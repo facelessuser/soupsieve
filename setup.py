@@ -5,7 +5,6 @@
 from setuptools import setup, find_packages
 import os
 import imp
-import sys
 
 
 def get_version():
@@ -45,6 +44,7 @@ VER, DEVSTATUS = get_version()
 setup(
     name='soupsieve',
     version=VER,
+    python_requires=">=3.4",
     keywords='CSS HTML selector filter',
     description='A CSS4 selector implementation for Beautiful Soup.',
     long_description=get_description(),
