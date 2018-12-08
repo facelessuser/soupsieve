@@ -51,7 +51,7 @@ Then create you can begin to use Soup Sieve to select:
 
 ```pycon3
 >>> import soupsieve as sv
->>> list(sv.select('p:is(.a, .b, .c)', soup))
+>>> sv.select('p:is(.a, .b, .c)', soup)
 [<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
 ```
 
