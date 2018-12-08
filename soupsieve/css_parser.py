@@ -590,15 +590,25 @@ class SoupSieve(util.Immutable):
         else:
             return [node for node in nodes if self.match(node)]
 
+    def commentsiter(self, node, limit=0):
+        """Iterate comments only."""
+
+        yield from self._sieve(node, capture=False, comments=True, limit=limit)
+
     def comments(self, node, limit=0):
         """Get comments only."""
 
-        yield from self._sieve(node, capture=False, comments=True, limit=limit)
+        return list(self.commentsiter(node, limit))
+
+    def selectiter(self, node, limit=0):
+        """Iterate the specified tags."""
+
+        yield from self._sieve(node, limit=limit)
 
     def select(self, node, limit=0):
         """Select the specified tags."""
 
-        yield from self._sieve(node, limit=limit)
+        return list(self.selectiter(node, limit))
 
     def __repr__(self):
         """Representation."""

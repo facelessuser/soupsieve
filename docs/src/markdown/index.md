@@ -45,21 +45,21 @@ Then create you can begin to use Soup Sieve to select:
 
 ```pycon3
 >>> import soupsieve as sv
->>> list(sv.select(soup, 'p:is(.a, .b, .c)'))
+>>> list(sv.select('p:is(.a, .b, .c)', soup))
 [<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
 ```
 
 To filter:
 
 ```pycon3
->>> sv.filter(soup.div, 'p:not(.b)')
+>>> sv.filter('p:not(.b)', soup.div)
 [<p class="a">Cat</p>, <p class="c">Mouse</p>]
 ```
 
 To match:
 
 ```pycon3
->>> nodes = list(sv.select(soup, 'p:is(.a, .b, .c)'))
+>>> nodes = sv.select('p:is(.a, .b, .c)', soup)
 >>> sv.match(nodes[0], 'p:not(.b)')
 True
 >>> sv.match(nodes[1], 'p:not(.b)')
@@ -69,7 +69,7 @@ False
 Or even just extracting comments:
 
 ```pycon3
->>> list(sv.comments(soup))
+>>> sv.comments(soup)
 [' These are animals ']
 ```
 

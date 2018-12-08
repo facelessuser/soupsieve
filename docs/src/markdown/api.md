@@ -20,56 +20,65 @@ Keep in mind, that Soup Sieve itself is not responsible for deciding what tag ha
 
 It is recommend to use the `xml` mode in Beautiful Soup when parsing XHTML documents.
 
+### `soupsieve.select()`
+
+```py3
+def select(select, node, namespaces=None, limit=0, mode=HTML5):
+    """Select the specified tags."""
+```
+
+`select` given a tag, will select all tags that match the provided CSS selector string. You can give `limit` a positive integer to return a specific number tags (0 means to return all tags).
+
+`select` accepts a CSS selector string, a `node` or element, an optional [namespace](#namespaces) dictionary, a `limit`, and a document `mode` (default is HTML5).
+
+```pycon3
+>>> import soupsieve as sv
+>>> sv.select('p:is(.a, .b, .c)', soup)
+[<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
+```
+
+### `soupsieve.selectiter()`
+
+```py3
+def selectiter(select, node, namespaces=None, limit=0, mode=HTML5):
+    """Select the specified tags."""
+```
+
+`selectiter` is exactly like `select` except that it returns a generator instead of a list.
+
 ### `soupsieve.match()`
 
 ```py3
-def match(node, select, namespaces=None, mode=HTML5):
+def match(select, node, namespaces=None, mode=HTML5):
     """Match node."""
 ```
 
 `match` matches a given node/element with a given CSS selector.
 
-`match` accepts a `node` or element, a CSS selector string, an optional [namespace](#namespaces) dictionary, and document mode (default is HTML5).
+`match` accepts a CSS selector string, a `node` or element, an optional [namespace](#namespaces) dictionary, and document mode (default is HTML5).
 
 ```pycon3
->>> nodes = list(sv.select(soup, 'p:is(.a, .b, .c)'))
->>> sv.match(nodes[0], 'p:not(.b)')
+>>> nodes = sv.select('p:is(.a, .b, .c)', soup)
+>>> sv.match('p:not(.b)', nodes[0])
 True
->>> sv.match(nodes[1], 'p:not(.b)')
+>>> sv.match('p:not(.b)', nodes[1])
 False
 ```
 
 ### `soupsieve.filter()`
 
 ```py3
-def filter(nodes, select, namespaces=None, mode=HTML5):
+def filter(select, nodes, namespaces=None, mode=HTML5):
     """Filter list of nodes."""
 ```
 
 `filter` takes an iterable containing HTML nodes and will filter them based on the provided CSS selector string. If given a Beautiful Soup tag, it will iterate the children that are tags.
 
-`filter` accepts a iterable containing tags, a CSS selector string, an optional [namespace](#namespaces) dictionary, and document mode (default is HTML5).
+`filter` accepts a CSS selector string, an iterable containing tags, an optional [namespace](#namespaces) dictionary, and document mode (default is HTML5).
 
 ```pycon3
->>> sv.filter(soup.div, 'p:not(.b)')
+>>> sv.filter('p:not(.b)', soup.div)
 [<p class="a">Cat</p>, <p class="c">Mouse</p>]
-```
-
-### `soupsieve.select()`
-
-```py3
-def select(node, select, namespaces=None, limit=0, mode=HTML5):
-    """Select the specified tags."""
-```
-
-`select` given a tag, will select all tags that match the provided CSS selector string. You can give `limit` a positive integer to return a specific number tags (0 means to return all tags). `select` returns a generator.  If you need a list, simply do this: `#!py3 list(sv.select(tag, 'p'))`.
-
-`select` accepts a `node` or element, a CSS selector string, an optional [namespace](#namespaces) dictionary, a `limit`, and a document `mode` (default is HTML5).
-
-```pycon3
->>> import soupsieve as sv
->>> list(sv.select(soup, 'p:is(.a, .b, .c)'))
-[<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
 ```
 
 ### `soupsieve.comments()`
@@ -79,9 +88,18 @@ def comments(node, limit=0, mode=HTML5):
     """Get comments only."""
 ```
 
-`comments` if useful to extract all comments from a document or document tag. It will extract from the given tag down through all of its children.  You can limit how many comments are returned with `limit`. `comments` returns a generator.  If you need a list, simply do this: `#!py3 list(sv.comments(tag))`.
+`comments` if useful to extract all comments from a document or document tag. It will extract from the given tag down through all of its children.  You can limit how many comments are returned with `limit`.
 
 `comments` accepts a `node` or element, a `limit`, and a document mode.
+
+### `soupsieve.commentsiter()`
+
+```
+def comments(node, limit=0, mode=HTML5):
+    """Get comments only."""
+```
+
+`commentsiter` is exactly like `comments` except that it returns a generator instead of a list.
 
 ### `soupsieve.compile()`
 

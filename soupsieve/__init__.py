@@ -61,25 +61,37 @@ def purge():
     cp._purge_cache()
 
 
-def match(node, select, namespaces=None, mode=HTML5):
+def match(select, node, namespaces=None, mode=HTML5):
     """Match node."""
 
     return compile(select, namespaces, mode).match(node)
 
 
-def filter(nodes, select, namespaces=None, mode=HTML5):  # noqa: A001
+def filter(select, nodes, namespaces=None, mode=HTML5):  # noqa: A001
     """Filter list of nodes."""
 
-    return compile(select, namespaces, mode).filter(select)
+    return compile(select, namespaces, mode).filter(nodes)
 
 
 def comments(node, limit=0, mode=HTML5):
     """Get comments only."""
 
-    yield from compile("", None, mode).comments(node, limit)
+    return compile("", None, mode).comments(node, limit)
 
 
-def select(node, select, namespaces=None, limit=0, mode=HTML5):
+def commentsiter(node, limit=0, mode=HTML5):
+    """Iterate comments only."""
+
+    yield from compile("", None, mode).commentsiter(node, limit)
+
+
+def select(select, node, namespaces=None, limit=0, mode=HTML5):
     """Select the specified tags."""
 
-    yield from compile(select, namespaces, mode).select(node, limit)
+    return compile(select, namespaces, mode).select(node, limit)
+
+
+def selectiter(select, node, namespaces=None, limit=0, mode=HTML5):
+    """Iterate the specified tags."""
+
+    yield from compile(select, namespaces, mode).selectiter(node, limit)
