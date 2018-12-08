@@ -9,7 +9,7 @@
 ## Overview
 
 Soup Sieve is a CSS4 selector library designed to be used with
-[Beautiful Soup 4](ttps://beautiful-soup-4.readthedocs.io/en/latest/#). It aims to provide selecting, matching, and
+[Beautiful Soup 4](https://beautiful-soup-4.readthedocs.io/en/latest/#). It aims to provide selecting, matching, and
 filtering with using modern CSS selectors.
 
 While Beautiful Soup comes with a builtin CSS selection API, it is not without issues. In addition, it also lacks

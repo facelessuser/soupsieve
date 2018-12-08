@@ -1,5 +1,5 @@
 # Changelog
 
-## 1.0.0
+## 0.4.0
 
-- **NEW**: Initial release.
+- **NEW**: Initial prerelease.
