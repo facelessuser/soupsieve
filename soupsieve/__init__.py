@@ -40,17 +40,17 @@ SoupSieve = cp.SoupSieve
 def compile(pattern, namespaces=None, mode=HTML5):  # noqa: A001
     """Compile CSS pattern."""
 
+    if namespaces is None:
+        namespaces = cp._Namespaces()
+    if not isinstance(namespaces, cp._Namespaces):
+        namespaces = cp._Namespaces(**(namespaces))
+
     if isinstance(pattern, SoupSieve):
         if mode != pattern.mode:
             raise ValueError("Cannot change mode of a pattern")
         elif namespaces != pattern.namespaces:
             raise ValueError("Cannot change namespaces of a pattern")
         return pattern
-
-    if namespaces is None:
-        namespaces = cp._Namespaces()
-    if not isinstance(namespaces, cp._Namespaces):
-        namespaces = cp._Namespaces(**(namespaces))
 
     return cp._cached_css_compile(pattern, namespaces, mode)
 

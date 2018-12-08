@@ -4,6 +4,7 @@ import bs4
 import soupsieve as sv
 import copy
 import random
+import pytest
 
 
 class TestSoupSieve(unittest.TestCase):
@@ -32,7 +33,7 @@ class TestSoupSieve(unittest.TestCase):
         comments = [str(c).strip() for c in sv.comments(soup, mode=sv.HTML5)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment', "don't ignore"]))
 
-        comments = [str(c).strip() for c in sv.comments(soup, limit=2, mode=sv.HTML5)]
+        comments = [str(c).strip() for c in sv.commentsiter(soup, limit=2, mode=sv.HTML5)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
 
     def test_select(self):
@@ -93,10 +94,6 @@ class TestSoupSieve(unittest.TestCase):
         self.assertTrue(sv.match('span#5', nodes[0]))
         self.assertFalse(sv.match('span#5', nodes[1]))
 
-        nodes = list(sv.selectiter('span[id]', soup))
-        self.assertTrue(sv.match('span#5', nodes[0]))
-        self.assertFalse(sv.match('span#5', nodes[1]))
-
     def test_filter(self):
         """Test filter."""
 
@@ -149,3 +146,16 @@ class TestSoupSieve(unittest.TestCase):
         self.assertTrue(sv.cp._cached_css_compile.cache_info().currsize == 500)
         sv.purge()
         self.assertEqual(sv.cp._cached_css_compile.cache_info().currsize, 0)
+
+    def test_recompile(self):
+        """If you feed through the same object, it should pass through unless you change flags."""
+
+        p1 = sv.compile('p[id]')
+        p2 = sv.compile(p1)
+        self.assertTrue(p1 is p2)
+
+        with pytest.raises(ValueError):
+            sv.compile(p1, mode=sv.HTML)
+
+        with pytest.raises(ValueError):
+            sv.compile(p1, namespaces={"": ""})
