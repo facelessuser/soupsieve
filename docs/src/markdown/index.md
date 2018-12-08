@@ -23,6 +23,12 @@ Sieve does not attempt to support all CSS4 selectors as many don't make sense in
 
 Checkout [CSS Selectors](./selectors.md) to see the full list.
 
+## Installation
+
+```
+pip install soupsieve
+````
+
 ## Usage
 
 Using Soup Sieve is easy. Simply create a Beautiful Soup object:
