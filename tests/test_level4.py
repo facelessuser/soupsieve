@@ -68,3 +68,210 @@ Not supported (with current opinions or plans the matter):
 
 - `:playing` / `:paused`: Elements cannot be played or paused in our environment, so this will not be implemented.
 """
+from . import util
+import soupsieve as sv
+
+
+class TestLevel4(util.TestCase):
+    """Test level 4 selectors."""
+
+    def test_attribute_case(self):
+        """Test attribute value case insensitivity."""
+
+        markup = """
+        <div id="div">
+        <p id="0" class="somewordshere">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3" class="herewords">Direct child</span>
+        <pre id="pre" class="wordshere">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            "[class*=WORDS]",
+            [],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "[class*=WORDS i]",
+            ["0", "3", "pre"],
+            mode=sv.HTML5
+        )
+
+    def test_is_matches_where(self):
+        """Test multiple selectors with "is", "matches", and "where"."""
+
+        markup = """
+        <div>
+        <p>Some text <span id="1"> in a paragraph</span>.
+        <a id="2" href="http://google.com">Link</a>
+        </p>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            ":is(span, a)",
+            ["1", "2"],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            ":is(span, a:matches(#2))",
+            ["1", "2"],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            ":where(span, a:matches(#2))",
+            ["1", "2"],
+            mode=sv.HTML5
+        )
+
+    def test_multi_nested_not(self):
+        """Test nested not and multiple selectors."""
+
+        markup = """
+        <div>
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            'div :not(p, :not([id=5]))',
+            ['5'],
+            mode=sv.HTML5
+        )
+
+    def test_has(self):
+        """Test has."""
+
+        markup = """
+        <div id="0" class="aaaa">
+            <p id="1" class="bbbb"></p>
+            <p id="2" class="cccc"></p>
+            <p id="3" class="dddd"></p>
+            <div id="4" class="eeee">
+            <div id="5" class="ffff">
+            <div id="6" class="gggg">
+                <p id="7" class="hhhh"></p>
+                <p id="8" class="iiii zzzz"></p>
+                <p id="9" class="jjjj"></p>
+                <div id="10" class="kkkk">
+                    <p id="11" class="llll zzzz"></p>
+                </div>
+            </div>
+            </div>
+            </div>
+        </div>
+        """
+
+        markup2 = """
+        <div id="0" class="aaaa">
+            <p id="1" class="bbbb"></p>
+        </div>
+        <div id="2" class="cccc">
+            <p id="3" class="dddd"></p>
+        </div>
+        <div id="4" class="eeee">
+            <p id="5" class="ffff"></p>
+        </div>
+        <div id="6" class="gggg">
+            <p id="7" class="hhhh"></p>
+        </div>
+        <div id="8" class="iiii">
+            <p id="9" class="jjjj"></p>
+            <span id="10"></span>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            'div:not(.aaaa):has(.kkkk > p.llll)',
+            ['4', '5', '6'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            'p:has(+ .dddd:has(+ div .jjjj))',
+            ['2'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            'p:has(~ .jjjj)',
+            ['7', '8'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup2,
+            'div:has(> .bbbb, .ffff, .jjjj)',
+            ['0', '4', '8'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup2,
+            'div:has(> :not(.bbbb, .ffff, .jjjj))',
+            ['2', '6', '8'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup2,
+            'div:not(:has(> .bbbb, .ffff, .jjjj))',
+            ['2', '6'],
+            mode=sv.HTML5
+        )
+
+    def test_nth_child_of_s(self):
+        """Test `nth` child with selector."""
+
+        markup = """
+        <p id="0"></p>
+        <p id="1"></p>
+        <span id="2" class="test"></span>
+        <span id="3"></span>
+        <span id="4" class="test"></span>
+        <span id="5"></span>
+        <span id="6" class="test"></span>
+        <p id="7"></p>
+        <p id="8" class="test"></p>
+        <p id="9"></p>
+        <p id="10" class="test"></p>
+        <span id="11"></span>
+        """
+
+        self.assert_selector(
+            markup,
+            ":nth-child(2n + 1 of :is(p, span).test)",
+            ['2', '6', '10'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            ":nth-child(-n+3 of p)",
+            ['0', '1', '7'],
+            mode=sv.HTML5
+        )
