@@ -9,7 +9,6 @@ include .pyspelling.yml
 include mkdocs.yml
 include setup.py
 include setup.cfg
-include .coveragerc
 include tox.ini
 include LICENSE.md
 include README.md

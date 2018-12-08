@@ -2,7 +2,6 @@ spellchecker: aspell
 
 matrix:
 - name: mkdocs
-  hidden: true
   sources:
   - site/**/*.html
   hunspell:
