@@ -251,10 +251,8 @@ class CSSParser:
         pseudo = m.group('pseudo')[1:]
         if pseudo == 'root':
             sel.is_root = True
-            has_selector = True
         elif pseudo == 'empty':
             sel.is_empty = True
-            has_selector = True
         elif pseudo == 'first-child':
             sel.nth.append(SelectorNth(1, False, 0, False, False, tuple()))
         elif pseudo == 'last-child':
@@ -278,6 +276,7 @@ class CSSParser:
                 ]
             )
 
+        has_selector = True
         return has_selector
 
     def parse_pseudo_nth(self, sel, m, has_selector, iselector):

@@ -373,3 +373,332 @@ class TestLevel3(util.TestCase):
             },
             mode=sv.XML
         )
+
+    def test_attribute_namespace(self):
+        """Test attribute namespace."""
+
+        markup = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        </head>
+        <body>
+          <h1>A contrived example</h1>
+          <svg viewBox="0 0 20 32" class="icon icon-1">
+            <use id="0" xlink:href="images/sprites.svg#icon-undo">aaaa</use>
+          </svg>
+          <svg viewBox="0 0 30 32" class="icon icon-2">
+            <use id="1" xlink:href="images/sprites.svg#icon-redo">bbbb</use>
+          </svg>
+          <svg viewBox="0 0 40 32" class="icon icon-3">
+            <use id="2" xlink:href="images/sprites.svg#icon-forward">cccc</use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="3" xlink:href="other/sprites.svg#icon-reply">dddd</use>
+          </svg>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            '[xlink|href*=forw],[xlink|href="images/sprites.svg#icon-redo"]',
+            ['1', '2'],
+            namespaces={"xlink": "http://www.w3.org/1999/xlink"},
+            mode=sv.HTML5
+        )
+
+    def test_first_of_type(self):
+        """Test first of type."""
+
+        markup = """
+        <p id="0"></p>
+        <p id="1"></p>
+        <span id="2"></span>
+        <span id="3"></span>
+        <span id="4"></span>
+        <span id="5"></span>
+        <span id="6"></span>
+        <p id="7"></p>
+        <p id="8"></p>
+        <p id="9"></p>
+        <p id="10"></p>
+        <span id="11"></span>
+        """
+
+        self.assert_selector(
+            markup,
+            "p:first-of-type",
+            ['0'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "span:first-of-type",
+            ['2'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "body :first-of-type",
+            ['0', '2'],
+            mode=sv.HTML5
+        )
+
+    def test_last_of_type(self):
+        """Test last of type."""
+
+        markup = """
+        <p id="0"></p>
+        <p id="1"></p>
+        <span id="2"></span>
+        <span id="3"></span>
+        <span id="4"></span>
+        <span id="5"></span>
+        <span id="6"></span>
+        <p id="7"></p>
+        <p id="8"></p>
+        <p id="9"></p>
+        <p id="10"></p>
+        <span id="11"></span>
+        """
+
+        self.assert_selector(
+            markup,
+            "p:last-of-type",
+            ['10'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "span:last-of-type",
+            ['11'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "body :last-of-type",
+            ['10', '11'],
+            mode=sv.HTML5
+        )
+
+    def test_only_of_type(self):
+        """Test only of type."""
+
+        markup = """
+        <div id="0">
+            <p id="1"></p>
+        </div>
+        <span id="2"></span>
+        <span id="3"></span>
+        <p id="4"></p>
+        <span id="5"></span>
+        <span id="6"></span>
+        <div>
+            <p id="7"></p>
+            <p id="8"></p>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            "p:only-of-type",
+            ['1', '4'],
+            mode=sv.HTML5
+        )
+
+    def test_nth_child(self):
+        """Test `nth` child."""
+
+        markup = """
+        <p id="0"></p>
+        <p id="1"></p>
+        <span id="2"></span>
+        <span id="3"></span>
+        <span id="4"></span>
+        <span id="5"></span>
+        <span id="6"></span>
+        <p id="7"></p>
+        <p id="8"></p>
+        <p id="9"></p>
+        <p id="10"></p>
+        <span id="11"></span>
+        """
+
+        self.assert_selector(
+            markup,
+            "p:nth-child(-2)",
+            [],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "p:nth-child(2)",
+            ['1'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "p:nth-child(9n - 1)",
+            ['7'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "p:nth-child(2n + 1)",
+            ['0', '8', '10'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "p:nth-child(-n+3)",
+            ['0', '1'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "span:nth-child(-n+3)",
+            ['2'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "body *:nth-child(-n+3)",
+            ['0', '1', '2'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "p:nth-child(odd)",
+            ['0', '8', '10'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "p:nth-child(even)",
+            ['1', '7', '9'],
+            mode=sv.HTML5
+        )
+
+    def test_nth_last_child(self):
+        """Test `nth` last child."""
+
+        markup = """
+        <p id="0"></p>
+        <p id="1"></p>
+        <span id="2"></span>
+        <span id="3"></span>
+        <span id="4"></span>
+        <span id="5"></span>
+        <span id="6"></span>
+        <p id="7"></p>
+        <p id="8"></p>
+        <p id="9"></p>
+        <p id="10"></p>
+        <span id="11"></span>
+        """
+
+        self.assert_selector(
+            markup,
+            "p:nth-last-child(2)",
+            ['10'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "p:nth-last-child(2n + 1)",
+            ['1', '7', '9'],
+            mode=sv.HTML5
+        )
+
+    def test_nth_of_type(self):
+        """Test `nth` of type."""
+
+        markup = """
+        <p id="0"></p>
+        <p id="1"></p>
+        <span id="2"></span>
+        <span id="3"></span>
+        <span id="4"></span>
+        <span id="5"></span>
+        <span id="6"></span>
+        <p id="7"></p>
+        <p id="8"></p>
+        <p id="9"></p>
+        <p id="10"></p>
+        <span id="11"></span>
+        """
+
+        self.assert_selector(
+            markup,
+            "p:nth-of-type(3)",
+            ['7'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "p:nth-of-type(2n + 1)",
+            ['0', '7', '9'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "span:nth-of-type(2n + 1)",
+            ['2', '4', '6'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "body :nth-of-type(2n + 1)",
+            ['0', '2', '4', '6', '7', '9'],
+            mode=sv.HTML5
+        )
+
+    def test_nth_last_of_type(self):
+        """Test `nth` last of type."""
+
+        markup = """
+        <p id="0"></p>
+        <p id="1"></p>
+        <span id="2"></span>
+        <span id="3"></span>
+        <span id="4"></span>
+        <span id="5"></span>
+        <span id="6"></span>
+        <p id="7"></p>
+        <p id="8"></p>
+        <p id="9"></p>
+        <p id="10"></p>
+        <span id="11"></span>
+        """
+
+        self.assert_selector(
+            markup,
+            "p:nth-last-of-type(3)",
+            ['8'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "p:nth-last-of-type(2n + 1)",
+            ['1', '8', '10'],
+            mode=sv.HTML5
+        )

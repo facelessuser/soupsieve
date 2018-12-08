@@ -313,9 +313,13 @@ class CSSMatch:
             if var:
                 # Abort if our nth index is out of bounds and only getting further out of bounds as we increment.
                 # Otherwise, increment to try to get in bounds.
+                adjust = None
                 while idx < 1 or idx > last_index:
                     diff_low = 0 - idx
                     if idx < 0:
+                        if adjust is not None:
+                            break
+                        adjust = -1
                         count += count_incr
                         idx = last_idx = a * count + b if var else a
                         diff = 0 - idx
@@ -324,6 +328,9 @@ class CSSMatch:
                         diff_low = diff
                     diff_high = idx - last_index
                     if idx > last_index:
+                        if adjust is not None:
+                            break
+                        adjust = 1
                         count += count_incr
                         idx = last_idx = a * count + b if var else a
                         diff = idx - last_index
