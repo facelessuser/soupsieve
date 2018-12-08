@@ -46,14 +46,14 @@ RE_NTH = re.compile(r'(?P<s1>[-+])?(?P<a>\d+n?|n)(?:(?<=n)\s*(?P<s2>[-+])\s*(?P<
 SPLIT = ','
 HAS_CHILD = ": "
 
-_MAXCACHE = 256
+_MAXCACHE = 500
 
 
 @lru_cache(maxsize=_MAXCACHE)
 def _cached_css_compile(pattern, namespaces, mode):
     """Cached CSS compile."""
 
-    return CSSPattern(
+    return SoupSieve(
         pattern,
         namespaces,
         mode
@@ -75,6 +75,20 @@ def css_unescape(string):
         return chr(int(m.group(1)[1:], 16)) if m.group(1) else m.group(2)[1:]
 
     return RE_CSS_ESC.sub(replace, string)
+
+
+class _Namespaces(util.ImmutableDict):
+    """Namespaces."""
+
+    def __init__(self, *args, **kwargs):
+        """Initialize."""
+
+        if not all([isinstance(k, str) and isinstance(v, str) for k, v in args]):
+            raise TypeError('Namespace keys and values must be Unicode strings')
+        if not all([isinstance(k, str) and isinstance(v, str) for k, v in kwargs.items()]):
+            raise TypeError('Namespace keys and values must be Unicode strings')
+
+        super().__init__(*args, **kwargs)
 
 
 class _Selector:
@@ -525,7 +539,7 @@ class CSSParser:
         return tuple([s.freeze() for s in self.parse_selectors(self.re_sel.finditer(self.pattern))])
 
 
-class CSSPattern(util.Immutable):
+class SoupSieve(util.Immutable):
     """Match tags in Beautiful Soup with CSS selectors."""
 
     __slots__ = ("pattern", "selectors", "namespaces", "mode", "_hash")
@@ -540,14 +554,62 @@ class CSSPattern(util.Immutable):
             mode=mode
         )
 
-    def match(self, el):
-        """Match selector."""
+    def _walk(self, node, capture=True, comments=False):
+        """Recursively return selected tags."""
 
-        return cm.CSSMatch(self.selectors, self.namespaces, self.mode).match(el)
+        if capture and self.match(node):
+            yield node
+
+        # Walk children
+        for child in node.children:
+            if isinstance(child, util.TAG):
+                yield from self._walk(child, capture, comments)
+            elif comments and isinstance(child, util.COMMENT):
+                yield child
+
+    def _sieve(self, node, capture=True, comments=False, limit=0):
+        """Sieve."""
+
+        if limit < 1:
+            limit = None
+
+        for child in self._walk(node, capture, comments):
+            yield child
+            if limit is not None:
+                limit -= 1
+                if limit < 1:
+                    break
+
+    def match(self, node):
+        """Match."""
+
+        return cm.CSSMatch(self.selectors, self.namespaces, self.mode).match(node)
+
+    def filter(self, nodes):  # noqa A001
+        """Filter."""
+
+        return [node for node in nodes if self.match(node)]
+
+    def comments(self, node, limit=0):
+        """Get comments only."""
+
+        yield from self._sieve(node, capture=False, comments=True, limit=limit)
+
+    def select(self, node, limit=0):
+        """Select the specified tags."""
+
+        yield from self._sieve(node, limit=limit)
+
+    def __repr__(self):
+        """Representation."""
+
+        return "SoupSieve(pattern=%r, namespaces=%s, mode=%s)" % (self.pattern, self.namespaces, self.mode)
+
+    __str__ = __repr__
 
 
 def _pickle(p):
-    return CSSPattern, (p.pattern, p.namespaces, p.mode)
+    return SoupSieve, (p.pattern, p.namespaces, p.mode)
 
 
-copyreg.pickle(CSSPattern, _pickle)
+copyreg.pickle(SoupSieve, _pickle)

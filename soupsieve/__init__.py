@@ -27,35 +27,32 @@ SOFTWARE.
 """
 from .__meta__ import __version__, __version_info__  # noqa: F401
 from . import css_parser as cp
-from . import util
 from .util import HTML, HTML5, XHTML, XML
 
 __all__ = (
-    'HTML', 'HTML5', 'XHTML', 'XML', 'COMMENTS',
-    'SoupSieve', 'compile', 'purge', 'comments', 'select',
+    'HTML', 'HTML5', 'XHTML', 'XML',
+    'SoupSieve', 'compile', 'purge', 'comments', 'select', 'match', 'filter'
 )
 
-COMMENTS = 0x1
+SoupSieve = cp.SoupSieve
 
 
-def compile(pattern, namespaces, mode=0):  # noqa: A001
+def compile(pattern, namespaces=None, mode=0):  # noqa: A001
     """Compile CSS pattern."""
 
-    if isinstance(pattern, cp.CSSPattern):
+    if isinstance(pattern, SoupSieve):
         if mode != pattern.mode:
             raise ValueError("Cannot change mode of a pattern")
         elif namespaces != pattern.namespaces:
             raise ValueError("Cannot change namespaces of a pattern")
         return pattern
 
-    if not all([isinstance(k, str) and isinstance(v, str) for k, v in namespaces.items()]):
-        raise TypeError('Namespace keys and values must be Unicode strings')
+    if namespaces is None:
+        namespaces = cp._Namespaces()
+    if not isinstance(namespaces, cp._Namespaces):
+        namespaces = cp._Namespaces(**(namespaces))
 
-    return cp._cached_css_compile(
-        pattern,
-        util.ImmutableDict(**(namespaces if namespaces else {})),
-        mode
-    )
+    return cp._cached_css_compile(pattern, namespaces, mode)
 
 
 def purge():
@@ -64,72 +61,26 @@ def purge():
     cp._purge_cache()
 
 
-class SoupSieve:
-    """Soup sieve CSS selector class."""
+def match(node, select, namespaces=None, mode=0):
+    """Match node."""
 
-    def __init__(self, mode=0):
-        """Initialize mode."""
+    return compile(select, namespaces, mode).match(node)
 
-        if mode == 0:
-            mode = HTML
 
-        if mode in (HTML, HTML5, XML, XHTML):
-            self.mode = mode
-        else:
-            raise ValueError("Invalid SoupSieve document mode '{}'".format(mode))
+def filter(nodes, select, namespaces=None, mode=0):  # noqa: A001
+    """Filter list of nodes."""
 
-    def _select(self, node):
-        """Recursively return selected tags."""
-
-        if self.ignores.match(node):
-            if self.comments:
-                for child in node.descendants:
-                    if isinstance(child, util.COMMENT):
-                        yield child
-        else:
-            if self.captures.match(node):
-                yield node
-
-            # Walk children
-            for child in node.children:
-                if isinstance(child, util.TAG):
-                    yield from self._select(child)
-                elif self.comments and isinstance(child, util.COMMENT):
-                    yield child
-
-    def comments(self, node, limit=0):
-        """Get comments only."""
-
-        yield from self.select(node, "", "", None, limit, COMMENTS)
-
-    def select(self, node, select="", ignore="", namespaces=None, limit=0, flags=0):
-        """Select the specified tags filtering out an tags if 'ignores' is provided."""
-
-        if limit < 1:
-            limit = None
-
-        if namespaces is None:
-            namespaces = {}
-
-        self.comments = flags & COMMENTS
-        self.captures = compile(select, namespaces, self.mode)
-        self.ignores = compile(ignore, namespaces, self.mode)
-
-        for child in self._select(node):
-            yield child
-            if limit is not None:
-                limit -= 1
-                if limit < 1:
-                    break
+    css_selector = compile(select, namespaces, mode)
+    return [node for node in nodes if css_selector.match(node)]
 
 
 def comments(node, limit=0, mode=0):
     """Get comments only."""
 
-    yield from SoupSieve(mode).comments(node, limit)
+    yield from compile("", None, mode).comments(node, limit)
 
 
-def select(node, select="", ignore="", namespaces=None, limit=0, mode=0, flags=0):
-    """Select the specified tags filtering out if a filter pattern is provided."""
+def select(node, select="", namespaces=None, limit=0, mode=0):
+    """Select the specified tags."""
 
-    yield from SoupSieve(mode).select(node, select, ignore, namespaces, limit, flags)
+    yield from compile(select, namespaces, mode).select(node, limit)

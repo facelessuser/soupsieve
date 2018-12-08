@@ -99,7 +99,7 @@ class ImmutableDict(Mapping):
             raise ValueError('All values must be hashable')
 
         self._d = dict(*args, **kwargs)
-        self._hash = hash(tuple(sorted(self._d.items())))
+        self._hash = hash(tuple([(type(x), x, type(y), y) for x, y in sorted(self._d.items())]))
 
     def __iter__(self):
         """Iterator."""
@@ -119,3 +119,10 @@ class ImmutableDict(Mapping):
         """Hash."""
 
         return self._hash
+
+    def __repr__(self):
+        """Representation."""
+
+        return "%r" % self._d
+
+    __str__ = __repr__
