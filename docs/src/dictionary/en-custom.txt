@@ -9,6 +9,7 @@ Hashable
 MERCHANTABILITY
 MkDocs
 NONINFRINGEMENT
+PyPI
 PySpelling
 SVG
 Tox
