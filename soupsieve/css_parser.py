@@ -558,9 +558,9 @@ class SoupSieve(util.Immutable):
             yield node
 
         # Walk children
-        for child in node.children:
-            if isinstance(child, util.TAG):
-                yield from self._walk(child, capture, comments)
+        for child in node.descendants:
+            if capture and isinstance(child, util.TAG) and self.match(child):
+                yield child
             elif comments and isinstance(child, util.COMMENT):
                 yield child
 
