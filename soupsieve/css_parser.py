@@ -254,6 +254,7 @@ class CSSParser:
             has_selector = True
         elif pseudo == 'empty':
             sel.is_empty = True
+            has_selector = True
         elif pseudo == 'first-child':
             sel.nth.append(SelectorNth(1, False, 0, False, False, tuple()))
         elif pseudo == 'last-child':

@@ -8,6 +8,7 @@ MERCHANTABILITY
 NONINFRINGEMENT
 Unescape
 WIP
+XHTML
 accessor
 builtin
 matcher

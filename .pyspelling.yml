@@ -54,7 +54,7 @@ matrix:
 - name: python
   sources:
   - setup.py
-  - soupsieve/**/*.py
+  - '{soupsieve,tests}/**/*.py'
   hunspell:
     d: en_US
   aspell:
