@@ -188,13 +188,10 @@ class SelectorNth(namedtuple('SelectorNth', ['a', 'n', 'b', 'type', 'last', 'sel
 class CSSParser:
     """Parse CSS selectors."""
 
-    def __init__(self, selector, mode=0):
+    def __init__(self, selector, mode=util.HTML5):
         """Initialize."""
 
         self.pattern = selector
-
-        if mode == 0:
-            mode = util.HTML
 
         if mode in (util.HTML, util.HTML5, util.XML, util.XHTML):
             self.mode = mode
@@ -588,7 +585,10 @@ class SoupSieve(util.Immutable):
     def filter(self, nodes):  # noqa A001
         """Filter."""
 
-        return [node for node in nodes if self.match(node)]
+        if isinstance(nodes, util.TAG):
+            return [node for node in nodes.children if isinstance(node, util.TAG) and self.match(node)]
+        else:
+            return [node for node in nodes if self.match(node)]
 
     def comments(self, node, limit=0):
         """Get comments only."""

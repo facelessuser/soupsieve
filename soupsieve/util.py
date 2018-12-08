@@ -3,8 +3,8 @@ from collections import Mapping
 from collections.abc import Hashable
 import bs4
 
-HTML = 0x1
-HTML5 = 0x2
+HTML5 = 0x1
+HTML = 0x2
 XHTML = 0x4
 XML = 0x8
 

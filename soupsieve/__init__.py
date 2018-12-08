@@ -37,7 +37,7 @@ __all__ = (
 SoupSieve = cp.SoupSieve
 
 
-def compile(pattern, namespaces=None, mode=0):  # noqa: A001
+def compile(pattern, namespaces=None, mode=HTML5):  # noqa: A001
     """Compile CSS pattern."""
 
     if isinstance(pattern, SoupSieve):
@@ -61,26 +61,25 @@ def purge():
     cp._purge_cache()
 
 
-def match(node, select, namespaces=None, mode=0):
+def match(node, select, namespaces=None, mode=HTML5):
     """Match node."""
 
     return compile(select, namespaces, mode).match(node)
 
 
-def filter(nodes, select, namespaces=None, mode=0):  # noqa: A001
+def filter(nodes, select, namespaces=None, mode=HTML5):  # noqa: A001
     """Filter list of nodes."""
 
-    css_selector = compile(select, namespaces, mode)
-    return [node for node in nodes if css_selector.match(node)]
+    return compile(select, namespaces, mode).filter(select)
 
 
-def comments(node, limit=0, mode=0):
+def comments(node, limit=0, mode=HTML5):
     """Get comments only."""
 
     yield from compile("", None, mode).comments(node, limit)
 
 
-def select(node, select="", namespaces=None, limit=0, mode=0):
+def select(node, select, namespaces=None, limit=0, mode=HTML5):
     """Select the specified tags."""
 
     yield from compile(select, namespaces, mode).select(node, limit)

@@ -8,7 +8,7 @@ import soupsieve as sv
 class TestCase(unittest.TestCase):
     """Test case."""
 
-    def assert_selector(self, markup, selectors, expected_ids, namespaces={}, mode=sv.HTML):
+    def assert_selector(self, markup, selectors, expected_ids, namespaces={}, mode=sv.HTML5):
         """Assert selector."""
 
         if mode == sv.HTML:
