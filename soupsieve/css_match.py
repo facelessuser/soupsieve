@@ -282,7 +282,7 @@ class CSSMatch:
 
         return(
             (child.name == (util.lower(el.name) if not self.is_xml() else el.name)) and
-            (self.supports_namespaces() and self.get_namespace(child) == self.get_namespace(el))
+            (not self.supports_namespaces() or self.get_namespace(child) == self.get_namespace(el))
         )
 
     def match_nth(self, el, nth):
