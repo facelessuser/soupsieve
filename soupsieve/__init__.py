@@ -27,11 +27,12 @@ SOFTWARE.
 """
 from .__meta__ import __version__, __version_info__  # noqa: F401
 from . import css_parser as cp
-from .util import HTML, HTML5, XHTML, XML
+from .util import HTML, HTML5, XHTML, XML, deprecated
 
 __all__ = (
     'HTML', 'HTML5', 'XHTML', 'XML',
-    'SoupSieve', 'compile', 'purge', 'comments', 'select', 'match', 'filter'
+    'SoupSieve', 'compile', 'purge',
+    'comments', 'icomments', 'select', 'iselect', 'match', 'filter'
 )
 
 SoupSieve = cp.SoupSieve
@@ -79,10 +80,10 @@ def comments(node, limit=0, mode=HTML5):
     return compile("", None, mode).comments(node, limit)
 
 
-def commentsiter(node, limit=0, mode=HTML5):
+def icomments(node, limit=0, mode=HTML5):
     """Iterate comments only."""
 
-    yield from compile("", None, mode).commentsiter(node, limit)
+    yield from compile("", None, mode).icomments(node, limit)
 
 
 def select(select, node, namespaces=None, limit=0, mode=HTML5):
@@ -91,7 +92,22 @@ def select(select, node, namespaces=None, limit=0, mode=HTML5):
     return compile(select, namespaces, mode).select(node, limit)
 
 
+def iselect(select, node, namespaces=None, limit=0, mode=HTML5):
+    """Iterate the specified tags."""
+
+    yield from compile(select, namespaces, mode).iselect(node, limit)
+
+
+# ====== Deprecated ======
+@deprecated("Use 'icomments' instead.")
+def commentsiter(node, limit=0, mode=HTML5):
+    """Iterate comments only."""
+
+    yield from icomments(node, limit, mode)
+
+
+@deprecated("Use 'iselect' instead.")
 def selectiter(select, node, namespaces=None, limit=0, mode=HTML5):
     """Iterate the specified tags."""
 
-    yield from compile(select, namespaces, mode).selectiter(node, limit)
+    yield from iselect(select, node, namespaces, limit, mode)
