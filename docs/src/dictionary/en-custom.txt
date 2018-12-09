@@ -19,6 +19,7 @@ WIP
 XHTML
 accessor
 builtin
+deprecations
 html
 iterable
 linter

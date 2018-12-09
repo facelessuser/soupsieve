@@ -5,13 +5,15 @@ import soupsieve as sv
 import copy
 import random
 import pytest
+import warnings
 
 
 class TestSoupSieve(unittest.TestCase):
-    """Test soup sieve."""
+    """Test Soup Sieve."""
 
     def test_comments(self):
         """Test comments."""
+
         markup = """
         <!-- before header -->
         <html>
@@ -33,7 +35,7 @@ class TestSoupSieve(unittest.TestCase):
         comments = [str(c).strip() for c in sv.comments(soup, mode=sv.HTML5)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment', "don't ignore"]))
 
-        comments = [str(c).strip() for c in sv.commentsiter(soup, limit=2, mode=sv.HTML5)]
+        comments = [str(c).strip() for c in sv.icomments(soup, limit=2, mode=sv.HTML5)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
 
     def test_select(self):
@@ -64,7 +66,7 @@ class TestSoupSieve(unittest.TestCase):
         self.assertEqual(sorted(['5', 'some-id']), sorted(ids))
 
         ids = []
-        for el in sv.selectiter('span[id]', soup):
+        for el in sv.iselect('span[id]', soup):
             ids.append(el.attrs['id'])
 
         self.assertEqual(sorted(['5', 'some-id']), sorted(ids))
@@ -159,3 +161,91 @@ class TestSoupSieve(unittest.TestCase):
 
         with pytest.raises(ValueError):
             sv.compile(p1, namespaces={"": ""})
+
+
+class TestDeprcations(unittest.TestCase):
+    """Test Soup Sieve deprecations."""
+
+    def test_selectiter_deprecation(self):
+        """Test the deprecated iterator functions."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = bs4.BeautifulSoup(markup, 'html5lib')
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+
+            ids = []
+            for el in sv.selectiter('span[id]', soup):
+                ids.append(el.attrs['id'])
+            self.assertEqual(sorted(['5', 'some-id']), sorted(ids))
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+
+            ids = []
+            for el in sv.compile('span[id]').selectiter(soup):
+                ids.append(el.attrs['id'])
+            self.assertEqual(sorted(['5', 'some-id']), sorted(ids))
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+
+    def test_commentsiter_deprecation(self):
+        """Test the deprecated iterator functions."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = bs4.BeautifulSoup(markup, 'html5lib')
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+
+            comments = [str(c).strip() for c in sv.commentsiter(soup, limit=2)]
+            self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+
+            comments = [str(c).strip() for c in sv.compile('').commentsiter(soup, limit=2)]
+            self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))

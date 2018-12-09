@@ -119,3 +119,23 @@ class TestLevel1(util.TestCase):
             ["2"],
             mode=sv.HTML5
         )
+
+    def test_classes(self):
+        """Test classes."""
+
+        markup = """
+        <div>
+        <p>Some text <span id="1" class="foo"> in a paragraph</span>.
+        <a id="2" class="bar" href="http://google.com">Link</a>
+        <a id="3" class="foo" href="http://google.com">Link</a>
+        <a id="4" class="foo bar" href="http://google.com">Link</a>
+        </p>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            "a.foo.bar",
+            ["4"],
+            mode=sv.HTML5
+        )

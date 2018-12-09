@@ -37,14 +37,14 @@ def select(select, node, namespaces=None, limit=0, mode=HTML5):
 [<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
 ```
 
-### `soupsieve.selectiter()`
+### `soupsieve.iselect()`
 
 ```py3
-def selectiter(select, node, namespaces=None, limit=0, mode=HTML5):
+def iselect(select, node, namespaces=None, limit=0, mode=HTML5):
     """Select the specified tags."""
 ```
 
-`selectiter` is exactly like `select` except that it returns a generator instead of a list.
+`iselect` is exactly like `select` except that it returns a generator instead of a list.
 
 ### `soupsieve.match()`
 
@@ -92,14 +92,14 @@ def comments(node, limit=0, mode=HTML5):
 
 `comments` accepts a `node` or element, a `limit`, and a document mode.
 
-### `soupsieve.commentsiter()`
+### `soupsieve.icomments()`
 
 ```
-def comments(node, limit=0, mode=HTML5):
+def icomments(node, limit=0, mode=HTML5):
     """Get comments only."""
 ```
 
-`commentsiter` is exactly like `comments` except that it returns a generator instead of a list.
+`icomments` is exactly like `comments` except that it returns a generator instead of a list.
 
 ### `soupsieve.compile()`
 

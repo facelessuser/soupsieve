@@ -32,20 +32,31 @@ class TestLevel2(util.TestCase):
     def test_direct_child(self):
         """Test direct child."""
 
+        markup = """
+        <div>
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre>
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
+        # Spaces
         self.assert_selector(
-            """
-            <div>
-            <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
-            <a id="2" href="http://google.com">Link</a>
-            <span id="3">Direct child</span>
-            <pre>
-            <span id="4">Child 1</span>
-            <span id="5">Child 2</span>
-            <span id="6">Child 3</span>
-            </pre>
-            </div>
-            """,
+            markup,
             "div > span",
+            ["3"],
+            mode=sv.HTML5
+        )
+
+        # No spaces
+        self.assert_selector(
+            markup,
+            "div>span",
             ["3"],
             mode=sv.HTML5
         )
@@ -53,21 +64,40 @@ class TestLevel2(util.TestCase):
     def test_direct_sibling(self):
         """Test direct sibling."""
 
+        markup = """
+        <div>
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre>
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
+        # Spaces
         self.assert_selector(
-            """
-            <div>
-            <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
-            <a id="2" href="http://google.com">Link</a>
-            <span id="3">Direct child</span>
-            <pre>
-            <span id="4">Child 1</span>
-            <span id="5">Child 2</span>
-            <span id="6">Child 3</span>
-            </pre>
-            </div>
-            """,
+            markup,
             "span + span",
             ["5", "6"],
+            mode=sv.HTML5
+        )
+
+        # No spaces
+        self.assert_selector(
+            markup,
+            "span+span",
+            ["5", "6"],
+            mode=sv.HTML5
+        )
+
+        # Complex
+        self.assert_selector(
+            markup,
+            "span#4 + span#5",
+            ["5"],
             mode=sv.HTML5
         )
 
@@ -110,6 +140,28 @@ class TestLevel2(util.TestCase):
             """,
             "[href]",
             ["2"],
+            mode=sv.HTML5
+        )
+
+    def test_multi_attribute(self):
+        """Test multiple attribute."""
+
+        self.assert_selector(
+            """
+            <div id="div">
+            <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+            <a id="2" href="http://google.com">Link</a>
+            <span id="3">Direct child</span>
+            <pre id="pre">
+            <span id="4" class="test">Child 1</span>
+            <span id="5" class="test" data-test="test">Child 2</span>
+            <span id="6">Child 3</span>
+            <span id="6">Child 3</span>
+            </pre>
+            </div>
+            """,
+            "span[id].test[data-test=test]",
+            ["5"],
             mode=sv.HTML5
         )
 

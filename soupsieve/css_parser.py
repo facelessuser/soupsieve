@@ -5,6 +5,7 @@ from collections import namedtuple
 from functools import lru_cache
 from . import util
 from . import css_match as cm
+from .util import deprecated
 
 
 # Selector patterns
@@ -590,25 +591,25 @@ class SoupSieve(util.Immutable):
         else:
             return [node for node in nodes if self.match(node)]
 
-    def commentsiter(self, node, limit=0):
+    def comments(self, node, limit=0):
+        """Get comments only."""
+
+        return list(self.icomments(node, limit))
+
+    def icomments(self, node, limit=0):
         """Iterate comments only."""
 
         yield from self._sieve(node, capture=False, comments=True, limit=limit)
 
-    def comments(self, node, limit=0):
-        """Get comments only."""
-
-        return list(self.commentsiter(node, limit))
-
-    def selectiter(self, node, limit=0):
-        """Iterate the specified tags."""
-
-        yield from self._sieve(node, limit=limit)
-
     def select(self, node, limit=0):
         """Select the specified tags."""
 
-        return list(self.selectiter(node, limit))
+        return list(self.iselect(node, limit))
+
+    def iselect(self, node, limit=0):
+        """Iterate the specified tags."""
+
+        yield from self._sieve(node, limit=limit)
 
     def __repr__(self):
         """Representation."""
@@ -616,6 +617,19 @@ class SoupSieve(util.Immutable):
         return "SoupSieve(pattern=%r, namespaces=%s, mode=%s)" % (self.pattern, self.namespaces, self.mode)
 
     __str__ = __repr__
+
+    # ====== Deprecated ======
+    @deprecated("Use 'SoupSieve.icomments' instead.")
+    def commentsiter(self, node, limit=0):
+        """Iterate comments only."""
+
+        yield from self.icomments(node, limit)
+
+    @deprecated("Use 'SoupSieve.iselect' instead.")
+    def selectiter(self, node, limit=0):
+        """Iterate the specified tags."""
+
+        yield from self.iselect(node, limit)
 
 
 def _pickle(p):
