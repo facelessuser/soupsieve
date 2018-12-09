@@ -27,7 +27,7 @@ Checkout [CSS Selectors](./selectors.md) to see the full list.
 
 ```
 pip install soupsieve
-````
+```
 
 ## Usage
 
