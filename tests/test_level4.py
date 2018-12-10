@@ -105,6 +105,40 @@ class TestLevel4(util.TestCase):
             mode=sv.HTML5
         )
 
+    def test_attribute_type_case(self):
+        """Type is treated as case insensitive in HTML."""
+
+        markup = """
+        <html>
+        <body>
+        <div id="div">
+        <p type="TEST" id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a type="test" id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            '[type="test" s]',
+            ['2'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            '[type="test" i]',
+            ['0', '2'],
+            mode=sv.XML
+        )
+
     def test_is_matches_where(self):
         """Test multiple selectors with "is", "matches", and "where"."""
 

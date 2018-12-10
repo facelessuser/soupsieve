@@ -6,8 +6,8 @@ Below shows accepted selectors. When speaking about namespaces, they only apply 
 
 While an effort is made to mimic CSS selector behavior, there may be some differences or quirks, please report issues if any are found. We do not support all CSS selector features, but enough to make filtering and searching more enjoyable.
 
-Selector                        | Example                       | Description
-------------------------------- | ----------------------------- | -----------
+Selector                        | Example                             | Description
+------------------------------- | ----------------------------------- | -----------
 `Element`                       | `#!css div`                         | Select the `#!html <div>` element (will be under the default namespace if defined for XHTML).
 `Element, Element`              | `#!css div, h1`                     | Select the `#!html <div>` element and the `#!html <h1>` element.
 `Element Element`               | `#!css div p`                       | Select all `#!html <p>` elements inside `#!html <div>` elements.
@@ -33,6 +33,8 @@ Selector                        | Example                       | Description
 `[attribute^=value]`            | `#!css a[href^="https"]`            | Selects every `#!html <a>` element whose `href` attribute value begins with `https`.
 `[attribute$=value]`            | `#!css a[href$=".pdf"]`             | Selects every `#!html <a>` element whose `href` attribute value ends with `.pdf`.
 `[attribute*=value]`            | `#!css a[href*="sometext"]`         | Selects every `#!html <a>` element whose `href` attribute value contains the substring `sometext`.
+`[attribute=value i]`           | `#!css [title=flower i]`            | Selects any element with a `title` that equals `flower` regardless of case.
+`[attribute=value s]`           | `#!css [type=submit s]`             | Selects any element with a `type` that equals `submit`. Case sensitivity will be forced.
 `:not(sel, sel)`                | `#!css :not(.some-class, #some-id)` | Selects elements that do not have class `some-class` and ID `some-id`.
 `:is(sel, sel)`                 | `#!css :is(div, .some-class)`       | Selects elements that are not `#!html <div>` and do not have class `some-class`. The alias `:matches` is allowed as well. In CSS4 `:where` is like `:is` except specificity is always zero. Soup Sieve doesn't care about specificity, so `:where` is exactly like `:is`.
 `:has(> sel, + sel)`            | `#!css :has(> div, + p)`            | Selects elements that have a direct child that is a `#!html <div>` or that have sibling of `#!html <p>` immediately following.

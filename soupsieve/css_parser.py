@@ -10,16 +10,20 @@ from .util import deprecated
 
 # Selector patterns
 CSS_ESCAPES = r'(?:\\[a-fA-F0-9]{1,6}[ ]?|\\.)'
+
 NTH = r'(?:[-+])?(?:\d+n?|n)(?:(?<=n)\s*(?:[-+])\s*(?:\d+))?'
+
 HTML_SELECTORS = r"""
-(?P<class_id>(?:\#|\.)(?:[-\w]|{esc})+) |                            #.class and #id
-(?P<ns_tag>(?:(?:(?:[-\w]|{esc})+|\*)?\|)?(?:(?:[-\w]|{esc})+|\*)) | # namespace:tag
-\[(?P<ns_attr>(?:(?:(?:[-\w]|{esc})+|\*)?\|)?(?:[-\w]|{esc})+)
+(?P<class_id>(?:\#|\.)(?:[-\w]|{esc})+) |                             #.class and #id
+(?P<ns_tag>(?:(?:(?:[-\w]|{esc})+|\*)?\|)?(?:(?:[-\w]|{esc})+|\*)) |  # namespace:tag
+\[\s*(?P<ns_attr>(?:(?:(?:[-\w]|{esc})+|\*)?\|)?(?:[-\w]|{esc})+)
 """.format(esc=CSS_ESCAPES)
+
 XML_SELECTORS = r"""
-(?P<ns_tag>(?:(?:(?:[-\w.]|{esc})+|\*)?\|)?(?:(?:[-\w.]|{esc})+|\*)) | # namespace:tag
-\[(?P<ns_attr>(?:(?:(?:[-\w]|{esc})+|\*)\|)?(?:[-\w.]|{esc})+)         # namespace:attributes
+(?P<ns_tag>(?:(?:(?:[-\w.]|{esc})+|\*)?\|)?(?:(?:[-\w.]|{esc})+|\*)) |  # namespace:tag
+\[\s*(?P<ns_attr>(?:(?:(?:[-\w]|{esc})+|\*)\|)?(?:[-\w.]|{esc})+)       # namespace:attributes
 """.format(esc=CSS_ESCAPES)
+
 SELECTORS = r'''(?x)
     (?P<pseudo_open>:(?:has|is|matches|not|where)\() |                            # optinal pseudo selector wrapper
     (?P<pseudo>:(?:empty|root|(?:first|last|only)-(?:child|of-type))) |           # Simple pseudo selector
@@ -28,13 +32,14 @@ SELECTORS = r'''(?x)
     (?P<pseudo_nth_type>:nth-(?:last-)?of-type
         \(\s*(?P<nth_type>{nth}|even|odd)\s*\)) |                                 # Pseudo `nth-of-type` selectors
     {doc_specific}
-    (?:(?P<cmp>[~^|*$]?=)                                                         # compare
+    (?:\s*(?P<cmp>[~^|*$]?=)\s*                                                   # compare
     (?P<value>"(\\.|[^\\"]+)*?"|'(\\.|[^\\']+)*?'|(?:[^'"\[\] \t\r\n]|{esc})+))?  # attribute value
-    (?P<i>[ ]+i)? \] |                                                            # case insensitive
+    (?P<case>[ ]+[iIsS])?\s*\] |                                                  # case sensitivity
     (?P<pseudo_close>\)) |                                                        # optional pseudo selector close
     (?P<split>\s*?(?P<relation>[,+>~]|[ ](?![,+>~]))\s*) |                        # split multiple selectors
     (?P<invalid>).+                                                               # not proper syntax
 '''
+
 RE_HTML_SEL = re.compile(SELECTORS.format(esc=CSS_ESCAPES, nth=NTH, doc_specific=HTML_SELECTORS))
 RE_XML_SEL = re.compile(SELECTORS.format(esc=CSS_ESCAPES, nth=NTH, doc_specific=XML_SELECTORS))
 
@@ -203,7 +208,7 @@ class CSSParser:
     def parse_attribute_selector(self, sel, m, has_selector):
         """Create attribute selector from the returned regex match."""
 
-        flags = re.I if m.group('i') else 0
+        case = m.group('case').strip().lower() if m.group('case') else None
         parts = [css_unescape(a.strip()) for a in m.group('ns_attr').split('|')]
         ns = ''
         if len(parts) > 1:
@@ -211,6 +216,12 @@ class CSSParser:
             attr = parts[1]
         else:
             attr = parts[0]
+        if case:
+            flags = re.I if case == 'i' else 0
+        elif self.mode == util.XML:
+            flags = 0
+        else:
+            flags = re.I if attr.lower() == 'type' and not ns else 0
         op = m.group('cmp')
         if op:
             value = css_unescape(

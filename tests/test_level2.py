@@ -125,20 +125,30 @@ class TestLevel2(util.TestCase):
     def test_attribute(self):
         """Test attribute."""
 
+        markup = """
+        <div id="div">
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
         self.assert_selector(
-            """
-            <div id="div">
-            <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
-            <a id="2" href="http://google.com">Link</a>
-            <span id="3">Direct child</span>
-            <pre id="pre">
-            <span id="4">Child 1</span>
-            <span id="5">Child 2</span>
-            <span id="6">Child 3</span>
-            </pre>
-            </div>
-            """,
+            markup,
             "[href]",
+            ["2"],
+            mode=sv.HTML5
+        )
+
+        # With spaces
+        self.assert_selector(
+            markup,
+            "[   href   ]",
             ["2"],
             mode=sv.HTML5
         )
@@ -203,6 +213,48 @@ class TestLevel2(util.TestCase):
             '[id="5"]',
             ["5"],
             mode=sv.HTML5
+        )
+
+        # With spaces
+        self.assert_selector(
+            markup,
+            '[  id  =  "5"  ]',
+            ["5"],
+            mode=sv.HTML5
+        )
+
+    def test_attribute_type(self):
+        """Type is treated as case insensitive in HTML."""
+
+        markup = """
+        <html>
+        <body>
+        <div id="div">
+        <p type="TEST" id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a type="test" id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            '[type="test"]',
+            ["0", '2'],
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            '[type="test"]',
+            ['2'],
+            mode=sv.XML
         )
 
     def test_attribute_start_dash(self):
