@@ -5,6 +5,7 @@
 - **FIX**: Add missing `s` flag to attribute selector for forced case sensitivity of attribute values.
 - **FIX**: Relax attribute pattern matching to allow non-essential whitespace.
 - **FIX**: Attribute selector flags themselves are not case sensitive.
+- **FIX**: `type` attribute in HTML is handled special. While all other attributes values are case sensitive, `type` in HTML is usually treated special and is insensitive. In XML, this is not the case.
 
 ## 0.5.1
 
