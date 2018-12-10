@@ -1,11 +1,9 @@
 """CSS selector parser."""
 import re
-import copyreg
 from collections import namedtuple
 from functools import lru_cache
 from . import util
 from . import css_match as cm
-from .util import deprecated
 
 
 # Selector patterns
@@ -59,8 +57,9 @@ _MAXCACHE = 500
 def _cached_css_compile(pattern, namespaces, mode):
     """Cached CSS compile."""
 
-    return SoupSieve(
+    return cm.SoupSieve(
         pattern,
+        CSSParser(pattern, mode).process_selectors(),
         namespaces,
         mode
     )
@@ -546,105 +545,3 @@ class CSSParser:
         """
 
         return tuple([s.freeze() for s in self.parse_selectors(self.re_sel.finditer(self.pattern))])
-
-
-class SoupSieve(util.Immutable):
-    """Match tags in Beautiful Soup with CSS selectors."""
-
-    __slots__ = ("pattern", "selectors", "namespaces", "mode", "_hash")
-
-    def __init__(self, selectors, namespaces, mode):
-        """Initialize."""
-
-        super().__init__(
-            pattern=selectors,
-            selectors=CSSParser(selectors, mode).process_selectors(),
-            namespaces=namespaces,
-            mode=mode
-        )
-
-    def _walk(self, node, capture=True, comments=False):
-        """Recursively return selected tags."""
-
-        if capture and self.match(node):
-            yield node
-
-        # Walk children
-        for child in node.descendants:
-            if capture and isinstance(child, util.TAG) and self.match(child):
-                yield child
-            elif comments and isinstance(child, util.COMMENT):
-                yield child
-
-    def _sieve(self, node, capture=True, comments=False, limit=0):
-        """Sieve."""
-
-        if limit < 1:
-            limit = None
-
-        for child in self._walk(node, capture, comments):
-            yield child
-            if limit is not None:
-                limit -= 1
-                if limit < 1:
-                    break
-
-    def match(self, node):
-        """Match."""
-
-        return cm.CSSMatch(self.selectors, self.namespaces, self.mode).match(node)
-
-    def filter(self, nodes):  # noqa A001
-        """Filter."""
-
-        if isinstance(nodes, util.TAG):
-            return [node for node in nodes.children if isinstance(node, util.TAG) and self.match(node)]
-        else:
-            return [node for node in nodes if self.match(node)]
-
-    def comments(self, node, limit=0):
-        """Get comments only."""
-
-        return list(self.icomments(node, limit))
-
-    def icomments(self, node, limit=0):
-        """Iterate comments only."""
-
-        yield from self._sieve(node, capture=False, comments=True, limit=limit)
-
-    def select(self, node, limit=0):
-        """Select the specified tags."""
-
-        return list(self.iselect(node, limit))
-
-    def iselect(self, node, limit=0):
-        """Iterate the specified tags."""
-
-        yield from self._sieve(node, limit=limit)
-
-    def __repr__(self):
-        """Representation."""
-
-        return "SoupSieve(pattern=%r, namespaces=%s, mode=%s)" % (self.pattern, self.namespaces, self.mode)
-
-    __str__ = __repr__
-
-    # ====== Deprecated ======
-    @deprecated("Use 'SoupSieve.icomments' instead.")
-    def commentsiter(self, node, limit=0):
-        """Iterate comments only."""
-
-        yield from self.icomments(node, limit)
-
-    @deprecated("Use 'SoupSieve.iselect' instead.")
-    def selectiter(self, node, limit=0):
-        """Iterate the specified tags."""
-
-        yield from self.iselect(node, limit)
-
-
-def _pickle(p):
-    return SoupSieve, (p.pattern, p.namespaces, p.mode)
-
-
-copyreg.pickle(SoupSieve, _pickle)
