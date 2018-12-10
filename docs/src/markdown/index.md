@@ -25,9 +25,13 @@ Checkout [CSS Selectors](./selectors.md) to see the full list.
 
 ## Installation
 
+Installation is easy with `pip`:
+
 ```
 pip install soupsieve
 ```
+
+If you want to manually install it, run `#!bash python setup.py build` and `#!bash python setup.py install`.
 
 ## Usage
 
@@ -47,7 +51,7 @@ Using Soup Sieve is easy. Simply create a Beautiful Soup object:
 >>> soup = bs4.BeautifulSoup(text, 'html5lib')
 ```
 
-Then create you can begin to use Soup Sieve to select:
+Then you can begin to use Soup Sieve to select:
 
 ```pycon3
 >>> import soupsieve as sv
@@ -87,7 +91,7 @@ If you've ever used Python's Re library for regular expression, you may know tha
 [<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
 ```
 
-A compiled object has all the same methods.
+A compiled object has all the same methods, though the parameters will be slightly different as they don't need things like the pattern or document mode once compiled. See [API](./api.md) documentation for more info.
 
 --8<--
 refs.txt

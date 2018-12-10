@@ -1,26 +1,41 @@
-## API
+# API
 
-### `soupsieve.HTML5`
+## `soupsieve.HTML5`
 
 `HTML5` is a flag that instructs Soup Sieve to use HTML5 logic. When `HTML5` mode is used, Soup Sieve will take into account namespaces for known embedded HTML5 namespaces such as SVG. `HTML5` will also not compare tag names and attribute names with case sensitivity.
 
+!!! tip
+    While attribute values are always treated as case sensitive, HTML5, XHTML, and HTML treat the `type` attribute special, `type`'s value is always case insensitive. This is generally how most browsers treat `type`.
+
+    If you need `type` to be sensitive, you can use the `s` flag: `#!css [type="submit" s]`.
+
 Keep in mind, that Soup Sieve itself is not responsible for deciding what tag has or does not have a namespace.  This is actually determined by the parser used in Beautiful Soup. This flag only tells Soup Sieve that the parser should be calculating namespaces, so it is okay to look at them. The user is responsible for using an appropriate parser for HTML5.  If using the [lxml][lxml] or [html5lib][html5lib] with Beautiful Soup, HTML5 namespaces *should* be accounted for in the parsing. If you are using Python's builtin HTML parser, this may not be the case.
 
-### `soupsieve.HTML`
+## `soupsieve.HTML`
 
 `HTML` is a flag that instructs Soup Sieve to use pre HTML5 logic. When `HTML` mode is used, Soup Sieve will not consider namespaces when evaluating elements. `HTML` will also not compare tag names  and attribute names with case sensitivity.
 
-### `soupsieve.XML`
+!!! tip
+    While attribute values are always treated as case sensitive, HTML5, XHTML, and HTML treat the `type` attribute special, `type`'s value is always case insensitive. This is generally how most browsers treat `type`.
+
+    If you need `type` to be sensitive, you can use the `s` flag: `#!css [type="submit" s]`.
+
+## `soupsieve.XML`
 
 `XML` is a flag that instructs Soup Sieve to use XML logic. `XML` will cause Soup Sieve to take namespaces into considerations, and it will evaluate tag names and attribute names with case sensitivity. It will also relax what it considers valid tag name and attribute characters. It will also disable `.class` and `#id` selectors this is more an HTML concept.
 
-### `soupsieve.XHTML`
+## `soupsieve.XHTML`
 
 `XHTML` is a flag that instructs Soup Sieve to use XHTML logic. This will cause Soup Sieve to take namespaces into considerations, and evaluate tag names and attributes names with no case sensitivity as this is how most browsers deal with XHTML tags. `.class` and `#id` are perfectly valid in XHTML.
 
+!!! tip
+    While attribute values are always treated as case sensitive, HTML5, XHTML, and HTML treat the `type` attribute special, `type`'s value is always case insensitive. This is generally how most browsers treat `type`.
+
+    If you need `type` to be sensitive, you can use the `s` flag: `#!css [type="submit" s]`.
+
 It is recommend to use the `xml` mode in Beautiful Soup when parsing XHTML documents.
 
-### `soupsieve.select()`
+## `soupsieve.select()`
 
 ```py3
 def select(select, node, namespaces=None, limit=0, mode=HTML5):
@@ -37,7 +52,7 @@ def select(select, node, namespaces=None, limit=0, mode=HTML5):
 [<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
 ```
 
-### `soupsieve.iselect()`
+## `soupsieve.iselect()`
 
 ```py3
 def iselect(select, node, namespaces=None, limit=0, mode=HTML5):
@@ -46,7 +61,7 @@ def iselect(select, node, namespaces=None, limit=0, mode=HTML5):
 
 `iselect` is exactly like `select` except that it returns a generator instead of a list.
 
-### `soupsieve.match()`
+## `soupsieve.match()`
 
 ```py3
 def match(select, node, namespaces=None, mode=HTML5):
@@ -65,7 +80,7 @@ True
 False
 ```
 
-### `soupsieve.filter()`
+## `soupsieve.filter()`
 
 ```py3
 def filter(select, nodes, namespaces=None, mode=HTML5):
@@ -81,7 +96,7 @@ def filter(select, nodes, namespaces=None, mode=HTML5):
 [<p class="a">Cat</p>, <p class="c">Mouse</p>]
 ```
 
-### `soupsieve.comments()`
+## `soupsieve.comments()`
 
 ```
 def comments(node, limit=0, mode=HTML5):
@@ -92,7 +107,7 @@ def comments(node, limit=0, mode=HTML5):
 
 `comments` accepts a `node` or element, a `limit`, and a document mode.
 
-### `soupsieve.icomments()`
+## `soupsieve.icomments()`
 
 ```
 def icomments(node, limit=0, mode=HTML5):
@@ -101,7 +116,7 @@ def icomments(node, limit=0, mode=HTML5):
 
 `icomments` is exactly like `comments` except that it returns a generator instead of a list.
 
-### `soupsieve.compile()`
+## `soupsieve.compile()`
 
 ```py3
 def compile(pattern, namespaces=None, mode=HTML5):
@@ -123,16 +138,22 @@ class SoupSieve:
     def comments(self, node, limit=0):
         """Get comments only."""
 
+    def icomments(self, node, limit=0):
+        """Iterate comments only."""
+
     def select(self, node, limit=0):
         """Select the specified tags."""
+
+    def iselect(self, node, limit=0):
+        """Iterate the specified tags."""
 ```
 
-### `soupsieve.purge()`
+## `soupsieve.purge()`
 
 Soup Sieve caches compiled patterns for performance. If for whatever reason you need to purge the cache, simply call `purge`.
 
 
-### Namespaces
+## Namespaces
 
 Many of Soup Sieve's selector functions take an optional namespaces dictionary. Namespaces, just like CSS, must be defined for Soup Sieve to evaluate `ns|tag` type selectors. This is analogous to CSS's namespace at-rule:
 
