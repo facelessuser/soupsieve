@@ -86,13 +86,9 @@ class _Selector:
     """
     Intermediate selector class.
 
-    This is currently required as a convenient way to store the data
-    until we are ready to return it. We aren't sure how many of what
-    selectors we have until we are done, so we can't store it in immutable
-    data right way.
-
-    `:has()` will nest `_Selector` under relation as a chain currently.
-    Maybe this can be flattened since it is only a chain of single `_Selector`s.
+    This stores selector data for a compound selector as we are acquiring them.
+    Once we are done collecting the data for a compound selector, we freeze
+    the data in an object that can be pickled and hashed.
     """
 
     def __init__(self, **kwargs):
@@ -104,21 +100,10 @@ class _Selector:
         self.attributes = kwargs.get('attributes', [])
         self.nth = kwargs.get('nth', [])
         self.selectors = kwargs.get('selectors', [])
-        self.relation = kwargs.get('relation', [])
+        self.relations = kwargs.get('relations', [])
         self.rel_type = kwargs.get('rel_type', None)
         self.empty = kwargs.get('empty', False)
         self.root = kwargs.get('root', False)
-
-    def set_distant_relation(self, value):
-        """Set the furthest relation down the chain."""
-
-        if self.relation:
-            temp = self.relation
-            while temp and temp.relation:
-                temp = temp.relation
-            temp.relation = value
-        else:
-            self.relation = value
 
     def _freeze_list(self, chain):
         """Create an immutable selector chain."""
@@ -135,7 +120,7 @@ class _Selector:
 
         if relations:
             sel = relations[0]
-            sel.relation.extend(relations[1:])
+            sel.relations.extend(relations[1:])
             return ct.SelectorList([sel.freeze()])
         else:
             return ct.SelectorList()
@@ -150,7 +135,7 @@ class _Selector:
             self._freeze_list(self.attributes),
             self._freeze_list(self.nth),
             self._freeze_list(self.selectors),
-            self._freeze_relations(self.relation),
+            self._freeze_relations(self.relations),
             self.rel_type,
             self.empty,
             self.root
@@ -161,10 +146,10 @@ class _Selector:
 
         return (
             '_Selector(tag=%r, ids=%r, classes=%r, attributes=%r, nth=%r, selectors=%r, '
-            'relation=%r, rel_type=%r, empty=%r, root=%r)'
+            'relations=%r, rel_type=%r, empty=%r, root=%r)'
         ) % (
             self.tag, self.ids, self.classes, self.attributes, self.nth, self.selectors,
-            self.relation, self.rel_type, self.empty, self.root
+            self.relations, self.rel_type, self.empty, self.root
         )
 
     __repr__ = __str__
@@ -359,13 +344,13 @@ class CSSParser:
             if not has_selector:
                 raise ValueError("Cannot start or end selector with '{}'".format(m.group('relation')))
             sel.rel_type = rel_type
-            selectors[-1].relation.append(sel)
+            selectors[-1].relations.append(sel)
             rel_type = REL_HAS_CHILD
             selectors.append(_Selector())
         else:
             if has_selector:
                 sel.rel_type = rel_type
-                selectors[-1].relation.append(sel)
+                selectors[-1].relations.append(sel)
             rel_type = ':' + m.group('relation')
         sel = _Selector()
 
@@ -381,11 +366,11 @@ class CSSParser:
             if not sel.tag and not is_pseudo:
                 # Implied `*`
                 sel.tag = ct.SelectorTag('*', None)
-            sel.relation.extend(relations)
+            sel.relations.extend(relations)
             selectors.append(sel)
             relations.clear()
         else:
-            sel.relation.extend(relations)
+            sel.relations.extend(relations)
             sel.rel_type = m.group('relation')
             relations.clear()
             relations.append(sel)
@@ -476,9 +461,9 @@ class CSSParser:
                 sel.tag = ct.SelectorTag('*', None)
             if is_has:
                 sel.rel_type = rel_type
-                selectors[-1].relation.append(sel)
+                selectors[-1].relations.append(sel)
             else:
-                sel.relation.extend(relations)
+                sel.relations.extend(relations)
                 relations.clear()
                 selectors.append(sel)
         elif is_has:
