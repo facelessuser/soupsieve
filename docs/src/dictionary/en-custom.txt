@@ -36,6 +36,7 @@ regex
 sublicense
 substring
 tuple
+tuples
 un
 whitespace
 wordlist

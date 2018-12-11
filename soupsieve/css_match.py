@@ -403,6 +403,15 @@ class CSSMatch:
 
         return not is_empty or (RE_NOT_EMPTY.search(el.text) is None and not self.has_child(el))
 
+    def match_subselectors(self, el, selectors):
+        """Match selectors."""
+
+        match = True
+        for sel in selectors:
+            if not self.match_selectors(el, sel):
+                match = False
+        return match
+
     def match_selectors(self, el, selectors):
         """Check if element matches one of the selectors."""
 
@@ -430,7 +439,7 @@ class CSSMatch:
             if selector.is_root and not self.match_root(el):
                 continue
             # Verify pseudo selector patterns
-            if selector.selectors and not self.match_selectors(el, selector.selectors):
+            if selector.selectors and not self.match_subselectors(el, selector.selectors):
                 continue
             # Verify relationship selectors
             if selector.relation and not self.match_relations(el, selector.relation):

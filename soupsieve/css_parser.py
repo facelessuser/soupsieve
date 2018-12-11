@@ -363,7 +363,7 @@ class CSSParser:
     def parse_pseudo_open(self, sel, m, has_selector, iselector, is_pseudo):
         """Parse pseudo with opening bracket."""
 
-        sel.selectors.extend(
+        sel.selectors.append(
             self.parse_selectors(
                 iselector,
                 True,
