@@ -7,7 +7,7 @@ from . import css_match as cm
 
 
 # Selector patterns
-CSS_ESCAPES = r'(?:\\[a-fA-F0-9]{1,6}[ ]?|\\.)'
+CSS_ESCAPES = r'(?:\\[a-f0-9]{1,6}[ ]?|\\.)'
 
 NTH = r'(?:[-+])?(?:\d+n?|n)(?:(?<=n)\s*(?:[-+])\s*(?:\d+))?'
 
@@ -32,20 +32,20 @@ SELECTORS = r'''(?x)
     {doc_specific}
     (?:\s*(?P<cmp>[~^|*$]?=)\s*                                                   # compare
     (?P<value>"(\\.|[^\\"]+)*?"|'(\\.|[^\\']+)*?'|(?:[^'"\[\] \t\r\n]|{esc})+))?  # attribute value
-    (?P<case>[ ]+[iIsS])?\s*\] |                                                  # case sensitivity
+    (?P<case>[ ]+[is])?\s*\] |                                                    # case sensitivity
     (?P<pseudo_close>\)) |                                                        # optional pseudo selector close
     (?P<split>\s*?(?P<relation>[,+>~]|[ ](?![,+>~]))\s*) |                        # split multiple selectors
     (?P<invalid>).+                                                               # not proper syntax
 '''
 
-RE_HTML_SEL = re.compile(SELECTORS.format(esc=CSS_ESCAPES, nth=NTH, doc_specific=HTML_SELECTORS))
-RE_XML_SEL = re.compile(SELECTORS.format(esc=CSS_ESCAPES, nth=NTH, doc_specific=XML_SELECTORS))
+RE_HTML_SEL = re.compile(SELECTORS.format(esc=CSS_ESCAPES, nth=NTH, doc_specific=HTML_SELECTORS), re.I)
+RE_XML_SEL = re.compile(SELECTORS.format(esc=CSS_ESCAPES, nth=NTH, doc_specific=XML_SELECTORS), re.I)
 
 # CSS escape pattern
-RE_CSS_ESC = re.compile(r'(?:(\\[a-fA-F0-9]{1,6}[ ]?)|(\\.))')
+RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{1,6}[ ]?)|(\\.))', re.I)
 
 # Pattern to break up `nth` specifiers
-RE_NTH = re.compile(r'(?P<s1>[-+])?(?P<a>\d+n?|n)(?:(?<=n)\s*(?P<s2>[-+])\s*(?P<b>\d+))?')
+RE_NTH = re.compile(r'(?P<s1>[-+])?(?P<a>\d+n?|n)(?:(?<=n)\s*(?P<s2>[-+])\s*(?P<b>\d+))?', re.I)
 
 SPLIT = ','
 HAS_CHILD = ": "

@@ -3,6 +3,7 @@
 ## 0.5.3
 
 - **FIX**: Previously, all pseudo classes' selector lists were evaluated as one big group, but now each pseudo classes' selector lists are evaluated separately.
+- **FIX**: CSS selector tokens are not case sensitive.
 
 ## 0.5.2
 
