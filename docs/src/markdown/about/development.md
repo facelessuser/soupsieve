@@ -137,6 +137,7 @@ soupseive
 ├── __meta__.py
 ├── css_match.py
 ├── css_parser.py
+├── css_types.py
 └── util.py
 ```
 
@@ -146,31 +147,42 @@ File            | Description
 `__meta__.py`   | Contains package meta data like version.
 `css_match.py`  | Contains the logic for matching tags with a CSS selector.
 `css_parser.py` | Contains the CSS selector parser.
+`css_types.py`  | Contains the CSS types for the compiled CSS patterns.
 `util.py`       | Contains miscellaneous helper functions, classes, and constants.
 
 ### Compiled CSS Selector Structure
 
-When a CSS selector string is given to Soup Sieve, it is run through the `CSSParser` class.  `CSSParser` will return a tuple object with one or more `Selector` classes. This tuple is handed to the `SoupSieve` class as a parameter along with things like `namespace` and `mode`. One of the most important things to understand when contributing is the structure of the `Selector` class and the various chained objects.
+When a CSS selector string is given to Soup Sieve, it is run through the `CSSParser` class.  `CSSParser` will return a `SelectorList` class. This class is sent to the `SoupSieve` class as a parameter along with things like `namespace` and `mode`. One of the most important things to understand when contributing is the structure of the `SelectorList` class.
 
-The `Selector` class is a `namedtuple`. A compiled selector will always return a tuple of these objects. A `Selector` represents one compound selector.  So if you had the selector `#!css div > p`, you would get a tuple with one `Selector`. If you had `#!css div, p`, you would get a tuple with two `Selector` objects as this is a selector list of two compound selectors. With that said, `#!css div > p` will generate a sub-selector that is chained to the top level, but at the top level, there is only one.
+A `SelectorList` represents a list of compound selectors.  So if you had the selector `#!css div > p`, you would get a `SelectorList` object containing one `Selector` object. If you had `#!css div, p`, you would get a `SelectorList` with two `Selector` objects as this is a selector list of two compound selectors.
 
-A compound selector gets parsed into pieces. Each part of a specific compound selector is usually assigned to an attribute in a single `Selector` object. The attributes of the `Selector` object may be as simple as a boolean or a string, but hey can also be a tuple of more `Selector` objects. In the case of `#!css *:not(p, div)`, `#!css *` will be one `Selector` and the `#!css :not(p, div)` selector list will be a tuple containing one tuple of two `Selectors` (one for `p` and one for `div`) under the `selectors` attribute.
+A compound selector gets parsed into pieces. Each part of a specific compound selector is usually assigned to an attribute in a single `Selector` object. The attributes of the `Selector` object may be as simple as a boolean or a string, but they can also be a tuple of of `SelectorList` objects. In the case of `#!css *:not(p, div)`, `#!css *` will be a `SelectorList` with one `Selector`. The `#!css :not(p, div)` selector list will be a tuple containing one `SelectorList` of two `Selectors` (one for `p` and one for `div`) under the `selectors` attribute of the `#!css *` `Selector`.
 
-In short a compound selector is a single `Selector` object that may chain other `Selector` objects depending on the complexity of the compound selector. If you provide a selector list, than you will get multiple `Selector` objects (one for each compound selector in the list) which in turn may chain other `Selector` objects.
+In short, `Selectors` are always contained within a `SelectorList`, and a compound selector is a single `Selector` object that may chain other `SelectorLists` objects depending on the complexity of the compound selector. If you provide a selector list, than you will get multiple `Selector` objects (one for each compound selector in the list) which in turn may chain other `Selector` objects.
+
+### `SelectorList`
+
+```py3
+class SelectorList:
+    """Selector list."""
+
+    def __init__(self, selectors=tuple(), is_not=False):
+        """Initialize."""
+```
+
+`SelectorList` | Description
+-------------- | -----------
+`selectors`    | A list of `Selector` objects.
+`is_not`       | Are the selectors in the selector list from a `:not()`.
 
 ### `Selector`
 
 ```py3
-class Selector(
-    namedtuple(
-        'Selector',
-        [
-            'tag', 'ids', 'classes', 'attributes', 'nth', 'selectors',
-            'is_not', 'is_empty', 'relation', 'rel_type', 'is_root'
-        ]
-    )
-):
+class Selector:
     """Selector."""
+
+    def __init__(self, tag, ids, classes, attributes, nth, selectors, relation, rel_type, empty, root):
+        """Initialize."""
 ```
 
 `Selector`   | Description
@@ -180,18 +192,20 @@ class Selector(
 `classes`    | Contains a tuple of class names to match.
 `attributes` | Contains a tuple of attributes. Each attribute is represented as a [`SelectorAttribute`](#selectorattribute).
 `nth`        | Contains a tuple containing `nth` selectors, each selector being represented as a [`SelectorNth`](#selectornth). `nth` selectors contain things like `:first-child`, `:only-child`, `#!css :nth-child()`, `#!css :nth-of-type()`, etc.
-`selectors`  | Contains a tuple of tuples of pseudo class selectors: `#!css :is()`, `#!css :not()`, `#!css :has()`, etc. For instance, for a given selector `#!css div:is(.a, .b):not(.c)`, you would have a tuple of tuples: `((Selector(.a), Selector(.b)), (Selector(.c)))`.
-`is_not`     | This is `True` if the current `Selector` is `:not()` pseudo class.
-`is_empty`   | This is `True` if the current selector contained a `:is_empty` pseudo.
-`relation`   | This is will contain a `Selector` object that is a relational match.  For instance, for `div > p + a` would be a `Selector` that contains a `relation` for `p` (another `Selector` object) which also contains a relation of `div`.  When matching, we would match that the tag is `a`, and then check that it's relations match, in this case a direct, previous sibling of `p` which has a direct parent of `div`.
+`selectors`  | Contains a tuple of `SelectorList` objects for each pseudo class selector  part of the compound selector: `#!css :is()`, `#!css :not()`, `#!css :has()`, etc.
+`empty`   | This is `True` if the current selector contained a `:empty` pseudo.
+`relation`   | This is will contain a `SelectorList` object with one `Selector` object that is a relational match.  For instance, `div > p + a` would be a `Selector` for `a` that contains a `relation` for `p` (another `SelectorList` object) which also contains a relation of `div`.  When matching, we would match that the tag is `a`, and then check that its relations match, in this case a direct, previous sibling of `p`, which has a direct parent of `div`.
 `rel_type`   | `rel_type` is attached to relational selectors. In the case of `#!css div > p + a`, the relational selectors of `div` and `p` would get a relational type of `>` and `+` respectively.  `#!css :has()` relations are actually stored under the selector attributes instead of `relation`, but they still have `rel_type`s as well. In the case of `#!css p:has(> a)`, the `p` selector would have a `Selector` object in the `selectors` tuple with a `rel_type` of `:>` (has relations are prefixed `:` to denote forward looking relations).
-`is_root`  | This is `True` if the current compound selector contains `:is_root`.
+`root`  | This is `True` if the current compound selector contains `:root`.
 
 ### `SelectorTag`
 
 ```py3
-class SelectorTag(namedtuple('SelectorTag', ['name', 'prefix'])):
+class SelectorTag:
     """Selector tag."""
+
+    def __init__(self, name, prefix):
+        """Initialize."""
 ```
 
 `SelectorTag` | Description
@@ -203,8 +217,11 @@ class SelectorTag(namedtuple('SelectorTag', ['name', 'prefix'])):
 ### `SelectorAttribute`
 
 ```py3
-class SelectorAttribute(namedtuple('AttrRule', ['attribute', 'prefix', 'pattern'])):
+class SelectorAttribute:
     """Selector attribute rule."""
+
+    def __init__(self, attribute, prefix, pattern):
+        """Initialize."""
 ```
 
 `SelectorAttribute` | Description
@@ -216,8 +233,11 @@ class SelectorAttribute(namedtuple('AttrRule', ['attribute', 'prefix', 'pattern'
 ### `SelectorNth`
 
 ```py3
-class SelectorNth(namedtuple('SelectorNth', ['a', 'n', 'b', 'type', 'last', 'selectors'])):
+class SelectorNth:
     """Selector nth type."""
+
+    def __init__(self, a, n, b, of_type, last, selectors):
+        """Initialize."""
 ```
 
 `SelectorNth` | Description
@@ -227,6 +247,6 @@ class SelectorNth(namedtuple('SelectorNth', ['a', 'n', 'b', 'type', 'last', 'sel
 `b`           | The `b` value in the formula `an+b`.
 `type`        | `True` if the `nth` pseudo class is an `*-of-type` variant.
 `last`        | `True` if the `nth` pseudo class is a `*last*` variant.
-`selectors`   | A tuple of `Selector` objects representing the `of S` portion of `:nth-chld(an+b [of S]?)`.
+`selectors`   | A `SelectorList` object representing the `of S` portion of `:nth-chld(an+b [of S]?)`.
 
 --8<-- "links.txt"

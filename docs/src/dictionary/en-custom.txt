@@ -39,5 +39,6 @@ substring
 tuple
 tuples
 un
+unpickle
 whitespace
 wordlist

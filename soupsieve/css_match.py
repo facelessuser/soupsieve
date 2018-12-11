@@ -177,29 +177,29 @@ class CSSMatch:
         """Match past relationship."""
 
         found = False
-        if relation.rel_type == REL_PARENT:
+        if relation[0].rel_type == REL_PARENT:
             parent = el.parent
             while not found and parent:
-                found = self.match_selectors(parent, [relation])
+                found = self.match_selectors(parent, relation)
                 parent = parent.parent
-        elif relation.rel_type == REL_CLOSE_PARENT:
+        elif relation[0].rel_type == REL_CLOSE_PARENT:
             parent = el.parent
             if parent:
-                found = self.match_selectors(parent, [relation])
-        elif relation.rel_type == REL_SIBLING:
+                found = self.match_selectors(parent, relation)
+        elif relation[0].rel_type == REL_SIBLING:
             sibling = el.previous_sibling
             while not found and sibling:
                 if not isinstance(sibling, util.TAG):
                     sibling = sibling.previous_sibling
                     continue
-                found = self.match_selectors(sibling, [relation])
+                found = self.match_selectors(sibling, relation)
                 sibling = sibling.previous_sibling
-        elif relation.rel_type == REL_CLOSE_SIBLING:
+        elif relation[0].rel_type == REL_CLOSE_SIBLING:
             sibling = el.previous_sibling
             while sibling and not isinstance(sibling, util.TAG):
                 sibling = sibling.previous_sibling
             if sibling and isinstance(sibling, util.TAG):
-                found = self.match_selectors(sibling, [relation])
+                found = self.match_selectors(sibling, relation)
         return found
 
     def match_future_child(self, parent, relation, recursive=False):
@@ -209,7 +209,7 @@ class CSSMatch:
         for child in (parent.descendants if recursive else parent.children):
             if not isinstance(child, util.TAG):
                 continue
-            match = self.match_selectors(child, [relation])
+            match = self.match_selectors(child, relation)
             if match:
                 break
         return match
@@ -218,24 +218,24 @@ class CSSMatch:
         """Match future relationship."""
 
         found = False
-        if relation.rel_type == REL_HAS_PARENT:
+        if relation[0].rel_type == REL_HAS_PARENT:
             found = self.match_future_child(el, relation, True)
-        elif relation.rel_type == REL_HAS_CLOSE_PARENT:
+        elif relation[0].rel_type == REL_HAS_CLOSE_PARENT:
             found = self.match_future_child(el, relation)
-        elif relation.rel_type == REL_HAS_SIBLING:
+        elif relation[0].rel_type == REL_HAS_SIBLING:
             sibling = el.next_sibling
             while not found and sibling:
                 if not isinstance(sibling, util.TAG):
                     sibling = sibling.next_sibling
                     continue
-                found = self.match_selectors(sibling, [relation])
+                found = self.match_selectors(sibling, relation)
                 sibling = sibling.next_sibling
-        elif relation.rel_type == REL_HAS_CLOSE_SIBLING:
+        elif relation[0].rel_type == REL_HAS_CLOSE_SIBLING:
             sibling = el.next_sibling
             while sibling and not isinstance(sibling, util.TAG):
                 sibling = sibling.next_sibling
             if sibling and isinstance(sibling, util.TAG):
-                found = self.match_selectors(sibling, [relation])
+                found = self.match_selectors(sibling, relation)
         return found
 
     def match_relations(self, el, relation):
@@ -243,7 +243,7 @@ class CSSMatch:
 
         found = False
 
-        if relation.rel_type.startswith(':'):
+        if relation[0].rel_type.startswith(':'):
             found = self.match_future_relations(el, relation)
         else:
             found = self.match_past_relations(el, relation)
@@ -364,7 +364,7 @@ class CSSMatch:
                     if n.selectors and not self.match_selectors(child, n.selectors):
                         continue
                     # Handle `of-type`
-                    if n.type and not self.match_nth_tag_type(el, child):
+                    if n.of_type and not self.match_nth_tag_type(el, child):
                         continue
                     relative_index += 1
                     if relative_index == idx:
@@ -398,10 +398,10 @@ class CSSMatch:
                 break
         return found_child
 
-    def match_empty(self, el, is_empty):
+    def match_empty(self, el, empty):
         """Check if element is empty (if requested)."""
 
-        return not is_empty or (RE_NOT_EMPTY.search(el.text) is None and not self.has_child(el))
+        return not empty or (RE_NOT_EMPTY.search(el.text) is None and not self.has_child(el))
 
     def match_subselectors(self, el, selectors):
         """Match selectors."""
@@ -417,15 +417,16 @@ class CSSMatch:
 
         match = False
         is_html = self.mode != util.XML
+        is_not = selectors.is_not
         for selector in selectors:
-            match = selector.is_not
+            match = is_not
             # Verify tag matches
             if not self.match_tag(el, selector.tag):
                 continue
             # Verify `nth` matches
             if not self.match_nth(el, selector.nth):
                 continue
-            if not self.match_empty(el, selector.is_empty):
+            if not self.match_empty(el, selector.empty):
                 continue
             # Verify id matches
             if is_html and selector.ids and not self.match_id(el, selector.ids):
@@ -436,7 +437,7 @@ class CSSMatch:
             # Verify attribute(s) match
             if not self.match_attributes(el, selector.attributes):
                 continue
-            if selector.is_root and not self.match_root(el):
+            if selector.root and not self.match_root(el):
                 continue
             # Verify pseudo selector patterns
             if selector.selectors and not self.match_subselectors(el, selector.selectors):
@@ -444,7 +445,7 @@ class CSSMatch:
             # Verify relationship selectors
             if selector.relation and not self.match_relations(el, selector.relation):
                 continue
-            match = not selector.is_not
+            match = not is_not
             break
 
         return match

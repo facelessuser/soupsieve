@@ -6,6 +6,7 @@ import copy
 import random
 import pytest
 import warnings
+import pickle
 
 
 class TestSoupSieve(unittest.TestCase):
@@ -121,22 +122,35 @@ class TestSoupSieve(unittest.TestCase):
         self.assertEqual(len(nodes), 1)
         self.assertEqual(nodes[0].attrs['id'], '6')
 
-    def test_cache(self):
-        """Test copy."""
+    def test_copy_pickle(self):
+        """Test copy and pickle."""
 
+        # Test that we can pickle and unpickle
         p1 = sv.compile('p[id]', mode=sv.HTML5)
-        p2 = sv.compile('p[id]', mode=sv.HTML5)
-        p3 = sv.compile('p[id]', mode=sv.HTML)
-        p4 = copy.copy(p1)
-        p5 = copy.copy(p3)
+        sp1 = pickle.dumps(p1)
+        pp1 = pickle.loads(sp1)
+        self.assertTrue(pp1 == p1)
 
+        # Test that we pull the same one from cache
+        p2 = sv.compile('p[id]', mode=sv.HTML5)
         self.assertTrue(p1 is p2)
+
+        # Test that we compile a new one when providing a different mode
+        p3 = sv.compile('p[id]', mode=sv.HTML)
         self.assertTrue(p1 is not p3)
+
+        # Test that the copy is equivalent, but not same.
+        p4 = copy.copy(p1)
         self.assertTrue(p4 is not p1)
         self.assertTrue(p4 == p1)
+
+        p5 = copy.copy(p3)
         self.assertTrue(p5 is not p3)
         self.assertTrue(p5 == p3)
         self.assertTrue(p5 is not p4)
+
+    def test_cache(self):
+        """Test cache."""
 
         sv.purge()
         self.assertEqual(sv.cp._cached_css_compile.cache_info().currsize, 0)
