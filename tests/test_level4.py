@@ -171,6 +171,33 @@ class TestLevel4(util.TestCase):
             mode=sv.HTML5
         )
 
+        # Each pseudo class is evaluated separately
+        # So this will not match
+        self.assert_selector(
+            markup,
+            ":is(span):not(span)",
+            [],
+            mode=sv.HTML5
+        )
+
+        # Each pseudo class is evaluated separately
+        # So this will not match
+        self.assert_selector(
+            markup,
+            ":is(span):is(div)",
+            [],
+            mode=sv.HTML5
+        )
+
+        # Each pseudo class is evaluated separately
+        # So this will match
+        self.assert_selector(
+            markup,
+            ":is(a):is(#2)",
+            ['2'],
+            mode=sv.HTML5
+        )
+
     def test_multi_nested_not(self):
         """Test nested not and multiple selectors."""
 

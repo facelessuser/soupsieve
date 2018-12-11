@@ -1,15 +1,13 @@
 """CSS selector parser."""
 import re
-import copyreg
-from collections import namedtuple
 from functools import lru_cache
 from . import util
 from . import css_match as cm
-from .util import deprecated
+from . import css_types as ct
 
 
 # Selector patterns
-CSS_ESCAPES = r'(?:\\[a-fA-F0-9]{1,6}[ ]?|\\.)'
+CSS_ESCAPES = r'(?:\\[a-f0-9]{1,6}[ ]?|\\.)'
 
 NTH = r'(?:[-+])?(?:\d+n?|n)(?:(?<=n)\s*(?:[-+])\s*(?:\d+))?'
 
@@ -34,23 +32,23 @@ SELECTORS = r'''(?x)
     {doc_specific}
     (?:\s*(?P<cmp>[~^|*$]?=)\s*                                                   # compare
     (?P<value>"(\\.|[^\\"]+)*?"|'(\\.|[^\\']+)*?'|(?:[^'"\[\] \t\r\n]|{esc})+))?  # attribute value
-    (?P<case>[ ]+[iIsS])?\s*\] |                                                  # case sensitivity
+    (?P<case>[ ]+[is])?\s*\] |                                                    # case sensitivity
     (?P<pseudo_close>\)) |                                                        # optional pseudo selector close
     (?P<split>\s*?(?P<relation>[,+>~]|[ ](?![,+>~]))\s*) |                        # split multiple selectors
     (?P<invalid>).+                                                               # not proper syntax
 '''
 
-RE_HTML_SEL = re.compile(SELECTORS.format(esc=CSS_ESCAPES, nth=NTH, doc_specific=HTML_SELECTORS))
-RE_XML_SEL = re.compile(SELECTORS.format(esc=CSS_ESCAPES, nth=NTH, doc_specific=XML_SELECTORS))
+RE_HTML_SEL = re.compile(SELECTORS.format(esc=CSS_ESCAPES, nth=NTH, doc_specific=HTML_SELECTORS), re.I)
+RE_XML_SEL = re.compile(SELECTORS.format(esc=CSS_ESCAPES, nth=NTH, doc_specific=XML_SELECTORS), re.I)
 
 # CSS escape pattern
-RE_CSS_ESC = re.compile(r'(?:(\\[a-fA-F0-9]{1,6}[ ]?)|(\\.))')
+RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{1,6}[ ]?)|(\\.))', re.I)
 
 # Pattern to break up `nth` specifiers
-RE_NTH = re.compile(r'(?P<s1>[-+])?(?P<a>\d+n?|n)(?:(?<=n)\s*(?P<s2>[-+])\s*(?P<b>\d+))?')
+RE_NTH = re.compile(r'(?P<s1>[-+])?(?P<a>\d+n?|n)(?:(?<=n)\s*(?P<s2>[-+])\s*(?P<b>\d+))?', re.I)
 
 SPLIT = ','
-HAS_CHILD = ": "
+REL_HAS_CHILD = ": "
 
 _MAXCACHE = 500
 
@@ -59,8 +57,9 @@ _MAXCACHE = 500
 def _cached_css_compile(pattern, namespaces, mode):
     """Cached CSS compile."""
 
-    return SoupSieve(
+    return cm.SoupSieve(
         pattern,
+        CSSParser(pattern, mode).process_selectors(),
         namespaces,
         mode
     )
@@ -83,48 +82,28 @@ def css_unescape(string):
     return RE_CSS_ESC.sub(replace, string)
 
 
-class _Namespaces(util.ImmutableDict):
-    """Namespaces."""
-
-    def __init__(self, *args, **kwargs):
-        """Initialize."""
-
-        if not all([isinstance(k, str) and isinstance(v, str) for k, v in args]):
-            raise TypeError('Namespace keys and values must be Unicode strings')
-        if not all([isinstance(k, str) and isinstance(v, str) for k, v in kwargs.items()]):
-            raise TypeError('Namespace keys and values must be Unicode strings')
-
-        super().__init__(*args, **kwargs)
-
-
 class _Selector:
-    """Intermediate selector."""
+    """
+    Intermediate selector class.
+
+    This stores selector data for a compound selector as we are acquiring them.
+    Once we are done collecting the data for a compound selector, we freeze
+    the data in an object that can be pickled and hashed.
+    """
 
     def __init__(self, **kwargs):
         """Initialize."""
 
-        self.tags = kwargs.get('tags', [])
+        self.tag = kwargs.get('tag', None)
         self.ids = kwargs.get('ids', [])
         self.classes = kwargs.get('classes', [])
         self.attributes = kwargs.get('attributes', [])
         self.nth = kwargs.get('nth', [])
         self.selectors = kwargs.get('selectors', [])
-        self.is_not = kwargs.get('is_not', False)
-        self.is_empty = kwargs.get('is_empty', False)
-        self.relation = kwargs.get('relation', None)
+        self.relations = kwargs.get('relations', [])
         self.rel_type = kwargs.get('rel_type', None)
-        self.is_root = kwargs.get('is_root', False)
-
-    def set_distant_relation(self, value):
-        """Set the furthest relation down the chain."""
-
-        if self.relation:
-            temp = self.relation
-            while temp and temp.relation:
-                temp = temp.relation
-            temp.relation = value
-        else:
-            self.relation = value
+        self.empty = kwargs.get('empty', False)
+        self.root = kwargs.get('root', False)
 
     def _freeze_list(self, chain):
         """Create an immutable selector chain."""
@@ -136,59 +115,44 @@ class _Selector:
                 chain[index] = item.freeze()
         return tuple(chain)
 
+    def _freeze_relations(self, relations):
+        """Freeze relation."""
+
+        if relations:
+            sel = relations[0]
+            sel.relations.extend(relations[1:])
+            return ct.SelectorList([sel.freeze()])
+        else:
+            return ct.SelectorList()
+
     def freeze(self):
         """Freeze self."""
 
-        return Selector(
-            self._freeze_list(self.tags),
+        return ct.Selector(
+            self.tag,
             self._freeze_list(self.ids),
             self._freeze_list(self.classes),
             self._freeze_list(self.attributes),
             self._freeze_list(self.nth),
             self._freeze_list(self.selectors),
-            self.is_not,
-            self.is_empty,
-            self.relation.freeze() if self.relation is not None else None,
+            self._freeze_relations(self.relations),
             self.rel_type,
-            self.is_root
+            self.empty,
+            self.root
         )
 
     def __str__(self):
         """String representation."""
 
         return (
-            '_Selector(tags=%r, ids=%r, classes=%r, attributes=%r, nth=%r, selectors=%r, '
-            'is_not=%r, relation=%r, rel_type=%r, is_root=%r)'
+            '_Selector(tag=%r, ids=%r, classes=%r, attributes=%r, nth=%r, selectors=%r, '
+            'relations=%r, rel_type=%r, empty=%r, root=%r)'
         ) % (
-            self.tags, self.ids, self.classes, self.attributes, self.nth, self.selectors,
-            self.is_not, self.relation, self.rel_type, self.is_root
+            self.tag, self.ids, self.classes, self.attributes, self.nth, self.selectors,
+            self.relations, self.rel_type, self.empty, self.root
         )
 
     __repr__ = __str__
-
-
-class Selector(
-    namedtuple(
-        'Selector',
-        [
-            'tags', 'ids', 'classes', 'attributes', 'nth', 'selectors',
-            'is_not', 'is_empty', 'relation', 'rel_type', 'is_root'
-        ]
-    )
-):
-    """Selector."""
-
-
-class SelectorTag(namedtuple('SelectorTag', ['name', 'prefix'])):
-    """Selector tag."""
-
-
-class SelectorAttribute(namedtuple('AttrRule', ['attribute', 'prefix', 'pattern'])):
-    """Selector attribute rule."""
-
-
-class SelectorNth(namedtuple('SelectorNth', ['a', 'n', 'b', 'type', 'last', 'selectors'])):
-    """Selector nth type."""
 
 
 class CSSParser:
@@ -251,7 +215,7 @@ class CSSParser:
             # Value matches
             pattern = re.compile(r'^%s$' % re.escape(value), flags)
         has_selector = True
-        sel.attributes.append(SelectorAttribute(attr, ns, pattern))
+        sel.attributes.append(ct.SelectorAttribute(attr, ns, pattern))
         return has_selector
 
     def parse_tag_pattern(self, sel, m, has_selector):
@@ -264,7 +228,7 @@ class CSSParser:
         else:
             tag = parts[0]
             prefix = None
-        sel.tags.append(SelectorTag(tag, prefix))
+        sel.tag = ct.SelectorTag(tag, prefix)
         has_selector = True
         return has_selector
 
@@ -273,29 +237,29 @@ class CSSParser:
 
         pseudo = m.group('pseudo')[1:]
         if pseudo == 'root':
-            sel.is_root = True
+            sel.root = True
         elif pseudo == 'empty':
-            sel.is_empty = True
+            sel.empty = True
         elif pseudo == 'first-child':
-            sel.nth.append(SelectorNth(1, False, 0, False, False, tuple()))
+            sel.nth.append(ct.SelectorNth(1, False, 0, False, False, ct.SelectorList()))
         elif pseudo == 'last-child':
-            sel.nth.append(SelectorNth(1, False, 0, False, True, tuple()))
+            sel.nth.append(ct.SelectorNth(1, False, 0, False, True, ct.SelectorList()))
         elif pseudo == 'first-of-type':
-            sel.nth.append(SelectorNth(1, False, 0, True, False, tuple()))
+            sel.nth.append(ct.SelectorNth(1, False, 0, True, False, ct.SelectorList()))
         elif pseudo == 'last-of-type':
-            sel.nth.append(SelectorNth(1, False, 0, True, True, tuple()))
+            sel.nth.append(ct.SelectorNth(1, False, 0, True, True, ct.SelectorList()))
         elif pseudo == 'only-child':
             sel.nth.extend(
                 [
-                    SelectorNth(1, False, 0, False, False, tuple()),
-                    SelectorNth(1, False, 0, False, True, tuple())
+                    ct.SelectorNth(1, False, 0, False, False, ct.SelectorList()),
+                    ct.SelectorNth(1, False, 0, False, True, ct.SelectorList())
                 ]
             )
         elif pseudo == 'only-of-type':
             sel.nth.extend(
                 [
-                    SelectorNth(1, False, 0, True, False, tuple()),
-                    SelectorNth(1, False, 0, True, True, tuple())
+                    ct.SelectorNth(1, False, 0, True, False, ct.SelectorList()),
+                    ct.SelectorNth(1, False, 0, True, True, ct.SelectorList())
                 ]
             )
 
@@ -341,30 +305,28 @@ class CSSParser:
             else:
                 # Use default `*|*` for `of S`. Simulate un-closed pseudo.
                 temp_sel = self.re_sel.finditer('*|*)')
-            nth_sel = tuple(
-                self.parse_selectors(
-                    temp_sel,
-                    True,
-                    False,
-                    False
-                )
+            nth_sel = self.parse_selectors(
+                temp_sel,
+                True,
+                False,
+                False
             )
             if m.group('pseudo_nth' + postfix).startswith(':nth-child'):
-                sel.nth.append(SelectorNth(s1, var, s2, False, False, nth_sel))
+                sel.nth.append(ct.SelectorNth(s1, var, s2, False, False, nth_sel))
             elif m.group('pseudo_nth' + postfix).startswith(':nth-last-child'):
-                sel.nth.append(SelectorNth(s1, var, s2, False, True, nth_sel))
+                sel.nth.append(ct.SelectorNth(s1, var, s2, False, True, nth_sel))
         else:
             if m.group('pseudo_nth' + postfix).startswith(':nth-of-type'):
-                sel.nth.append(SelectorNth(s1, var, s2, True, False, tuple()))
+                sel.nth.append(ct.SelectorNth(s1, var, s2, True, False, ct.SelectorList()))
             elif m.group('pseudo_nth' + postfix).startswith(':nth-last-of-type'):
-                sel.nth.append(SelectorNth(s1, var, s2, True, True, tuple()))
+                sel.nth.append(ct.SelectorNth(s1, var, s2, True, True, ct.SelectorList()))
         has_selector = True
         return has_selector
 
     def parse_pseudo_open(self, sel, m, has_selector, iselector, is_pseudo):
         """Parse pseudo with opening bracket."""
 
-        sel.selectors.extend(
+        sel.selectors.append(
             self.parse_selectors(
                 iselector,
                 True,
@@ -382,13 +344,13 @@ class CSSParser:
             if not has_selector:
                 raise ValueError("Cannot start or end selector with '{}'".format(m.group('relation')))
             sel.rel_type = rel_type
-            selectors[-1].set_distant_relation(sel)
-            rel_type = HAS_CHILD
+            selectors[-1].relations.append(sel)
+            rel_type = REL_HAS_CHILD
             selectors.append(_Selector())
         else:
             if has_selector:
                 sel.rel_type = rel_type
-                selectors[-1].set_distant_relation(sel)
+                selectors[-1].relations.append(sel)
             rel_type = ':' + m.group('relation')
         sel = _Selector()
 
@@ -400,45 +362,19 @@ class CSSParser:
 
         if not has_selector:
             raise ValueError("Cannot start or end selector with '{}'".format(m.group('relation')))
-        is_not = sel.is_not
         if m.group('relation') == SPLIT:
-            if not sel.tags and not is_pseudo:
+            if not sel.tag and not is_pseudo:
                 # Implied `*`
-                sel.tags.append(SelectorTag('*', None))
-            sel.relation = relations[0] if relations else None
+                sel.tag = ct.SelectorTag('*', None)
+            sel.relations.extend(relations)
             selectors.append(sel)
             relations.clear()
         else:
-            # In this particular case, we are attaching a relation to an element of interest.
-            # the `:not()` applies to the element of interest, not the ancestors. `:not()` is really only
-            # applied at the sub-selector level `_Selector(is_not=False, selector=[_Selector(is_not=True)])`
-            # We want to see if the element has the proper ancestry, and then apply the `:not()`.
-            # In the case of `:not(el1) > el2`, where the ancestor is evaluated with a not, you'd actually get:
-            # ```
-            # _Selector(
-            #     tags=['el2'],
-            #     relations=[
-            #         [
-            #             _Selector(
-            #                 tags=['*'],
-            #                 selectors=[
-            #                     _Selector(
-            #                         tags=['el1'],
-            #                         is_not=True
-            #                     )
-            #                 ]
-            #             )
-            #         ]
-            #     ],
-            #     rel_type='>'
-            # )
-            # ```
-            sel.relation = relations[0] if relations else None
+            sel.relations.extend(relations)
             sel.rel_type = m.group('relation')
-            sel.is_not = False
             relations.clear()
             relations.append(sel)
-        sel = _Selector(is_not=is_not)
+        sel = _Selector()
 
         has_selector = False
         return has_selector, sel
@@ -458,13 +394,13 @@ class CSSParser:
     def parse_selectors(self, iselector, is_pseudo=False, is_not=False, is_has=False):
         """Parse selectors."""
 
-        sel = _Selector(is_not=is_not)
+        sel = _Selector()
         selectors = []
         has_selector = False
         closed = False
         is_html = self.mode != util.XML
         relations = []
-        rel_type = HAS_CHILD
+        rel_type = REL_HAS_CHILD
         split_last = False
         if is_has:
             selectors.append(_Selector())
@@ -520,21 +456,21 @@ class CSSParser:
             raise ValueError("Cannot end with a combining character")
 
         if has_selector:
-            if not sel.tags and not is_pseudo:
+            if not sel.tag and not is_pseudo:
                 # Implied `*`
-                sel.tags.append(SelectorTag('*', None))
+                sel.tag = ct.SelectorTag('*', None)
             if is_has:
                 sel.rel_type = rel_type
-                selectors[-1].set_distant_relation(sel)
+                selectors[-1].relations.append(sel)
             else:
-                sel.relation = relations[0] if relations else None
+                sel.relations.extend(relations)
                 relations.clear()
                 selectors.append(sel)
         elif is_has:
             # We will always need to finish a selector when `:has()` is used as it leads with combining.
             raise ValueError('Missing selectors after combining type.')
 
-        return selectors
+        return ct.SelectorList([s.freeze() for s in selectors], is_not)
 
     def process_selectors(self):
         """
@@ -545,106 +481,4 @@ class CSSParser:
         descendants etc.
         """
 
-        return tuple([s.freeze() for s in self.parse_selectors(self.re_sel.finditer(self.pattern))])
-
-
-class SoupSieve(util.Immutable):
-    """Match tags in Beautiful Soup with CSS selectors."""
-
-    __slots__ = ("pattern", "selectors", "namespaces", "mode", "_hash")
-
-    def __init__(self, selectors, namespaces, mode):
-        """Initialize."""
-
-        super().__init__(
-            pattern=selectors,
-            selectors=CSSParser(selectors, mode).process_selectors(),
-            namespaces=namespaces,
-            mode=mode
-        )
-
-    def _walk(self, node, capture=True, comments=False):
-        """Recursively return selected tags."""
-
-        if capture and self.match(node):
-            yield node
-
-        # Walk children
-        for child in node.descendants:
-            if capture and isinstance(child, util.TAG) and self.match(child):
-                yield child
-            elif comments and isinstance(child, util.COMMENT):
-                yield child
-
-    def _sieve(self, node, capture=True, comments=False, limit=0):
-        """Sieve."""
-
-        if limit < 1:
-            limit = None
-
-        for child in self._walk(node, capture, comments):
-            yield child
-            if limit is not None:
-                limit -= 1
-                if limit < 1:
-                    break
-
-    def match(self, node):
-        """Match."""
-
-        return cm.CSSMatch(self.selectors, self.namespaces, self.mode).match(node)
-
-    def filter(self, nodes):  # noqa A001
-        """Filter."""
-
-        if isinstance(nodes, util.TAG):
-            return [node for node in nodes.children if isinstance(node, util.TAG) and self.match(node)]
-        else:
-            return [node for node in nodes if self.match(node)]
-
-    def comments(self, node, limit=0):
-        """Get comments only."""
-
-        return list(self.icomments(node, limit))
-
-    def icomments(self, node, limit=0):
-        """Iterate comments only."""
-
-        yield from self._sieve(node, capture=False, comments=True, limit=limit)
-
-    def select(self, node, limit=0):
-        """Select the specified tags."""
-
-        return list(self.iselect(node, limit))
-
-    def iselect(self, node, limit=0):
-        """Iterate the specified tags."""
-
-        yield from self._sieve(node, limit=limit)
-
-    def __repr__(self):
-        """Representation."""
-
-        return "SoupSieve(pattern=%r, namespaces=%s, mode=%s)" % (self.pattern, self.namespaces, self.mode)
-
-    __str__ = __repr__
-
-    # ====== Deprecated ======
-    @deprecated("Use 'SoupSieve.icomments' instead.")
-    def commentsiter(self, node, limit=0):
-        """Iterate comments only."""
-
-        yield from self.icomments(node, limit)
-
-    @deprecated("Use 'SoupSieve.iselect' instead.")
-    def selectiter(self, node, limit=0):
-        """Iterate the specified tags."""
-
-        yield from self.iselect(node, limit)
-
-
-def _pickle(p):
-    return SoupSieve, (p.pattern, p.namespaces, p.mode)
-
-
-copyreg.pickle(SoupSieve, _pickle)
+        return self.parse_selectors(self.re_sel.finditer(self.pattern))

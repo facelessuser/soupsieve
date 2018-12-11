@@ -27,6 +27,8 @@ SOFTWARE.
 """
 from .__meta__ import __version__, __version_info__  # noqa: F401
 from . import css_parser as cp
+from . import css_match as cm
+from . import css_types as ct
 from .util import HTML, HTML5, XHTML, XML, deprecated
 
 __all__ = (
@@ -35,16 +37,16 @@ __all__ = (
     'comments', 'icomments', 'select', 'iselect', 'match', 'filter'
 )
 
-SoupSieve = cp.SoupSieve
+SoupSieve = cm.SoupSieve
 
 
 def compile(pattern, namespaces=None, mode=HTML5):  # noqa: A001
     """Compile CSS pattern."""
 
     if namespaces is None:
-        namespaces = cp._Namespaces()
-    if not isinstance(namespaces, cp._Namespaces):
-        namespaces = cp._Namespaces(**(namespaces))
+        namespaces = ct.Namespaces()
+    if not isinstance(namespaces, ct.Namespaces):
+        namespaces = ct.Namespaces(**(namespaces))
 
     if isinstance(pattern, SoupSieve):
         if mode != pattern.mode:

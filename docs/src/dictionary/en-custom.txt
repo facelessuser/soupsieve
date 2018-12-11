@@ -18,6 +18,7 @@ Virtualenv
 WIP
 XHTML
 accessor
+boolean
 builtin
 deprecations
 html
@@ -36,6 +37,8 @@ regex
 sublicense
 substring
 tuple
+tuples
 un
+unpickle
 whitespace
 wordlist

@@ -1,6 +1,8 @@
 """CSS matcher."""
 from . import util
 import re
+import copyreg
+from .util import deprecated
 
 # Empty tag pattern (whitespace okay)
 RE_NOT_EMPTY = re.compile('[^ \t\r\n]')
@@ -158,48 +160,46 @@ class CSSMatch:
             tag.name not in ((util.lower(el.name) if not self.is_xml() else el.name), '*')
         )
 
-    def match_tag(self, el, tags):
+    def match_tag(self, el, tag):
         """Match the tag."""
 
         has_ns = self.supports_namespaces()
         match = True
-        for t in tags:
+        if tag is not None:
             # Verify namespace
-            if has_ns and not self.match_namespace(el, t):
+            if has_ns and not self.match_namespace(el, tag):
                 match = False
-                break
-            if not self.match_tagname(el, t):
+            if not self.match_tagname(el, tag):
                 match = False
-                break
         return match
 
     def match_past_relations(self, el, relation):
         """Match past relationship."""
 
         found = False
-        if relation.rel_type == REL_PARENT:
+        if relation[0].rel_type == REL_PARENT:
             parent = el.parent
             while not found and parent:
-                found = self.match_selectors(parent, [relation])
+                found = self.match_selectors(parent, relation)
                 parent = parent.parent
-        elif relation.rel_type == REL_CLOSE_PARENT:
+        elif relation[0].rel_type == REL_CLOSE_PARENT:
             parent = el.parent
             if parent:
-                found = self.match_selectors(parent, [relation])
-        elif relation.rel_type == REL_SIBLING:
+                found = self.match_selectors(parent, relation)
+        elif relation[0].rel_type == REL_SIBLING:
             sibling = el.previous_sibling
             while not found and sibling:
                 if not isinstance(sibling, util.TAG):
                     sibling = sibling.previous_sibling
                     continue
-                found = self.match_selectors(sibling, [relation])
+                found = self.match_selectors(sibling, relation)
                 sibling = sibling.previous_sibling
-        elif relation.rel_type == REL_CLOSE_SIBLING:
+        elif relation[0].rel_type == REL_CLOSE_SIBLING:
             sibling = el.previous_sibling
             while sibling and not isinstance(sibling, util.TAG):
                 sibling = sibling.previous_sibling
             if sibling and isinstance(sibling, util.TAG):
-                found = self.match_selectors(sibling, [relation])
+                found = self.match_selectors(sibling, relation)
         return found
 
     def match_future_child(self, parent, relation, recursive=False):
@@ -209,7 +209,7 @@ class CSSMatch:
         for child in (parent.descendants if recursive else parent.children):
             if not isinstance(child, util.TAG):
                 continue
-            match = self.match_selectors(child, [relation])
+            match = self.match_selectors(child, relation)
             if match:
                 break
         return match
@@ -218,24 +218,24 @@ class CSSMatch:
         """Match future relationship."""
 
         found = False
-        if relation.rel_type == REL_HAS_PARENT:
+        if relation[0].rel_type == REL_HAS_PARENT:
             found = self.match_future_child(el, relation, True)
-        elif relation.rel_type == REL_HAS_CLOSE_PARENT:
+        elif relation[0].rel_type == REL_HAS_CLOSE_PARENT:
             found = self.match_future_child(el, relation)
-        elif relation.rel_type == REL_HAS_SIBLING:
+        elif relation[0].rel_type == REL_HAS_SIBLING:
             sibling = el.next_sibling
             while not found and sibling:
                 if not isinstance(sibling, util.TAG):
                     sibling = sibling.next_sibling
                     continue
-                found = self.match_selectors(sibling, [relation])
+                found = self.match_selectors(sibling, relation)
                 sibling = sibling.next_sibling
-        elif relation.rel_type == REL_HAS_CLOSE_SIBLING:
+        elif relation[0].rel_type == REL_HAS_CLOSE_SIBLING:
             sibling = el.next_sibling
             while sibling and not isinstance(sibling, util.TAG):
                 sibling = sibling.next_sibling
             if sibling and isinstance(sibling, util.TAG):
-                found = self.match_selectors(sibling, [relation])
+                found = self.match_selectors(sibling, relation)
         return found
 
     def match_relations(self, el, relation):
@@ -243,7 +243,7 @@ class CSSMatch:
 
         found = False
 
-        if relation.rel_type.startswith(':'):
+        if relation[0].rel_type.startswith(':'):
             found = self.match_future_relations(el, relation)
         else:
             found = self.match_past_relations(el, relation)
@@ -364,7 +364,7 @@ class CSSMatch:
                     if n.selectors and not self.match_selectors(child, n.selectors):
                         continue
                     # Handle `of-type`
-                    if n.type and not self.match_nth_tag_type(el, child):
+                    if n.of_type and not self.match_nth_tag_type(el, child):
                         continue
                     relative_index += 1
                     if relative_index == idx:
@@ -398,25 +398,35 @@ class CSSMatch:
                 break
         return found_child
 
-    def match_empty(self, el, is_empty):
+    def match_empty(self, el, empty):
         """Check if element is empty (if requested)."""
 
-        return not is_empty or (RE_NOT_EMPTY.search(el.text) is None and not self.has_child(el))
+        return not empty or (RE_NOT_EMPTY.search(el.text) is None and not self.has_child(el))
+
+    def match_subselectors(self, el, selectors):
+        """Match selectors."""
+
+        match = True
+        for sel in selectors:
+            if not self.match_selectors(el, sel):
+                match = False
+        return match
 
     def match_selectors(self, el, selectors):
         """Check if element matches one of the selectors."""
 
         match = False
         is_html = self.mode != util.XML
+        is_not = selectors.is_not
         for selector in selectors:
-            match = selector.is_not
+            match = is_not
             # Verify tag matches
-            if not self.match_tag(el, selector.tags):
+            if not self.match_tag(el, selector.tag):
                 continue
             # Verify `nth` matches
             if not self.match_nth(el, selector.nth):
                 continue
-            if not self.match_empty(el, selector.is_empty):
+            if not self.match_empty(el, selector.empty):
                 continue
             # Verify id matches
             if is_html and selector.ids and not self.match_id(el, selector.ids):
@@ -427,15 +437,15 @@ class CSSMatch:
             # Verify attribute(s) match
             if not self.match_attributes(el, selector.attributes):
                 continue
-            if selector.is_root and not self.match_root(el):
+            if selector.root and not self.match_root(el):
                 continue
             # Verify pseudo selector patterns
-            if selector.selectors and not self.match_selectors(el, selector.selectors):
+            if selector.selectors and not self.match_subselectors(el, selector.selectors):
                 continue
             # Verify relationship selectors
             if selector.relation and not self.match_relations(el, selector.relation):
                 continue
-            match = not selector.is_not
+            match = not is_not
             break
 
         return match
@@ -444,3 +454,105 @@ class CSSMatch:
         """Match."""
 
         return isinstance(el, util.TAG) and self.match_selectors(el, self.selectors)
+
+
+class SoupSieve(util.Immutable):
+    """Match tags in Beautiful Soup with CSS selectors."""
+
+    __slots__ = ("pattern", "selectors", "namespaces", "mode", "_hash")
+
+    def __init__(self, pattern, selectors, namespaces, mode):
+        """Initialize."""
+
+        super().__init__(
+            pattern=pattern,
+            selectors=selectors,
+            namespaces=namespaces,
+            mode=mode
+        )
+
+    def _walk(self, node, capture=True, comments=False):
+        """Recursively return selected tags."""
+
+        if capture and self.match(node):
+            yield node
+
+        # Walk children
+        for child in node.descendants:
+            if capture and isinstance(child, util.TAG) and self.match(child):
+                yield child
+            elif comments and isinstance(child, util.COMMENT):
+                yield child
+
+    def _sieve(self, node, capture=True, comments=False, limit=0):
+        """Sieve."""
+
+        if limit < 1:
+            limit = None
+
+        for child in self._walk(node, capture, comments):
+            yield child
+            if limit is not None:
+                limit -= 1
+                if limit < 1:
+                    break
+
+    def match(self, node):
+        """Match."""
+
+        return CSSMatch(self.selectors, self.namespaces, self.mode).match(node)
+
+    def filter(self, nodes):  # noqa A001
+        """Filter."""
+
+        if isinstance(nodes, util.TAG):
+            return [node for node in nodes.children if isinstance(node, util.TAG) and self.match(node)]
+        else:
+            return [node for node in nodes if self.match(node)]
+
+    def comments(self, node, limit=0):
+        """Get comments only."""
+
+        return list(self.icomments(node, limit))
+
+    def icomments(self, node, limit=0):
+        """Iterate comments only."""
+
+        yield from self._sieve(node, capture=False, comments=True, limit=limit)
+
+    def select(self, node, limit=0):
+        """Select the specified tags."""
+
+        return list(self.iselect(node, limit))
+
+    def iselect(self, node, limit=0):
+        """Iterate the specified tags."""
+
+        yield from self._sieve(node, limit=limit)
+
+    def __repr__(self):
+        """Representation."""
+
+        return "SoupSieve(pattern=%r, namespaces=%s, mode=%s)" % (self.pattern, self.namespaces, self.mode)
+
+    __str__ = __repr__
+
+    # ====== Deprecated ======
+    @deprecated("Use 'SoupSieve.icomments' instead.")
+    def commentsiter(self, node, limit=0):
+        """Iterate comments only."""
+
+        yield from self.icomments(node, limit)
+
+    @deprecated("Use 'SoupSieve.iselect' instead.")
+    def selectiter(self, node, limit=0):
+        """Iterate the specified tags."""
+
+        yield from self.iselect(node, limit)
+
+
+def _pickle(p):
+    return SoupSieve, (p.pattern, p.selectors, p.namespaces, p.mode)
+
+
+copyreg.pickle(SoupSieve, _pickle)
