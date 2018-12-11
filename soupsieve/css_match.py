@@ -160,19 +160,17 @@ class CSSMatch:
             tag.name not in ((util.lower(el.name) if not self.is_xml() else el.name), '*')
         )
 
-    def match_tag(self, el, tags):
+    def match_tag(self, el, tag):
         """Match the tag."""
 
         has_ns = self.supports_namespaces()
         match = True
-        for t in tags:
+        if tag is not None:
             # Verify namespace
-            if has_ns and not self.match_namespace(el, t):
+            if has_ns and not self.match_namespace(el, tag):
                 match = False
-                break
-            if not self.match_tagname(el, t):
+            if not self.match_tagname(el, tag):
                 match = False
-                break
         return match
 
     def match_past_relations(self, el, relation):
@@ -413,7 +411,7 @@ class CSSMatch:
         for selector in selectors:
             match = selector.is_not
             # Verify tag matches
-            if not self.match_tag(el, selector.tags):
+            if not self.match_tag(el, selector.tag):
                 continue
             # Verify `nth` matches
             if not self.match_nth(el, selector.nth):

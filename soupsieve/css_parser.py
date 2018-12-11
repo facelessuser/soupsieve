@@ -102,7 +102,7 @@ class _Selector:
     def __init__(self, **kwargs):
         """Initialize."""
 
-        self.tags = kwargs.get('tags', [])
+        self.tag = kwargs.get('tag', None)
         self.ids = kwargs.get('ids', [])
         self.classes = kwargs.get('classes', [])
         self.attributes = kwargs.get('attributes', [])
@@ -139,7 +139,7 @@ class _Selector:
         """Freeze self."""
 
         return Selector(
-            self._freeze_list(self.tags),
+            self.tag,
             self._freeze_list(self.ids),
             self._freeze_list(self.classes),
             self._freeze_list(self.attributes),
@@ -156,10 +156,10 @@ class _Selector:
         """String representation."""
 
         return (
-            '_Selector(tags=%r, ids=%r, classes=%r, attributes=%r, nth=%r, selectors=%r, '
+            '_Selector(tag=%r, ids=%r, classes=%r, attributes=%r, nth=%r, selectors=%r, '
             'is_not=%r, relation=%r, rel_type=%r, is_root=%r)'
         ) % (
-            self.tags, self.ids, self.classes, self.attributes, self.nth, self.selectors,
+            self.tag, self.ids, self.classes, self.attributes, self.nth, self.selectors,
             self.is_not, self.relation, self.rel_type, self.is_root
         )
 
@@ -170,7 +170,7 @@ class Selector(
     namedtuple(
         'Selector',
         [
-            'tags', 'ids', 'classes', 'attributes', 'nth', 'selectors',
+            'tag', 'ids', 'classes', 'attributes', 'nth', 'selectors',
             'is_not', 'is_empty', 'relation', 'rel_type', 'is_root'
         ]
     )
@@ -263,7 +263,7 @@ class CSSParser:
         else:
             tag = parts[0]
             prefix = None
-        sel.tags.append(SelectorTag(tag, prefix))
+        sel.tag = SelectorTag(tag, prefix)
         has_selector = True
         return has_selector
 
@@ -401,9 +401,9 @@ class CSSParser:
             raise ValueError("Cannot start or end selector with '{}'".format(m.group('relation')))
         is_not = sel.is_not
         if m.group('relation') == SPLIT:
-            if not sel.tags and not is_pseudo:
+            if not sel.tag and not is_pseudo:
                 # Implied `*`
-                sel.tags.append(SelectorTag('*', None))
+                sel.tag = SelectorTag('*', None)
             sel.relation = relations[0] if relations else None
             selectors.append(sel)
             relations.clear()
@@ -415,14 +415,14 @@ class CSSParser:
             # In the case of `:not(el1) > el2`, where the ancestor is evaluated with a not, you'd actually get:
             # ```
             # _Selector(
-            #     tags=['el2'],
+            #     tag = 'el2',
             #     relations=[
             #         [
             #             _Selector(
-            #                 tags=['*'],
+            #                 tag = '*',
             #                 selectors=[
             #                     _Selector(
-            #                         tags=['el1'],
+            #                         tag = 'el1',
             #                         is_not=True
             #                     )
             #                 ]
@@ -519,9 +519,9 @@ class CSSParser:
             raise ValueError("Cannot end with a combining character")
 
         if has_selector:
-            if not sel.tags and not is_pseudo:
+            if not sel.tag and not is_pseudo:
                 # Implied `*`
-                sel.tags.append(SelectorTag('*', None))
+                sel.tag = SelectorTag('*', None)
             if is_has:
                 sel.rel_type = rel_type
                 selectors[-1].set_distant_relation(sel)
