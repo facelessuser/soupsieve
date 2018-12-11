@@ -152,11 +152,11 @@ File            | Description
 
 When a CSS selector string is given to Soup Sieve, it is run through the `CSSParser` class.  `CSSParser` will return a tuple object with one or more `Selector` classes. This tuple is handed to the `SoupSieve` class as a parameter along with things like `namespace` and `mode`. One of the most important things to understand when contributing is the structure of the `Selector` class and the various chained objects.
 
-The `Selector` class is a `namedtuple`. A compiled selector will always return a tuple of these objects. A `Selector` represents one compound selector.  So if you had the selector `div > p`, you would get a tuple with one `Selector`. If you had `div, p`, you would get a tuple with two `Selector`s as this is a selector list of two selectors. With that said, `div > p` will generate a sub-selector that is chained to the top level, but at the top level, there is only one.
+The `Selector` class is a `namedtuple`. A compiled selector will always return a tuple of these objects. A `Selector` represents one compound selector.  So if you had the selector `#!css div > p`, you would get a tuple with one `Selector`. If you had `#!css div, p`, you would get a tuple with two `Selector` objects as this is a selector list of two compound selectors. With that said, `#!css div > p` will generate a sub-selector that is chained to the top level, but at the top level, there is only one.
 
-A compound selector gets parsed into pieces. Each part of a specific compound selector is usually assigned to an attribute in a single `Selector` object, though some attributes can be an tuple of more selectors, as in the case of `*:not(p, div)` where `*` will be one `Selector` with the `:not(p, div)` selector list will be a tuple of containing one tuple of two `Selectors` (one for `p` and one for `div`) under the `selectors` attribute.
+A compound selector gets parsed into pieces. Each part of a specific compound selector is usually assigned to an attribute in a single `Selector` object. The attributes of the `Selector` object may be as simple as a boolean or a string, but hey can also be a tuple of more `Selector` objects. In the case of `#!css *:not(p, div)`, `#!css *` will be one `Selector` and the `#!css :not(p, div)` selector list will be a tuple containing one tuple of two `Selectors` (one for `p` and one for `div`) under the `selectors` attribute.
 
-In short a compound selector is a single `Selector` object that may chain other `Selector` objects. If you provide a selector list, than you will get multiple `Selector`s (one for each compound selector in the list) which in turn may chain other `Selector` objects.
+In short a compound selector is a single `Selector` object that may chain other `Selector` objects depending on the complexity of the compound selector. If you provide a selector list, than you will get multiple `Selector` objects (one for each compound selector in the list) which in turn may chain other `Selector` objects.
 
 ### `Selector`
 
@@ -173,19 +173,19 @@ class Selector(
     """Selector."""
 ```
 
-`Selector`\ Attributes | Description
-------------           | -----------
-`tag`                  | Contains a single [`SelectorTag`](#selectortag) object, or `None`.
-`id`                   | Contains a tuple of ids to match. Usually if multiple conflicting ids are present, it simply won't match a tag, but it allows multiple to handle the syntax `tag#1#2` even if it is invalid.
-`classes`              | Contains a tuple of class names to match.
-`attributes`           | Contains a tuple of attributes. Each attribute is represented as a [`SelectorAttribute`](#selectorattribute).
-`nth`                  | Contains a tuple containing `nth` selectors, each selector being represented as a [`SelectorNth`](#selectornth). `nth` selectors contain things like `:first-child`, `:only-child`, `:nth-child`, `:nth-of-type`, etc.
-`selectors`            | Contains a tuple of tuples of pseudo class selectors: `:is()`, `:not()`, `:has()`, etc. For instance, for a given selector `div:is(.a, .b):not(.c)`, you would have a tuple of tuples: `((Selector(.a), Selector(.b)), (Selector(.c)))`.
-`is_not`               | This is `True` if the current `Selector` is `:not()` pseudo class.
-`is_empty`             | This is `True` if the current selector contained a `:is_empty` pseudo.
-`relation`             | This is will contain a `Selector` object that is a relational match.  For instance, for `div > p + a` would be a `Selector` that contains a `relation` for `p` (another `Selector` object) which also contains a relation of `div`.  When matching, we would match that the tag is `a`, and then check that it's relations match, in this case a direct, previous sibling of `p` which has a direct parent of `div`.
-`rel_type`             | `rel_type` is attached to relational selectors. In the case of `div > p + a`, the relational selectors of `div` and `p` would get a relational type of `>` and `+` respectively.  `:has()` relations are actually stored under the selector attributes instead of `relation`, but they still have `rel_type`s as well. In the case of `p:has(> a)`, the `p` selector would have a `Selector` object in the `selectors` tuple with a `rel_type` of `:>` (has relations are prefixed `:` to denote forward looking relations).
-`is_root`              | This is `True` if the current compound selector contains `:is_root`.
+`Selector`   | Description
+------------ | -----------
+`tag`        | Contains a single [`SelectorTag`](#selectortag) object, or `None`.
+`id`         | Contains a tuple of ids to match. Usually if multiple conflicting ids are present, it simply won't match a tag, but it allows multiple to handle the syntax `tag#1#2` even if it is invalid.
+`classes`    | Contains a tuple of class names to match.
+`attributes` | Contains a tuple of attributes. Each attribute is represented as a [`SelectorAttribute`](#selectorattribute).
+`nth`        | Contains a tuple containing `nth` selectors, each selector being represented as a [`SelectorNth`](#selectornth). `nth` selectors contain things like `:first-child`, `:only-child`, `#!css :nth-child()`, `#!css :nth-of-type()`, etc.
+`selectors`  | Contains a tuple of tuples of pseudo class selectors: `#!css :is()`, `#!css :not()`, `#!css :has()`, etc. For instance, for a given selector `#!css div:is(.a, .b):not(.c)`, you would have a tuple of tuples: `((Selector(.a), Selector(.b)), (Selector(.c)))`.
+`is_not`     | This is `True` if the current `Selector` is `:not()` pseudo class.
+`is_empty`   | This is `True` if the current selector contained a `:is_empty` pseudo.
+`relation`   | This is will contain a `Selector` object that is a relational match.  For instance, for `div > p + a` would be a `Selector` that contains a `relation` for `p` (another `Selector` object) which also contains a relation of `div`.  When matching, we would match that the tag is `a`, and then check that it's relations match, in this case a direct, previous sibling of `p` which has a direct parent of `div`.
+`rel_type`   | `rel_type` is attached to relational selectors. In the case of `#!css div > p + a`, the relational selectors of `div` and `p` would get a relational type of `>` and `+` respectively.  `#!css :has()` relations are actually stored under the selector attributes instead of `relation`, but they still have `rel_type`s as well. In the case of `#!css p:has(> a)`, the `p` selector would have a `Selector` object in the `selectors` tuple with a `rel_type` of `:>` (has relations are prefixed `:` to denote forward looking relations).
+`is_root`  | This is `True` if the current compound selector contains `:is_root`.
 
 ### `SelectorTag`
 
@@ -194,10 +194,10 @@ class SelectorTag(namedtuple('SelectorTag', ['name', 'prefix'])):
     """Selector tag."""
 ```
 
-`SelectorTag`\ Attributes | Description
-------------------------- | -----------
-`name`                    | `name` contains the tag name to match.
-`prefix`                  | `prefix` contains the namespace prefix to match. `prefix` can also be `None`.
+`SelectorTag` | Description
+------------- | -----------
+`name`        | `name` contains the tag name to match.
+`prefix`      | `prefix` contains the namespace prefix to match. `prefix` can also be `None`.
 
 
 ### `SelectorAttribute`
@@ -207,11 +207,11 @@ class SelectorAttribute(namedtuple('AttrRule', ['attribute', 'prefix', 'pattern'
     """Selector attribute rule."""
 ```
 
-`SelectorAttribute`\ Attributes | Description
-------------------------------- | -----------
-`attribute`                     | Contains the attribute name to match.
-`prefix`                        | Contains the attribute namespace prefix to match if any.
-`pattern`                       | Contains a `re` regular expression object that matches the desired attribute value.
+`SelectorAttribute` | Description
+------------------- | -----------
+`attribute`         | Contains the attribute name to match.
+`prefix`            | Contains the attribute namespace prefix to match if any.
+`pattern`           | Contains a `re` regular expression object that matches the desired attribute value.
 
 ### `SelectorNth`
 
@@ -220,13 +220,13 @@ class SelectorNth(namedtuple('SelectorNth', ['a', 'n', 'b', 'type', 'last', 'sel
     """Selector nth type."""
 ```
 
-`SelectorNth`\ Attributes | Description
-------------------------- | -----------
-`a`                       | The `a` value in the formula `an+b` specifying an index.
-`n`                       | `True` if the provided formula has included a literal `n` which signifies the formula is not a static index.
-`b`                       | The `b` value in the formula `an+b`.
-`type`                    | `True` if the `nth` pseudo class is an `*-of-type` variant.
-`last`                    | `True` if the `nth` pseudo class is a `*last*` variant.
-`selectors`               | A tuple of `Selector` objects representing the `of S` portion of `:nth-chld(an+b [of S]?)`.
+`SelectorNth` | Description
+------------- | -----------
+`a`           | The `a` value in the formula `an+b` specifying an index.
+`n`           | `True` if the provided formula has included a literal `n` which signifies the formula is not a static index.
+`b`           | The `b` value in the formula `an+b`.
+`type`        | `True` if the `nth` pseudo class is an `*-of-type` variant.
+`last`        | `True` if the `nth` pseudo class is a `*last*` variant.
+`selectors`   | A tuple of `Selector` objects representing the `of S` portion of `:nth-chld(an+b [of S]?)`.
 
 --8<-- "links.txt"
