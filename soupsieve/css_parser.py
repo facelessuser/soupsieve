@@ -48,7 +48,7 @@ RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{1,6}[ ]?)|(\\.))', re.I)
 RE_NTH = re.compile(r'(?P<s1>[-+])?(?P<a>\d+n?|n)(?:(?<=n)\s*(?P<s2>[-+])\s*(?P<b>\d+))?', re.I)
 
 SPLIT = ','
-HAS_CHILD = ": "
+REL_HAS_CHILD = ": "
 
 _MAXCACHE = 500
 
@@ -104,7 +104,7 @@ class _Selector:
         self.attributes = kwargs.get('attributes', [])
         self.nth = kwargs.get('nth', [])
         self.selectors = kwargs.get('selectors', [])
-        self.relation = kwargs.get('relation', None)
+        self.relation = kwargs.get('relation', [])
         self.rel_type = kwargs.get('rel_type', None)
         self.empty = kwargs.get('empty', False)
         self.root = kwargs.get('root', False)
@@ -130,6 +130,16 @@ class _Selector:
                 chain[index] = item.freeze()
         return tuple(chain)
 
+    def _freeze_relations(self, relations):
+        """Freeze relation."""
+
+        if relations:
+            sel = relations[0]
+            sel.relation.extend(relations[1:])
+            return ct.SelectorList([sel.freeze()])
+        else:
+            return ct.SelectorList()
+
     def freeze(self):
         """Freeze self."""
 
@@ -140,7 +150,7 @@ class _Selector:
             self._freeze_list(self.attributes),
             self._freeze_list(self.nth),
             self._freeze_list(self.selectors),
-            ct.SelectorList([self.relation.freeze()] if self.relation is not None else []),
+            self._freeze_relations(self.relation),
             self.rel_type,
             self.empty,
             self.root
@@ -349,13 +359,13 @@ class CSSParser:
             if not has_selector:
                 raise ValueError("Cannot start or end selector with '{}'".format(m.group('relation')))
             sel.rel_type = rel_type
-            selectors[-1].set_distant_relation(sel)
-            rel_type = HAS_CHILD
+            selectors[-1].relation.append(sel)
+            rel_type = REL_HAS_CHILD
             selectors.append(_Selector())
         else:
             if has_selector:
                 sel.rel_type = rel_type
-                selectors[-1].set_distant_relation(sel)
+                selectors[-1].relation.append(sel)
             rel_type = ':' + m.group('relation')
         sel = _Selector()
 
@@ -371,11 +381,11 @@ class CSSParser:
             if not sel.tag and not is_pseudo:
                 # Implied `*`
                 sel.tag = ct.SelectorTag('*', None)
-            sel.relation = relations[0] if relations else None
+            sel.relation.extend(relations)
             selectors.append(sel)
             relations.clear()
         else:
-            sel.relation = relations[0] if relations else None
+            sel.relation.extend(relations)
             sel.rel_type = m.group('relation')
             relations.clear()
             relations.append(sel)
@@ -405,7 +415,7 @@ class CSSParser:
         closed = False
         is_html = self.mode != util.XML
         relations = []
-        rel_type = HAS_CHILD
+        rel_type = REL_HAS_CHILD
         split_last = False
         if is_has:
             selectors.append(_Selector())
@@ -466,9 +476,9 @@ class CSSParser:
                 sel.tag = ct.SelectorTag('*', None)
             if is_has:
                 sel.rel_type = rel_type
-                selectors[-1].set_distant_relation(sel)
+                selectors[-1].relation.append(sel)
             else:
-                sel.relation = relations[0] if relations else None
+                sel.relation.extend(relations)
                 relations.clear()
                 selectors.append(sel)
         elif is_has:
