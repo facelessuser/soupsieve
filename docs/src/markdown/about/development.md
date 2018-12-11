@@ -158,7 +158,7 @@ A `SelectorList` represents a list of compound selectors.  So if you had the sel
 
 A compound selector gets parsed into pieces. Each part of a specific compound selector is usually assigned to an attribute in a single `Selector` object. The attributes of the `Selector` object may be as simple as a boolean or a string, but they can also be a tuple of of `SelectorList` objects. In the case of `#!css *:not(p, div)`, `#!css *` will be a `SelectorList` with one `Selector`. The `#!css :not(p, div)` selector list will be a tuple containing one `SelectorList` of two `Selectors` (one for `p` and one for `div`) under the `selectors` attribute of the `#!css *` `Selector`.
 
-In short, `Selectors` are always contained within a `SelectorList`, and a compound selector is a single `Selector` object that may chain other `SelectorLists` objects depending on the complexity of the compound selector. If you provide a selector list, than you will get multiple `Selector` objects (one for each compound selector in the list) which in turn may chain other `Selector` objects.
+In short, `Selectors` are always contained within a `SelectorList`, and a compound selector is a single `Selector` object that may chain other `SelectorLists` objects depending on the complexity of the compound selector. If you provide a selector list, then you will get multiple `Selector` objects (one for each compound selector in the list) which in turn may chain other `Selector` objects.
 
 ### `SelectorList`
 
@@ -193,10 +193,10 @@ class Selector:
 `attributes` | Contains a tuple of attributes. Each attribute is represented as a [`SelectorAttribute`](#selectorattribute).
 `nth`        | Contains a tuple containing `nth` selectors, each selector being represented as a [`SelectorNth`](#selectornth). `nth` selectors contain things like `:first-child`, `:only-child`, `#!css :nth-child()`, `#!css :nth-of-type()`, etc.
 `selectors`  | Contains a tuple of `SelectorList` objects for each pseudo class selector  part of the compound selector: `#!css :is()`, `#!css :not()`, `#!css :has()`, etc.
-`empty`   | This is `True` if the current selector contained a `:empty` pseudo.
-`relation`   | This is will contain a `SelectorList` object with one `Selector` object that is a relational match.  For instance, `div > p + a` would be a `Selector` for `a` that contains a `relation` for `p` (another `SelectorList` object) which also contains a relation of `div`.  When matching, we would match that the tag is `a`, and then check that its relations match, in this case a direct, previous sibling of `p`, which has a direct parent of `div`.
-`rel_type`   | `rel_type` is attached to relational selectors. In the case of `#!css div > p + a`, the relational selectors of `div` and `p` would get a relational type of `>` and `+` respectively.  `#!css :has()` relations are actually stored under the selector attributes instead of `relation`, but they still have `rel_type`s as well. In the case of `#!css p:has(> a)`, the `p` selector would have a `Selector` object in the `selectors` tuple with a `rel_type` of `:>` (has relations are prefixed `:` to denote forward looking relations).
-`root`  | This is `True` if the current compound selector contains `:root`.
+`relation`   | This will contain a `SelectorList` object with one `Selector` object, which could in turn chain an additional relation depending on the complexity of the compound selector.  For instance, `div > p + a` would be a `Selector` for `a` that contains a `relation` for `p` (another `SelectorList` object) which also contains a relation of `div`.  When matching, we would match that the tag is `a`, and then walk its relation chain verifying that they all match. In this case, the relation chain would be a direct, previous sibling of `p`, which has a direct parent of `div`. A `:has()` pseudo class would walk this in the opposite order. `div:has(> p + a)` would verify `div`, and then check for a child of `p` with a sibling of `a`.
+`rel_type`   | `rel_type` is attached to relational selectors. In the case of `#!css div > p + a`, the relational selectors of `div` and `p` would get a relational type of `>` and `+` respectively. `:has()` relational `rel_type` are preceded with `:` to signify a forward looking relation.
+`empty`      | This is `True` if the current selector contained a `:empty` pseudo.
+`root`       | This is `True` if the current compound selector contains `:root`.
 
 ### `SelectorTag`
 
