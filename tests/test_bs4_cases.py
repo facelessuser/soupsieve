@@ -79,8 +79,8 @@ class SelectorNthOfTypeBugTest(unittest.TestCase):
         div_inner = h1.parent
         div_main = div_inner.parent
         div_main_children = [child for child in div_main.children]
-        self.assertEquals(div_main_children[0], '\n')
-        self.assertEquals(div_main_children[1], div_inner)
+        self.assertEqual(div_main_children[0], '\n')
+        self.assertEqual(div_main_children[1], div_inner)
 
     def test_parent_nth_of_type(self):
         """Test parent of `nth` of type."""

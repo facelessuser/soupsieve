@@ -11,9 +11,14 @@ class Namespaces(util.ImmutableDict):
     def __init__(self, *args, **kwargs):
         """Initialize."""
 
-        if not all([isinstance(k, str) and isinstance(v, str) for k, v in args]):
+        # If there are arguments, check the first index.
+        # `super` should fail if the user gave multiple arguments,
+        # so don't bother checking that.
+        arg = args[0] if args else kwargs
+        is_dict = isinstance(arg, dict)
+        if is_dict and not all([isinstance(k, str) and isinstance(v, str) for k, v in arg.items()]):
             raise TypeError('Namespace keys and values must be Unicode strings')
-        if not all([isinstance(k, str) and isinstance(v, str) for k, v in kwargs.items()]):
+        elif not is_dict and not all([isinstance(k, str) and isinstance(v, str) for k, v in arg]):
             raise TypeError('Namespace keys and values must be Unicode strings')
 
         super().__init__(*args, **kwargs)

@@ -74,3 +74,12 @@ class TestInvalid(unittest.TestCase):
 
         with self.assertRaises(SyntaxError):
             sv.compile('div?')
+
+    def test_invalid_namespace(self):
+        """Test invalid namespace."""
+
+        with self.assertRaises(TypeError):
+            sv.ct.Namespaces(((3, 3),))
+
+        with self.assertRaises(TypeError):
+            sv.ct.Namespaces({'a': {}})
