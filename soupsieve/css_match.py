@@ -2,7 +2,6 @@
 from . import util
 import re
 import copyreg
-from . import util
 from .util import deprecated
 
 # Empty tag pattern (whitespace okay)
