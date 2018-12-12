@@ -57,7 +57,7 @@ class TestLevel3(util.TestCase):
             """,
             "p ~ span",
             ["3"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_not(self):
@@ -80,14 +80,14 @@ class TestLevel3(util.TestCase):
             markup,
             'div :not([id="1"])',
             ["0", "2", "3", "4", "5", "6", "pre"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             'span:not([id="1"])',
             ["3", "4", "5", "6"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_attribute_begins(self):
@@ -108,7 +108,7 @@ class TestLevel3(util.TestCase):
             """,
             "[class^=here]",
             ["0"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_attribute_end(self):
@@ -129,7 +129,7 @@ class TestLevel3(util.TestCase):
             """,
             "[class$=words]",
             ["0"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_attribute_contains(self):
@@ -152,7 +152,7 @@ class TestLevel3(util.TestCase):
             markup,
             "[class*=words]",
             ["0", "3", "pre"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_root(self):
@@ -182,14 +182,14 @@ class TestLevel3(util.TestCase):
             markup,
             ":root",
             ["root"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             ":root > body > div",
             ["div"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_empty(self):
@@ -213,7 +213,7 @@ class TestLevel3(util.TestCase):
             markup,
             "body :empty",
             ["4", "5", "6", "8"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_last_child(self):
@@ -234,7 +234,7 @@ class TestLevel3(util.TestCase):
             """,
             "span:last-child",
             ["1", "6"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_only_child(self):
@@ -255,7 +255,7 @@ class TestLevel3(util.TestCase):
             """,
             "span:only-child",
             ["1"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_namespace(self):
@@ -297,7 +297,7 @@ class TestLevel3(util.TestCase):
                 "foo": "http://me.com/namespaces/foofoo",
                 "bar": "http://me.com/namespaces/foobar"
             },
-            mode=sv.XML
+            flags=sv.XML
         )
 
         self.assert_selector(
@@ -308,7 +308,7 @@ class TestLevel3(util.TestCase):
                 "foo": "http://me.com/namespaces/foofoo",
                 "bar": "http://me.com/namespaces/foobar"
             },
-            mode=sv.XML
+            flags=sv.XML
         )
 
         self.assert_selector(
@@ -319,7 +319,7 @@ class TestLevel3(util.TestCase):
                 "foo": "http://me.com/namespaces/foofoo",
                 "bar": "http://me.com/namespaces/foobar"
             },
-            mode=sv.XML
+            flags=sv.XML
         )
 
         self.assert_selector(
@@ -330,7 +330,7 @@ class TestLevel3(util.TestCase):
                 "foo": "http://me.com/namespaces/foofoo",
                 "bar": "http://me.com/namespaces/foobar"
             },
-            mode=sv.XML
+            flags=sv.XML
         )
 
         # Because we employ level 4 selectors
@@ -343,7 +343,7 @@ class TestLevel3(util.TestCase):
                 "foo": "http://me.com/namespaces/foofoo",
                 "bar": "http://me.com/namespaces/foobar"
             },
-            mode=sv.XML
+            flags=sv.XML
         )
 
         # Now that we apply a default namespace. Null space.
@@ -356,7 +356,7 @@ class TestLevel3(util.TestCase):
                 "foo": "http://me.com/namespaces/foofoo",
                 "bar": "http://me.com/namespaces/foobar"
             },
-            mode=sv.XML
+            flags=sv.XML
         )
 
         self.assert_selector(
@@ -368,7 +368,7 @@ class TestLevel3(util.TestCase):
                 "foo": "http://me.com/namespaces/foofoo",
                 "bar": "http://me.com/namespaces/foobar"
             },
-            mode=sv.XML
+            flags=sv.XML
         )
 
         # Because no prefix is specified for "other" in the above document,
@@ -384,7 +384,7 @@ class TestLevel3(util.TestCase):
                 "bar": "http://me.com/namespaces/foobar",
                 "other": "http://me.com/namespaces/other"
             },
-            mode=sv.XML
+            flags=sv.XML
         )
 
     def test_attribute_namespace(self):
@@ -399,16 +399,22 @@ class TestLevel3(util.TestCase):
         <body>
           <h1>A contrived example</h1>
           <svg viewBox="0 0 20 32" class="icon icon-1">
-            <use id="0" xlink:href="images/sprites.svg#icon-undo">aaaa</use>
+            <use id="0" xlink:href="images/sprites.svg#icon-undo"></use>
           </svg>
           <svg viewBox="0 0 30 32" class="icon icon-2">
-            <use id="1" xlink:href="images/sprites.svg#icon-redo">bbbb</use>
+            <use id="1" xlink:href="images/sprites.svg#icon-redo"></use>
           </svg>
           <svg viewBox="0 0 40 32" class="icon icon-3">
-            <use id="2" xlink:href="images/sprites.svg#icon-forward">cccc</use>
+            <use id="2" xlink:href="images/sprites.svg#icon-forward"></use>
           </svg>
           <svg viewBox="0 0 50 32" class="icon icon-4">
-            <use id="3" xlink:href="other/sprites.svg#icon-reply">dddd</use>
+            <use id="3" xlink:href="other/sprites.svg#icon-reply"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="4" :href="other/sprites.svg#icon-reply"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="5" other:href="other/sprites.svg#icon-reply"></use>
           </svg>
         </body>
         </html>
@@ -419,7 +425,65 @@ class TestLevel3(util.TestCase):
             '[xlink|href*=forw],[xlink|href="images/sprites.svg#icon-redo"]',
             ['1', '2'],
             namespaces={"xlink": "http://www.w3.org/1999/xlink"},
-            mode=sv.HTML5
+            flags=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            '[bad|href*=forw]',
+            [],
+            namespaces={"xlink": "http://www.w3.org/1999/xlink"},
+            flags=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            '[\\:href]',
+            ['4'],
+            namespaces={"xlink": "http://www.w3.org/1999/xlink"},
+            flags=sv.HTML5
+        )
+
+    def test_attribute_namespace_xhtml(self):
+        """Test attribute namespace in XHTML."""
+
+        markup = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+            "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+        <html xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+        </head>
+        <body>
+          <h1>A contrived example</h1>
+          <svg viewBox="0 0 20 32" class="icon icon-1">
+            <use id="0" xlink:href="images/sprites.svg#icon-undo"></use>
+          </svg>
+          <svg viewBox="0 0 30 32" class="icon icon-2">
+            <use id="1" xlink:href="images/sprites.svg#icon-redo"></use>
+          </svg>
+          <svg viewBox="0 0 40 32" class="icon icon-3">
+            <use id="2" xlink:href="images/sprites.svg#icon-forward"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="3" xlink:href="other/sprites.svg#icon-reply"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="4" :href="other/sprites.svg#icon-reply"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="5" other:href="other/sprites.svg#icon-reply"></use>
+          </svg>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            '[xlink|href*=forw],[xlink|href="images/sprites.svg#icon-redo"]',
+            ['1', '2'],
+            namespaces={"xlink": "http://www.w3.org/1999/xlink"},
+            flags=sv.XHTML
         )
 
     def test_first_of_type(self):
@@ -444,21 +508,21 @@ class TestLevel3(util.TestCase):
             markup,
             "p:first-of-type",
             ['0'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "span:first-of-type",
             ['2'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "body :first-of-type",
             ['0', '2'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_last_of_type(self):
@@ -483,21 +547,21 @@ class TestLevel3(util.TestCase):
             markup,
             "p:last-of-type",
             ['10'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "span:last-of-type",
             ['11'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "body :last-of-type",
             ['10', '11'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_only_of_type(self):
@@ -522,7 +586,7 @@ class TestLevel3(util.TestCase):
             markup,
             "p:only-of-type",
             ['1', '4'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_nth_child(self):
@@ -545,65 +609,89 @@ class TestLevel3(util.TestCase):
 
         self.assert_selector(
             markup,
+            "p:nth-child(2n-5)",
+            ['0', '8', '10']
+        )
+
+        self.assert_selector(
+            markup,
+            "p:nth-child(-2n+20)",
+            ['1', '7', '9']
+        )
+
+        self.assert_selector(
+            markup,
+            "p:nth-child(50n-20)",
+            []
+        )
+
+        self.assert_selector(
+            markup,
+            "p:nth-child(-2n-2)",
+            []
+        )
+
+        self.assert_selector(
+            markup,
             "p:nth-child(-2)",
             [],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(2)",
             ['1'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(9n - 1)",
             ['7'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(2n + 1)",
             ['0', '8', '10'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(-n+3)",
             ['0', '1'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "span:nth-child(-n+3)",
             ['2'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "body *:nth-child(-n+3)",
             ['0', '1', '2'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(odd)",
             ['0', '8', '10'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(even)",
             ['1', '7', '9'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_nth_last_child(self):
@@ -628,14 +716,14 @@ class TestLevel3(util.TestCase):
             markup,
             "p:nth-last-child(2)",
             ['10'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "p:nth-last-child(2n + 1)",
             ['1', '7', '9'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_nth_of_type(self):
@@ -660,28 +748,28 @@ class TestLevel3(util.TestCase):
             markup,
             "p:nth-of-type(3)",
             ['7'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "p:nth-of-type(2n + 1)",
             ['0', '7', '9'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "span:nth-of-type(2n + 1)",
             ['2', '4', '6'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "body :nth-of-type(2n + 1)",
             ['0', '2', '4', '6', '7', '9'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_nth_last_of_type(self):
@@ -706,12 +794,12 @@ class TestLevel3(util.TestCase):
             markup,
             "p:nth-last-of-type(3)",
             ['8'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "p:nth-last-of-type(2n + 1)",
             ['1', '8', '10'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )

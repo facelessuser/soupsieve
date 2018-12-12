@@ -50,7 +50,7 @@ class TestLevel2(util.TestCase):
             markup,
             "div > span",
             ["3"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         # No spaces
@@ -58,7 +58,7 @@ class TestLevel2(util.TestCase):
             markup,
             "div>span",
             ["3"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_direct_sibling(self):
@@ -82,7 +82,7 @@ class TestLevel2(util.TestCase):
             markup,
             "span + span",
             ["5", "6"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         # No spaces
@@ -90,7 +90,7 @@ class TestLevel2(util.TestCase):
             markup,
             "span+span",
             ["5", "6"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         # Complex
@@ -98,7 +98,7 @@ class TestLevel2(util.TestCase):
             markup,
             "span#4 + span#5",
             ["5"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_wild_tag(self):
@@ -119,7 +119,7 @@ class TestLevel2(util.TestCase):
             """,
             "body *",
             ["0", "1", "2", "3", "4", "5", "6", "div", "pre"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_attribute(self):
@@ -142,7 +142,7 @@ class TestLevel2(util.TestCase):
             markup,
             "[href]",
             ["2"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         # With spaces
@@ -150,7 +150,7 @@ class TestLevel2(util.TestCase):
             markup,
             "[   href   ]",
             ["2"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_multi_attribute(self):
@@ -172,7 +172,7 @@ class TestLevel2(util.TestCase):
             """,
             "span[id].test[data-test=test]",
             ["5"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_attribute_equal(self):
@@ -196,7 +196,7 @@ class TestLevel2(util.TestCase):
             markup,
             '[id=5]',
             ["5"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         # Single quoted
@@ -204,7 +204,7 @@ class TestLevel2(util.TestCase):
             markup,
             "[id='5']",
             ["5"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         # Double quoted
@@ -212,7 +212,7 @@ class TestLevel2(util.TestCase):
             markup,
             '[id="5"]',
             ["5"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         # With spaces
@@ -220,7 +220,14 @@ class TestLevel2(util.TestCase):
             markup,
             '[  id  =  "5"  ]',
             ["5"],
-            mode=sv.HTML5
+            flags=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            '[  id  =  "5"  ]',
+            ["5"],
+            flags=sv.HTML
         )
 
     def test_attribute_type(self):
@@ -247,14 +254,14 @@ class TestLevel2(util.TestCase):
             markup,
             '[type="test"]',
             ["0", '2'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             '[type="test"]',
             ['2'],
-            mode=sv.XML
+            flags=sv.XML
         )
 
     def test_attribute_start_dash(self):
@@ -275,7 +282,7 @@ class TestLevel2(util.TestCase):
             """,
             "[lang|=en]",
             ["0"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_attribute_contains_space(self):
@@ -299,7 +306,7 @@ class TestLevel2(util.TestCase):
             markup,
             "[class~=test2]",
             ["0"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         # Start of list
@@ -307,7 +314,7 @@ class TestLevel2(util.TestCase):
             markup,
             "[class~=test-a]",
             ["pre"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         # End of list
@@ -315,7 +322,7 @@ class TestLevel2(util.TestCase):
             markup,
             "[class~=test-b]",
             ["pre"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_first_child(self):
@@ -336,5 +343,5 @@ class TestLevel2(util.TestCase):
             """,
             "span:first-child",
             ["1", "4"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )

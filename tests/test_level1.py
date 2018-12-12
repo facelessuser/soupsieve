@@ -35,7 +35,7 @@ class TestLevel1(util.TestCase):
             """,
             "span",
             ["1"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_tags(self):
@@ -51,7 +51,7 @@ class TestLevel1(util.TestCase):
             """,
             "span, a",
             ["1", "2"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_child(self):
@@ -67,7 +67,7 @@ class TestLevel1(util.TestCase):
             """,
             "div span",
             ["1"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_id(self):
@@ -85,14 +85,14 @@ class TestLevel1(util.TestCase):
             markup,
             "#1",
             ["1"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "a#2",
             ["2"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_class(self):
@@ -110,14 +110,21 @@ class TestLevel1(util.TestCase):
             markup,
             ".foo",
             ["1"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "a.bar",
             ["2"],
-            mode=sv.HTML5
+            flags=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            ".foo",
+            ["1"],
+            flags=sv.XHTML
         )
 
     def test_classes(self):
@@ -137,5 +144,23 @@ class TestLevel1(util.TestCase):
             markup,
             "a.foo.bar",
             ["4"],
-            mode=sv.HTML5
+            flags=sv.HTML5
+        )
+
+    def test_escapes(self):
+        """Test escapes."""
+
+        markup = """
+        <div>
+        <p>Some text <span id="1" class="foo:bar:foobar"> in a paragraph</span>.
+        <a id="2" class="bar" href="http://google.com">Link</a>
+        </p>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            ".foo\\:bar\\3a foobar",
+            ["1"],
+            flags=sv.HTML5
         )

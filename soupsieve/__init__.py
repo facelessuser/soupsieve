@@ -40,7 +40,7 @@ __all__ = (
 SoupSieve = cm.SoupSieve
 
 
-def compile(pattern, namespaces=None, mode=HTML5):  # noqa: A001
+def compile(pattern, namespaces=None, flags=HTML5):  # noqa: A001
     """Compile CSS pattern."""
 
     if namespaces is None:
@@ -49,13 +49,13 @@ def compile(pattern, namespaces=None, mode=HTML5):  # noqa: A001
         namespaces = ct.Namespaces(**(namespaces))
 
     if isinstance(pattern, SoupSieve):
-        if mode != pattern.mode:
-            raise ValueError("Cannot change mode of a pattern")
+        if flags != pattern.flags:
+            raise ValueError("Cannot change flags of a pattern")
         elif namespaces != pattern.namespaces:
             raise ValueError("Cannot change namespaces of a pattern")
         return pattern
 
-    return cp._cached_css_compile(pattern, namespaces, mode)
+    return cp._cached_css_compile(pattern, namespaces, flags)
 
 
 def purge():
@@ -64,52 +64,52 @@ def purge():
     cp._purge_cache()
 
 
-def match(select, node, namespaces=None, mode=HTML5):
+def match(select, node, namespaces=None, flags=0):
     """Match node."""
 
-    return compile(select, namespaces, mode).match(node)
+    return compile(select, namespaces, flags).match(node)
 
 
-def filter(select, nodes, namespaces=None, mode=HTML5):  # noqa: A001
+def filter(select, nodes, namespaces=None, flags=0):  # noqa: A001
     """Filter list of nodes."""
 
-    return compile(select, namespaces, mode).filter(nodes)
+    return compile(select, namespaces, flags).filter(nodes)
 
 
-def comments(node, limit=0, mode=HTML5):
+def comments(node, limit=0, flags=0):
     """Get comments only."""
 
-    return compile("", None, mode).comments(node, limit)
+    return compile("", None, flags).comments(node, limit)
 
 
-def icomments(node, limit=0, mode=HTML5):
+def icomments(node, limit=0, flags=0):
     """Iterate comments only."""
 
-    yield from compile("", None, mode).icomments(node, limit)
+    yield from compile("", None, flags).icomments(node, limit)
 
 
-def select(select, node, namespaces=None, limit=0, mode=HTML5):
+def select(select, node, namespaces=None, limit=0, flags=0):
     """Select the specified tags."""
 
-    return compile(select, namespaces, mode).select(node, limit)
+    return compile(select, namespaces, flags).select(node, limit)
 
 
-def iselect(select, node, namespaces=None, limit=0, mode=HTML5):
+def iselect(select, node, namespaces=None, limit=0, flags=0):
     """Iterate the specified tags."""
 
-    yield from compile(select, namespaces, mode).iselect(node, limit)
+    yield from compile(select, namespaces, flags).iselect(node, limit)
 
 
 # ====== Deprecated ======
 @deprecated("Use 'icomments' instead.")
-def commentsiter(node, limit=0, mode=HTML5):
+def commentsiter(node, limit=0, flags=0):
     """Iterate comments only."""
 
-    yield from icomments(node, limit, mode)
+    yield from icomments(node, limit, flags)
 
 
 @deprecated("Use 'iselect' instead.")
-def selectiter(select, node, namespaces=None, limit=0, mode=HTML5):
+def selectiter(select, node, namespaces=None, limit=0, flags=0):
     """Iterate the specified tags."""
 
-    yield from iselect(select, node, namespaces, limit, mode)
+    yield from iselect(select, node, namespaces, limit, flags)

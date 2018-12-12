@@ -23,12 +23,15 @@ REL_HAS_CLOSE_SIBLING = ':+'
 class CSSMatch:
     """Perform CSS matching."""
 
-    def __init__(self, selectors, namespaces, mode):
+    def __init__(self, selectors, namespaces, flags):
         """Initialize."""
 
         self.selectors = selectors
         self.namespaces = namespaces
-        self.mode = mode
+        self.flags = flags
+        self.mode = flags & util.MODE_MSK
+        if self.mode == 0:
+            self.mode == util.DEFAULT_MODE
 
     def get_namespace(self, el):
         """Get the namespace for the element."""
@@ -105,10 +108,10 @@ class CSSMatch:
     def get_classes(self, el):
         """Get classes."""
 
-        if self.mode not in (util.XHTML, util.XML):
-            return el.attrs.get('class', [])
-        else:
-            return [c for c in el.attrs.get('class', '').strip().split(' ') if c]
+        classes = el.attrs.get('class', [])
+        if isinstance(classes, str):
+            classes = [c for c in classes.strip().split(' ') if c]
+        return classes
 
     def match_namespace(self, el, tag):
         """Match the namespace of the element."""
@@ -315,9 +318,9 @@ class CSSMatch:
                 # Otherwise, increment to try to get in bounds.
                 adjust = None
                 while idx < 1 or idx > last_index:
-                    diff_low = 0 - idx
                     if idx < 0:
-                        if adjust is not None:
+                        diff_low = 0 - idx
+                        if adjust is not None and adjust == 1:
                             break
                         adjust = -1
                         count += count_incr
@@ -325,10 +328,9 @@ class CSSMatch:
                         diff = 0 - idx
                         if diff >= diff_low:
                             break
-                        diff_low = diff
-                    diff_high = idx - last_index
-                    if idx > last_index:
-                        if adjust is not None:
+                    else:
+                        diff_high = idx - last_index
+                        if adjust is not None and adjust == -1:
                             break
                         adjust = 1
                         count += count_incr
@@ -459,16 +461,16 @@ class CSSMatch:
 class SoupSieve(util.Immutable):
     """Match tags in Beautiful Soup with CSS selectors."""
 
-    __slots__ = ("pattern", "selectors", "namespaces", "mode", "_hash")
+    __slots__ = ("pattern", "selectors", "namespaces", "flags", "_hash")
 
-    def __init__(self, pattern, selectors, namespaces, mode):
+    def __init__(self, pattern, selectors, namespaces, flags):
         """Initialize."""
 
         super().__init__(
             pattern=pattern,
             selectors=selectors,
             namespaces=namespaces,
-            mode=mode
+            flags=flags
         )
 
     def _walk(self, node, capture=True, comments=False):
@@ -500,7 +502,7 @@ class SoupSieve(util.Immutable):
     def match(self, node):
         """Match."""
 
-        return CSSMatch(self.selectors, self.namespaces, self.mode).match(node)
+        return CSSMatch(self.selectors, self.namespaces, self.flags).match(node)
 
     def filter(self, nodes):  # noqa A001
         """Filter."""
@@ -530,10 +532,10 @@ class SoupSieve(util.Immutable):
 
         yield from self._sieve(node, limit=limit)
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         """Representation."""
 
-        return "SoupSieve(pattern=%r, namespaces=%s, mode=%s)" % (self.pattern, self.namespaces, self.mode)
+        return "SoupSieve(pattern=%r, namespaces=%s, flags=%s)" % (self.pattern, self.namespaces, self.flags)
 
     __str__ = __repr__
 
@@ -552,7 +554,7 @@ class SoupSieve(util.Immutable):
 
 
 def _pickle(p):
-    return SoupSieve, (p.pattern, p.selectors, p.namespaces, p.mode)
+    return SoupSieve, (p.pattern, p.selectors, p.namespaces, p.flags)
 
 
 copyreg.pickle(SoupSieve, _pickle)

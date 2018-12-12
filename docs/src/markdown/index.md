@@ -91,7 +91,7 @@ If you've ever used Python's Re library for regular expression, you may know tha
 [<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
 ```
 
-A compiled object has all the same methods, though the parameters will be slightly different as they don't need things like the pattern or document mode once compiled. See [API](./api.md) documentation for more info.
+A compiled object has all the same methods, though the parameters will be slightly different as they don't need things like the pattern or flags once compiled. See [API](./api.md) documentation for more info.
 
 --8<--
 refs.txt

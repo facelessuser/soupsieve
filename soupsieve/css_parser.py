@@ -35,7 +35,7 @@ SELECTORS = r'''(?x)
     (?P<case>[ ]+[is])?\s*\] |                                                    # case sensitivity
     (?P<pseudo_close>\)) |                                                        # optional pseudo selector close
     (?P<split>\s*?(?P<relation>[,+>~]|[ ](?![,+>~]))\s*) |                        # split multiple selectors
-    (?P<invalid>).+                                                               # not proper syntax
+    (?P<invalid>.)                                                               # not proper syntax
 '''
 
 RE_HTML_SEL = re.compile(SELECTORS.format(esc=CSS_ESCAPES, nth=NTH, doc_specific=HTML_SELECTORS), re.I)
@@ -54,14 +54,14 @@ _MAXCACHE = 500
 
 
 @lru_cache(maxsize=_MAXCACHE)
-def _cached_css_compile(pattern, namespaces, mode):
+def _cached_css_compile(pattern, namespaces, flags):
     """Cached CSS compile."""
 
     return cm.SoupSieve(
         pattern,
-        CSSParser(pattern, mode).process_selectors(),
+        CSSParser(pattern, flags).process_selectors(),
         namespaces,
-        mode
+        flags
     )
 
 
@@ -105,16 +105,6 @@ class _Selector:
         self.empty = kwargs.get('empty', False)
         self.root = kwargs.get('root', False)
 
-    def _freeze_list(self, chain):
-        """Create an immutable selector chain."""
-
-        for index, item in enumerate(chain):
-            if isinstance(item, list):
-                chain[index] = self._freeze_list(item)
-            elif isinstance(item, _Selector):
-                chain[index] = item.freeze()
-        return tuple(chain)
-
     def _freeze_relations(self, relations):
         """Freeze relation."""
 
@@ -130,18 +120,18 @@ class _Selector:
 
         return ct.Selector(
             self.tag,
-            self._freeze_list(self.ids),
-            self._freeze_list(self.classes),
-            self._freeze_list(self.attributes),
-            self._freeze_list(self.nth),
-            self._freeze_list(self.selectors),
+            tuple(self.ids),
+            tuple(self.classes),
+            tuple(self.attributes),
+            tuple(self.nth),
+            tuple(self.selectors),
             self._freeze_relations(self.relations),
             self.rel_type,
             self.empty,
             self.root
         )
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         """String representation."""
 
         return (
@@ -158,13 +148,15 @@ class _Selector:
 class CSSParser:
     """Parse CSS selectors."""
 
-    def __init__(self, selector, mode=util.HTML5):
+    def __init__(self, selector, flags=0):
         """Initialize."""
 
         self.pattern = selector
+        self.flags = flags
+        mode = flags & util.MODE_MSK
 
-        if mode in (util.HTML, util.HTML5, util.XML, util.XHTML):
-            self.mode = mode
+        if mode in (util.HTML, util.HTML5, util.XML, util.XHTML, 0):
+            self.mode = mode if mode else util.DEFAULT_MODE
         else:
             raise ValueError("Invalid SelectorMatcher flag(s) '{}'".format(mode))
         self.re_sel = RE_HTML_SEL if self.mode != util.XML else RE_XML_SEL
@@ -342,7 +334,7 @@ class CSSParser:
 
         if m.group('relation') == SPLIT:
             if not has_selector:
-                raise ValueError("Cannot start or end selector with '{}'".format(m.group('relation')))
+                raise SyntaxError("Cannot start or end selector with '{}'".format(m.group('relation')))
             sel.rel_type = rel_type
             selectors[-1].relations.append(sel)
             rel_type = REL_HAS_CHILD
@@ -361,7 +353,7 @@ class CSSParser:
         """Parse splitting tokens."""
 
         if not has_selector:
-            raise ValueError("Cannot start or end selector with '{}'".format(m.group('relation')))
+            raise SyntaxError("Cannot start or end selector with '{}'".format(m.group('relation')))
         if m.group('relation') == SPLIT:
             if not sel.tag and not is_pseudo:
                 # Implied `*`
@@ -418,15 +410,15 @@ class CSSParser:
                     has_selector = self.parse_pseudo_open(sel, m, has_selector, iselector, is_pseudo)
                 elif m.group('pseudo_close'):
                     if split_last:
-                        raise ValueError("Cannot end with a combining character")
+                        raise SyntaxError("Cannot end with a combining character")
                     if is_pseudo:
                         closed = True
                         break
                     else:
-                        raise ValueError("Bad selector '{}'".format(m.group(0)))
+                        raise SyntaxError("Unmatched '{}'".format(m.group(0)))
                 elif m.group('split'):
                     if split_last:
-                        raise ValueError("Cannot have combining character after a combining character")
+                        raise SyntaxError("Cannot have combining character directly after a combining character")
                     if is_has:
                         has_selector, sel, rel_type = self.parse_has_split(
                             sel, m, has_selector, selectors, is_pseudo, rel_type
@@ -439,21 +431,21 @@ class CSSParser:
                     has_selector = self.parse_attribute_selector(sel, m, has_selector)
                 elif m.group('ns_tag'):
                     if has_selector:
-                        raise ValueError("Tag must come first")
+                        raise SyntaxError("Tag must come first")
                     has_selector = self.parse_tag_pattern(sel, m, has_selector)
                 elif is_html and m.group('class_id'):
                     has_selector = self.parse_classes(sel, m, has_selector)
                 elif m.group('invalid'):
-                    raise ValueError("Bad selector '{}'".format(m.group(0)))
+                    raise SyntaxError("Invlaid character '{}'".format(m.group(0)))
                 split_last = False
         except StopIteration:
             pass
 
         if is_pseudo and not closed:
-            raise ValueError("Unclosed `:pseudo()`")
+            raise SyntaxError("Unclosed `:pseudo()`")
 
         if split_last:
-            raise ValueError("Cannot end with a combining character")
+            raise SyntaxError("Cannot end with a combining character")
 
         if has_selector:
             if not sel.tag and not is_pseudo:
@@ -468,7 +460,7 @@ class CSSParser:
                 selectors.append(sel)
         elif is_has:
             # We will always need to finish a selector when `:has()` is used as it leads with combining.
-            raise ValueError('Missing selectors after combining type.')
+            raise SyntaxError('Missing selectors after combining type.')
 
         return ct.SelectorList([s.freeze() for s in selectors], is_not)
 
