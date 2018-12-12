@@ -12,11 +12,13 @@ CSS_ESCAPES = r'(?:\\[a-f0-9]{1,6}[ ]?|\\.)'
 
 NTH = r'(?:[-+])?(?:\d+n?|n)(?:(?<=n)\s*(?:[-+])\s*(?:\d+))?'
 
+VALUE = r'''(?P<value>"(?:\\.|[^\\"]+)*?"|'(?:\\.|[^\\']+)*?'|(?:[^'"\[\] \t\r\n]|{esc})+)'''.format(esc=CSS_ESCAPES)
+
 ATTR = r'''
 (?:\s*(?P<cmp>[~^|*$]?=)\s*                                                   # compare
-(?P<value>"(\\.|[^\\"]+)*?"|'(\\.|[^\\']+)*?'|(?:[^'"\[\] \t\r\n]|{esc})+))?  # attribute value
-(?P<case>[ ]+[is])?\s*\]                                                      # case sensitive
-'''
+{value}
+(?P<case>[ ]+[is])?)?\s*\]                                                      # case sensitive
+'''.format(value=VALUE)
 
 # Selector patterns
 PAT_ID = r'#(?:[-\w]|{esc})+'.format(esc=CSS_ESCAPES)
@@ -41,7 +43,7 @@ PAT_PSEUDO_OPEN = r':(?:has|is|matches|not|where)\('
 
 PAT_PSEUDO_CLOSE = r'\)'
 
-PAT_PSEUDO = r':(?:empty|root|(?:first|last|only)-(?:child|of-type))'
+PAT_PSEUDO = r':(?:empty|root|(?:first|last|only)-(?:child|of-type))\b'
 
 PAT_PSEUDO_NTH_CHILD = r'''(?x)
 (?P<pseudo_nth_child>:nth-(?:last-)?child
@@ -54,6 +56,9 @@ PAT_PSEUDO_NTH_TYPE = r'''(?x)
 '''.format(nth=NTH)
 
 PAT_SPLIT = r'\s*?(?P<relation>[,+>~]|[ ](?![,+>~]))\s*'
+
+# Extra selector patterns
+PAT_CONTAINS = r':contains\(\s*{value}\s*\)'.format(value=VALUE)
 
 # CSS escape pattern
 RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{1,6}[ ]?)|(\\.))', re.I)
@@ -148,6 +153,7 @@ class _Selector:
         self.selectors = kwargs.get('selectors', [])
         self.relations = kwargs.get('relations', [])
         self.rel_type = kwargs.get('rel_type', None)
+        self.contains = kwargs.get('contains', [])
         self.empty = kwargs.get('empty', False)
         self.root = kwargs.get('root', False)
 
@@ -173,6 +179,7 @@ class _Selector:
             tuple(self.selectors),
             self._freeze_relations(self.relations),
             self.rel_type,
+            tuple(self.contains),
             self.empty,
             self.root
         )
@@ -198,6 +205,7 @@ class CSSParser:
         [
             ("pseudo_open", SelectorPattern(PAT_PSEUDO_OPEN)),
             ("pseudo", SelectorPattern(PAT_PSEUDO)),
+            ("contains", SelectorPattern(PAT_CONTAINS)),
             ("pseudo_nth_child", SelectorPattern(PAT_PSEUDO_NTH_CHILD)),
             ("pseudo_nth_type", SelectorPattern(PAT_PSEUDO_NTH_TYPE)),
             ("id", HtmlSelectorPattern(PAT_ID)),
@@ -227,7 +235,7 @@ class CSSParser:
     def parse_attribute_selector(self, sel, m, has_selector):
         """Create attribute selector from the returned regex match."""
 
-        case = m.group('case').strip().lower() if m.group('case') else None
+        case = util.lower(m.group('case').strip()) if m.group('case') else None
         parts = [css_unescape(a.strip()) for a in m.group('ns_attr').split('|')]
         ns = ''
         if len(parts) > 1:
@@ -240,7 +248,7 @@ class CSSParser:
         elif self.mode == util.XML:
             flags = 0
         else:
-            flags = re.I if attr.lower() == 'type' and not ns else 0
+            flags = re.I if util.lower(attr) == 'type' and not ns else 0
         op = m.group('cmp')
         if op:
             value = css_unescape(
@@ -290,7 +298,7 @@ class CSSParser:
     def parse_pseudo(self, sel, m, has_selector):
         """Parse pseudo."""
 
-        pseudo = m.group(0)[1:]
+        pseudo = util.lower(m.group(0)[1:])
         if pseudo == 'root':
             sel.root = True
         elif pseudo == 'empty':
@@ -326,7 +334,6 @@ class CSSParser:
 
         mdict = m.groupdict()
         postfix = '_child' if mdict.get('pseudo_nth_child') else '_type'
-        print(mdict)
         content = mdict.get('nth' + postfix)
         if content == 'even':
             s1 = 2
@@ -355,8 +362,9 @@ class CSSParser:
             s1 = int(s1, 16)
             s2 = int(s2, 16)
 
+        pseudo_sel = util.lower(m.group('pseudo_nth' + postfix))
         if postfix == '_child':
-            if m.group('pseudo_nth' + postfix).strip().endswith('of'):
+            if pseudo_sel.strip().endswith('of'):
                 # Parse the rest of `of S`.
                 temp_sel = iselector
             else:
@@ -368,14 +376,14 @@ class CSSParser:
                 False,
                 False
             )
-            if mdict.get('pseudo_nth' + postfix).startswith(':nth-child'):
+            if pseudo_sel.startswith(':nth-child'):
                 sel.nth.append(ct.SelectorNth(s1, var, s2, False, False, nth_sel))
-            elif mdict.get('pseudo_nth' + postfix).startswith(':nth-last-child'):
+            elif pseudo_sel.startswith(':nth-last-child'):
                 sel.nth.append(ct.SelectorNth(s1, var, s2, False, True, nth_sel))
         else:
-            if mdict.get('pseudo_nth' + postfix).startswith(':nth-of-type'):
+            if pseudo_sel.startswith(':nth-of-type'):
                 sel.nth.append(ct.SelectorNth(s1, var, s2, True, False, ct.SelectorList()))
-            elif mdict.get('pseudo_nth' + postfix).startswith(':nth-last-of-type'):
+            elif pseudo_sel.startswith(':nth-last-of-type'):
                 sel.nth.append(ct.SelectorNth(s1, var, s2, True, True, ct.SelectorList()))
         has_selector = True
         return has_selector
@@ -383,12 +391,13 @@ class CSSParser:
     def parse_pseudo_open(self, sel, m, has_selector, iselector, is_pseudo):
         """Parse pseudo with opening bracket."""
 
+        name = util.lower(m.group(0)[1:-1])
         sel.selectors.append(
             self.parse_selectors(
                 iselector,
                 True,
-                m.group(0)[1:-1] == 'not',
-                m.group(0)[1:-1] == 'has'
+                name == 'not',
+                name == 'has'
             )
         )
         has_selector = True
@@ -448,6 +457,16 @@ class CSSParser:
             has_selector = True
         return has_selector
 
+    def parse_contains(self, sel, m, has_selector):
+        """Parse contains."""
+
+        content = css_unescape(m.group('value').strip())
+        if content.startswith(("'", '"')):
+            content = content[1:-1]
+        sel.contains.append(content)
+        has_selector = True
+        return has_selector
+
     def parse_selectors(self, iselector, is_pseudo=False, is_not=False, is_has=False):
         """Parse selectors."""
 
@@ -468,6 +487,8 @@ class CSSParser:
                 # Handle parts
                 if key == 'pseudo':
                     has_selector = self.parse_pseudo(sel, m, has_selector)
+                elif key == 'contains':
+                    has_selector = self.parse_contains(sel, m, has_selector)
                 elif key in ('pseudo_nth_type', 'pseudo_nth_child'):
                     has_selector = self.parse_pseudo_nth(sel, m, has_selector, iselector)
                 elif key == 'pseudo_open':

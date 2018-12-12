@@ -85,6 +85,13 @@ class TestLevel3(util.TestCase):
 
         self.assert_selector(
             markup,
+            'div :NOT([id="1"])',
+            ["0", "2", "3", "4", "5", "6", "pre"],
+            flags=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
             'span:not([id="1"])',
             ["3", "4", "5", "6"],
             flags=sv.HTML5
@@ -219,20 +226,29 @@ class TestLevel3(util.TestCase):
     def test_last_child(self):
         """Test last child."""
 
+        markup = """
+        <div id="div">
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
         self.assert_selector(
-            """
-            <div id="div">
-            <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
-            <a id="2" href="http://google.com">Link</a>
-            <span id="3">Direct child</span>
-            <pre id="pre">
-            <span id="4">Child 1</span>
-            <span id="5">Child 2</span>
-            <span id="6">Child 3</span>
-            </pre>
-            </div>
-            """,
+            markup,
             "span:last-child",
+            ["1", "6"],
+            flags=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "span:LAST-CHILD",
             ["1", "6"],
             flags=sv.HTML5
         )
@@ -610,6 +626,12 @@ class TestLevel3(util.TestCase):
         self.assert_selector(
             markup,
             "p:nth-child(2n-5)",
+            ['0', '8', '10']
+        )
+
+        self.assert_selector(
+            markup,
+            "p:NTH-CHILD(2n-5)",
             ['0', '8', '10']
         )
 

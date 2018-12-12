@@ -1,5 +1,7 @@
 # CSS Selectors
 
+## Level 1-4 Selectors
+
 The CSS selectors are based on a limited subset of CSS4 selectors. Primarily support has been added for selectors that were feasible to implement and most likely to get practical use.
 
 Below shows accepted selectors. When speaking about namespaces, they only apply to XML, XHTML, or when dealing with recognized foreign tags in HTML5. You must configure the CSS [namespaces](./api.md#namespaces) when attempting to evaluate namespaces.
@@ -55,3 +57,13 @@ Selector                        | Example                             | Descript
     `:has()` implementation is experimental and may change. There are currently no reference implementation available in any browsers, not to mention the CSS4 specifications have not been finalized, so current implementation is based on our best interpretation.
 
     Recent addition of `:nth-*`, `:first-*`, `:last-*`, and `:only-*` is experimental. It has been implemented to the best of our understanding, especially `of S` support. Any issues with should be reported.
+
+## Custom Selectors
+
+Below is listed non-standard CSS selectors. These can contain useful selectors that were rejected from the official CSS specifications, selectors implemented by other systems such as JQuery, or even selectors specific to Soup Sieve.
+
+Just because we include selectors from one source, does not mean we have intentions of implementing other selectors from the same source.
+
+Selector                        | Example                             | Description
+------------------------------- | ----------------------------------- | -----------
+`:contains(text)`               | `#!css p:contains(text)`            | Select all `#!html <p>` elements that contain "text" in their content, either directly in themselves or indirectly in their decedents.

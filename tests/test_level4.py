@@ -105,6 +105,9 @@ class TestLevel4(util.TestCase):
             flags=sv.HTML5
         )
 
+        with self.assertRaises(SyntaxError):
+            sv.compile('[id i]')
+
     def test_attribute_type_case(self):
         """Type is treated as case insensitive in HTML."""
 
@@ -266,6 +269,13 @@ class TestLevel4(util.TestCase):
         self.assert_selector(
             markup,
             'div:not(.aaaa):has(.kkkk > p.llll)',
+            ['4', '5', '6'],
+            flags=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            'div:NOT(.aaaa):HAS(.kkkk > p.llll)',
             ['4', '5', '6'],
             flags=sv.HTML5
         )

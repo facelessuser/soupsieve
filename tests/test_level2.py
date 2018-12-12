@@ -225,8 +225,29 @@ class TestLevel2(util.TestCase):
 
         self.assert_selector(
             markup,
+            '[ID="5"]',
+            ["5"],
+            flags=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
             '[  id  =  "5"  ]',
             ["5"],
+            flags=sv.HTML
+        )
+
+        self.assert_selector(
+            markup,
+            '[ID="5"]',
+            ["5"],
+            flags=sv.HTML
+        )
+
+        self.assert_selector(
+            '<span bad="5"></span>',
+            '[  id  =  "5"  ]',
+            [],
             flags=sv.HTML
         )
 

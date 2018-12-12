@@ -29,10 +29,10 @@ class Selector(util.Immutable):
 
     __slots__ = (
         'tag', 'ids', 'classes', 'attributes', 'nth', 'selectors',
-        'relation', 'rel_type', 'empty', 'root', '_hash'
+        'relation', 'rel_type', 'contains', 'empty', 'root', '_hash'
     )
 
-    def __init__(self, tag, ids, classes, attributes, nth, selectors, relation, rel_type, empty, root):
+    def __init__(self, tag, ids, classes, attributes, nth, selectors, relation, rel_type, contains, empty, root):
         """Initialize."""
 
         super().__init__(
@@ -44,6 +44,7 @@ class Selector(util.Immutable):
             selectors=selectors,
             relation=relation,
             rel_type=rel_type,
+            contains=contains,
             empty=empty,
             root=root
         )
