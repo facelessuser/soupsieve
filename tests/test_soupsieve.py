@@ -72,6 +72,13 @@ class TestSoupSieve(unittest.TestCase):
 
         self.assertEqual(sorted(['5', 'some-id']), sorted(ids))
 
+        span = sv.select('span[id]', soup)[0]
+        ids = []
+        for el in sv.select('span[id]', span):
+            ids.append(el.attrs['id'])
+
+        self.assertEqual(sorted(['5']), sorted(ids))
+
     def test_match(self):
         """Test matching."""
 
@@ -119,6 +126,10 @@ class TestSoupSieve(unittest.TestCase):
 
         soup = bs4.BeautifulSoup(markup, 'html5lib')
         nodes = sv.filter('pre#6', soup.html.body)
+        self.assertEqual(len(nodes), 1)
+        self.assertEqual(nodes[0].attrs['id'], '6')
+
+        nodes = sv.filter('pre#6', [el for el in soup.html.body.children if isinstance(el, bs4.Tag)])
         self.assertEqual(len(nodes), 1)
         self.assertEqual(nodes[0].attrs['id'], '6')
 

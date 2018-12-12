@@ -399,16 +399,22 @@ class TestLevel3(util.TestCase):
         <body>
           <h1>A contrived example</h1>
           <svg viewBox="0 0 20 32" class="icon icon-1">
-            <use id="0" xlink:href="images/sprites.svg#icon-undo">aaaa</use>
+            <use id="0" xlink:href="images/sprites.svg#icon-undo"></use>
           </svg>
           <svg viewBox="0 0 30 32" class="icon icon-2">
-            <use id="1" xlink:href="images/sprites.svg#icon-redo">bbbb</use>
+            <use id="1" xlink:href="images/sprites.svg#icon-redo"></use>
           </svg>
           <svg viewBox="0 0 40 32" class="icon icon-3">
-            <use id="2" xlink:href="images/sprites.svg#icon-forward">cccc</use>
+            <use id="2" xlink:href="images/sprites.svg#icon-forward"></use>
           </svg>
           <svg viewBox="0 0 50 32" class="icon icon-4">
-            <use id="3" xlink:href="other/sprites.svg#icon-reply">dddd</use>
+            <use id="3" xlink:href="other/sprites.svg#icon-reply"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="4" :href="other/sprites.svg#icon-reply"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="5" other:href="other/sprites.svg#icon-reply"></use>
           </svg>
         </body>
         </html>
@@ -420,6 +426,64 @@ class TestLevel3(util.TestCase):
             ['1', '2'],
             namespaces={"xlink": "http://www.w3.org/1999/xlink"},
             mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            '[bad|href*=forw]',
+            [],
+            namespaces={"xlink": "http://www.w3.org/1999/xlink"},
+            mode=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            '[\\:href]',
+            ['4'],
+            namespaces={"xlink": "http://www.w3.org/1999/xlink"},
+            mode=sv.HTML5
+        )
+
+    def test_attribute_namespace_xhtml(self):
+        """Test attribute namespace in XHTML."""
+
+        markup = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+            "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+        <html xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+        </head>
+        <body>
+          <h1>A contrived example</h1>
+          <svg viewBox="0 0 20 32" class="icon icon-1">
+            <use id="0" xlink:href="images/sprites.svg#icon-undo"></use>
+          </svg>
+          <svg viewBox="0 0 30 32" class="icon icon-2">
+            <use id="1" xlink:href="images/sprites.svg#icon-redo"></use>
+          </svg>
+          <svg viewBox="0 0 40 32" class="icon icon-3">
+            <use id="2" xlink:href="images/sprites.svg#icon-forward"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="3" xlink:href="other/sprites.svg#icon-reply"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="4" :href="other/sprites.svg#icon-reply"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="5" other:href="other/sprites.svg#icon-reply"></use>
+          </svg>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            '[xlink|href*=forw],[xlink|href="images/sprites.svg#icon-redo"]',
+            ['1', '2'],
+            namespaces={"xlink": "http://www.w3.org/1999/xlink"},
+            mode=sv.XHTML
         )
 
     def test_first_of_type(self):
@@ -542,6 +606,30 @@ class TestLevel3(util.TestCase):
         <p id="10"></p>
         <span id="11"></span>
         """
+
+        self.assert_selector(
+            markup,
+            "p:nth-child(2n-5)",
+            ['0', '8', '10']
+        )
+
+        self.assert_selector(
+            markup,
+            "p:nth-child(-2n+20)",
+            ['1', '7', '9']
+        )
+
+        self.assert_selector(
+            markup,
+            "p:nth-child(50n-20)",
+            []
+        )
+
+        self.assert_selector(
+            markup,
+            "p:nth-child(-2n-2)",
+            []
+        )
 
         self.assert_selector(
             markup,

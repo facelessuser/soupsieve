@@ -120,6 +120,13 @@ class TestLevel1(util.TestCase):
             mode=sv.HTML5
         )
 
+        self.assert_selector(
+            markup,
+            ".foo",
+            ["1"],
+            mode=sv.XHTML
+        )
+
     def test_classes(self):
         """Test classes."""
 

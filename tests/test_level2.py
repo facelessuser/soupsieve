@@ -223,6 +223,13 @@ class TestLevel2(util.TestCase):
             mode=sv.HTML5
         )
 
+        self.assert_selector(
+            markup,
+            '[  id  =  "5"  ]',
+            ["5"],
+            mode=sv.HTML
+        )
+
     def test_attribute_type(self):
         """Type is treated as case insensitive in HTML."""
 

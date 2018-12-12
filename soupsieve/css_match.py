@@ -105,10 +105,10 @@ class CSSMatch:
     def get_classes(self, el):
         """Get classes."""
 
-        if self.mode not in (util.XHTML, util.XML):
-            return el.attrs.get('class', [])
-        else:
-            return [c for c in el.attrs.get('class', '').strip().split(' ') if c]
+        classes = el.attrs.get('class', [])
+        if isinstance(classes, str):
+            classes = [c for c in classes.strip().split(' ') if c]
+        return classes
 
     def match_namespace(self, el, tag):
         """Match the namespace of the element."""
@@ -315,9 +315,9 @@ class CSSMatch:
                 # Otherwise, increment to try to get in bounds.
                 adjust = None
                 while idx < 1 or idx > last_index:
-                    diff_low = 0 - idx
                     if idx < 0:
-                        if adjust is not None:
+                        diff_low = 0 - idx
+                        if adjust is not None and adjust == 1:
                             break
                         adjust = -1
                         count += count_incr
@@ -325,10 +325,9 @@ class CSSMatch:
                         diff = 0 - idx
                         if diff >= diff_low:
                             break
-                        diff_low = diff
-                    diff_high = idx - last_index
-                    if idx > last_index:
-                        if adjust is not None:
+                    else:
+                        diff_high = idx - last_index
+                        if adjust is not None and adjust == -1:
                             break
                         adjust = 1
                         count += count_incr
@@ -530,7 +529,7 @@ class SoupSieve(util.Immutable):
 
         yield from self._sieve(node, limit=limit)
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         """Representation."""
 
         return "SoupSieve(pattern=%r, namespaces=%s, mode=%s)" % (self.pattern, self.namespaces, self.mode)
