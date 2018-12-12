@@ -138,6 +138,7 @@ class TestSoupSieve(unittest.TestCase):
         # Test that we compile a new one when providing a different mode
         p3 = sv.compile('p[id]', mode=sv.HTML)
         self.assertTrue(p1 is not p3)
+        self.assertTrue(p1 != p3)
 
         # Test that the copy is equivalent, but not same.
         p4 = copy.copy(p1)
@@ -175,6 +176,32 @@ class TestSoupSieve(unittest.TestCase):
 
         with pytest.raises(ValueError):
             sv.compile(p1, namespaces={"": ""})
+
+    def test_immutable_object(self):
+        """Test immutable object."""
+
+        obj = sv.util.Immutable()
+
+        with self.assertRaises(AttributeError):
+            obj.member = 3
+
+    def test_immutable_dict(self):
+        """Test immutable dictionary."""
+
+        idict = sv.util.ImmutableDict({'a': 'b', 'c': 'd'})
+        self.assertEqual(2, len(idict))
+
+        with self.assertRaises(TypeError):
+            idict['a'] = 'f'
+
+        with self.assertRaises(TypeError):
+            sv.util.ImmutableDict([[3, {}]])
+
+        with self.assertRaises(TypeError):
+            sv.util.ImmutableDict([[{}, 3]])
+
+        with self.assertRaises(TypeError):
+            sv.ct.Namespaces({'a': {}})
 
 
 class TestDeprcations(unittest.TestCase):
@@ -263,3 +290,85 @@ class TestDeprcations(unittest.TestCase):
             self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
             self.assertTrue(len(w) == 1)
             self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+
+
+class TestInvalid(unittest.TestCase):
+    """Test invalid."""
+
+    def test_invalid_mode(self):
+        """Test invalid mode."""
+
+        with self.assertRaises(ValueError):
+            sv.compile('p', None, 0)
+
+    def test_invalid_combination(self):
+        """
+        Test invalid combination.
+
+        Selectors cannot start with relational symbols unless in `:has()`.
+        `:has()` cannot start with `,`.
+        """
+
+        with self.assertRaises(SyntaxError):
+            sv.compile('> p')
+
+        with self.assertRaises(SyntaxError):
+            sv.compile(', p')
+
+        with self.assertRaises(SyntaxError):
+            sv.compile(':has(, p)')
+
+        with self.assertRaises(SyntaxError):
+            sv.compile('div >> p')
+
+        with self.assertRaises(SyntaxError):
+            sv.compile('div >')
+
+    def test_invalid_pseudo_close(self):
+        """Test invalid pseudo close."""
+
+        with self.assertRaises(SyntaxError):
+            sv.compile('div)')
+
+        with self.assertRaises(SyntaxError):
+            sv.compile(':is(div,)')
+
+    def test_invalid_pseudo_open(self):
+        """Test invalid pseudo close."""
+
+        with self.assertRaises(SyntaxError):
+            sv.compile(':is(div')
+
+    def test_invalid_incomplete_has(self):
+        """Test invalid `:has()`."""
+
+        with self.assertRaises(SyntaxError):
+            sv.compile(':has(>)')
+
+        with self.assertRaises(SyntaxError):
+            sv.compile(':has()')
+
+    def test_invalid_tag(self):
+        """
+        Test invalid tag.
+
+        Tag must come first.
+        """
+
+        with self.assertRaises(SyntaxError):
+            sv.compile(':is(div)p')
+
+    def test_invalid_syntax(self):
+        """Test invalid syntax."""
+
+        with self.assertRaises(SyntaxError):
+            sv.compile('div?')
+
+    def test_invalid_namespace(self):
+        """Test invalid namespace."""
+
+        with self.assertRaises(TypeError):
+            sv.ct.Namespaces(((3, 3),))
+
+        with self.assertRaises(TypeError):
+            sv.ct.Namespaces({'a': {}})

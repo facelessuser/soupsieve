@@ -85,7 +85,7 @@ class Immutable:
     def __setattr__(self, name, value):
         """Prevent mutability."""
 
-        raise AttributeError('Class is immutable!')
+        raise AttributeError("'{}' is immutable".format(self.__class__.__name__))
 
 
 class ImmutableDict(Mapping):
@@ -94,11 +94,13 @@ class ImmutableDict(Mapping):
     def __init__(self, *args, **kwargs):
         """Initialize."""
 
+        arg = args[0] if args else kwargs
+        is_dict = isinstance(arg, dict)
         if (
-            not all([isinstance(v, Hashable) for v in kwargs.values()]) or
-            not all([isinstance(v, Hashable) for k, v in args])
+            is_dict and not all([isinstance(v, Hashable) for v in arg.values()]) or
+            not is_dict and not all([isinstance(k, Hashable) and isinstance(v, Hashable) for k, v in arg])
         ):
-            raise ValueError('All values must be hashable')
+            raise TypeError('All values must be hashable')
 
         self._d = dict(*args, **kwargs)
         self._hash = hash(tuple([(type(x), x, type(y), y) for x, y in sorted(self._d.items())]))
@@ -122,7 +124,7 @@ class ImmutableDict(Mapping):
 
         return self._hash
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         """Representation."""
 
         return "%r" % self._d
