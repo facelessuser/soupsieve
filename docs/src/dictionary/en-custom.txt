@@ -6,6 +6,7 @@ CSS
 CSS's
 Changelog
 Hashable
+JQuery
 MERCHANTABILITY
 MkDocs
 NONINFRINGEMENT

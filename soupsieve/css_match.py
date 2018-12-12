@@ -414,6 +414,16 @@ class CSSMatch:
                 match = False
         return match
 
+    def match_contains(self, el, contains):
+        """Match element if it contains text."""
+
+        match = True
+        for c in contains:
+            if c not in el.get_text():
+                match = False
+                break
+        return match
+
     def match_selectors(self, el, selectors):
         """Check if element matches one of the selectors."""
 
@@ -446,6 +456,8 @@ class CSSMatch:
                 continue
             # Verify relationship selectors
             if selector.relation and not self.match_relations(el, selector.relation):
+                continue
+            if not self.match_contains(el, selector.contains):
                 continue
             match = not is_not
             break

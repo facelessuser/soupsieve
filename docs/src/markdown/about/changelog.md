@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0b1
+
+- **NEW**: Add support for non-standard `:contains()` selector.
+- **FIX**: Compare pseudo class names case insensitively when matching unexpected cases.
+- **FIX**: Don't allow attribute case flags when no attribute value is defined.
+
 ## 0.6.0
 
 - **NEW**: `mode` attribute is now called `flags` to allow for other options in the future.
