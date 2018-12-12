@@ -95,14 +95,14 @@ class TestLevel4(util.TestCase):
             markup,
             "[class*=WORDS]",
             [],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             "[class*=WORDS i]",
             ["0", "3", "pre"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_attribute_type_case(self):
@@ -129,14 +129,14 @@ class TestLevel4(util.TestCase):
             markup,
             '[type="test" s]',
             ['2'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             '[type="test" i]',
             ['0', '2'],
-            mode=sv.XML
+            flags=sv.XML
         )
 
     def test_is_matches_where(self):
@@ -154,21 +154,21 @@ class TestLevel4(util.TestCase):
             markup,
             ":is(span, a)",
             ["1", "2"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             ":is(span, a:matches(#2))",
             ["1", "2"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             ":where(span, a:matches(#2))",
             ["1", "2"],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         # Each pseudo class is evaluated separately
@@ -177,7 +177,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":is(span):not(span)",
             [],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         # Each pseudo class is evaluated separately
@@ -186,7 +186,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":is(span):is(div)",
             [],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         # Each pseudo class is evaluated separately
@@ -195,7 +195,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":is(a):is(#2)",
             ['2'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_multi_nested_not(self):
@@ -218,7 +218,7 @@ class TestLevel4(util.TestCase):
             markup,
             'div :not(p, :not([id=5]))',
             ['5'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_has(self):
@@ -267,42 +267,42 @@ class TestLevel4(util.TestCase):
             markup,
             'div:not(.aaaa):has(.kkkk > p.llll)',
             ['4', '5', '6'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             'p:has(+ .dddd:has(+ div .jjjj))',
             ['2'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             'p:has(~ .jjjj)',
             ['7', '8'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup2,
             'div:has(> .bbbb, .ffff, .jjjj)',
             ['0', '4', '8'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup2,
             'div:has(> :not(.bbbb, .ffff, .jjjj))',
             ['2', '6', '8'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup2,
             'div:not(:has(> .bbbb, .ffff, .jjjj))',
             ['2', '6'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
     def test_nth_child_of_s(self):
@@ -327,12 +327,12 @@ class TestLevel4(util.TestCase):
             markup,
             ":nth-child(2n + 1 of :is(p, span).test)",
             ['2', '6', '10'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )
 
         self.assert_selector(
             markup,
             ":nth-child(-n+3 of p)",
             ['0', '1', '7'],
-            mode=sv.HTML5
+            flags=sv.HTML5
         )

@@ -10,6 +10,9 @@ HTML = 0x2
 XHTML = 0x4
 XML = 0x8
 
+MODE_MSK = 0xF
+DEFAULT_MODE = HTML5
+
 TAG = bs4.Tag
 CHILD = (TAG, bs4.Doctype, bs4.Declaration, bs4.CData, bs4.ProcessingInstruction)
 COMMENT = bs4.Comment

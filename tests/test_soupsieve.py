@@ -33,10 +33,10 @@ class TestSoupSieve(unittest.TestCase):
         """
 
         soup = bs4.BeautifulSoup(markup, 'html5lib')
-        comments = [str(c).strip() for c in sv.comments(soup, mode=sv.HTML5)]
+        comments = [str(c).strip() for c in sv.comments(soup, flags=sv.HTML5)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment', "don't ignore"]))
 
-        comments = [str(c).strip() for c in sv.icomments(soup, limit=2, mode=sv.HTML5)]
+        comments = [str(c).strip() for c in sv.icomments(soup, limit=2, flags=sv.HTML5)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
 
     def test_select(self):
@@ -137,17 +137,17 @@ class TestSoupSieve(unittest.TestCase):
         """Test copy and pickle."""
 
         # Test that we can pickle and unpickle
-        p1 = sv.compile('p[id]', mode=sv.HTML5)
+        p1 = sv.compile('p[id]', flags=sv.HTML5)
         sp1 = pickle.dumps(p1)
         pp1 = pickle.loads(sp1)
         self.assertTrue(pp1 == p1)
 
         # Test that we pull the same one from cache
-        p2 = sv.compile('p[id]', mode=sv.HTML5)
+        p2 = sv.compile('p[id]', flags=sv.HTML5)
         self.assertTrue(p1 is p2)
 
-        # Test that we compile a new one when providing a different mode
-        p3 = sv.compile('p[id]', mode=sv.HTML)
+        # Test that we compile a new one when providing a different flags
+        p3 = sv.compile('p[id]', flags=sv.HTML)
         self.assertTrue(p1 is not p3)
         self.assertTrue(p1 != p3)
 
@@ -183,7 +183,7 @@ class TestSoupSieve(unittest.TestCase):
         self.assertTrue(p1 is p2)
 
         with pytest.raises(ValueError):
-            sv.compile(p1, mode=sv.HTML)
+            sv.compile(p1, flags=sv.HTML)
 
         with pytest.raises(ValueError):
             sv.compile(p1, namespaces={"": ""})
@@ -310,7 +310,7 @@ class TestInvalid(unittest.TestCase):
         """Test invalid mode."""
 
         with self.assertRaises(ValueError):
-            sv.compile('p', None, 0)
+            sv.compile('p', None, sv.util.HTML | sv.util.HTML5)
 
     def test_invalid_combination(self):
         """

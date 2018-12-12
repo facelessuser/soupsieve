@@ -2,7 +2,7 @@
 
 ## `soupsieve.HTML5`
 
-`HTML5` is a flag that instructs Soup Sieve to use HTML5 logic. When `HTML5` mode is used, Soup Sieve will take into account namespaces for known embedded HTML5 namespaces such as SVG. `HTML5` will also not compare tag names and attribute names with case sensitivity.
+`HTML5` is a flag that instructs Soup Sieve to use HTML5 logic. When the `HTML5` flag is used, Soup Sieve will take into account namespaces for known embedded HTML5 namespaces such as SVG. `HTML5` will also not compare tag names and attribute names with case sensitivity.
 
 !!! tip
     While attribute values are always treated as case sensitive, HTML5, XHTML, and HTML treat the `type` attribute special, `type`'s value is always case insensitive. This is generally how most browsers treat `type`.
@@ -13,7 +13,7 @@ Keep in mind, that Soup Sieve itself is not responsible for deciding what tag ha
 
 ## `soupsieve.HTML`
 
-`HTML` is a flag that instructs Soup Sieve to use pre HTML5 logic. When `HTML` mode is used, Soup Sieve will not consider namespaces when evaluating elements. `HTML` will also not compare tag names  and attribute names with case sensitivity.
+`HTML` is a flag that instructs Soup Sieve to use pre HTML5 logic. When the `HTML` flag is used, Soup Sieve will not consider namespaces when evaluating elements. `HTML` will also not compare tag names  and attribute names with case sensitivity.
 
 !!! tip
     While attribute values are always treated as case sensitive, HTML5, XHTML, and HTML treat the `type` attribute special, `type`'s value is always case insensitive. This is generally how most browsers treat `type`.
@@ -38,13 +38,13 @@ It is recommend to use the `xml` mode in Beautiful Soup when parsing XHTML docum
 ## `soupsieve.select()`
 
 ```py3
-def select(select, node, namespaces=None, limit=0, mode=HTML5):
+def select(select, node, namespaces=None, limit=0, flags=0):
     """Select the specified tags."""
 ```
 
 `select` given a tag, will select all tags that match the provided CSS selector string. You can give `limit` a positive integer to return a specific number tags (0 means to return all tags).
 
-`select` accepts a CSS selector string, a `node` or element, an optional [namespace](#namespaces) dictionary, a `limit`, and a document `mode` (default is HTML5).
+`select` accepts a CSS selector string, a `node` or element, an optional [namespace](#namespaces) dictionary, a `limit`, and `flags`. If no flags are specified, HTML5 mode will be assumed.
 
 ```pycon3
 >>> import soupsieve as sv
@@ -55,7 +55,7 @@ def select(select, node, namespaces=None, limit=0, mode=HTML5):
 ## `soupsieve.iselect()`
 
 ```py3
-def iselect(select, node, namespaces=None, limit=0, mode=HTML5):
+def iselect(select, node, namespaces=None, limit=0, flags=0):
     """Select the specified tags."""
 ```
 
@@ -64,13 +64,13 @@ def iselect(select, node, namespaces=None, limit=0, mode=HTML5):
 ## `soupsieve.match()`
 
 ```py3
-def match(select, node, namespaces=None, mode=HTML5):
+def match(select, node, namespaces=None, mode=0):
     """Match node."""
 ```
 
 `match` matches a given node/element with a given CSS selector.
 
-`match` accepts a CSS selector string, a `node` or element, an optional [namespace](#namespaces) dictionary, and document mode (default is HTML5).
+`match` accepts a CSS selector string, a `node` or element, an optional [namespace](#namespaces) dictionary, and flags.  If no flags are specified, HTML5 mode will be assumed.
 
 ```pycon3
 >>> nodes = sv.select('p:is(.a, .b, .c)', soup)
@@ -83,13 +83,13 @@ False
 ## `soupsieve.filter()`
 
 ```py3
-def filter(select, nodes, namespaces=None, mode=HTML5):
+def filter(select, nodes, namespaces=None, flags=0):
     """Filter list of nodes."""
 ```
 
 `filter` takes an iterable containing HTML nodes and will filter them based on the provided CSS selector string. If given a Beautiful Soup tag, it will iterate the children that are tags.
 
-`filter` accepts a CSS selector string, an iterable containing tags, an optional [namespace](#namespaces) dictionary, and document mode (default is HTML5).
+`filter` accepts a CSS selector string, an iterable containing tags, an optional [namespace](#namespaces) dictionary, and flags.  If no flags are specified, HTML5 mode will be assumed.
 
 ```pycon3
 >>> sv.filter('p:not(.b)', soup.div)
@@ -99,18 +99,18 @@ def filter(select, nodes, namespaces=None, mode=HTML5):
 ## `soupsieve.comments()`
 
 ```
-def comments(node, limit=0, mode=HTML5):
+def comments(node, limit=0, flags=0):
     """Get comments only."""
 ```
 
 `comments` if useful to extract all comments from a document or document tag. It will extract from the given tag down through all of its children.  You can limit how many comments are returned with `limit`.
 
-`comments` accepts a `node` or element, a `limit`, and a document mode.
+`comments` accepts a `node` or element, a `limit`, and a flags.  If no flags are specified, HTML5 mode will be assumed.
 
 ## `soupsieve.icomments()`
 
 ```
-def icomments(node, limit=0, mode=HTML5):
+def icomments(node, limit=0, flags=0):
     """Get comments only."""
 ```
 
@@ -119,11 +119,11 @@ def icomments(node, limit=0, mode=HTML5):
 ## `soupsieve.compile()`
 
 ```py3
-def compile(pattern, namespaces=None, mode=HTML5):
+def compile(pattern, namespaces=None, flags=0):
     """Compile CSS pattern."""
 ```
 
-`compile` will pre-compile a CSS selector pattern returning a `SoupSieve` object. The `SoupSieve` object has the same selector functions available via the module without the need to specify the selector, namespaces, or modes.
+`compile` will pre-compile a CSS selector pattern returning a `SoupSieve` object. The `SoupSieve` object has the same selector functions available via the module without the need to specify the selector, namespaces, or flags.
 
 ```py3
 class SoupSieve:

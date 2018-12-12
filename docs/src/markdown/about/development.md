@@ -152,7 +152,7 @@ File            | Description
 
 ### Compiled CSS Selector Structure
 
-When a CSS selector string is given to Soup Sieve, it is run through the `CSSParser` class.  `CSSParser` will return a `SelectorList` class. This class is sent to the `SoupSieve` class as a parameter along with things like `namespace` and `mode`. One of the most important things to understand when contributing is the structure of the `SelectorList` class.
+When a CSS selector string is given to Soup Sieve, it is run through the `CSSParser` class.  `CSSParser` will return a `SelectorList` class. This class is sent to the `SoupSieve` class as a parameter along with things like `namespace` and `flags`. One of the most important things to understand when contributing is the structure of the `SelectorList` class.
 
 A `SelectorList` represents a list of compound selectors.  So if you had the selector `#!css div > p`, you would get a `SelectorList` object containing one `Selector` object. If you had `#!css div, p`, you would get a `SelectorList` with two `Selector` objects as this is a selector list of two compound selectors.
 

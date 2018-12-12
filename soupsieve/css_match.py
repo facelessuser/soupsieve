@@ -2,6 +2,7 @@
 from . import util
 import re
 import copyreg
+from . import util
 from .util import deprecated
 
 # Empty tag pattern (whitespace okay)
@@ -23,12 +24,15 @@ REL_HAS_CLOSE_SIBLING = ':+'
 class CSSMatch:
     """Perform CSS matching."""
 
-    def __init__(self, selectors, namespaces, mode):
+    def __init__(self, selectors, namespaces, flags):
         """Initialize."""
 
         self.selectors = selectors
         self.namespaces = namespaces
-        self.mode = mode
+        self.flags = flags
+        self.mode = flags & util.MODE_MSK
+        if self.mode == 0:
+            self.mode == util.DEFAULT_MODE
 
     def get_namespace(self, el):
         """Get the namespace for the element."""
@@ -458,16 +462,16 @@ class CSSMatch:
 class SoupSieve(util.Immutable):
     """Match tags in Beautiful Soup with CSS selectors."""
 
-    __slots__ = ("pattern", "selectors", "namespaces", "mode", "_hash")
+    __slots__ = ("pattern", "selectors", "namespaces", "flags", "_hash")
 
-    def __init__(self, pattern, selectors, namespaces, mode):
+    def __init__(self, pattern, selectors, namespaces, flags):
         """Initialize."""
 
         super().__init__(
             pattern=pattern,
             selectors=selectors,
             namespaces=namespaces,
-            mode=mode
+            flags=flags
         )
 
     def _walk(self, node, capture=True, comments=False):
@@ -499,7 +503,7 @@ class SoupSieve(util.Immutable):
     def match(self, node):
         """Match."""
 
-        return CSSMatch(self.selectors, self.namespaces, self.mode).match(node)
+        return CSSMatch(self.selectors, self.namespaces, self.flags).match(node)
 
     def filter(self, nodes):  # noqa A001
         """Filter."""
@@ -532,7 +536,7 @@ class SoupSieve(util.Immutable):
     def __repr__(self):  # pragma: no cover
         """Representation."""
 
-        return "SoupSieve(pattern=%r, namespaces=%s, mode=%s)" % (self.pattern, self.namespaces, self.mode)
+        return "SoupSieve(pattern=%r, namespaces=%s, flags=%s)" % (self.pattern, self.namespaces, self.flags)
 
     __str__ = __repr__
 
@@ -551,7 +555,7 @@ class SoupSieve(util.Immutable):
 
 
 def _pickle(p):
-    return SoupSieve, (p.pattern, p.selectors, p.namespaces, p.mode)
+    return SoupSieve, (p.pattern, p.selectors, p.namespaces, p.flags)
 
 
 copyreg.pickle(SoupSieve, _pickle)

@@ -54,14 +54,14 @@ _MAXCACHE = 500
 
 
 @lru_cache(maxsize=_MAXCACHE)
-def _cached_css_compile(pattern, namespaces, mode):
+def _cached_css_compile(pattern, namespaces, flags):
     """Cached CSS compile."""
 
     return cm.SoupSieve(
         pattern,
-        CSSParser(pattern, mode).process_selectors(),
+        CSSParser(pattern, flags).process_selectors(),
         namespaces,
-        mode
+        flags
     )
 
 
@@ -148,13 +148,15 @@ class _Selector:
 class CSSParser:
     """Parse CSS selectors."""
 
-    def __init__(self, selector, mode=util.HTML5):
+    def __init__(self, selector, flags=0):
         """Initialize."""
 
         self.pattern = selector
+        self.flags = flags
+        mode = flags & util.MODE_MSK
 
-        if mode in (util.HTML, util.HTML5, util.XML, util.XHTML):
-            self.mode = mode
+        if mode in (util.HTML, util.HTML5, util.XML, util.XHTML, 0):
+            self.mode = mode if mode else util.DEFAULT_MODE
         else:
             raise ValueError("Invalid SelectorMatcher flag(s) '{}'".format(mode))
         self.re_sel = RE_HTML_SEL if self.mode != util.XML else RE_XML_SEL
