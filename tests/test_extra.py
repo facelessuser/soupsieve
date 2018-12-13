@@ -74,3 +74,24 @@ class TestLevel1(util.TestCase):
             ['2'],
             flags=sv.HTML5
         )
+
+    def test_contains_cdata(self):
+        """Test tag."""
+
+        markup = """
+        <div id="1">Testing that <span id="2"><![CDATA[that]]></span>contains works.</div>
+        """
+
+        self.assert_selector(
+            markup,
+            'body *:contains("that")',
+            ['1'],
+            flags=sv.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            '*:contains("that")',
+            ['1', '2'],
+            flags=sv.XML
+        )

@@ -468,7 +468,7 @@ class CSSMatch:
     def match(self, el):
         """Match."""
 
-        return isinstance(el, util.TAG) and self.match_selectors(el, self.selectors)
+        return isinstance(el, util.TAG) and el.parent and self.match_selectors(el, self.selectors)
 
 
 class SoupSieve(util.Immutable):
