@@ -18,6 +18,7 @@ COMMENT = bs4.Comment
 DECLARATION = bs4.Declaration
 CDATA = bs4.CData
 PROC_INSTRUCT = bs4.ProcessingInstruction
+NAV_STRINGS = bs4.NavigableString
 
 LC_A = ord('a')
 LC_Z = ord('z')

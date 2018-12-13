@@ -414,12 +414,13 @@ class CSSMatch:
                 match = False
         return match
 
-    def match_contains(self, el, contains):
+    def match_contains(self, el, contains, is_html):
         """Match element if it contains text."""
 
+        types = (util.NAV_STRINGS,) if is_html else (util.NAV_STRINGS, util.CDATA)
         match = True
         for c in contains:
-            if c not in el.get_text():
+            if c not in el.get_text(types=types):
                 match = False
                 break
         return match
@@ -457,7 +458,7 @@ class CSSMatch:
             # Verify relationship selectors
             if selector.relation and not self.match_relations(el, selector.relation):
                 continue
-            if not self.match_contains(el, selector.contains):
+            if not self.match_contains(el, selector.contains, is_html):
                 continue
             match = not is_not
             break
