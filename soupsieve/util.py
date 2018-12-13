@@ -14,8 +14,10 @@ MODE_MSK = 0xF
 DEFAULT_MODE = HTML5
 
 TAG = bs4.Tag
-CHILD = (TAG, bs4.Doctype, bs4.Declaration, bs4.CData, bs4.ProcessingInstruction)
 COMMENT = bs4.Comment
+DECLARATION = bs4.Declaration
+CDATA = bs4.CData
+PROC_INSTRUCT = bs4.ProcessingInstruction
 
 LC_A = ord('a')
 LC_Z = ord('z')

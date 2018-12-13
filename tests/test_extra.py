@@ -59,3 +59,18 @@ class TestLevel1(util.TestCase):
             [],
             flags=sv.HTML5
         )
+
+    def test_contains_escapes(self):
+        """Test tag."""
+
+        markup = """
+        <div id="1">Testing<span id="2">
+        that</span>contains works.</div>
+        """
+
+        self.assert_selector(
+            markup,
+            'body span:contains("\nthat")',
+            ['2'],
+            flags=sv.HTML5
+        )

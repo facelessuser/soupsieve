@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0
+
+- **FIX**: CSS selectors should be evaluated with CSS whitespace rules.
+- **FIX**: Processing instructions, CDATA, and declarations should all be ignored from child considerations for `:empty`.
+
 ## 1.0.0b1
 
 - **NEW**: Add support for non-standard `:contains()` selector.

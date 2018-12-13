@@ -5,7 +5,7 @@ import copyreg
 from .util import deprecated
 
 # Empty tag pattern (whitespace okay)
-RE_NOT_EMPTY = re.compile('[^ \t\r\n]')
+RE_NOT_EMPTY = re.compile('[^ \t\r\n\f]')
 
 # Relationships
 REL_PARENT = ' '
@@ -395,7 +395,7 @@ class CSSMatch:
 
         found_child = False
         for child in el.children:
-            if isinstance(child, util.CHILD):
+            if isinstance(child, util.TAG):
                 found_child = True
                 break
         return found_child

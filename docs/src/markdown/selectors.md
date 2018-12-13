@@ -54,9 +54,7 @@ Selector                        | Example                             | Descript
 `:empty`                        | `#!css p:empty`                     | Selects every `#!html <p>` element that has no children and either no text. Whitespace and comments are ignored.
 
 !!! warning "Experimental Selectors"
-    `:has()` implementation is experimental and may change. There are currently no reference implementation available in any browsers, not to mention the CSS4 specifications have not been finalized, so current implementation is based on our best interpretation.
-
-    Recent addition of `:nth-*`, `:first-*`, `:last-*`, and `:only-*` is experimental. It has been implemented to the best of our understanding, especially `of S` support. Any issues with should be reported.
+    `:has()` and `of S` support (in `:nth-child(an+b [of S]?)`) is experimental and may change. There are currently no reference implementations available in any browsers, not to mention the CSS4 specifications have not been finalized, so current implementation is based on our best interpretation. Any issues should be reported.
 
 ## Custom Selectors
 

@@ -8,17 +8,15 @@ from collections import OrderedDict
 
 
 # Sub-patterns parts
-CSS_ESCAPES = r'(?:\\[a-f0-9]{1,6}[ ]?|\\.)'
+WS = r'[ \t\r\n\f]'
 
-NTH = r'(?:[-+])?(?:\d+n?|n)(?:(?<=n)\s*(?:[-+])\s*(?:\d+))?'
+CSS_ESCAPES = r'(?:\\[a-f0-9]{{1,6}}{ws}?|\\.)'.format(ws=WS)
 
-VALUE = r'''(?P<value>"(?:\\.|[^\\"]+)*?"|'(?:\\.|[^\\']+)*?'|(?:[^'"\[\] \t\r\n]|{esc})+)'''.format(esc=CSS_ESCAPES)
+NTH = r'(?:[-+])?(?:\d+n?|n)(?:(?<=n){ws}*(?:[-+]){ws}*(?:\d+))?'.format(ws=WS)
 
-ATTR = r'''
-(?:\s*(?P<cmp>[~^|*$]?=)\s*                                                   # compare
-{value}
-(?P<case>[ ]+[is])?)?\s*\]                                                      # case sensitive
-'''.format(value=VALUE)
+VALUE = r'''(?P<value>"(?:\\.|[^\\"]+)*?"|'(?:\\.|[^\\']+)*?'|(?:[^'"\[\] \f\t\r\n]|{esc})+)'''.format(esc=CSS_ESCAPES)
+
+ATTR = r'''(?:{ws}*(?P<cmp>[~^|*$]?=){ws}*{value}(?P<case>{ws}+[is])?)?{ws}*\]'''.format(ws=WS, value=VALUE)
 
 # Selector patterns
 PAT_ID = r'#(?:[-\w]|{esc})+'.format(esc=CSS_ESCAPES)
@@ -30,41 +28,41 @@ PAT_HTML_TAG = r'(?:(?:(?:[-\w]|{esc})+|\*)?\|)?(?:(?:[-\w]|{esc})+|\*)'.format(
 PAT_XML_TAG = r'(?:(?:(?:[-\w.]|{esc})+|\*)?\|)?(?:(?:[-\w.]|{esc})+|\*)'.format(esc=CSS_ESCAPES)
 
 PAT_HTML_ATTR = r'''(?x)
-\[\s*(?P<ns_attr>(?:(?:(?:[-\w]|{esc})+|\*)?\|)?(?:[-\w]|{esc})+)
+\[{ws}*(?P<ns_attr>(?:(?:(?:[-\w]|{esc})+|\*)?\|)?(?:[-\w]|{esc})+)
 {attr}
-'''.format(esc=CSS_ESCAPES, attr=ATTR)
+'''.format(ws=WS, esc=CSS_ESCAPES, attr=ATTR)
 
 PAT_XML_ATTR = r'''(?x)
-\[\s*(?P<ns_attr>(?:(?:(?:[-\w]|{esc})+|\*)?\|)?(?:[-\w.]|{esc})+)
+\[{ws}*(?P<ns_attr>(?:(?:(?:[-\w]|{esc})+|\*)?\|)?(?:[-\w.]|{esc})+)
 {attr}
-'''.format(esc=CSS_ESCAPES, attr=ATTR)
+'''.format(ws=WS, esc=CSS_ESCAPES, attr=ATTR)
 
 PAT_PSEUDO_OPEN = r':(?:has|is|matches|not|where)\('
 
-PAT_PSEUDO_CLOSE = r'\)'
+PAT_PSEUDO_CLOSE = r'{ws}*\)'.format(ws=WS)
 
 PAT_PSEUDO = r':(?:empty|root|(?:first|last|only)-(?:child|of-type))\b'
 
 PAT_PSEUDO_NTH_CHILD = r'''(?x)
 (?P<pseudo_nth_child>:nth-(?:last-)?child
-\(\s*(?P<nth_child>{nth}|even|odd)\s*(?:\)|(?<=\s)of\s+))
-'''.format(nth=NTH)
+\({ws}*(?P<nth_child>{nth}|even|odd){ws}*(?:\)|(?<={ws})of{ws}+))
+'''.format(ws=WS, nth=NTH)
 
 PAT_PSEUDO_NTH_TYPE = r'''(?x)
 (?P<pseudo_nth_type>:nth-(?:last-)?of-type
-\(\s*(?P<nth_type>{nth}|even|odd)\s*\))
-'''.format(nth=NTH)
+\({ws}*(?P<nth_type>{nth}|even|odd){ws}*\))
+'''.format(ws=WS, nth=NTH)
 
-PAT_SPLIT = r'\s*?(?P<relation>[,+>~]|[ ](?![,+>~]))\s*'
+PAT_SPLIT = r'{ws}*?(?P<relation>[,+>~]|{ws}(?![,+>~])){ws}*'.format(ws=WS)
 
 # Extra selector patterns
-PAT_CONTAINS = r':contains\(\s*{value}\s*\)'.format(value=VALUE)
+PAT_CONTAINS = r':contains\({ws}*{value}{ws}*\)'.format(ws=WS, value=VALUE)
 
 # CSS escape pattern
-RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{1,6}[ ]?)|(\\.))', re.I)
+RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{{1,6}}{ws}?)|(\\.))'.format(ws=WS), re.I)
 
 # Pattern to break up `nth` specifiers
-RE_NTH = re.compile(r'(?P<s1>[-+])?(?P<a>\d+n?|n)(?:(?<=n)\s*(?P<s2>[-+])\s*(?P<b>\d+))?', re.I)
+RE_NTH = re.compile(r'(?P<s1>[-+])?(?P<a>\d+n?|n)(?:(?<=n){ws}*(?P<s2>[-+]){ws}*(?P<b>\d+))?'.format(ws=WS), re.I)
 
 SPLIT = ','
 REL_HAS_CHILD = ": "
@@ -437,7 +435,10 @@ class CSSParser:
             relations.clear()
         else:
             sel.relations.extend(relations)
-            sel.rel_type = m.group('relation')
+            rel_type = m.group('relation').strip()
+            if not rel_type:
+                rel_type = ' '
+            sel.rel_type = rel_type
             relations.clear()
             relations.append(sel)
         sel = _Selector()
