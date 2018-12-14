@@ -67,15 +67,16 @@ class SelectorTag(util.Immutable):
 class SelectorAttribute(util.Immutable):
     """Selector attribute rule."""
 
-    __slots__ = ("attribute", "prefix", "pattern", "_hash")
+    __slots__ = ("attribute", "prefix", "pattern", "xml_type_pattern", "_hash")
 
-    def __init__(self, attribute, prefix, pattern):
+    def __init__(self, attribute, prefix, pattern, xml_type_pattern):
         """Initialize."""
 
         super().__init__(
             attribute=attribute,
             prefix=prefix,
-            pattern=pattern
+            pattern=pattern,
+            xml_type_pattern=xml_type_pattern
         )
 
 

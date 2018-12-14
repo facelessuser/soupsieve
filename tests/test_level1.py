@@ -17,7 +17,6 @@ Not supported (with current opinions or plans the matter):
 - `:active`: No elements in our environment can be "active", so this makes no sense in our context.
 """
 from . import util
-import soupsieve as sv
 
 
 class TestLevel1(util.TestCase):
@@ -35,7 +34,7 @@ class TestLevel1(util.TestCase):
             """,
             "span",
             ["1"],
-            flags=sv.HTML5
+            flags=util.HTML5
         )
 
     def test_tags(self):
@@ -51,7 +50,7 @@ class TestLevel1(util.TestCase):
             """,
             "span, a",
             ["1", "2"],
-            flags=sv.HTML5
+            flags=util.HTML5
         )
 
     def test_child(self):
@@ -67,7 +66,7 @@ class TestLevel1(util.TestCase):
             """,
             "div span",
             ["1"],
-            flags=sv.HTML5
+            flags=util.HTML5
         )
 
     def test_id(self):
@@ -85,14 +84,14 @@ class TestLevel1(util.TestCase):
             markup,
             "#1",
             ["1"],
-            flags=sv.HTML5
+            flags=util.HTML5
         )
 
         self.assert_selector(
             markup,
             "a#2",
             ["2"],
-            flags=sv.HTML5
+            flags=util.HTML5
         )
 
     def test_class(self):
@@ -110,21 +109,21 @@ class TestLevel1(util.TestCase):
             markup,
             ".foo",
             ["1"],
-            flags=sv.HTML5
+            flags=util.HTML5
         )
 
         self.assert_selector(
             markup,
             "a.bar",
             ["2"],
-            flags=sv.HTML5
+            flags=util.HTML5
         )
 
         self.assert_selector(
             markup,
             ".foo",
             ["1"],
-            flags=sv.XHTML
+            flags=util.XHTML
         )
 
     def test_classes(self):
@@ -144,7 +143,7 @@ class TestLevel1(util.TestCase):
             markup,
             "a.foo.bar",
             ["4"],
-            flags=sv.HTML5
+            flags=util.HTML5
         )
 
     def test_escapes(self):
@@ -162,5 +161,5 @@ class TestLevel1(util.TestCase):
             markup,
             ".foo\\:bar\\3a foobar",
             ["1"],
-            flags=sv.HTML5
+            flags=util.HTML5
         )

@@ -220,7 +220,7 @@ class SelectorTag:
 class SelectorAttribute:
     """Selector attribute rule."""
 
-    def __init__(self, attribute, prefix, pattern):
+    def __init__(self, attribute, prefix, pattern, xml_type_pattern):
         """Initialize."""
 ```
 
@@ -229,6 +229,7 @@ class SelectorAttribute:
 `attribute`         | Contains the attribute name to match.
 `prefix`            | Contains the attribute namespace prefix to match if any.
 `pattern`           | Contains a `re` regular expression object that matches the desired attribute value.
+`xml_type_pattern`  | As the default `type` pattern is case insensitive, when the attribute value is `type` and a case sensitivity has not been explicitly defined, a secondary case sensitive `type` pattern is compiled for use with XML documents when detected.
 
 ### `SelectorNth`
 

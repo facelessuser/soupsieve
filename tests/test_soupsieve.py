@@ -33,10 +33,10 @@ class TestSoupSieve(unittest.TestCase):
         """
 
         soup = bs4.BeautifulSoup(markup, 'html5lib')
-        comments = [str(c).strip() for c in sv.comments(soup, flags=sv.HTML5)]
+        comments = [str(c).strip() for c in sv.comments(soup)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment', "don't ignore"]))
 
-        comments = [str(c).strip() for c in sv.icomments(soup, limit=2, flags=sv.HTML5)]
+        comments = [str(c).strip() for c in sv.icomments(soup, limit=2)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
 
     def test_select(self):
@@ -137,17 +137,17 @@ class TestSoupSieve(unittest.TestCase):
         """Test copy and pickle."""
 
         # Test that we can pickle and unpickle
-        p1 = sv.compile('p[id]', flags=sv.HTML5)
+        p1 = sv.compile('p[id]')
         sp1 = pickle.dumps(p1)
         pp1 = pickle.loads(sp1)
         self.assertTrue(pp1 == p1)
 
         # Test that we pull the same one from cache
-        p2 = sv.compile('p[id]', flags=sv.HTML5)
+        p2 = sv.compile('p[id]')
         self.assertTrue(p1 is p2)
 
         # Test that we compile a new one when providing a different flags
-        p3 = sv.compile('p[id]', flags=sv.HTML)
+        p3 = sv.compile('p[id]', flags=0x10)
         self.assertTrue(p1 is not p3)
         self.assertTrue(p1 != p3)
 
@@ -183,7 +183,7 @@ class TestSoupSieve(unittest.TestCase):
         self.assertTrue(p1 is p2)
 
         with pytest.raises(ValueError):
-            sv.compile(p1, flags=sv.HTML)
+            sv.compile(p1, flags=0x10)
 
         with pytest.raises(ValueError):
             sv.compile(p1, namespaces={"": ""})
@@ -217,6 +217,41 @@ class TestSoupSieve(unittest.TestCase):
 
 class TestDeprcations(unittest.TestCase):
     """Test Soup Sieve deprecations."""
+
+    def test_flag_deprecations(self):
+        """Test flag deprecation."""
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+
+            sv.compile('p', flags=sv.HTML)
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+
+            sv.compile('p', flags=sv.XHTML)
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+
+            sv.compile('p', flags=sv.XML)
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+
+            sv.compile('p', flags=sv.HTML5)
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
 
     def test_selectiter_deprecation(self):
         """Test the deprecated iterator functions."""
@@ -305,12 +340,6 @@ class TestDeprcations(unittest.TestCase):
 
 class TestInvalid(unittest.TestCase):
     """Test invalid."""
-
-    def test_invalid_mode(self):
-        """Test invalid mode."""
-
-        with self.assertRaises(ValueError):
-            sv.compile('p', None, sv.util.HTML | sv.util.HTML5)
 
     def test_invalid_combination(self):
         """

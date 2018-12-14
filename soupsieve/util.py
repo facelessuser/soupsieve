@@ -9,13 +9,15 @@ HTML5 = 0x1
 HTML = 0x2
 XHTML = 0x4
 XML = 0x8
-
-MODE_MSK = 0xF
-DEFAULT_MODE = HTML5
+DEPRECATED_FLAGS = HTML5 | HTML | XHTML | XML
 
 TAG = bs4.Tag
-CHILD = (TAG, bs4.Doctype, bs4.Declaration, bs4.CData, bs4.ProcessingInstruction)
 COMMENT = bs4.Comment
+DECLARATION = bs4.Declaration
+CDATA = bs4.CData
+PROC_INSTRUCT = bs4.ProcessingInstruction
+NAV_STRINGS = bs4.NavigableString
+NON_CONTENT_STRINGS = (COMMENT, DECLARATION, CDATA, PROC_INSTRUCT)
 
 LC_A = ord('a')
 LC_Z = ord('z')
@@ -90,6 +92,15 @@ class Immutable:
 
         raise AttributeError("'{}' is immutable".format(self.__class__.__name__))
 
+    def __repr__(self):  # pragma: no cover
+        """Representation."""
+
+        return "{}({})".format(
+            self.__base__(), ', '.join(["{}={!r}".format(k, getattr(self, k)) for k in self.__slots__[:-1]])
+        )
+
+    __str__ = __repr__
+
 
 class ImmutableDict(Mapping):
     """Hashable, immutable dictionary."""
@@ -153,3 +164,13 @@ def deprecated(message, stacklevel=2):
             return func(*args, **kwargs)
         return _func
     return _decorator
+
+
+def warn_deprecated(message, stacklevel=2):
+    """Warn deprecated."""
+
+    warnings.warn(
+        message,
+        category=DeprecationWarning,
+        stacklevel=stacklevel
+    )

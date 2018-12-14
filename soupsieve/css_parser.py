@@ -8,63 +8,54 @@ from collections import OrderedDict
 
 
 # Sub-patterns parts
-CSS_ESCAPES = r'(?:\\[a-f0-9]{1,6}[ ]?|\\.)'
+WS = r'[ \t\r\n\f]'
 
-NTH = r'(?:[-+])?(?:\d+n?|n)(?:(?<=n)\s*(?:[-+])\s*(?:\d+))?'
+CSS_ESCAPES = r'(?:\\[a-f0-9]{{1,6}}{ws}?|\\.)'.format(ws=WS)
 
-VALUE = r'''(?P<value>"(?:\\.|[^\\"]+)*?"|'(?:\\.|[^\\']+)*?'|(?:[^'"\[\] \t\r\n]|{esc})+)'''.format(esc=CSS_ESCAPES)
+NTH = r'(?:[-+])?(?:\d+n?|n)(?:(?<=n){ws}*(?:[-+]){ws}*(?:\d+))?'.format(ws=WS)
 
-ATTR = r'''
-(?:\s*(?P<cmp>[~^|*$]?=)\s*                                                   # compare
-{value}
-(?P<case>[ ]+[is])?)?\s*\]                                                      # case sensitive
-'''.format(value=VALUE)
+VALUE = r'''(?P<value>"(?:\\.|[^\\"]+)*?"|'(?:\\.|[^\\']+)*?'|(?:[^'"\[\] \f\t\r\n]|{esc})+)'''.format(esc=CSS_ESCAPES)
+
+ATTR = r'''(?:{ws}*(?P<cmp>[~^|*$]?=){ws}*{value}(?P<case>{ws}+[is])?)?{ws}*\]'''.format(ws=WS, value=VALUE)
 
 # Selector patterns
 PAT_ID = r'#(?:[-\w]|{esc})+'.format(esc=CSS_ESCAPES)
 
 PAT_CLASS = r'\.(?:[-\w]|{esc})+'.format(esc=CSS_ESCAPES)
 
-PAT_HTML_TAG = r'(?:(?:(?:[-\w]|{esc})+|\*)?\|)?(?:(?:[-\w]|{esc})+|\*)'.format(esc=CSS_ESCAPES)
+PAT_TAG = r'(?:(?:(?:[-\w]|{esc})+|\*)?\|)?(?:(?:[-\w]|{esc})+|\*)'.format(esc=CSS_ESCAPES)
 
-PAT_XML_TAG = r'(?:(?:(?:[-\w.]|{esc})+|\*)?\|)?(?:(?:[-\w.]|{esc})+|\*)'.format(esc=CSS_ESCAPES)
-
-PAT_HTML_ATTR = r'''(?x)
-\[\s*(?P<ns_attr>(?:(?:(?:[-\w]|{esc})+|\*)?\|)?(?:[-\w]|{esc})+)
+PAT_ATTR = r'''(?x)
+\[{ws}*(?P<ns_attr>(?:(?:(?:[-\w]|{esc})+|\*)?\|)?(?:[-\w]|{esc})+)
 {attr}
-'''.format(esc=CSS_ESCAPES, attr=ATTR)
-
-PAT_XML_ATTR = r'''(?x)
-\[\s*(?P<ns_attr>(?:(?:(?:[-\w]|{esc})+|\*)?\|)?(?:[-\w.]|{esc})+)
-{attr}
-'''.format(esc=CSS_ESCAPES, attr=ATTR)
+'''.format(ws=WS, esc=CSS_ESCAPES, attr=ATTR)
 
 PAT_PSEUDO_OPEN = r':(?:has|is|matches|not|where)\('
 
-PAT_PSEUDO_CLOSE = r'\)'
+PAT_PSEUDO_CLOSE = r'{ws}*\)'.format(ws=WS)
 
 PAT_PSEUDO = r':(?:empty|root|(?:first|last|only)-(?:child|of-type))\b'
 
 PAT_PSEUDO_NTH_CHILD = r'''(?x)
 (?P<pseudo_nth_child>:nth-(?:last-)?child
-\(\s*(?P<nth_child>{nth}|even|odd)\s*(?:\)|(?<=\s)of\s+))
-'''.format(nth=NTH)
+\({ws}*(?P<nth_child>{nth}|even|odd){ws}*(?:\)|(?<={ws})of{ws}+))
+'''.format(ws=WS, nth=NTH)
 
 PAT_PSEUDO_NTH_TYPE = r'''(?x)
 (?P<pseudo_nth_type>:nth-(?:last-)?of-type
-\(\s*(?P<nth_type>{nth}|even|odd)\s*\))
-'''.format(nth=NTH)
+\({ws}*(?P<nth_type>{nth}|even|odd){ws}*\))
+'''.format(ws=WS, nth=NTH)
 
-PAT_SPLIT = r'\s*?(?P<relation>[,+>~]|[ ](?![,+>~]))\s*'
+PAT_SPLIT = r'{ws}*?(?P<relation>[,+>~]|{ws}(?![,+>~])){ws}*'.format(ws=WS)
 
 # Extra selector patterns
-PAT_CONTAINS = r':contains\(\s*{value}\s*\)'.format(value=VALUE)
+PAT_CONTAINS = r':contains\({ws}*{value}{ws}*\)'.format(ws=WS, value=VALUE)
 
 # CSS escape pattern
-RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{1,6}[ ]?)|(\\.))', re.I)
+RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{{1,6}}{ws}?)|(\\.))'.format(ws=WS), re.I)
 
 # Pattern to break up `nth` specifiers
-RE_NTH = re.compile(r'(?P<s1>[-+])?(?P<a>\d+n?|n)(?:(?<=n)\s*(?P<s2>[-+])\s*(?P<b>\d+))?', re.I)
+RE_NTH = re.compile(r'(?P<s1>[-+])?(?P<a>\d+n?|n)(?:(?<=n){ws}*(?P<s2>[-+]){ws}*(?P<b>\d+))?'.format(ws=WS), re.I)
 
 SPLIT = ','
 REL_HAS_CHILD = ": "
@@ -113,24 +104,6 @@ class SelectorPattern:
         """Enabled."""
 
         return True
-
-
-class HtmlSelectorPattern(SelectorPattern):
-    """HTML selector pattern."""
-
-    def enabled(self, flags):
-        """Enabled."""
-
-        return (flags & util.MODE_MSK) in (util.HTML, util.HTML5, util.XHTML)
-
-
-class XmlSelectorPattern(SelectorPattern):
-    """XML selector pattern."""
-
-    def enabled(self, flags):
-        """Enabled."""
-
-        return (flags & util.MODE_MSK) in (util.XML,)
 
 
 class _Selector:
@@ -208,12 +181,10 @@ class CSSParser:
             ("contains", SelectorPattern(PAT_CONTAINS)),
             ("pseudo_nth_child", SelectorPattern(PAT_PSEUDO_NTH_CHILD)),
             ("pseudo_nth_type", SelectorPattern(PAT_PSEUDO_NTH_TYPE)),
-            ("id", HtmlSelectorPattern(PAT_ID)),
-            ("class", HtmlSelectorPattern(PAT_CLASS)),
-            ("html_tag", HtmlSelectorPattern(PAT_HTML_TAG)),
-            ("xml_tag", XmlSelectorPattern(PAT_XML_TAG)),
-            ("html_attribute", HtmlSelectorPattern(PAT_HTML_ATTR)),
-            ("xml_attribute", XmlSelectorPattern(PAT_XML_ATTR)),
+            ("id", SelectorPattern(PAT_ID)),
+            ("class", SelectorPattern(PAT_CLASS)),
+            ("tag", SelectorPattern(PAT_TAG)),
+            ("attribute", SelectorPattern(PAT_ATTR)),
             ("pseudo_close", SelectorPattern(PAT_PSEUDO_CLOSE)),
             ("combine", SelectorPattern(PAT_SPLIT))
         ]
@@ -224,13 +195,11 @@ class CSSParser:
 
         self.pattern = selector
         self.flags = flags
-        mode = flags & util.MODE_MSK
-
-        if mode in (util.HTML, util.HTML5, util.XML, util.XHTML, 0):
-            self.mode = mode if mode else util.DEFAULT_MODE
-        else:
-            raise ValueError("Invalid SelectorMatcher flag(s) '{}'".format(mode))
-        self.adjusted_flags = flags | self.mode
+        dflags = self.flags & util.DEPRECATED_FLAGS
+        if dflags:
+            util.warn_deprecated(
+                "The following flags are deprecated and may be repurposed in the future '0x%02X'" % dflags
+            )
 
     def parse_attribute_selector(self, sel, m, has_selector):
         """Create attribute selector from the returned regex match."""
@@ -238,6 +207,8 @@ class CSSParser:
         case = util.lower(m.group('case').strip()) if m.group('case') else None
         parts = [css_unescape(a.strip()) for a in m.group('ns_attr').split('|')]
         ns = ''
+        is_type = False
+        pattern2 = None
         if len(parts) > 1:
             ns = parts[0]
             attr = parts[1]
@@ -245,10 +216,12 @@ class CSSParser:
             attr = parts[0]
         if case:
             flags = re.I if case == 'i' else 0
-        elif self.mode == util.XML:
-            flags = 0
+        elif util.lower(attr) == 'type':
+            flags = re.I
+            is_type = True
         else:
-            flags = re.I if util.lower(attr) == 'type' and not ns else 0
+            flags = 0
+
         op = m.group('cmp')
         if op:
             value = css_unescape(
@@ -277,8 +250,10 @@ class CSSParser:
         else:
             # Value matches
             pattern = re.compile(r'^%s$' % re.escape(value), flags)
+        if is_type:
+            pattern2 = re.compile(pattern.pattern)
         has_selector = True
-        sel.attributes.append(ct.SelectorAttribute(attr, ns, pattern))
+        sel.attributes.append(ct.SelectorAttribute(attr, ns, pattern, pattern2))
         return has_selector
 
     def parse_tag_pattern(self, sel, m, has_selector):
@@ -437,7 +412,10 @@ class CSSParser:
             relations.clear()
         else:
             sel.relations.extend(relations)
-            sel.rel_type = m.group('relation')
+            rel_type = m.group('relation').strip()
+            if not rel_type:
+                rel_type = ' '
+            sel.rel_type = rel_type
             relations.clear()
             relations.append(sel)
         sel = _Selector()
@@ -512,9 +490,9 @@ class CSSParser:
                         has_selector, sel = self.parse_split(sel, m, has_selector, selectors, relations, is_pseudo)
                     split_last = True
                     continue
-                elif key in ('html_attribute', 'xml_attribute'):
+                elif key == 'attribute':
                     has_selector = self.parse_attribute_selector(sel, m, has_selector)
-                elif key in ('html_tag', 'xml_tag'):
+                elif key == 'tag':
                     if has_selector:
                         raise SyntaxError("Tag must come first")
                     has_selector = self.parse_tag_pattern(sel, m, has_selector)
@@ -555,7 +533,7 @@ class CSSParser:
         while index <= end:
             m = None
             for k, v in self.css_tokens.items():
-                if not v.enabled(self.adjusted_flags):
+                if not v.enabled(self.flags):  # pragma: no cover
                     continue
                 m = v.pattern.match(pattern, index)
                 if m:
