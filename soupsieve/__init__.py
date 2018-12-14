@@ -40,7 +40,7 @@ __all__ = (
 SoupSieve = cm.SoupSieve
 
 
-def compile(pattern, namespaces=None, flags=HTML5):  # noqa: A001
+def compile(pattern, namespaces=None, flags=0):  # noqa: A001
     """Compile CSS pattern."""
 
     if namespaces is None:

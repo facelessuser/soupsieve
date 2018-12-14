@@ -8,7 +8,6 @@ Extra patterns that are not in the specification, but may be useful.
 ```
 """
 from . import util
-import soupsieve as sv
 
 
 class TestLevel1(util.TestCase):
@@ -29,35 +28,35 @@ class TestLevel1(util.TestCase):
             markup,
             'body span:contains(that)',
             ['2'],
-            flags=sv.HTML5
+            flags=util.HTML5
         )
 
         self.assert_selector(
             markup,
             'body span:contains(" that ")',
             ['2'],
-            flags=sv.HTML5
+            flags=util.HTML5
         )
 
         self.assert_selector(
             markup,
             'body :contains(" that ")',
             ['1', '2'],
-            flags=sv.HTML5
+            flags=util.HTML5
         )
 
         self.assert_selector(
             markup,
             'body :contains( "Testing" )',
             ['1'],
-            flags=sv.HTML5
+            flags=util.HTML5
         )
 
         self.assert_selector(
             markup,
             'body :contains(bad)',
             [],
-            flags=sv.HTML5
+            flags=util.HTML5
         )
 
     def test_contains_escapes(self):
@@ -72,7 +71,7 @@ class TestLevel1(util.TestCase):
             markup,
             'body span:contains("\nthat")',
             ['2'],
-            flags=sv.HTML5
+            flags=util.HTML5
         )
 
     def test_contains_cdata(self):
@@ -86,12 +85,12 @@ class TestLevel1(util.TestCase):
             markup,
             'body *:contains("that")',
             ['1'],
-            flags=sv.HTML5
+            flags=util.HTML5
         )
 
         self.assert_selector(
             markup,
             '*:contains("that")',
             ['1', '2'],
-            flags=sv.XML
+            flags=util.XML
         )

@@ -19,6 +19,8 @@ REL_HAS_CLOSE_PARENT = ':>'
 REL_HAS_SIBLING = ':~'
 REL_HAS_CLOSE_SIBLING = ':+'
 
+NS_XHTML = 'http://www.w3.org/1999/xhtml'
+
 
 class CSSMatch:
     """Perform CSS matching."""
@@ -29,9 +31,6 @@ class CSSMatch:
         self.selectors = selectors
         self.namespaces = namespaces
         self.flags = flags
-        self.mode = flags & util.MODE_MSK
-        if self.mode == 0:
-            self.mode == util.DEFAULT_MODE
 
     def get_namespace(self, el):
         """Get the namespace for the element."""
@@ -45,18 +44,12 @@ class CSSMatch:
     def supports_namespaces(self):
         """Check if namespaces are supported in the HTML type."""
 
-        return self.mode in (util.HTML5, util.XHTML, util.XML)
-
-    def is_xml(self):
-        """Check if document is an XML type."""
-
-        return self.mode in (util.XHTML, util.XML)
+        return self.is_xml or self.html_namespace
 
     def get_attribute(self, el, attr, prefix):
         """Get attribute from element if it exists."""
 
         value = None
-        is_xml = self.is_xml()
         if self.supports_namespaces():
             value = None
             # If we have not defined namespaces, we can't very well find them, so don't bother trying.
@@ -81,7 +74,7 @@ class CSSMatch:
                 # We can't match our desired prefix attribute as the attribute doesn't have a prefix
                 if prefix and not p and prefix != '*':
                     continue
-                if is_xml:
+                if self.is_xml:
                     # The prefix doesn't match
                     if prefix and p and prefix != '*' and prefix != p:
                         continue
@@ -140,17 +133,15 @@ class CSSMatch:
         if attributes:
             for a in attributes:
                 value = self.get_attribute(el, a.attribute, a.prefix)
+                pattern = a.xml_type_pattern if not self.html_namespace and a.xml_type_pattern else a.pattern
                 if isinstance(value, list):
                     value = ' '.join(value)
-                if a.pattern is None and value is None:
+                if value is None:
                     match = False
                     break
-                elif a.pattern is not None and value is None:
-                    match = False
-                    break
-                elif a.pattern is None:
+                elif pattern is None:
                     continue
-                elif value is None or a.pattern.match(value) is None:
+                elif pattern.match(value) is None:
                     match = False
                     break
         return match
@@ -160,7 +151,7 @@ class CSSMatch:
 
         return not (
             tag.name and
-            tag.name not in ((util.lower(el.name) if not self.is_xml() else el.name), '*')
+            tag.name not in ((util.lower(el.name) if not self.is_xml else el.name), '*')
         )
 
     def match_tag(self, el, tag):
@@ -284,7 +275,7 @@ class CSSMatch:
         """Match tag type for `nth` matches."""
 
         return(
-            (child.name == (util.lower(el.name) if not self.is_xml() else el.name)) and
+            (child.name == (util.lower(el.name) if not self.is_xml else el.name)) and
             (not self.supports_namespaces() or self.get_namespace(child) == self.get_namespace(el))
         )
 
@@ -295,8 +286,6 @@ class CSSMatch:
 
         for n in nth:
             matched = False
-            if not el.parent:
-                break
             if n.selectors and not self.match_selectors(el, n.selectors):
                 break
             parent = el.parent
@@ -390,20 +379,22 @@ class CSSMatch:
                 break
         return matched
 
-    def has_child(self, el):
-        """Check if element has child."""
-
-        found_child = False
-        for child in el.children:
-            if isinstance(child, util.TAG):
-                found_child = True
-                break
-        return found_child
-
     def match_empty(self, el, empty):
         """Check if element is empty (if requested)."""
 
-        return not empty or (RE_NOT_EMPTY.search(el.text) is None and not self.has_child(el))
+        is_empty = True
+        if empty:
+            for child in el.children:
+                if isinstance(child, util.TAG):
+                    is_empty = False
+                    break
+                elif (
+                    (isinstance(child, util.NAV_STRINGS) and not isinstance(child, util.NON_CONTENT_STRINGS)) and
+                    RE_NOT_EMPTY.search(child)
+                ):
+                    is_empty = False
+                    break
+        return is_empty
 
     def match_subselectors(self, el, selectors):
         """Match selectors."""
@@ -414,10 +405,10 @@ class CSSMatch:
                 match = False
         return match
 
-    def match_contains(self, el, contains, is_html):
+    def match_contains(self, el, contains):
         """Match element if it contains text."""
 
-        types = (util.NAV_STRINGS,) if is_html else (util.NAV_STRINGS, util.CDATA)
+        types = (util.NAV_STRINGS,) if not self.is_xml else (util.NAV_STRINGS, util.CDATA)
         match = True
         for c in contains:
             if c not in el.get_text(types=types):
@@ -429,7 +420,6 @@ class CSSMatch:
         """Check if element matches one of the selectors."""
 
         match = False
-        is_html = self.mode != util.XML
         is_not = selectors.is_not
         for selector in selectors:
             match = is_not
@@ -442,10 +432,10 @@ class CSSMatch:
             if not self.match_empty(el, selector.empty):
                 continue
             # Verify id matches
-            if is_html and selector.ids and not self.match_id(el, selector.ids):
+            if selector.ids and not self.match_id(el, selector.ids):
                 continue
             # Verify classes match
-            if is_html and selector.classes and not self.match_classes(el, selector.classes):
+            if selector.classes and not self.match_classes(el, selector.classes):
                 continue
             # Verify attribute(s) match
             if not self.match_attributes(el, selector.attributes):
@@ -458,15 +448,32 @@ class CSSMatch:
             # Verify relationship selectors
             if selector.relation and not self.match_relations(el, selector.relation):
                 continue
-            if not self.match_contains(el, selector.contains, is_html):
+            if not self.match_contains(el, selector.contains):
                 continue
             match = not is_not
             break
 
         return match
 
+    def is_html_ns(self, el):
+        """Check if in HTML namespace."""
+
+        ns = getattr(el, 'namespace') if el else None
+        return ns and ns == NS_XHTML
+
     def match(self, el):
         """Match."""
+
+        doc = el
+        while doc.parent:
+            doc = doc.parent
+        root = None
+        for child in doc.children:
+            if isinstance(child, util.TAG):
+                root = child
+                break
+        self.html_namespace = self.is_html_ns(root)
+        self.is_xml = doc.is_xml and not self.html_namespace
 
         return isinstance(el, util.TAG) and el.parent and self.match_selectors(el, self.selectors)
 

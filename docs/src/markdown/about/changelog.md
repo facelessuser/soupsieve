@@ -1,9 +1,10 @@
 # Changelog
 
-## 1.0.0
+## 1.0.0b2
 
+- **NEW**: Drop document flags. Document type can be detected from the Beautiful Soup object directly.
 - **FIX**: CSS selectors should be evaluated with CSS whitespace rules.
-- **FIX**: Processing instructions, CDATA, and declarations should all be ignored from child considerations for `:empty`.
+- **FIX**: Processing instructions, CDATA, and declarations should all be ignored in `:contains` and child considerations for `:empty`.
 - **FIX**: In Beautiful Soup, the document itself is the first tag. Do not match the "document" tag by returning false for any tag that doesn't have a parent.
 
 ## 1.0.0b1
