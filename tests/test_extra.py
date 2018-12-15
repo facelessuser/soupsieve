@@ -94,3 +94,43 @@ class TestLevel1(util.TestCase):
             ['1', '2'],
             flags=util.XML
         )
+
+    def test_attribute_not_equal(self):
+        """Test attribute with value that does not equal specified value."""
+
+        markup = """
+        <div id="div">
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
+        # No quotes
+        self.assert_selector(
+            markup,
+            'body [id!=\\35]',
+            ["div", "0", "1", "2", "3", "pre", "4", "6"],
+            flags=util.HTML5
+        )
+
+        # Quotes
+        self.assert_selector(
+            markup,
+            "body [id!='5']",
+            ["div", "0", "1", "2", "3", "pre", "4", "6"],
+            flags=util.HTML5
+        )
+
+        # Double quotes
+        self.assert_selector(
+            markup,
+            'body [id!="5"]',
+            ["div", "0", "1", "2", "3", "pre", "4", "6"],
+            flags=util.HTML5
+        )

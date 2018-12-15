@@ -65,6 +65,7 @@ Just because we include selectors from one source, does not mean we have intenti
 Selector                        | Example                             | Description
 ------------------------------- | ----------------------------------- | -----------
 `:contains(text)`               | `#!css p:contains(text)`            | Select all `#!html <p>` elements that contain "text" in their content, either directly in themselves or indirectly in their decedents.
+`[attribute!=value]`            | `#!css [target!=_blank]`            | Equivalent to `#!css :not([target=_blank])`.
 
 --8<--
 refs.txt

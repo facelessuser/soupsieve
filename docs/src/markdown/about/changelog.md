@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0
+
+- **NEW**: Adds support for `[attr!=value]` which is equivalent to `:not([attr=value])`.
+
 ## 1.0.2
 
 - **FIX**: Use proper CSS identifier patterns for tag names, classes, ids, etc. Things like `#3` or `#-3` should not match and should require `#\33` or `#-\33`.

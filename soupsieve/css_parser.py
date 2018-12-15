@@ -46,7 +46,7 @@ VALUE = r'''
 )
 '''.format(ident=IDENTIFIER)
 
-ATTR = r'''(?:{ws}*(?P<cmp>[~^|*$]?=){ws}*{value}(?P<case>{ws}+[is])?)?{ws}*\]'''.format(ws=WS, value=VALUE)
+ATTR = r'''(?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*{value}(?P<case>{ws}+[is])?)?{ws}*\]'''.format(ws=WS, value=VALUE)
 
 # Selector patterns
 PAT_ID = r'\#{ident}'.format(ident=IDENTIFIER)
@@ -237,56 +237,74 @@ class CSSParser:
     def parse_attribute_selector(self, sel, m, has_selector):
         """Create attribute selector from the returned regex match."""
 
-        case = util.lower(m.group('case').strip()) if m.group('case') else None
-        parts = [css_unescape(a.strip()) for a in m.group('ns_attr').split('|')]
-        ns = ''
-        is_type = False
-        pattern2 = None
-        if len(parts) > 1:
-            ns = parts[0]
-            attr = parts[1]
-        else:
-            attr = parts[0]
-        if case:
-            flags = re.I if case == 'i' else 0
-        elif util.lower(attr) == 'type':
-            flags = re.I
-            is_type = True
-        else:
-            flags = 0
-
         op = m.group('cmp')
-        if op:
-            value = css_unescape(
-                m.group('value')[1:-1] if m.group('value').startswith(('"', "'")) else m.group('value')
+        if op and op.startswith('!'):
+            # Equivalent to `:not([attr=value])`
+            attr = m.group('ns_attr')
+            value = m.group('value')
+            case = m.group('case')
+            if not case:
+                case = ''
+            sel.selectors.append(
+                self.parse_selectors(
+                    # Simulate the content of `:not`, but make the attribute as `=` instead of `!=`.
+                    self.selector_iter('[{}={} {}])'.format(attr, value, case)),
+                    is_pseudo=True,
+                    is_not=True,
+                    is_has=False
+                )
             )
+            has_selector = True
         else:
-            value = None
-        if not op:
-            # Attribute name
-            pattern = None
-        elif op.startswith('^'):
-            # Value start with
-            pattern = re.compile(r'^%s.*' % re.escape(value), flags)
-        elif op.startswith('$'):
-            # Value ends with
-            pattern = re.compile(r'.*?%s$' % re.escape(value), flags)
-        elif op.startswith('*'):
-            # Value contains
-            pattern = re.compile(r'.*?%s.*' % re.escape(value), flags)
-        elif op.startswith('~'):
-            # Value contains word within space separated list
-            pattern = re.compile(r'.*?(?:(?<=^)|(?<= ))%s(?=(?:[ ]|$)).*' % re.escape(value), flags)
-        elif op.startswith('|'):
-            # Value starts with word in dash separated list
-            pattern = re.compile(r'^%s(?:-.*)?$' % re.escape(value), flags)
-        else:
-            # Value matches
-            pattern = re.compile(r'^%s$' % re.escape(value), flags)
-        if is_type:
-            pattern2 = re.compile(pattern.pattern)
-        has_selector = True
-        sel.attributes.append(ct.SelectorAttribute(attr, ns, pattern, pattern2))
+            case = util.lower(m.group('case').strip()) if m.group('case') else None
+            parts = [css_unescape(a.strip()) for a in m.group('ns_attr').split('|')]
+            ns = ''
+            is_type = False
+            pattern2 = None
+            if len(parts) > 1:
+                ns = parts[0]
+                attr = parts[1]
+            else:
+                attr = parts[0]
+            if case:
+                flags = re.I if case == 'i' else 0
+            elif util.lower(attr) == 'type':
+                flags = re.I
+                is_type = True
+            else:
+                flags = 0
+
+            if op:
+                value = css_unescape(
+                    m.group('value')[1:-1] if m.group('value').startswith(('"', "'")) else m.group('value')
+                )
+            else:
+                value = None
+            if not op:
+                # Attribute name
+                pattern = None
+            elif op.startswith('^'):
+                # Value start with
+                pattern = re.compile(r'^%s.*' % re.escape(value), flags)
+            elif op.startswith('$'):
+                # Value ends with
+                pattern = re.compile(r'.*?%s$' % re.escape(value), flags)
+            elif op.startswith('*'):
+                # Value contains
+                pattern = re.compile(r'.*?%s.*' % re.escape(value), flags)
+            elif op.startswith('~'):
+                # Value contains word within space separated list
+                pattern = re.compile(r'.*?(?:(?<=^)|(?<= ))%s(?=(?:[ ]|$)).*' % re.escape(value), flags)
+            elif op.startswith('|'):
+                # Value starts with word in dash separated list
+                pattern = re.compile(r'^%s(?:-.*)?$' % re.escape(value), flags)
+            else:
+                # Value matches
+                pattern = re.compile(r'^%s$' % re.escape(value), flags)
+            if is_type:
+                pattern2 = re.compile(pattern.pattern)
+            has_selector = True
+            sel.attributes.append(ct.SelectorAttribute(attr, ns, pattern, pattern2))
         return has_selector
 
     def parse_tag_pattern(self, sel, m, has_selector):
@@ -380,9 +398,9 @@ class CSSParser:
                 temp_sel = self.selector_iter('*|*)')
             nth_sel = self.parse_selectors(
                 temp_sel,
-                True,
-                False,
-                False
+                is_pseudo=True,
+                is_not=False,
+                is_has=False
             )
             if pseudo_sel.startswith(':nth-child'):
                 sel.nth.append(ct.SelectorNth(s1, var, s2, False, False, nth_sel))
