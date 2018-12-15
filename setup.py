@@ -45,7 +45,7 @@ setup(
     name='soupsieve',
     version=VER,
     python_requires=">=3.4",
-    keywords='CSS HTML selector filter',
+    keywords='CSS HTML XML selector filter query soup',
     description='A CSS4 selector implementation for Beautiful Soup.',
     long_description=get_description(),
     long_description_content_type='text/markdown',

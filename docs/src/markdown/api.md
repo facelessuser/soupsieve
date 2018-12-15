@@ -1,12 +1,24 @@
 # API
 
-Soup Sieve will detect the document type being used from the Beautiful Soup object that is given to it. For all HTML document types, it will treat tag names and attribute names without case sensitivity like most browsers do (even with XHTML). For HTML5, XHTML and XML, it will consider namespaces per the document's support (provided by the parser). To get namespaces support in HTML5, it is recommended to use `html5lib` as the parser. Some additional configuration is required when using namespaces, see [Namespace](#namespaces) for more information.
+Soup Sieve uses a subset of the CSS4 selector specification to detect and filter elements. To learn more about which specific selectors are implemented, see [CSS Selectors](./selectors.md).
 
-While attribute values are always generally treated as case sensitive, HTML5, XHTML, and HTML treat the `type` attribute special. The `type` attribute's value is always case insensitive. This is generally how most browsers treat `type`. If you need `type` to be sensitive, you can use the `s` flag: `#!css [type="submit" s]`.
+Soup Sieve will detect the document type being used from the Beautiful Soup object that is given to it, and depending on the document type, its behavior may be slightly different:
+
+- All HTML document types (HTML, HTML5, and XHTML) will have their tag names and attribute names treated without case sensitivity, like most browsers do. Though XHTML is XML, which traditionally is case sensitive, it will still be treated like HTML in this respect.
+
+- XML document types will have their tag names and attribute names treated with case sensitivity.
+
+- HTML5, XHTML and XML document types will have namespaces evaluated per the document's support (provided via the parser).
+
+    `html5lib` provides proper namespaces for HTML5, but `lxml` will not. If you need namespace support for HTML5, consider using `html5lib`.
+
+    For XML, `lxml` will provide proper namespaces. It is generally suggested that `lxml` is used to parse XHTML documents. Some additional configuration is required when using namespaces, see [Namespace](#namespaces) for more information.
+
+- While attribute values are generally treated as case sensitive, HTML5, XHTML, and HTML treat the `type` attribute special. The `type` attribute's value is always case insensitive. This is generally how most browsers treat `type`. If you need `type` to be sensitive, you can use the `s` flag: `#!css [type="submit" s]`.
 
 ## Flags
 
-There are no flags at this time, but the parameter is provided for potential future use.
+Early in development, flags were used to specify document type, but as of 1.0.0, there are no flags used at this time, but the parameter is provided for potential future use.
 
 ## `soupsieve.select()`
 
@@ -15,9 +27,9 @@ def select(select, node, namespaces=None, limit=0, flags=0):
     """Select the specified tags."""
 ```
 
-`select` given a tag, will select all tags that match the provided CSS selector string. You can give `limit` a positive integer to return a specific number tags (0 means to return all tags).
+`select` will return all tags under the given a tag, that match the given CSS selectors provided. You can also limit the number of tags returned by providing a positive integer via the `limit` parameter (0 means to return all tags).
 
-`select` accepts a CSS selector string, a `node` or element, an optional [namespace](#namespaces) dictionary, a `limit`, and `flags`.
+`select` accepts a CSS selector string, a `node`/element, an optional [namespace](#namespaces) dictionary, a `limit`, and `flags`.
 
 ```pycon3
 >>> import soupsieve as sv
@@ -41,9 +53,9 @@ def match(select, node, namespaces=None, flags=0):
     """Match node."""
 ```
 
-`match` matches a given node/element with a given CSS selector.
+The `match` function matches a given `node`/element with a given CSS selector.
 
-`match` accepts a CSS selector string, a `node` or element, an optional [namespace](#namespaces) dictionary, and flags.
+`match` accepts a CSS selector string, a `node`/element, an optional [namespace](#namespaces) dictionary, and flags.
 
 ```pycon3
 >>> nodes = sv.select('p:is(.a, .b, .c)', soup)
@@ -60,7 +72,7 @@ def filter(select, nodes, namespaces=None, flags=0):
     """Filter list of nodes."""
 ```
 
-`filter` takes an iterable containing HTML nodes and will filter them based on the provided CSS selector string. If given a Beautiful Soup tag, it will iterate the children that are tags.
+`filter` takes an iterable containing HTML `nodes`/elements and will filter them based on the provided CSS selector string. If given a Beautiful Soup tag, it will iterate the direct children that are tags.
 
 `filter` accepts a CSS selector string, an iterable containing tags, an optional [namespace](#namespaces) dictionary, and flags.
 
@@ -76,9 +88,9 @@ def comments(node, limit=0, flags=0):
     """Get comments only."""
 ```
 
-`comments` if useful to extract all comments from a document or document tag. It will extract from the given tag down through all of its children.  You can limit how many comments are returned with `limit`.
+The `comments` function can be used to extract all comments from a document or document tag. It will extract from the given tag down through all of its children.  You can limit how many comments are returned with `limit`.
 
-`comments` accepts a `node` or element, a `limit`, and flags.
+`comments` accepts a `node`/element, a `limit`, and flags.
 
 ## `soupsieve.icomments()`
 
@@ -123,12 +135,12 @@ class SoupSieve:
 
 ## `soupsieve.purge()`
 
-Soup Sieve caches compiled patterns for performance. If for whatever reason you need to purge the cache, simply call `purge`.
+Soup Sieve caches compiled patterns for performance. If for whatever reason, you need to purge the cache, simply call `purge`.
 
 
 ## Namespaces
 
-Many of Soup Sieve's selector functions take an optional namespaces dictionary. Namespaces, just like CSS, must be defined for Soup Sieve to evaluate `ns|tag` type selectors. This is analogous to CSS's namespace at-rule:
+Many of Soup Sieve's selector functions take an optional namespace dictionary. Namespaces, just like CSS, must be defined for Soup Sieve to evaluate `ns|tag` type selectors. This is analogous to CSS's namespace at-rule:
 
 ```css
 @namespace url("http://www.w3.org/1999/xhtml");
@@ -145,7 +157,7 @@ namespace = {
 }
 ```
 
-Tags do not necessarily have to have a prefix for Soup Sieve to recognize them.  For instance, in HTML5, SVG *should* automatically get the SVG namespace. Depending how namespaces were defined in the documentation, tags may inherit namespaces in some conditions.  Namespace assignment is mainly handled by the parser and exposed through the Beautiful Soup API. Soup Sieve uses the Beautiful Soup API to then compare namespaces when the appropriate document that supports namespaces is set.
+Tags do not necessarily have to have a prefix for Soup Sieve to recognize them.  For instance, in HTML5, SVG *should* automatically get the SVG namespace. Depending how namespaces were defined in the documentation, tags may inherit namespaces in some conditions.  Namespace assignment is mainly handled by the parser and exposed through the Beautiful Soup API. Soup Sieve uses the Beautiful Soup API to then compare namespaces for supported documents.
 
 --8<--
 refs.txt

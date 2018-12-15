@@ -24,7 +24,7 @@ Directory             | Description
 
 ## Coding Standards
 
-When writing code, the code should roughly conform to PEP8 and PEP257 suggestions.  The project utilizes the Flake8 linter (with some additional plugins) to ensure code conforms (give or take some of the rules).  When in doubt, follow the formatting hints of existing code when adding or modifying files. existing files.  Listed below are the modules used:
+When writing code, the code should roughly conform to PEP8 and PEP257 suggestions.  The project utilizes the Flake8 linter (with some additional plugins) to ensure code conforms (give or take some of the rules).  When in doubt, follow the formatting hints of existing code when adding files or modifying existing files.  Listed below are the modules used:
 
 - @gitlab:pycqa/flake8
 - @gitlab:pycqa/flake8-docstrings
@@ -55,7 +55,7 @@ Spell checking is performed via @facelessuser/pyspelling.
 
 During validation we build the docs and spell check various files in the project. [Aspell][aspell] must be installed and in the path.  Currently this project uses one of the more recent versions of Aspell.  It is not expected that everyone will install and run Aspell locally, but it will be run in CI tests for pull requests.
 
-In order to perform the spell check, it is expected you are setup to build the documents, and that you have Aspell installed in your system path (if needed you can use the `--binary` option to point to the location of your Aspell binary). It is also expected that you have the `en` dictionary installed as well. To initiate the spell check, run the following command from the root of the project.
+In order to perform the spell check locally, it is expected you are setup to build the documents, and that you have Aspell installed in your system path (if needed you can use the `--binary` option to point to the location of your Aspell binary). It is also expected that you have the `en` dictionary installed as well. To initiate the spell check, run the following command from the root of the project.
 
 You will need to make sure the documents are built first:
 
@@ -63,7 +63,7 @@ You will need to make sure the documents are built first:
 mkdocs build --clean
 ```
 
-And then run the spell checker. Using `python -m` from the project root will load your checked out version of PySpelling instead of your system installed version:
+And then run the spell checker.
 
 ```
 pyspelling
@@ -73,7 +73,7 @@ It should print out the files with the misspelled words if any are found.  If yo
 
 ## Validation Tests
 
-In order to preserve good code health, a test suite has been put together with pytest (@pytest-dev/pytest). There are currently two kinds of tests: syntax and targeted.  To run these tests, you can use the following command:
+In order to preserve good code health, a test suite has been put together with pytest (@pytest-dev/pytest).  To run these tests, you can use the following command:
 
 ```
 py.test
@@ -95,21 +95,19 @@ By running Tox, it will walk through all the environments and create them (assum
 tox
 ```
 
-If you don't have all the Python versions needed to test all the environments, those entries will fail.  You can ignore those.  Spelling will also fail if you don't have the correct version of Aspell.
-
-As most people will not have all the Python versions on their machine, it makes more sense to target specific environments. To target a specific environment to test, you use the `-e` option to select the environment of interest.  To select lint:
-
-```
-tox -e lint
-```
-
-To select Python 3.7 unit tests (or other versions -- change accordingly):
+If you don't have all the Python versions needed to test all the environments, those entries will fail. To run the tests for specific versions of Python, you specify the environment with `-e PXY` where `X` is the major version and `Y` is the minor version.
 
 ```
 tox -e py37
 ```
 
-To select spelling and document building:
+To target linting:
+
+```
+tox -e lint
+```
+
+To select spell checking and document building:
 
 ```
 tox -e documents
@@ -123,13 +121,13 @@ When running the validation tests through Tox, it is setup to track code coverag
 coverage erase
 ```
 
-Then run each unit test environment to and coverage will be calculated. All the data from each run is merged together.  HTML is output for each file in `.tox/pyXX/tmp`.  You can use these to see areas that are not covered/exercised yet with testing.
+Then run each unit test environment to generate coverage data. All the data from each run is merged together.  HTML is output for each file in `.tox/pyXX/tmp`.  You can use these to see areas that are not covered/exercised yet with testing.
 
 You can checkout `tox.ini` to see how this is accomplished.
 
 ## Code Documentation
 
-Soup Sieve is laid out in the following structure:
+The Soup Sieve module is laid out in the following structure:
 
 ```
 soupseive
@@ -156,7 +154,7 @@ When a CSS selector string is given to Soup Sieve, it is run through the `CSSPar
 
 A `SelectorList` represents a list of compound selectors.  So if you had the selector `#!css div > p`, you would get a `SelectorList` object containing one `Selector` object. If you had `#!css div, p`, you would get a `SelectorList` with two `Selector` objects as this is a selector list of two compound selectors.
 
-A compound selector gets parsed into pieces. Each part of a specific compound selector is usually assigned to an attribute in a single `Selector` object. The attributes of the `Selector` object may be as simple as a boolean or a string, but they can also be a tuple of of `SelectorList` objects. In the case of `#!css *:not(p, div)`, `#!css *` will be a `SelectorList` with one `Selector`. The `#!css :not(p, div)` selector list will be a tuple containing one `SelectorList` of two `Selectors` (one for `p` and one for `div`) under the `selectors` attribute of the `#!css *` `Selector`.
+A compound selector gets parsed into pieces. Each part of a specific compound selector is usually assigned to an attribute in a single `Selector` object. The attributes of the `Selector` object may be as simple as a boolean or a string, but they can also be a tuple of more `SelectorList` objects. In the case of `#!css *:not(p, div)`, `#!css *` will be a `SelectorList` with one `Selector`. The `#!css :not(p, div)` selector list will be a tuple containing one `SelectorList` of two `Selectors` (one for `p` and one for `div`) under the `selectors` attribute of the `#!css *` `Selector`.
 
 In short, `Selectors` are always contained within a `SelectorList`, and a compound selector is a single `Selector` object that may chain other `SelectorLists` objects depending on the complexity of the compound selector. If you provide a selector list, then you will get multiple `Selector` objects (one for each compound selector in the list) which in turn may chain other `Selector` objects.
 
@@ -170,7 +168,7 @@ class SelectorList:
         """Initialize."""
 ```
 
-`SelectorList` | Description
+Attribute      | Description
 -------------- | -----------
 `selectors`    | A list of `Selector` objects.
 `is_not`       | Are the selectors in the selector list from a `:not()`.
@@ -185,7 +183,7 @@ class Selector:
         """Initialize."""
 ```
 
-`Selector`   | Description
+Attribute    | Description
 ------------ | -----------
 `tag`        | Contains a single [`SelectorTag`](#selectortag) object, or `None`.
 `id`         | Contains a tuple of ids to match. Usually if multiple conflicting ids are present, it simply won't match a tag, but it allows multiple to handle the syntax `tag#1#2` even if it is invalid.
@@ -208,7 +206,7 @@ class SelectorTag:
         """Initialize."""
 ```
 
-`SelectorTag` | Description
+Attribute     | Description
 ------------- | -----------
 `name`        | `name` contains the tag name to match.
 `prefix`      | `prefix` contains the namespace prefix to match. `prefix` can also be `None`.
@@ -224,7 +222,7 @@ class SelectorAttribute:
         """Initialize."""
 ```
 
-`SelectorAttribute` | Description
+Attribute           | Description
 ------------------- | -----------
 `attribute`         | Contains the attribute name to match.
 `prefix`            | Contains the attribute namespace prefix to match if any.
@@ -241,7 +239,7 @@ class SelectorNth:
         """Initialize."""
 ```
 
-`SelectorNth` | Description
+Attribute     | Description
 ------------- | -----------
 `a`           | The `a` value in the formula `an+b` specifying an index.
 `n`           | `True` if the provided formula has included a literal `n` which signifies the formula is not a static index.
