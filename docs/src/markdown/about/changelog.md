@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+
+- **FIX**: Use proper CSS identifier patterns for tag names, classes, ids, etc. Things like `#3` or `#-3` should not match and should require `#\33` or `#-\33`.
+- **FIX**: Do not raise `NotImplementedError` for supported pseudo classes/elements with bad syntax, instead raise `SyntaxError`.
+
 ## 1.0.1
 
 - **FIX**: When giving a tag to `select`, it should only return the children of that tag, never the tag itself.

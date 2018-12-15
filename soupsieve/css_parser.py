@@ -6,29 +6,58 @@ from . import css_match as cm
 from . import css_types as ct
 from collections import OrderedDict
 
+SUPPORTED_PSEUDO = {
+    ":root",
+    ":empty",
+    ":has",
+    ":is",
+    ":matches",
+    ":not",
+    ":where",
+    ":first-child",
+    ":first-of-type",
+    ":last-child",
+    ":last-of-type",
+    ":only-child",
+    ":only-of-type",
+    ":nth-child",
+    ":nth-last-child",
+    ":nth-of-type",
+    ":nth-last-of-type"
+}
 
 # Sub-patterns parts
 WS = r'[ \t\r\n\f]'
 
 CSS_ESCAPES = r'(?:\\[a-f0-9]{{1,6}}{ws}?|\\.)'.format(ws=WS)
 
+IDENTIFIER = r'''
+(?:(?!-?\d|--)(?:[^\u0000-\u002c\u002e\u002f\u003A-\u0040\u005B-\u005E\u0060\u007B-\u009f]|{esc})+)
+'''.format(esc=CSS_ESCAPES)
+
 NTH = r'(?:[-+])?(?:\d+n?|n)(?:(?<=n){ws}*(?:[-+]){ws}*(?:\d+))?'.format(ws=WS)
 
-VALUE = r'''(?P<value>"(?:\\.|[^\\"]+)*?"|'(?:\\.|[^\\']+)*?'|(?:[^'"\[\] \f\t\r\n]|{esc})+)'''.format(esc=CSS_ESCAPES)
+VALUE = r'''
+(?P<value>
+    "(?:\\.|[^\\"]+)*?"|
+    '(?:\\.|[^\\']+)*?'|
+    {ident}+
+)
+'''.format(ident=IDENTIFIER)
 
 ATTR = r'''(?:{ws}*(?P<cmp>[~^|*$]?=){ws}*{value}(?P<case>{ws}+[is])?)?{ws}*\]'''.format(ws=WS, value=VALUE)
 
 # Selector patterns
-PAT_ID = r'#(?:[-\w]|{esc})+'.format(esc=CSS_ESCAPES)
+PAT_ID = r'\#{ident}'.format(ident=IDENTIFIER)
 
-PAT_CLASS = r'\.(?:[-\w]|{esc})+'.format(esc=CSS_ESCAPES)
+PAT_CLASS = r'\.{ident}'.format(ident=IDENTIFIER)
 
-PAT_TAG = r'(?:(?:(?:[-\w]|{esc})+|\*)?\|)?(?:(?:[-\w]|{esc})+|\*)'.format(esc=CSS_ESCAPES)
+PAT_TAG = r'(?:(?:{ident}|\*)?\|)?(?:{ident}|\*)'.format(ident=IDENTIFIER)
 
-PAT_ATTR = r'''(?x)
-\[{ws}*(?P<ns_attr>(?:(?:(?:[-\w]|{esc})+|\*)?\|)?(?:[-\w]|{esc})+)
+PAT_ATTR = r'''
+\[{ws}*(?P<ns_attr>(?:(?:{ident}|\*)?\|)?{ident})
 {attr}
-'''.format(ws=WS, esc=CSS_ESCAPES, attr=ATTR)
+'''.format(ws=WS, ident=IDENTIFIER, attr=ATTR)
 
 PAT_PSEUDO_OPEN = r':(?:has|is|matches|not|where)\('
 
@@ -36,22 +65,22 @@ PAT_PSEUDO_CLOSE = r'{ws}*\)'.format(ws=WS)
 
 PAT_PSEUDO = r':(?:empty|root|(?:first|last|only)-(?:child|of-type))\b'
 
-PAT_PSEUDO_NTH_CHILD = r'''(?x)
+PAT_PSEUDO_NTH_CHILD = r'''
 (?P<pseudo_nth_child>:nth-(?:last-)?child
 \({ws}*(?P<nth_child>{nth}|even|odd){ws}*(?:\)|(?<={ws})of{ws}+))
 '''.format(ws=WS, nth=NTH)
 
-PAT_PSEUDO_NTH_TYPE = r'''(?x)
+PAT_PSEUDO_NTH_TYPE = r'''
 (?P<pseudo_nth_type>:nth-(?:last-)?of-type
 \({ws}*(?P<nth_type>{nth}|even|odd){ws}*\))
 '''.format(ws=WS, nth=NTH)
 
 PAT_SPLIT = r'{ws}*?(?P<relation>[,+>~]|{ws}(?![,+>~])){ws}*'.format(ws=WS)
 
-PAT_INVALID_PSEUDO = r':[a-z0-9-]+'
-
 # Extra selector patterns
-PAT_CONTAINS = r':contains\({ws}*{value}{ws}*\)'.format(ws=WS, value=VALUE)
+PAT_PSEUDO_CONTAINS = r':contains\({ws}*{value}{ws}*\)'.format(ws=WS, value=VALUE)
+
+PAT_PSEUDO_INVALID = r':{ident}'.format(ident=IDENTIFIER)
 
 # CSS escape pattern
 RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{{1,6}}{ws}?)|(\\.))'.format(ws=WS), re.I)
@@ -100,7 +129,7 @@ class SelectorPattern:
     def __init__(self, pattern):
         """Initialize."""
 
-        self.pattern = re.compile(pattern, re.I)
+        self.pattern = re.compile(pattern, re.I | re.X)
 
     def enabled(self, flags):
         """Enabled."""
@@ -179,16 +208,16 @@ class CSSParser:
     css_tokens = OrderedDict(
         [
             ("pseudo_open", SelectorPattern(PAT_PSEUDO_OPEN)),
+            ("pseudo_close", SelectorPattern(PAT_PSEUDO_CLOSE)),
             ("pseudo", SelectorPattern(PAT_PSEUDO)),
-            ("contains", SelectorPattern(PAT_CONTAINS)),
+            ("pseudo_contains", SelectorPattern(PAT_PSEUDO_CONTAINS)),
             ("pseudo_nth_child", SelectorPattern(PAT_PSEUDO_NTH_CHILD)),
             ("pseudo_nth_type", SelectorPattern(PAT_PSEUDO_NTH_TYPE)),
-            ("pseudo_invalid", SelectorPattern(PAT_INVALID_PSEUDO)),
+            ("pseudo_invalid", SelectorPattern(PAT_PSEUDO_INVALID)),
             ("id", SelectorPattern(PAT_ID)),
             ("class", SelectorPattern(PAT_CLASS)),
             ("tag", SelectorPattern(PAT_TAG)),
             ("attribute", SelectorPattern(PAT_ATTR)),
-            ("pseudo_close", SelectorPattern(PAT_PSEUDO_CLOSE)),
             ("combine", SelectorPattern(PAT_SPLIT))
         ]
     )
@@ -467,10 +496,15 @@ class CSSParser:
 
                 # Handle parts
                 if key == 'pseudo_invalid':
-                    raise NotImplementedError("'{}' pseudo class is not implemented".format(m.group(0)))
+                    if util.lower(m.group(0)) in SUPPORTED_PSEUDO:
+                        raise SyntaxError("Invalid syntax for pseudo class '{}'".format(key))
+                    else:
+                        raise NotImplementedError(
+                            "'{}' pseudo class/element is not implemented at this time".format(key)
+                        )
                 elif key == 'pseudo':
                     has_selector = self.parse_pseudo(sel, m, has_selector)
-                elif key == 'contains':
+                elif key == 'pseudo_contains':
                     has_selector = self.parse_contains(sel, m, has_selector)
                 elif key in ('pseudo_nth_type', 'pseudo_nth_child'):
                     has_selector = self.parse_pseudo_nth(sel, m, has_selector, iselector)
