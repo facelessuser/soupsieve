@@ -162,14 +162,14 @@ class TestLevel4(util.TestCase):
 
         self.assert_selector(
             markup,
-            ":is(span, a:matches(#2))",
+            ":is(span, a:matches(#\\32))",
             ["1", "2"],
             flags=util.HTML5
         )
 
         self.assert_selector(
             markup,
-            ":where(span, a:matches(#2))",
+            ":where(span, a:matches(#\\32))",
             ["1", "2"],
             flags=util.HTML5
         )
@@ -196,7 +196,7 @@ class TestLevel4(util.TestCase):
         # So this will match
         self.assert_selector(
             markup,
-            ":is(a):is(#2)",
+            ":is(a):is(#\\32)",
             ['2'],
             flags=util.HTML5
         )
@@ -219,7 +219,7 @@ class TestLevel4(util.TestCase):
 
         self.assert_selector(
             markup,
-            'div :not(p, :not([id=5]))',
+            'div :not(p, :not([id=\\35]))',
             ['5'],
             flags=util.HTML5
         )

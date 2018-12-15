@@ -101,8 +101,8 @@ class TestSoupSieve(unittest.TestCase):
 
         soup = bs4.BeautifulSoup(markup, 'html5lib')
         nodes = sv.select('span[id]', soup)
-        self.assertTrue(sv.match('span#5', nodes[0]))
-        self.assertFalse(sv.match('span#5', nodes[1]))
+        self.assertTrue(sv.match('span#\\35', nodes[0]))
+        self.assertFalse(sv.match('span#\\35', nodes[1]))
 
     def test_filter(self):
         """Test filter."""
@@ -125,11 +125,11 @@ class TestSoupSieve(unittest.TestCase):
         """
 
         soup = bs4.BeautifulSoup(markup, 'html5lib')
-        nodes = sv.filter('pre#6', soup.html.body)
+        nodes = sv.filter('pre#\\36', soup.html.body)
         self.assertEqual(len(nodes), 1)
         self.assertEqual(nodes[0].attrs['id'], '6')
 
-        nodes = sv.filter('pre#6', [el for el in soup.html.body.children if isinstance(el, bs4.Tag)])
+        nodes = sv.filter('pre#\\36', [el for el in soup.html.body.children if isinstance(el, bs4.Tag)])
         self.assertEqual(len(nodes), 1)
         self.assertEqual(nodes[0].attrs['id'], '6')
 
@@ -167,7 +167,7 @@ class TestSoupSieve(unittest.TestCase):
         sv.purge()
         self.assertEqual(sv.cp._cached_css_compile.cache_info().currsize, 0)
         for x in range(1000):
-            value = '[value={}]'.format(str(random.randint(1, 10000)))
+            value = '[value="{}"]'.format(str(random.randint(1, 10000)))
             p = sv.compile(value)
             self.assertTrue(p.pattern == value)
             self.assertTrue(sv.cp._cached_css_compile.cache_info().currsize > 0)
@@ -369,6 +369,9 @@ class TestInvalid(unittest.TestCase):
 
         with self.assertRaises(NotImplementedError):
             sv.compile(':before')
+
+        with self.assertRaises(SyntaxError):
+            sv.compile(':nth-child(a)')
 
     def test_invalid_pseudo_close(self):
         """Test invalid pseudo close."""

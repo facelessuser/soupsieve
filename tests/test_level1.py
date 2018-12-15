@@ -82,14 +82,14 @@ class TestLevel1(util.TestCase):
 
         self.assert_selector(
             markup,
-            "#1",
+            "#\\31",
             ["1"],
             flags=util.HTML5
         )
 
         self.assert_selector(
             markup,
-            "a#2",
+            "a#\\32",
             ["2"],
             flags=util.HTML5
         )

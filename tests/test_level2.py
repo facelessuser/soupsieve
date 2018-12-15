@@ -95,7 +95,7 @@ class TestLevel2(util.TestCase):
         # Complex
         self.assert_selector(
             markup,
-            "span#4 + span#5",
+            "span#\\34 + span#\\35",
             ["5"],
             flags=util.HTML5
         )
@@ -193,7 +193,7 @@ class TestLevel2(util.TestCase):
         # No quotes
         self.assert_selector(
             markup,
-            '[id=5]',
+            '[id=\\35]',
             ["5"],
             flags=util.HTML5
         )
