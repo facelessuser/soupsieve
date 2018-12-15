@@ -496,9 +496,6 @@ class SoupSieve(util.Immutable):
     def _walk(self, node, capture=True, comments=False):
         """Recursively return selected tags."""
 
-        if capture and self.match(node):
-            yield node
-
         # Walk children
         for child in node.descendants:
             if capture and isinstance(child, util.TAG) and self.match(child):

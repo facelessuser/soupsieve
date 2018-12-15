@@ -48,6 +48,8 @@ PAT_PSEUDO_NTH_TYPE = r'''(?x)
 
 PAT_SPLIT = r'{ws}*?(?P<relation>[,+>~]|{ws}(?![,+>~])){ws}*'.format(ws=WS)
 
+PAT_INVALID_PSEUDO = r':[a-z0-9-]+'
+
 # Extra selector patterns
 PAT_CONTAINS = r':contains\({ws}*{value}{ws}*\)'.format(ws=WS, value=VALUE)
 
@@ -181,6 +183,7 @@ class CSSParser:
             ("contains", SelectorPattern(PAT_CONTAINS)),
             ("pseudo_nth_child", SelectorPattern(PAT_PSEUDO_NTH_CHILD)),
             ("pseudo_nth_type", SelectorPattern(PAT_PSEUDO_NTH_TYPE)),
+            ("pseudo_invalid", SelectorPattern(PAT_INVALID_PSEUDO)),
             ("id", SelectorPattern(PAT_ID)),
             ("class", SelectorPattern(PAT_CLASS)),
             ("tag", SelectorPattern(PAT_TAG)),
@@ -463,7 +466,9 @@ class CSSParser:
                 key, m = next(iselector)
 
                 # Handle parts
-                if key == 'pseudo':
+                if key == 'pseudo_invalid':
+                    raise NotImplementedError("'{}' pseudo class is not implemented".format(m.group(0)))
+                elif key == 'pseudo':
                     has_selector = self.parse_pseudo(sel, m, has_selector)
                 elif key == 'contains':
                     has_selector = self.parse_contains(sel, m, has_selector)
