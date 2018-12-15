@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0
+
+- **NEW**: Official 1.0.0 release.
+
 ## 1.0.0b2
 
 - **NEW**: Drop document flags. Document type can be detected from the Beautiful Soup object directly.
