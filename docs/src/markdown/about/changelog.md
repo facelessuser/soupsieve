@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1
+
+- **FIX**: When giving a tag to `select`, it should only return the children of that tag, never the tag itself.
+- **FIX**: For informational purposes, raise a `NotImplementedError` when an unsupported pseudo class is used.
+
 ## 1.0.0
 
 - **NEW**: Official 1.0.0 release.

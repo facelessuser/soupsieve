@@ -74,7 +74,7 @@ class TestSoupSieve(unittest.TestCase):
 
         span = sv.select('span[id]', soup)[0]
         ids = []
-        for el in sv.select('span[id]', span):
+        for el in sv.select('span[id]:not(#some-id)', span.parent):
             ids.append(el.attrs['id'])
 
         self.assertEqual(sorted(['5']), sorted(ids))
@@ -363,6 +363,12 @@ class TestInvalid(unittest.TestCase):
 
         with self.assertRaises(SyntaxError):
             sv.compile('div >')
+
+    def test_invalid_pseudo(self):
+        """Test invalid pseudo class."""
+
+        with self.assertRaises(NotImplementedError):
+            sv.compile(':before')
 
     def test_invalid_pseudo_close(self):
         """Test invalid pseudo close."""
