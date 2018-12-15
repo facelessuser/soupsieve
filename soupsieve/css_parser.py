@@ -10,6 +10,7 @@ SUPPORTED_PSEUDO = {
     ":root",
     ":empty",
     ":has",
+    ":contains",
     ":is",
     ":matches",
     ":not",
