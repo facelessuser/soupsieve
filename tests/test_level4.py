@@ -40,8 +40,6 @@ Not supported:
 
 - `:read-only` / `:read-write`: There are no plans to implement this at this time.
 
-- `:required` / `:optional`: There are no plans to implement this at this time.
-
 - `:placeholder-shown`: There are no plans to implement this at this time.
 
 - `:indeterminate`: There are no plans to implement this at this time.
@@ -513,5 +511,63 @@ class TestLevel4(util.TestCase):
             markup,
             "p:future",
             [],
+            flags=util.HTML5
+        )
+
+    def test_required(self):
+        """Test required."""
+
+        markup = """
+        <form>
+        <input id="1" type="name" required>
+        <input id="2" type="checkbox" required>
+        <input id="3" type="email">
+        <textarea id="4" name="name" id="message" cols="30" rows="10" required></textarea>
+        <select id="5" name="nm" id="sel" required>
+            <!-- options -->
+        </select>
+        </form>
+        """
+
+        self.assert_selector(
+            markup,
+            ":required",
+            ['1', '2', '4', '5'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "input:required",
+            ['1', '2'],
+            flags=util.HTML5
+        )
+
+    def test_optional(self):
+        """Test optional."""
+
+        markup = """
+        <form>
+        <input id="1" type="name" required>
+        <input id="2" type="checkbox" required>
+        <input id="3" type="email">
+        <textarea id="4" name="name" id="message" cols="30" rows="10"></textarea>
+        <select id="5" name="nm" id="sel">
+            <!-- options -->
+        </select>
+        </form>
+        """
+
+        self.assert_selector(
+            markup,
+            ":optional",
+            ['3', '4', '5'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "input:optional",
+            ['3'],
             flags=util.HTML5
         )

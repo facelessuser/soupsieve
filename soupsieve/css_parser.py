@@ -20,7 +20,9 @@ PSEUDO_SIMPLE = {
     ":only-of-type",
     ':checked',
     ':disabled',
-    ':enabled'
+    ':enabled',
+    ':required',
+    ':optional'
 }
 
 # Supported, simple pseudo classes that match nothing in the Soup Sieve environment
@@ -416,6 +418,30 @@ class CSSParser:
                                 fieldset[disabled] > :not(legend) *,
                                 fieldset[disabled] > *
                             ):not([disabled]))
+                            '''
+                        ),
+                        is_pseudo=True,
+                        html_only=True
+                    )
+                )
+            elif pseudo == ":required":
+                sel.selectors.append(
+                    self.parse_selectors(
+                        self.selector_iter(
+                            '''
+                            :is(input, textarea, select)[required])
+                            '''
+                        ),
+                        is_pseudo=True,
+                        html_only=True
+                    )
+                )
+            elif pseudo == ":optional":
+                sel.selectors.append(
+                    self.parse_selectors(
+                        self.selector_iter(
+                            '''
+                            :is(input, textarea, select):not([required]))
                             '''
                         ),
                         is_pseudo=True,
