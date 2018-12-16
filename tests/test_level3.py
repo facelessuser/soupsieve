@@ -1011,3 +1011,29 @@ class TestLevel3(util.TestCase):
             ['1', '2', 'opt-enable', 'b', '3', 'link'],
             flags=util.HTML5
         )
+
+    def test_target(self):
+        """Test target."""
+
+        markup = """
+        <div>
+        <h2 id="head-1">Header 1</h1>
+        <div><p>content</p></div>
+        <h2 id="head-2">Header 2</h1>
+        <div><p>content</p></div>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            "#head-2:target",
+            [],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "#head-2:not(:target)",
+            ["head-2"],
+            flags=util.HTML5
+        )

@@ -187,3 +187,41 @@ class TestLevel1(util.TestCase):
             [],
             flags=util.XML
         )
+
+    def test_active(self):
+        """Test active."""
+
+        markup = """
+        <div>
+        <p>Some text <span id="1" class="foo:bar:foobar"> in a paragraph</span>.
+        <a id="2" class="bar" href="http://google.com">Link</a>
+        <a id="3">Placeholder text.</a>
+        </p>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            "a:active",
+            [],
+            flags=util.HTML5
+        )
+
+    def test_visited(self):
+        """Test visited."""
+
+        markup = """
+        <div>
+        <p>Some text <span id="1" class="foo:bar:foobar"> in a paragraph</span>.
+        <a id="2" class="bar" href="http://google.com">Link</a>
+        <a id="3">Placeholder text.</a>
+        </p>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            "a:visited",
+            [],
+            flags=util.HTML5
+        )

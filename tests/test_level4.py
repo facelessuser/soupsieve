@@ -9,6 +9,14 @@ Test selectors level 4.
 :not(s1, s2, ...)
 :has(> s1, ...)
 :any-link
+:current
+:past
+:future
+:playing
+:paused
+:focus-within
+:focus-visible
+:target-within
 ```
 
 Likely to be implemented:
@@ -57,17 +65,10 @@ Not supported (with current opinions or plans the matter):
 - `:in-range` / `:out-of-range`: This applies to form elements only. You'd have to evaluate `value`, `min`, and `max`. I
   guess you can have numerical ranges and alphabetic ranges. Currently, there are no plans to implement this.
 
-- `:current` / `:past` / `:future`: I believe this requires a live, in browser state to determine what is current, to
-  then determine what is past and future. I don't think this is applicable to our environment.
-
 - `:default`: This is in the same vain as `:checked`. If we ever implemented that, we'd probably implement this, but
   there are no plans to do so at this time.
 
-- `:focus-within` / `:focus-visible`: There is no focus in our environment, so this will not be implemented.
-
 - `:target-within`: Elements cannot be "targeted" in our environment, so this will not be implemented.
-
-- `:playing` / `:paused`: Elements cannot be played or paused in our environment, so this will not be implemented.
 """
 from . import util
 import soupsieve as sv
