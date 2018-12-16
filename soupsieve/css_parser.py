@@ -18,14 +18,24 @@ PSEUDO_SIMPLE = {
     ":last-of-type",
     ":only-child",
     ":only-of-type",
+    ':checked',
+    ':disabled',
+    ':enabled'
+}
+
+# Supported, simple pseudo classes that match nothing in the Soup Sieve environment
+PSEUDO_SIMPLE_NO_MATCH = {
     ":visited",
     ':hover',
     ':active',
     ':focus',
     ':target',
-    ':checked',
-    ':disabled',
-    ':enabled'
+    ':current',
+    ':past',
+    ':future',
+    ':focus-within',
+    ':focus-visible',
+    ':target-within'
 }
 
 # Complex pseudo classes that take selector lists
@@ -38,6 +48,10 @@ PSEUDO_COMPLEX = {
     ":where"
 }
 
+PSEUDO_COMPLEX_NO_MATCH = {
+    ":current"
+}
+
 # Complex pseudo classes that take very specific parameters and are handled special
 PSEUDO_SPECIAL = {
     ":nth-child",
@@ -46,7 +60,7 @@ PSEUDO_SPECIAL = {
     ":nth-last-of-type"
 }
 
-PSEUDO_SUPPORTED = PSEUDO_SIMPLE | PSEUDO_COMPLEX | PSEUDO_SPECIAL
+PSEUDO_SUPPORTED = PSEUDO_SIMPLE | PSEUDO_SIMPLE_NO_MATCH | PSEUDO_COMPLEX | PSEUDO_COMPLEX_NO_MATCH | PSEUDO_SPECIAL
 
 # Sub-patterns parts
 WS = r'[ \t\r\n\f]'
@@ -349,7 +363,7 @@ class CSSParser:
             pseudo = pseudo[:-1]
         if complex_pseudo and pseudo in PSEUDO_COMPLEX:
             has_selector = self.parse_pseudo_open(sel, pseudo, has_selector, iselector)
-        elif pseudo in PSEUDO_SIMPLE:
+        elif not complex_pseudo and pseudo in PSEUDO_SIMPLE:
             if pseudo == ':root':
                 sel.root = True
             elif pseudo == ':empty':
@@ -408,8 +422,6 @@ class CSSParser:
                         html_only=True
                     )
                 )
-            elif pseudo in (':visited', ':hover', ':active', ':focus', ':target'):
-                sel.no_match = True
             elif pseudo == ':first-child':
                 sel.nth.append(ct.SelectorNth(1, False, 0, False, False, ct.SelectorList()))
             elif pseudo == ':last-child':
@@ -433,11 +445,16 @@ class CSSParser:
                     ]
                 )
             has_selector = True
+        elif complex_pseudo and pseudo in PSEUDO_COMPLEX_NO_MATCH:
+            self.parse_selectors(iselector, is_pseudo=True)
+            sel.no_match = True
+            has_selector = True
+        elif not complex_pseudo and pseudo in PSEUDO_SIMPLE_NO_MATCH:
+            sel.no_match = True
+            has_selector = True
         elif pseudo in PSEUDO_SUPPORTED:
-            print('yup')
             raise SyntaxError("Invalid syntax for pseudo class '{}'".format(pseudo))
         else:
-            print('yup2')
             raise NotImplementedError(
                 "'{}' pseudo class/element is not implemented at this time".format(pseudo)
             )

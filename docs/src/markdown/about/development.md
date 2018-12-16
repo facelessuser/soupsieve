@@ -196,7 +196,7 @@ Attribute    | Description
 `rel_type`   | `rel_type` is attached to relational selectors. In the case of `#!css div > p + a`, the relational selectors of `div` and `p` would get a relational type of `>` and `+` respectively. `:has()` relational `rel_type` are preceded with `:` to signify a forward looking relation.
 `empty`      | This is `True` if the current selector contained a `:empty` pseudo.
 `root`       | This is `True` if the current compound selector contains `:root`.
-`no_match`   | This selector has an unmatchable selector, such as `:focus`. Such selectors cannot match as certain states are not applicable to Soup Sieve.
+`no_match`   | This compound selector has an unmatchable selector, such as `:focus`. Such selectors cannot match as certain states are not applicable to Soup Sieve.
 
 ### `SelectorTag`
 

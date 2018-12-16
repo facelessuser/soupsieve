@@ -11,8 +11,6 @@ E, F
 :active
 :visited
 ```
-Not supported (with current opinions or plans the matter):
-
 """
 from . import util
 

@@ -14,11 +14,10 @@ E + F
 :focus
 ```
 
-Not supported (with current opinions or plans the matter):
+Not supported:
 
 - `:lang(en)`: In documents, `:lang()` can take into considerations information in `meta` and other things in the
-  header. At this point, there are no plans to implement this. If a reasonable proposal was introduced on how to
-  support this, it may be considered.
+  header.
 """
 from . import util
 

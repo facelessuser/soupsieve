@@ -24,9 +24,6 @@ E ~ F
 :enabled
 :disabled
 ```
-
-Not supported (with current opinions or plans the matter):
-
 """
 from . import util
 

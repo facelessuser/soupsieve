@@ -12,14 +12,12 @@ Test selectors level 4.
 :current
 :past
 :future
-:playing
-:paused
 :focus-within
 :focus-visible
 :target-within
 ```
 
-Likely to be implemented:
+Not supported:
 
 - `:nth-col(n)` / `:nth-last-col(n)`: This needs further understanding before implementing and would likely only be
   implemented for HTML, XHTML, and HTML5. This would not be implemented for XML.
@@ -27,23 +25,18 @@ Likely to be implemented:
 - `E || F`: This would need more understanding before implementation. This would likely only be implemented for HTML,
   XHTML, and HTML5. This would not be implemented for XML.
 
-Not supported (with current opinions or plans the matter):
-
-- `:blank`: This applies to inputs with empty or otherwise null input. Currently, there is no plans to implement this.
+- `:blank`: This applies to inputs with empty or otherwise null input.
 
 - `:dir(ltr)`: This applies to direction of text. This direction can be inherited from parents. Due to the way Soup
   Sieve process things, it would have to scan the parents and evaluate what is inherited. it doesn't account for the CSS
   `direction` value, which is a good thing. It is doable, but not sure worth the effort. In addition, it seems there is
   reference to being able to do something like `[dir=auto]` which would select either `ltr` or `rtl`. This seems to add
-  additional logic in to attribute selections which would complicate things, but still technically doable. There are
-  currently no plans to implement this.
+  additional logic in to attribute selections which would complicate things, but still technically doable.
 
 - `:lang(en-*)`: As mentioned in level 2 tests, in documents, `:lang()` can take into considerations information in
-  `meta` and other things in the header. At this point, there are no plans to implement this. If a reasonable proposal
-  was introduced on how to support this, it may be considered.
+  `meta` and other things in the header.
 
-- `:local-link`: In our environment, there is no document URL. This isn't currently practical. This will not be
-  implemented.
+- `:local-link`: In our environment, there is no document URL. This isn't currently practical.
 
 - `:read-only` / `:read-write`: There are no plans to implement this at this time.
 
@@ -68,7 +61,7 @@ Not supported (with current opinions or plans the matter):
 - `:default`: This is in the same vain as `:checked`. If we ever implemented that, we'd probably implement this, but
   there are no plans to do so at this time.
 
-- `:target-within`: Elements cannot be "targeted" in our environment, so this will not be implemented.
+- `:playing` / `:paused`: Elements cannot be played or paused in our environment, so this will not be implemented.
 """
 from . import util
 import soupsieve as sv
@@ -380,4 +373,145 @@ class TestLevel4(util.TestCase):
             ":not(a:any-link)",
             ["div", "0", "1", "2", "3"],
             flags=util.XML
+        )
+
+    def test_focus_within(self):
+        """Test focus within."""
+
+        markup = """
+        <form id="form">
+          <input type="text">
+        </form>
+        """
+
+        self.assert_selector(
+            markup,
+            "form:focus-within",
+            [],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "form:not(:focus-within)",
+            ["form"],
+            flags=util.HTML5
+        )
+
+    def test_focus_visible(self):
+        """Test focus visible."""
+
+        markup = """
+        <form id="form">
+          <input type="text">
+        </form>
+        """
+
+        self.assert_selector(
+            markup,
+            "form:focus-visible",
+            [],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "form:not(:focus-visible)",
+            ["form"],
+            flags=util.HTML5
+        )
+
+    def test_target_within(self):
+        """Test target within."""
+
+        markup = """
+        <a href="#head-2">Jump</a>
+        <article id="article">
+        <h2 id="head-1">Header 1</h1>
+        <div><p>content</p></div>
+        <h2 id="head-2">Header 2</h1>
+        <div><p>content</p></div>
+        </article>
+        """
+
+        self.assert_selector(
+            markup,
+            "article:target-within",
+            [],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "article:not(:target-within)",
+            ["article"],
+            flags=util.HTML5
+        )
+
+    def test_current_past_future(self):
+        """Test current, past, future."""
+
+        markup = """
+        <div id="div">
+        <p id="0">Some text <span id="1" class="foo:bar:foobar"> in a paragraph</span>.
+        <a id="2" class="bar" href="http://google.com">Link</a>
+        <a id="3">Placeholder text.</a>
+        </p>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            ":current(p, div, a)",
+            [],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            ":current(p, :not(div), a)",
+            [],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "body :not(:current(p, div, a))",
+            ["div", "0", "1", "2", "3"],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "body :not(:current(p, :not(div), a))",
+            ["div", "0", "1", "2", "3"],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "p:current",
+            [],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "p:not(:current)",
+            ["0"],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "p:past",
+            [],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "p:future",
+            [],
+            flags=util.HTML5
         )

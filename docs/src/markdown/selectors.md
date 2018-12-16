@@ -69,11 +69,15 @@ Selector                        | Example                             | Descript
 `:active`                       | `#!css a:active`                    | Active states are not applicable, so this will never match.
 `:any-link`                     | `#!css a:any-link`                  | All links are treated as unvisited, so this will match every `#!html <a>` element with an `href` attribute.
 `:checked`                      | `#!css input:checked`               | Selects every checked `#!html <input>` element.
+`:current`                      | `#!css p:current`                   | As the document is not rendered, this will never match.
+`:current(sel, sel)`            | `#!css :current(p, li, dt, dd)`     | As the document is not rendered, this will never match.
 `:disabled`                     | `#!css input:disabled`              | Selects every disabled `#!html <input>` element.
 `:enabled`                      | `#!css input:enabled`               | Selects every enabled `#!html <input>` element.
 `:focus`                        | `#!css input:focus`                 | Focus states are not applicable, so this will never match.
+`:future`                       | `#!css p:future`                    | As the document is not rendered, this will never match.
 `:hover`                        | `#!css a:focus`                     | Focus states are not applicable, so this will never match.
 `:link`                         | `#!css a:link`                      | All links are treated as unvisited, so this will match every `#!html <a>` element with an `href` attribute.
+`:past`                         | `#!css p:past`                      | As the document is not rendered, this will never match.
 `:target`                       | `#!css #news:target`                | Elements cannot be targeted, so this will never match.
 `:visited`                      | `#!css a:visited`                   | All links are treated unvisited, so this will never match.
 
