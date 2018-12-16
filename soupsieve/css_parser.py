@@ -6,26 +6,47 @@ from . import css_match as cm
 from . import css_types as ct
 from collections import OrderedDict
 
-SUPPORTED_PSEUDO = {
+# Simple pseudo classes that take no parameters
+PSEUDO_SIMPLE = {
     ":root",
     ":empty",
-    ":has",
-    ":contains",
-    ":is",
-    ":matches",
-    ":not",
-    ":where",
+    ":link",
+    ":any-link",
     ":first-child",
     ":first-of-type",
     ":last-child",
     ":last-of-type",
     ":only-child",
     ":only-of-type",
+    ":visited",
+    ':hover',
+    ':active',
+    ':focus',
+    ':target',
+    ':checked',
+    ':disabled',
+    ':enabled'
+}
+
+# Complex pseudo classes that take selector lists
+PSEUDO_COMPLEX = {
+    ":has",
+    ":contains",
+    ":is",
+    ":matches",
+    ":not",
+    ":where"
+}
+
+# Complex pseudo classes that take very specific parameters and are handled special
+PSEUDO_SPECIAL = {
     ":nth-child",
     ":nth-last-child",
     ":nth-of-type",
     ":nth-last-of-type"
 }
+
+PSEUDO_SUPPORTED = PSEUDO_SIMPLE | PSEUDO_COMPLEX | PSEUDO_SPECIAL
 
 # Sub-patterns parts
 WS = r'[ \t\r\n\f]'
@@ -46,6 +67,7 @@ VALUE = r'''
 )
 '''.format(ident=IDENTIFIER)
 
+# Attribute value comparison. `!=` is handled special as it is non-standard.
 ATTR = r'''(?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*{value}(?P<case>{ws}+[is])?)?{ws}*\]'''.format(ws=WS, value=VALUE)
 
 # Selector patterns
@@ -60,11 +82,9 @@ PAT_ATTR = r'''
 {attr}
 '''.format(ws=WS, ident=IDENTIFIER, attr=ATTR)
 
-PAT_PSEUDO_OPEN = r':(?:has|is|matches|not|where)\('
-
 PAT_PSEUDO_CLOSE = r'{ws}*\)'.format(ws=WS)
 
-PAT_PSEUDO = r':(?:empty|root|(?:first|last|only)-(?:child|of-type))\b'
+PAT_PSEUDO = r':{ident}+(?:\({ws}*)?'.format(ws=WS, ident=IDENTIFIER)
 
 PAT_PSEUDO_NTH_CHILD = r'''
 (?P<pseudo_nth_child>:nth-(?:last-)?child
@@ -80,8 +100,6 @@ PAT_SPLIT = r'{ws}*?(?P<relation>[,+>~]|{ws}(?![,+>~])){ws}*'.format(ws=WS)
 
 # Extra selector patterns
 PAT_PSEUDO_CONTAINS = r':contains\({ws}*{value}{ws}*\)'.format(ws=WS, value=VALUE)
-
-PAT_PSEUDO_INVALID = r':{ident}'.format(ident=IDENTIFIER)
 
 # CSS escape pattern
 RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{{1,6}}{ws}?)|(\\.))'.format(ws=WS), re.I)
@@ -161,6 +179,7 @@ class _Selector:
         self.contains = kwargs.get('contains', [])
         self.empty = kwargs.get('empty', False)
         self.root = kwargs.get('root', False)
+        self.no_match = kwargs.get('no_match', False)
 
     def _freeze_relations(self, relations):
         """Freeze relation."""
@@ -186,7 +205,8 @@ class _Selector:
             self.rel_type,
             tuple(self.contains),
             self.empty,
-            self.root
+            self.root,
+            self.no_match,
         )
 
     def __str__(self):  # pragma: no cover
@@ -208,13 +228,11 @@ class CSSParser:
 
     css_tokens = OrderedDict(
         [
-            ("pseudo_open", SelectorPattern(PAT_PSEUDO_OPEN)),
             ("pseudo_close", SelectorPattern(PAT_PSEUDO_CLOSE)),
-            ("pseudo", SelectorPattern(PAT_PSEUDO)),
             ("pseudo_contains", SelectorPattern(PAT_PSEUDO_CONTAINS)),
             ("pseudo_nth_child", SelectorPattern(PAT_PSEUDO_NTH_CHILD)),
             ("pseudo_nth_type", SelectorPattern(PAT_PSEUDO_NTH_TYPE)),
-            ("pseudo_invalid", SelectorPattern(PAT_PSEUDO_INVALID)),
+            ("pseudo", SelectorPattern(PAT_PSEUDO)),
             ("id", SelectorPattern(PAT_ID)),
             ("class", SelectorPattern(PAT_CLASS)),
             ("tag", SelectorPattern(PAT_TAG)),
@@ -321,38 +339,109 @@ class CSSParser:
         has_selector = True
         return has_selector
 
-    def parse_pseudo(self, sel, m, has_selector):
+    def parse_pseudo(self, sel, m, has_selector, iselector):
         """Parse pseudo."""
 
-        pseudo = util.lower(m.group(0)[1:])
-        if pseudo == 'root':
-            sel.root = True
-        elif pseudo == 'empty':
-            sel.empty = True
-        elif pseudo == 'first-child':
-            sel.nth.append(ct.SelectorNth(1, False, 0, False, False, ct.SelectorList()))
-        elif pseudo == 'last-child':
-            sel.nth.append(ct.SelectorNth(1, False, 0, False, True, ct.SelectorList()))
-        elif pseudo == 'first-of-type':
-            sel.nth.append(ct.SelectorNth(1, False, 0, True, False, ct.SelectorList()))
-        elif pseudo == 'last-of-type':
-            sel.nth.append(ct.SelectorNth(1, False, 0, True, True, ct.SelectorList()))
-        elif pseudo == 'only-child':
-            sel.nth.extend(
-                [
-                    ct.SelectorNth(1, False, 0, False, False, ct.SelectorList()),
-                    ct.SelectorNth(1, False, 0, False, True, ct.SelectorList())
-                ]
-            )
-        elif pseudo == 'only-of-type':
-            sel.nth.extend(
-                [
-                    ct.SelectorNth(1, False, 0, True, False, ct.SelectorList()),
-                    ct.SelectorNth(1, False, 0, True, True, ct.SelectorList())
-                ]
+        complex_pseudo = False
+        pseudo = util.lower(m.group(0)).strip()
+        if pseudo.endswith('('):
+            complex_pseudo = True
+            pseudo = pseudo[:-1]
+        if complex_pseudo and pseudo in PSEUDO_COMPLEX:
+            has_selector = self.parse_pseudo_open(sel, pseudo, has_selector, iselector)
+        elif pseudo in PSEUDO_SIMPLE:
+            if pseudo == ':root':
+                sel.root = True
+            elif pseudo == ':empty':
+                sel.empty = True
+            elif pseudo in (':link', ':any-link'):
+                sel.selectors.append(
+                    self.parse_selectors(
+                        self.selector_iter(':is(a, area, link)[href])'),
+                        is_pseudo=True,
+                        html_only=True
+                    )
+                )
+            elif pseudo == ':checked':
+                sel.selectors.append(
+                    self.parse_selectors(
+                        self.selector_iter(
+                            '''
+                            :is(input[type=checkbox], input[type=radio])[checked],
+                            select > option[selected])
+                            '''
+                        ),
+                        is_pseudo=True,
+                        html_only=True
+                    )
+                )
+            elif pseudo == ":disabled":
+                sel.selectors.append(
+                    self.parse_selectors(
+                        self.selector_iter(
+                            '''
+                            :is(input[type!=hidden], button, select, textarea, fieldset, optgroup, option)[disabled],
+                            optgroup[disabled] > option,
+                            fieldset[disabled] > :not(legend) :is(input[type!=hidden], button, select, textarea),
+                            fieldset[disabled] > :is(input[type!=hidden], button, select, textarea))
+                            '''
+                        ),
+                        is_pseudo=True,
+                        html_only=True
+                    )
+                )
+            elif pseudo == ":enabled":
+                sel.selectors.append(
+                    self.parse_selectors(
+                        self.selector_iter(
+                            '''
+                            :is(a, area, link)[href],
+                            :is(fieldset, optgroup):not([disabled]),
+                            option:not(optgroup[disabled] *):not([disabled]),
+                            :is(input[type!=hidden], button, select, textarea):not(
+                                fieldset[disabled] > :not(legend) *,
+                                fieldset[disabled] > *
+                            ):not([disabled]))
+                            '''
+                        ),
+                        is_pseudo=True,
+                        html_only=True
+                    )
+                )
+            elif pseudo in (':visited', ':hover', ':active', ':focus', ':target'):
+                sel.no_match = True
+            elif pseudo == ':first-child':
+                sel.nth.append(ct.SelectorNth(1, False, 0, False, False, ct.SelectorList()))
+            elif pseudo == ':last-child':
+                sel.nth.append(ct.SelectorNth(1, False, 0, False, True, ct.SelectorList()))
+            elif pseudo == ':first-of-type':
+                sel.nth.append(ct.SelectorNth(1, False, 0, True, False, ct.SelectorList()))
+            elif pseudo == ':last-of-type':
+                sel.nth.append(ct.SelectorNth(1, False, 0, True, True, ct.SelectorList()))
+            elif pseudo == ':only-child':
+                sel.nth.extend(
+                    [
+                        ct.SelectorNth(1, False, 0, False, False, ct.SelectorList()),
+                        ct.SelectorNth(1, False, 0, False, True, ct.SelectorList())
+                    ]
+                )
+            elif pseudo == ':only-of-type':
+                sel.nth.extend(
+                    [
+                        ct.SelectorNth(1, False, 0, True, False, ct.SelectorList()),
+                        ct.SelectorNth(1, False, 0, True, True, ct.SelectorList())
+                    ]
+                )
+            has_selector = True
+        elif pseudo in PSEUDO_SUPPORTED:
+            print('yup')
+            raise SyntaxError("Invalid syntax for pseudo class '{}'".format(pseudo))
+        else:
+            print('yup2')
+            raise NotImplementedError(
+                "'{}' pseudo class/element is not implemented at this time".format(pseudo)
             )
 
-        has_selector = True
         return has_selector
 
     def parse_pseudo_nth(self, sel, m, has_selector, iselector):
@@ -414,22 +503,21 @@ class CSSParser:
         has_selector = True
         return has_selector
 
-    def parse_pseudo_open(self, sel, m, has_selector, iselector, is_pseudo):
+    def parse_pseudo_open(self, sel, name, has_selector, iselector):
         """Parse pseudo with opening bracket."""
 
-        name = util.lower(m.group(0)[1:-1])
         sel.selectors.append(
             self.parse_selectors(
                 iselector,
                 True,
-                name == 'not',
-                name == 'has'
+                name == ':not',
+                name == ':has'
             )
         )
         has_selector = True
         return has_selector
 
-    def parse_has_split(self, sel, m, has_selector, selectors, is_pseudo, rel_type):
+    def parse_has_split(self, sel, m, has_selector, selectors, rel_type):
         """Parse splitting tokens."""
 
         if m.group('relation') == SPLIT:
@@ -496,7 +584,7 @@ class CSSParser:
         has_selector = True
         return has_selector
 
-    def parse_selectors(self, iselector, is_pseudo=False, is_not=False, is_has=False):
+    def parse_selectors(self, iselector, is_pseudo=False, is_not=False, is_has=False, html_only=False):
         """Parse selectors."""
 
         sel = _Selector()
@@ -514,21 +602,12 @@ class CSSParser:
                 key, m = next(iselector)
 
                 # Handle parts
-                if key == 'pseudo_invalid':
-                    if util.lower(m.group(0)) in SUPPORTED_PSEUDO:
-                        raise SyntaxError("Invalid syntax for pseudo class '{}'".format(key))
-                    else:
-                        raise NotImplementedError(
-                            "'{}' pseudo class/element is not implemented at this time".format(key)
-                        )
-                elif key == 'pseudo':
-                    has_selector = self.parse_pseudo(sel, m, has_selector)
+                if key == 'pseudo':
+                    has_selector = self.parse_pseudo(sel, m, has_selector, iselector)
                 elif key == 'pseudo_contains':
                     has_selector = self.parse_contains(sel, m, has_selector)
                 elif key in ('pseudo_nth_type', 'pseudo_nth_child'):
                     has_selector = self.parse_pseudo_nth(sel, m, has_selector, iselector)
-                elif key == 'pseudo_open':
-                    has_selector = self.parse_pseudo_open(sel, m, has_selector, iselector, is_pseudo)
                 elif key == 'pseudo_close':
                     if split_last:
                         raise SyntaxError("Cannot end with a combining character")
@@ -542,7 +621,7 @@ class CSSParser:
                         raise SyntaxError("Cannot have combining character directly after a combining character")
                     if is_has:
                         has_selector, sel, rel_type = self.parse_has_split(
-                            sel, m, has_selector, selectors, is_pseudo, rel_type
+                            sel, m, has_selector, selectors, rel_type
                         )
                     else:
                         has_selector, sel = self.parse_split(sel, m, has_selector, selectors, relations, is_pseudo)
@@ -581,11 +660,12 @@ class CSSParser:
             # We will always need to finish a selector when `:has()` is used as it leads with combining.
             raise SyntaxError('Missing selectors after combining type.')
 
-        return ct.SelectorList([s.freeze() for s in selectors], is_not)
+        return ct.SelectorList([s.freeze() for s in selectors], is_not, html_only)
 
     def selector_iter(self, pattern):
         """Iterate selector tokens."""
 
+        pattern = pattern.strip()
         index = 0
         end = len(pattern) - 1
         while index <= end:

@@ -10,6 +10,8 @@ E + F
 [foo='bar']
 [foo~='bar']
 [foo|='en']
+:hover
+:focus
 ```
 
 Not supported (with current opinions or plans the matter):
@@ -17,10 +19,6 @@ Not supported (with current opinions or plans the matter):
 - `:lang(en)`: In documents, `:lang()` can take into considerations information in `meta` and other things in the
   header. At this point, there are no plans to implement this. If a reasonable proposal was introduced on how to
   support this, it may be considered.
-
-- `:hover`: Items cannot be hovered in our environment, so this has little meaning and will not be implemented.
-
-- `:focus`: Items cannot be focused in our environment, so this has little meaning and will not be implemented.
 """
 from . import util
 

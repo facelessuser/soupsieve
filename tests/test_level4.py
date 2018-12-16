@@ -8,6 +8,7 @@ Test selectors level 4.
 :where(s1, s2, ...) allowed, but due to our environment, works like `:is()`
 :not(s1, s2, ...)
 :has(> s1, ...)
+:any-link
 ```
 
 Likely to be implemented:
@@ -345,4 +346,37 @@ class TestLevel4(util.TestCase):
             ":nth-child(-n+3 of p)",
             ['0', '1', '7'],
             flags=util.HTML5
+        )
+
+    def test_anylink(self):
+        """Test any link (all links are unvisited)."""
+
+        markup = """
+        <div id="div">
+        <p id="0">Some text <span id="1" class="foo:bar:foobar"> in a paragraph</span>.
+        <a id="2" class="bar" href="http://google.com">Link</a>
+        <a id="3">Placeholder text.</a>
+        </p>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            ":any-link",
+            ["2"],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "a:any-link",
+            [],
+            flags=util.XML
+        )
+
+        self.assert_selector(
+            markup,
+            ":not(a:any-link)",
+            ["div", "0", "1", "2", "3"],
+            flags=util.XML
         )

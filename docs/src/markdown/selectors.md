@@ -2,6 +2,8 @@
 
 ## Level 1-4 Selectors
 
+### HTML and XML Selectors
+
 The CSS selectors are based on a limited subset of CSS4 selectors. Primarily support has been added for selectors that were feasible to implement and most likely to get practical use.
 
 Below shows accepted selectors. When speaking about namespaces, they only apply to XML, XHTML, or when dealing with recognized foreign tags in HTML5. You must configure the CSS [namespaces](./api.md#namespaces) when attempting to evaluate namespaces.
@@ -37,24 +39,43 @@ Selector                        | Example                             | Descript
 `[attribute*=value]`            | `#!css a[href*="sometext"]`         | Selects every `#!html <a>` element whose `href` attribute value contains the substring `sometext`.
 `[attribute=value i]`           | `#!css [title=flower i]`            | Selects any element with a `title` that equals `flower` regardless of case.
 `[attribute=value s]`           | `#!css [type=submit s]`             | Selects any element with a `type` that equals `submit`. Case sensitivity will be forced.
-`:not(sel, sel)`                | `#!css :not(.some-class, #some-id)` | Selects elements that do not have class `some-class` and ID `some-id`.
-`:is(sel, sel)`                 | `#!css :is(div, .some-class)`       | Selects elements that are not `#!html <div>` and do not have class `some-class`. The alias `:matches` is allowed as well. In CSS4 `:where` is like `:is` except specificity is always zero. Soup Sieve doesn't care about specificity, so `:where` is exactly like `:is`.
-`:has(> sel, + sel)`            | `#!css :has(> div, + p)`            | Selects elements that have a direct child that is a `#!html <div>` or that have sibling of `#!html <p>` immediately following.
+`:empty`                        | `#!css p:empty`                     | Selects every `#!html <p>` element that has no children and either no text. Whitespace and comments are ignored.
 `:first-child`                  | `#!css p:first-child`               | Selects every `#!html <p>` element that is the first child of its parent.
-`:last-child`                   | `#!css p:last-child`                | Selects every `#!html <p>` element that is the last child of its parent.
 `:first-of-type`                | `#!css p:first-of-type`             | Selects every `#!html <p>` element that is the first `#!html <p>` element of its parent.
+`:has(> sel, + sel)`            | `#!css :has(> div, + p)`            | Selects elements that have a direct child that is a `#!html <div>` or that have sibling of `#!html <p>` immediately following.
+`:is(sel, sel)`                 | `#!css :is(div, .some-class)`       | Selects elements that are not `#!html <div>` and do not have class `some-class`. The alias `:matches` is allowed as well. In CSS4 `:where` is like `:is` except specificity is always zero. Soup Sieve doesn't care about specificity, so `:where` is exactly like `:is`.
+`:last-child`                   | `#!css p:last-child`                | Selects every `#!html <p>` element that is the last child of its parent.
 `:last-of-type`                 | `#!css p:last-of-type`              | Selects every `#!html <p>` element that is the last `#!html <p>` element of its parent.
-`:only-child`                   | `#!css p:only-child`                | Selects every `#!html <p>` element that is the only child of its parent.
-`:only-of-type`                 | `#!css p:only-of-type`              | Selects every `#!html <p>` element that is the only `#!html <p>` element of its parent.
+`:not(sel, sel)`                | `#!css :not(.some-class, #some-id)` | Selects elements that do not have class `some-class` and ID `some-id`.
 `:nth-child(an+b [of S]?)`      | `#!css p:nth-child(2)`              | Selects every `#!html <p>` element that is the second child of its parent. Please see CSS specification for more info on format.
 `:nth-last-child(an+b [of S]?)` | `#!css p:nth-last-child(2)`         | Selects every `#!html <p>` element that is the second child of its parent, counting from the last child. Please see CSS specification for more info on format.
-`:nth-of-type(an+b)`            | `#!css p:nth-of-type(2)`            | Selects every `#!html <p>` element that is the second `#!html <p>` element of its parent. Please see CSS specification for more info on format.
 `:nth-last-of-type(an+b)`       | `#!css p:nth-last-of-type(2)`       | Selects every `#!html <p>` element that is the second `#!html <p>` element of its parent, counting from the last child. Please see CSS specification for more info on format.
+`:nth-of-type(an+b)`            | `#!css p:nth-of-type(2)`            | Selects every `#!html <p>` element that is the second `#!html <p>` element of its parent. Please see CSS specification for more info on format.
+`:only-child`                   | `#!css p:only-child`                | Selects every `#!html <p>` element that is the only child of its parent.
+`:only-of-type`                 | `#!css p:only-of-type`              | Selects every `#!html <p>` element that is the only `#!html <p>` element of its parent.
 `:root`                         | `#!css :root`                       | Selects the root element. In HTML, this is usually the `#!html <html>` element.
-`:empty`                        | `#!css p:empty`                     | Selects every `#!html <p>` element that has no children and either no text. Whitespace and comments are ignored.
 
 !!! warning "Experimental Selectors"
     `:has()` and `of S` support (in `:nth-child(an+b [of S]?)`) is experimental and may change. There are currently no reference implementations available in any browsers, not to mention the CSS4 specifications have not been finalized, so current implementation is based on our best interpretation. Any issues should be reported.
+
+### HTML Only Selectors
+
+There are a number of selectors that apply specifically to HTML documents. Such selectors will only match tags in HTML documents. Use of these selectors are not restricted from XML, but when used with XML documents, they will never match.
+
+Selectors that require states that only exist within a live HTML document, or are specifically tied to user interaction with a live document are allowed (if implemented), but will never match as well.
+
+Selector                        | Example                             | Description
+------------------------------- | ----------------------------------- | -----------
+`:active`                       | `#!css a:active`                    | Active states are not applicable, so this will never match.
+`:any-link`                     | `#!css a:any-link`                  | All links are treated as unvisited, so this will match every `#!html <a>` element with an `href` attribute.
+`:checked`                      | `#!css input:checked`               | Selects every checked `#!html <input>` element.
+`:disabled`                     | `#!css input:disabled`              | Selects every disabled `#!html <input>` element.
+`:enabled`                      | `#!css input:enabled`               | Selects every enabled `#!html <input>` element.
+`:focus`                        | `#!css input:focus`                 | Focus states are not applicable, so this will never match.
+`:hover`                        | `#!css a:focus`                     | Focus states are not applicable, so this will never match.
+`:link`                         | `#!css a:link`                      | All links are treated as unvisited, so this will match every `#!html <a>` element with an `href` attribute.
+`:target`                       | `#!css #news:target`                | Elements cannot be targeted, so this will never match.
+`:visited`                      | `#!css a:visited`                   | All links are treated unvisited, so this will never match.
 
 ## Custom Selectors
 
@@ -64,8 +85,8 @@ Just because we include selectors from one source, does not mean we have intenti
 
 Selector                        | Example                             | Description
 ------------------------------- | ----------------------------------- | -----------
-`:contains(text)`               | `#!css p:contains(text)`            | Select all `#!html <p>` elements that contain "text" in their content, either directly in themselves or indirectly in their decedents.
 `[attribute!=value]`            | `#!css [target!=_blank]`            | Equivalent to `#!css :not([target=_blank])`.
+`:contains(text)`               | `#!css p:contains(text)`            | Select all `#!html <p>` elements that contain "text" in their content, either directly in themselves or indirectly in their decedents.
 
 --8<--
 refs.txt

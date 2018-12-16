@@ -421,37 +421,42 @@ class CSSMatch:
 
         match = False
         is_not = selectors.is_not
-        for selector in selectors:
-            match = is_not
-            # Verify tag matches
-            if not self.match_tag(el, selector.tag):
-                continue
-            # Verify `nth` matches
-            if not self.match_nth(el, selector.nth):
-                continue
-            if not self.match_empty(el, selector.empty):
-                continue
-            # Verify id matches
-            if selector.ids and not self.match_id(el, selector.ids):
-                continue
-            # Verify classes match
-            if selector.classes and not self.match_classes(el, selector.classes):
-                continue
-            # Verify attribute(s) match
-            if not self.match_attributes(el, selector.attributes):
-                continue
-            if selector.root and not self.match_root(el):
-                continue
-            # Verify pseudo selector patterns
-            if selector.selectors and not self.match_subselectors(el, selector.selectors):
-                continue
-            # Verify relationship selectors
-            if selector.relation and not self.match_relations(el, selector.relation):
-                continue
-            if not self.match_contains(el, selector.contains):
-                continue
-            match = not is_not
-            break
+        is_html = selectors.is_html
+        if not (is_html and self.is_xml):
+            for selector in selectors:
+                match = is_not
+                # We have a un-matchable situation (like `:focus` as you can focus an element in this environment)
+                if selector.no_match:
+                    continue
+                # Verify tag matches
+                if not self.match_tag(el, selector.tag):
+                    continue
+                # Verify `nth` matches
+                if not self.match_nth(el, selector.nth):
+                    continue
+                if not self.match_empty(el, selector.empty):
+                    continue
+                # Verify id matches
+                if selector.ids and not self.match_id(el, selector.ids):
+                    continue
+                # Verify classes match
+                if selector.classes and not self.match_classes(el, selector.classes):
+                    continue
+                # Verify attribute(s) match
+                if not self.match_attributes(el, selector.attributes):
+                    continue
+                if selector.root and not self.match_root(el):
+                    continue
+                # Verify pseudo selector patterns
+                if selector.selectors and not self.match_subselectors(el, selector.selectors):
+                    continue
+                # Verify relationship selectors
+                if selector.relation and not self.match_relations(el, selector.relation):
+                    continue
+                if not self.match_contains(el, selector.contains):
+                    continue
+                match = not is_not
+                break
 
         return match
 

@@ -29,10 +29,14 @@ class Selector(util.Immutable):
 
     __slots__ = (
         'tag', 'ids', 'classes', 'attributes', 'nth', 'selectors',
-        'relation', 'rel_type', 'contains', 'empty', 'root', '_hash'
+        'relation', 'rel_type', 'contains', 'empty', 'root', 'no_match',
+        '_hash'
     )
 
-    def __init__(self, tag, ids, classes, attributes, nth, selectors, relation, rel_type, contains, empty, root):
+    def __init__(
+        self, tag, ids, classes, attributes, nth, selectors,
+        relation, rel_type, contains, empty, root, no_match
+    ):
         """Initialize."""
 
         super().__init__(
@@ -46,7 +50,8 @@ class Selector(util.Immutable):
             rel_type=rel_type,
             contains=contains,
             empty=empty,
-            root=root
+            root=root,
+            no_match=no_match
         )
 
 
@@ -101,14 +106,15 @@ class SelectorNth(util.Immutable):
 class SelectorList(util.Immutable):
     """Selector list."""
 
-    __slots__ = ("_selectors", "is_not", "_hash")
+    __slots__ = ("_selectors", "is_not", "is_html", "_hash")
 
-    def __init__(self, selectors=tuple(), is_not=False):
+    def __init__(self, selectors=tuple(), is_not=False, is_html=False):
         """Initialize."""
 
         super().__init__(
             _selectors=tuple(selectors),
-            is_not=is_not
+            is_not=is_not,
+            is_html=is_html
         )
 
     def __iter__(self):

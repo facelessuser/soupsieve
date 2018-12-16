@@ -7,14 +7,12 @@ E F
 E, F
 .class
 #elementID
+:link
+:active
+:visited
 ```
 Not supported (with current opinions or plans the matter):
 
-- `:link`: visited or un-visited links have no meaning outside a browser, just search for `:is(a,area,link)[href]` to
-  target links. At most, the possibility of supporting the `:link` as an alias for `:link` may be considered in the
-  future as technically, all links are un-visited in our scenario.
-
-- `:active`: No elements in our environment can be "active", so this makes no sense in our context.
 """
 from . import util
 
@@ -162,4 +160,30 @@ class TestLevel1(util.TestCase):
             ".foo\\:bar\\3a foobar",
             ["1"],
             flags=util.HTML5
+        )
+
+    def test_link(self):
+        """Test link (all links are unvisited)."""
+
+        markup = """
+        <div>
+        <p>Some text <span id="1" class="foo:bar:foobar"> in a paragraph</span>.
+        <a id="2" class="bar" href="http://google.com">Link</a>
+        <a id="3">Placeholder text.</a>
+        </p>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            ":link",
+            ["2"],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "a:link",
+            [],
+            flags=util.XML
         )

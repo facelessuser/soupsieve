@@ -27,6 +27,7 @@ html
 iterable
 linter
 lxml
+matchable
 matcher
 matchers
 namespace
@@ -42,5 +43,6 @@ tuple
 tuples
 un
 unpickle
+unvisited
 whitespace
 wordlist
