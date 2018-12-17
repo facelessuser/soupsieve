@@ -28,6 +28,8 @@ class CSSMatch:
     def __init__(self, selectors, namespaces, flags):
         """Initialize."""
 
+        self.default_forms = []
+        self.indeterminate_forms = []
         self.selectors = selectors
         self.namespaces = namespaces
         self.flags = flags
@@ -430,24 +432,35 @@ class CSSMatch:
             else:
                 parent = parent.parent
 
+        # Look in form cache to see if we've already located its default button
+        found_form = False
+        for f, t in self.default_forms:
+            if f is form:
+                found_form = True
+                if t is el:
+                    match = True
+                break
+
         # We didn't have the form cached, so look for its default button
-        child_found = False
-        for child in form.descendants:
-            if not isinstance(child, util.TAG):
-                continue
-            name = util.lower(child.name)
-            # Can't do nested forms (haven't figured out why we never hit this)
-            if name == 'form':  # pragma: no cover
-                break
-            if name in ('input', 'button'):
-                for k, v in child.attrs.items():
-                    if util.lower(k) == 'type' and util.lower(v) == 'submit':
-                        child_found = True
-                        if el is child:
-                            match = True
-                        break
-            if child_found:
-                break
+        if not found_form:
+            child_found = False
+            for child in form.descendants:
+                if not isinstance(child, util.TAG):
+                    continue
+                name = util.lower(child.name)
+                # Can't do nested forms (haven't figured out why we never hit this)
+                if name == 'form':  # pragma: no cover
+                    break
+                if name in ('input', 'button'):
+                    for k, v in child.attrs.items():
+                        if util.lower(k) == 'type' and util.lower(v) == 'submit':
+                            child_found = True
+                            self.default_forms.append([form, child])
+                            if el is child:
+                                match = True
+                            break
+                if child_found:
+                    break
         return match
 
     def match_indeterminate(self, el):
@@ -475,30 +488,41 @@ class CSSMatch:
 
         form = get_parent_form(el)
 
-        # We didn't have the form cached, so validate that the radio button is indeterminate
-        checked = False
-        for child in form.descendants:
-            if not isinstance(child, util.TAG) or child is el:
-                continue
-            tag_name = util.lower(child.name)
-            if tag_name == 'input':
-                is_radio = False
-                check = False
-                has_name = False
-                for k, v in child.attrs.items():
-                    if util.lower(k) == 'type' and util.lower(v) == 'radio':
-                        is_radio = True
-                    elif util.lower(k) == 'name' and v == name:
-                        has_name = True
-                    elif util.lower(k) == 'checked':
-                        check = True
-                    if is_radio and check and has_name and get_parent_form(child) is form:
-                        checked = True
-                        break
-            if checked:
+        # Look in form cache to see if we've already evaluated that its fellow radio buttons are indeterminate
+        found_form = False
+        for f, n, i in self.indeterminate_forms:
+            if f is form and n == name:
+                found_form = True
+                if i is True:
+                    match = True
                 break
-        if not checked:
-            match = True
+
+        # We didn't have the form cached, so validate that the radio button is indeterminate
+        if not found_form:
+            checked = False
+            for child in form.descendants:
+                if not isinstance(child, util.TAG) or child is el:
+                    continue
+                tag_name = util.lower(child.name)
+                if tag_name == 'input':
+                    is_radio = False
+                    check = False
+                    has_name = False
+                    for k, v in child.attrs.items():
+                        if util.lower(k) == 'type' and util.lower(v) == 'radio':
+                            is_radio = True
+                        elif util.lower(k) == 'name' and v == name:
+                            has_name = True
+                        elif util.lower(k) == 'checked':
+                            check = True
+                        if is_radio and check and has_name and get_parent_form(child) is form:
+                            checked = True
+                            break
+                if checked:
+                    break
+            if not checked:
+                match = True
+            self.indeterminate_forms.append([form, name, match])
 
         return match
 
@@ -594,9 +618,11 @@ class SoupSieve(util.Immutable):
     def _walk(self, node, capture=True, comments=False):
         """Recursively return selected tags."""
 
+        match = CSSMatch(self.selectors, self.namespaces, self.flags).match
+
         # Walk children
         for child in node.descendants:
-            if capture and isinstance(child, util.TAG) and self.match(child):
+            if capture and isinstance(child, util.TAG) and match(child):
                 yield child
             elif comments and isinstance(child, util.COMMENT):
                 yield child

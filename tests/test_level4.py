@@ -663,6 +663,15 @@ class TestLevel4(util.TestCase):
             flags=util.HTML5
         )
 
+        # For the sake of coverage, we will do this impractical select
+        # to ensure we reuse the cached default.
+        self.assert_selector(
+            markup2,
+            ":default:default",
+            ['d1'],
+            flags=util.HTML5
+        )
+
         # You shouldn't nest forms, but if you do,
         # When a parent form encounters a nested form, we will bail evaluation like browsers do.
         # We should see button 1 getting found for nested form, but button 2 will not be found

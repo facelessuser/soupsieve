@@ -280,7 +280,7 @@ class CSSParser:
         if dflags:
             util.warn_deprecated(
                 "The following flags are deprecated and may be repurposed in the future '0x%02X'" % dflags,
-                stacklevel=5
+                stacklevel=3
             )
 
     def parse_attribute_selector(self, sel, m, has_selector):
