@@ -23,7 +23,8 @@ PSEUDO_SIMPLE = {
     ':enabled',
     ':required',
     ':optional',
-    ':default'
+    ':default',
+    ':indeterminate'
 }
 
 # Supported, simple pseudo classes that match nothing in the Soup Sieve environment
@@ -133,6 +134,7 @@ FLG_NOT = 0x02
 FLG_HAS = 0x04
 FLG_DEFAULT = 0x08
 FLG_HTML = 0x10
+FLG_INDETERMINATE = 0x20
 
 _MAXCACHE = 500
 
@@ -204,6 +206,7 @@ class _Selector:
         self.empty = kwargs.get('empty', False)
         self.root = kwargs.get('root', False)
         self.default = kwargs.get('default', False)
+        self.indeterminate = kwargs.get('indeterminate', False)
         self.no_match = kwargs.get('no_match', False)
 
     def _freeze_relations(self, relations):
@@ -232,6 +235,7 @@ class _Selector:
             self.empty,
             self.root,
             self.default,
+            self.indeterminate,
             self.no_match,
         )
 
@@ -402,6 +406,20 @@ class CSSParser:
                     self.parse_selectors(
                         self.selector_iter(':checked, form :is(button, input)[type="submit"])'),
                         FLG_PSEUDO | FLG_HTML | FLG_DEFAULT
+                    )
+                )
+            elif pseudo == ':indeterminate':
+                sel.selectors.append(
+                    self.parse_selectors(
+                        self.selector_iter(
+                            '''
+                            input[type="checkbox"][indeterminate],
+                            input[type="radio"]:not([name]):not([checked]),
+                            progress:not([value]),
+                            input[type="radio"][name]:not([checked]))
+                            '''
+                        ),
+                        FLG_PSEUDO | FLG_HTML | FLG_INDETERMINATE
                     )
                 )
             elif pseudo == ":disabled":
@@ -637,6 +655,7 @@ class CSSParser:
         is_not = flags & FLG_NOT
         is_html = flags & FLG_HTML
         is_default = flags & FLG_DEFAULT
+        is_indeterminate = flags & FLG_INDETERMINATE
         if is_has:
             selectors.append(_Selector())
 
@@ -708,6 +727,8 @@ class CSSParser:
         # along with the pattern.
         if is_default:
             selectors[-1].default = True
+        if is_indeterminate:
+            selectors[-1].indeterminate = True
 
         return ct.SelectorList([s.freeze() for s in selectors], is_not, is_html)
 

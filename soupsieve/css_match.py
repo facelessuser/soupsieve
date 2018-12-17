@@ -421,7 +421,7 @@ class CSSMatch:
 
         match = False
 
-        # Find this inputs form
+        # Find this input's form
         form = None
         parent = el.parent
         while parent and form is None:
@@ -432,7 +432,7 @@ class CSSMatch:
 
         # Look in form cache to see if we've already located its default button
         found_form = False
-        for f, t in self.forms:
+        for f, t in self.default_forms:
             if f is form:
                 found_form = True
                 if t is el:
@@ -453,12 +453,75 @@ class CSSMatch:
                     for k, v in child.attrs.items():
                         if util.lower(k) == 'type' and util.lower(v) == 'submit':
                             child_found = True
-                            self.forms.append([form, child])
+                            self.default_forms.append([form, child])
                             if el is child:
                                 match = True
                             break
                 if child_found:
                     break
+        return match
+
+    def match_indeterminate(self, el):
+        """Match default."""
+
+        match = False
+        name = el.attrs.get('name')
+        if not name:
+            return True
+
+        def get_parent_form(el):
+            """Find this input's form."""
+            form = None
+            parent = el.parent
+            while form is None:
+                if util.lower(parent.name) == 'form':
+                    form = parent
+                    break
+                elif parent.parent:
+                    parent = parent.parent
+                else:
+                    form = parent
+                    break
+            return form
+
+        form = get_parent_form(el)
+
+        # Look in form cache to see if we've already evaluted that its fellow radio buttons are indeterminate
+        found_form = False
+        for f, n, i in self.indeterminate_forms:
+            if f is form and n == name:
+                found_form = True
+                if i is True:
+                    match = True
+                break
+
+        # We didn't have the form cached, so validate that the radio button is indeterminate
+        checked = False
+        if not found_form:
+            for child in form.descendants:
+                if not isinstance(child, util.TAG) or child is el:
+                    continue
+                tag_name = util.lower(child.name)
+                if tag_name == 'input':
+                    is_radio = False
+                    check = False
+                    has_name = False
+                    for k, v in child.attrs.items():
+                        if util.lower(k) == 'type' and util.lower(v) == 'radio':
+                            is_radio = True
+                        elif util.lower(k) == 'name' and v == name:
+                            has_name = True
+                        elif util.lower(k) == 'checked':
+                            check = True
+                        if is_radio and check and has_name and get_parent_form(child) is form:
+                            checked = True
+                            break
+                if checked:
+                    break
+            if not checked:
+                match = True
+            self.indeterminate_forms.append([form, name, match])
+
         return match
 
     def match_selectors(self, el, selectors):
@@ -498,7 +561,12 @@ class CSSMatch:
                 # Verify relationship selectors
                 if selector.relation and not self.match_relations(el, selector.relation):
                     continue
+                # Validate the the current default selector match coresponds to the first submit button in th form
                 if selector.default and not self.match_default(el):
+                    continue
+                # Validate that the unset radio button is among radio buttons with the same name in a form that are
+                # also not set.
+                if selector.indeterminate and not self.match_indeterminate(el):
                     continue
                 if not self.match_contains(el, selector.contains):
                     continue
@@ -516,7 +584,8 @@ class CSSMatch:
     def match(self, el):
         """Match."""
 
-        self.forms = []
+        self.default_forms = []
+        self.indeterminate_forms = []
         doc = el
         while doc.parent:
             doc = doc.parent

@@ -15,6 +15,8 @@ Test selectors level 4.
 :focus-within
 :focus-visible
 :target-within
+:default
+:indeterminate
 ```
 
 Not supported:
@@ -42,8 +44,6 @@ Not supported:
 
 - `:placeholder-shown`: There are no plans to implement this at this time.
 
-- `:indeterminate`: There are no plans to implement this at this time.
-
 - `:valid` / `:invalid`: We currently to not validate values, so this doesn't make sense at this time.
 
 - `:user-invalid`: User cannot alter things in our environment because there is no user interaction (we are not a
@@ -55,9 +55,6 @@ Not supported:
 
 - `:in-range` / `:out-of-range`: This applies to form elements only. You'd have to evaluate `value`, `min`, and `max`. I
   guess you can have numerical ranges and alphabetic ranges. Currently, there are no plans to implement this.
-
-- `:default`: This is in the same vain as `:checked`. If we ever implemented that, we'd probably implement this, but
-  there are no plans to do so at this time.
 
 - `:playing` / `:paused`: Elements cannot be played or paused in our environment, so this will not be implemented.
 """
@@ -659,5 +656,41 @@ class TestLevel4(util.TestCase):
             markup2,
             ":default",
             ['d1'],
+            flags=util.HTML5
+        )
+
+    def test_indeterminate(self):
+        """Test indeterminate."""
+
+        markup = """
+        <div>
+          <input type="checkbox" id="checkbox" indeterminate>
+          <label for="checkbox">This label starts out lime.</label>
+        </div>
+        <div>
+          <input type="radio" name="test" id="radio1">
+          <label for="radio">This label starts out lime.</label>
+          <form>
+            <input type="radio" name="test" id="radio2">
+            <label for="radio">This label starts out lime.</label>
+
+            <input type="radio" name="test" id="radio3" checked>
+            <label for="radio">This label starts out lime.</label>
+
+            <input type="radio" name="other" id="radio4">
+            <label for="radio">This label starts out lime.</label>
+
+            <input type="radio" name="other" id="radio5">
+            <label for="radio">This label starts out lime.</label>
+          </form>
+          <input type="radio" name="test" id="radio6">
+          <label for="radio">This label starts out lime.</label>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            ":indeterminate",
+            ['checkbox', 'radio1', 'radio6', 'radio4', 'radio5'],
             flags=util.HTML5
         )
