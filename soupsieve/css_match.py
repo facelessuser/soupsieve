@@ -430,35 +430,24 @@ class CSSMatch:
             else:
                 parent = parent.parent
 
-        # Look in form cache to see if we've already located its default button
-        found_form = False
-        for f, t in self.default_forms:
-            if f is form:
-                found_form = True
-                if t is el:
-                    match = True
-                break
-
         # We didn't have the form cached, so look for its default button
         child_found = False
-        if not found_form:
-            for child in form.descendants:
-                if not isinstance(child, util.TAG):
-                    continue
-                name = util.lower(child.name)
-                # Can't do nested forms
-                if name == 'form':
-                    break
-                if name in ('input', 'button'):
-                    for k, v in child.attrs.items():
-                        if util.lower(k) == 'type' and util.lower(v) == 'submit':
-                            child_found = True
-                            self.default_forms.append([form, child])
-                            if el is child:
-                                match = True
-                            break
-                if child_found:
-                    break
+        for child in form.descendants:
+            if not isinstance(child, util.TAG):
+                continue
+            name = util.lower(child.name)
+            # Can't do nested forms (haven't figured out why we never hit this)
+            if name == 'form':  # pragma: no cover
+                break
+            if name in ('input', 'button'):
+                for k, v in child.attrs.items():
+                    if util.lower(k) == 'type' and util.lower(v) == 'submit':
+                        child_found = True
+                        if el is child:
+                            match = True
+                        break
+            if child_found:
+                break
         return match
 
     def match_indeterminate(self, el):
@@ -486,41 +475,30 @@ class CSSMatch:
 
         form = get_parent_form(el)
 
-        # Look in form cache to see if we've already evaluted that its fellow radio buttons are indeterminate
-        found_form = False
-        for f, n, i in self.indeterminate_forms:
-            if f is form and n == name:
-                found_form = True
-                if i is True:
-                    match = True
-                break
-
         # We didn't have the form cached, so validate that the radio button is indeterminate
         checked = False
-        if not found_form:
-            for child in form.descendants:
-                if not isinstance(child, util.TAG) or child is el:
-                    continue
-                tag_name = util.lower(child.name)
-                if tag_name == 'input':
-                    is_radio = False
-                    check = False
-                    has_name = False
-                    for k, v in child.attrs.items():
-                        if util.lower(k) == 'type' and util.lower(v) == 'radio':
-                            is_radio = True
-                        elif util.lower(k) == 'name' and v == name:
-                            has_name = True
-                        elif util.lower(k) == 'checked':
-                            check = True
-                        if is_radio and check and has_name and get_parent_form(child) is form:
-                            checked = True
-                            break
-                if checked:
-                    break
-            if not checked:
-                match = True
-            self.indeterminate_forms.append([form, name, match])
+        for child in form.descendants:
+            if not isinstance(child, util.TAG) or child is el:
+                continue
+            tag_name = util.lower(child.name)
+            if tag_name == 'input':
+                is_radio = False
+                check = False
+                has_name = False
+                for k, v in child.attrs.items():
+                    if util.lower(k) == 'type' and util.lower(v) == 'radio':
+                        is_radio = True
+                    elif util.lower(k) == 'name' and v == name:
+                        has_name = True
+                    elif util.lower(k) == 'checked':
+                        check = True
+                    if is_radio and check and has_name and get_parent_form(child) is form:
+                        checked = True
+                        break
+            if checked:
+                break
+        if not checked:
+            match = True
 
         return match
 
@@ -561,7 +539,7 @@ class CSSMatch:
                 # Verify relationship selectors
                 if selector.relation and not self.match_relations(el, selector.relation):
                     continue
-                # Validate the the current default selector match coresponds to the first submit button in th form
+                # Validate that the current default selector match corresponds to the first submit button in the form
                 if selector.default and not self.match_default(el):
                     continue
                 # Validate that the unset radio button is among radio buttons with the same name in a form that are
@@ -584,8 +562,6 @@ class CSSMatch:
     def match(self, el):
         """Match."""
 
-        self.default_forms = []
-        self.indeterminate_forms = []
         doc = el
         while doc.parent:
             doc = doc.parent

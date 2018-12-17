@@ -615,15 +615,22 @@ class TestLevel4(util.TestCase):
         </form>
 
         <form>
+
+        <div>
         <button id="d3" type="submit">
         default3
         </button>
+        </div>
 
         <button id="d4" type="submit">
         default4
         </button>
 
         </form>
+
+        <button id="d5" type="submit">
+        default4
+        </button>
         """
 
         self.assert_selector(
@@ -633,10 +640,7 @@ class TestLevel4(util.TestCase):
             flags=util.HTML5
         )
 
-        # You shouldn't nest forms, but if you do,
-        # When we encounter a nested form, we will bail evaluation.
-        # We should see button 1 getting found for nested form, but button 2 will not be found
-        # for parent form.
+        # This is technically invalid use of forms, but browsers will generally evaluated the nested form
         markup2 = """
         <form>
 
@@ -659,10 +663,38 @@ class TestLevel4(util.TestCase):
             flags=util.HTML5
         )
 
+        # You shouldn't nest forms, but if you do,
+        # When a parent form encounters a nested form, we will bail evaluation like browsers do.
+        # We should see button 1 getting found for nested form, but button 2 will not be found
+        # for parent form.
+        markup3 = """
+        <form>
+
+        <form>
+        <span>what</span>
+        </form>
+
+        <button id="d2" type="submit">
+        button2
+        </button>
+        </form>
+        """
+
+        self.assert_selector(
+            markup3,
+            ":default",
+            [],
+            flags=util.HTML5
+        )
+
     def test_indeterminate(self):
         """Test indeterminate."""
 
         markup = """
+        <input type="radio" name="" id="radio-no-name1">
+        <label>No name 1</label>
+        <input type="radio" name="" id="radio-no-name2" checked>
+        <label>no name 2</label>
         <div>
           <input type="checkbox" id="checkbox" indeterminate>
           <label for="checkbox">This label starts out lime.</label>
@@ -691,6 +723,6 @@ class TestLevel4(util.TestCase):
         self.assert_selector(
             markup,
             ":indeterminate",
-            ['checkbox', 'radio1', 'radio6', 'radio4', 'radio5'],
+            ['checkbox', 'radio1', 'radio6', 'radio4', 'radio5', 'radio-no-name1'],
             flags=util.HTML5
         )
