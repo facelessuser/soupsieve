@@ -6,6 +6,7 @@
 - **NEW**: Add support for `:active`, `:focus`, `:hover`, `:visited`, `:target`, `:focus-within`, `:focus-visible`, `:target-within`, `:current()`/`:current`, `:past`, and `:future`, but they will never match as these states don't exist in the Soup Sieve environment.
 - **NEW**: Add support for `:checked`, `:enabled`, `:disabled`, `:required`, `:optional`, and `:default` which will only match in HTML documents as these concepts are not defined in XML.
 - **NEW**: Add support for `:link` and `:any-link`, both of which will target all `<a>`, `<area>`, and `<link>` elements with an `href` attribute as all links will be treated as unvisited in Soup Sieve.
+- **FIX**: Attributes in the form `prefix:attr` can be matched with the form `[prefix\:attr]` without specifying a namespaces if desired.
 
 ## 1.0.2
 

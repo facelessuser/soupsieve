@@ -438,6 +438,22 @@ class TestLevel3(util.TestCase):
 
         self.assert_selector(
             markup,
+            '[xlink\\:href*=forw],[xlink|href="images/sprites.svg#icon-redo"]',
+            ['1', '2'],
+            namespaces={"xlink": "http://www.w3.org/1999/xlink"},
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            '[xlink\\:nomatch*=forw],[xlink|href="images/sprites.svg#icon-redo"]',
+            ['1'],
+            namespaces={"xlink": "http://www.w3.org/1999/xlink"},
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
             '[bad|href*=forw]',
             [],
             namespaces={"xlink": "http://www.w3.org/1999/xlink"},

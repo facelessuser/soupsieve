@@ -71,7 +71,11 @@ class CSSMatch:
                     p = ''
                     a = k
                 # Can't match a prefix attribute as we haven't specified one to match
+                # Try to match it normally as a whole `p:a` as selector may be trying `p\:a`.
                 if not prefix and p:
+                    if (attr == k if self.is_xml else util.lower(attr) == util.lower(k)):
+                        value = v
+                        break
                     continue
                 # We can't match our desired prefix attribute as the attribute doesn't have a prefix
                 if prefix and not p and prefix != '*':
