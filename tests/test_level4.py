@@ -571,3 +571,93 @@ class TestLevel4(util.TestCase):
             ['3'],
             flags=util.HTML5
         )
+
+    def test_default(self):
+        """Test default."""
+
+        markup = """
+        <form>
+
+        <input type="radio" name="season" id="spring">
+        <label for="spring">Spring</label>
+
+        <input type="radio" name="season" id="summer" checked>
+        <label for="summer">Summer</label>
+
+        <input type="radio" name="season" id="fall">
+        <label for="fall">Fall</label>
+
+        <input type="radio" name="season" id="winter">
+        <label for="winter">Winter</label>
+
+        <select id="pet-select">
+            <option value="">--Please choose an option--</option>
+            <option id="dog" value="dog">Dog</option>
+            <option id="cat" value="cat">Cat</option>
+            <option id="hamster" value="hamster" selected>Hamster</option>
+            <option id="parrot" value="parrot">Parrot</option>
+            <option id="spider" value="spider">Spider</option>
+            <option id="goldfish" value="goldfish">Goldfish</option>
+        </select>
+
+        <input type="checkbox" name="enable" id="enable" checked>
+        <label for="enable">Enable</label>
+
+        <button type="button">
+        not default
+        </button>
+
+        <button id="d1" type="submit">
+        default1
+        </button>
+
+        <button id="d2" type="submit">
+        default2
+        </button>
+
+        </form>
+
+        <form>
+        <button id="d3" type="submit">
+        default3
+        </button>
+
+        <button id="d4" type="submit">
+        default4
+        </button>
+
+        </form>
+        """
+
+        self.assert_selector(
+            markup,
+            ":default",
+            ['summer', 'd1', 'd3', 'hamster', 'enable'],
+            flags=util.HTML5
+        )
+
+        # You shouldn't nest forms, but if you do,
+        # When we encounter a nested form, we will bail evaluation.
+        # We should see button 1 getting found for nested form, but button 2 will not be found
+        # for parent form.
+        markup2 = """
+        <form>
+
+        <form>
+        <button id="d1" type="submit">
+        button1
+        </button>
+        </form>
+
+        <button id="d2" type="submit">
+        button2
+        </button>
+        </form>
+        """
+
+        self.assert_selector(
+            markup2,
+            ":default",
+            ['d1'],
+            flags=util.HTML5
+        )

@@ -416,6 +416,51 @@ class CSSMatch:
                 break
         return match
 
+    def match_default(self, el):
+        """Match default."""
+
+        match = False
+
+        # Find this inputs form
+        form = None
+        parent = el.parent
+        while parent and form is None:
+            if util.lower(parent.name) == 'form':
+                form = parent
+            else:
+                parent = parent.parent
+
+        # Look in form cache to see if we've already located its default button
+        found_form = False
+        for f, t in self.forms:
+            if f is form:
+                found_form = True
+                if t is el:
+                    match = True
+                break
+
+        # We didn't have the form cached, so look for its default button
+        child_found = False
+        if not found_form:
+            for child in form.descendants:
+                if not isinstance(child, util.TAG):
+                    continue
+                name = util.lower(child.name)
+                # Can't do nested forms
+                if name == 'form':
+                    break
+                if name in ('input', 'button'):
+                    for k, v in child.attrs.items():
+                        if util.lower(k) == 'type' and util.lower(v) == 'submit':
+                            child_found = True
+                            self.forms.append([form, child])
+                            if el is child:
+                                match = True
+                            break
+                if child_found:
+                    break
+        return match
+
     def match_selectors(self, el, selectors):
         """Check if element matches one of the selectors."""
 
@@ -453,6 +498,8 @@ class CSSMatch:
                 # Verify relationship selectors
                 if selector.relation and not self.match_relations(el, selector.relation):
                     continue
+                if selector.default and not self.match_default(el):
+                    continue
                 if not self.match_contains(el, selector.contains):
                     continue
                 match = not is_not
@@ -469,6 +516,7 @@ class CSSMatch:
     def match(self, el):
         """Match."""
 
+        self.forms = []
         doc = el
         while doc.parent:
             doc = doc.parent

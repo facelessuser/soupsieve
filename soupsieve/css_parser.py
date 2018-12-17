@@ -22,7 +22,8 @@ PSEUDO_SIMPLE = {
     ':disabled',
     ':enabled',
     ':required',
-    ':optional'
+    ':optional',
+    ':default'
 }
 
 # Supported, simple pseudo classes that match nothing in the Soup Sieve environment
@@ -126,6 +127,13 @@ RE_NTH = re.compile(r'(?P<s1>[-+])?(?P<a>\d+n?|n)(?:(?<=n){ws}*(?P<s2>[-+]){ws}*
 SPLIT = ','
 REL_HAS_CHILD = ": "
 
+# Parse flags
+FLG_PSEUDO = 0x01
+FLG_NOT = 0x02
+FLG_HAS = 0x04
+FLG_DEFAULT = 0x08
+FLG_HTML = 0x10
+
 _MAXCACHE = 500
 
 
@@ -195,6 +203,7 @@ class _Selector:
         self.contains = kwargs.get('contains', [])
         self.empty = kwargs.get('empty', False)
         self.root = kwargs.get('root', False)
+        self.default = kwargs.get('default', False)
         self.no_match = kwargs.get('no_match', False)
 
     def _freeze_relations(self, relations):
@@ -222,6 +231,7 @@ class _Selector:
             tuple(self.contains),
             self.empty,
             self.root,
+            self.default,
             self.no_match,
         )
 
@@ -283,9 +293,7 @@ class CSSParser:
                 self.parse_selectors(
                     # Simulate the content of `:not`, but make the attribute as `=` instead of `!=`.
                     self.selector_iter('[{}={} {}])'.format(attr, value, case)),
-                    is_pseudo=True,
-                    is_not=True,
-                    is_has=False
+                    FLG_PSEUDO | FLG_NOT
                 )
             )
             has_selector = True
@@ -374,8 +382,7 @@ class CSSParser:
                 sel.selectors.append(
                     self.parse_selectors(
                         self.selector_iter(':is(a, area, link)[href])'),
-                        is_pseudo=True,
-                        html_only=True
+                        FLG_PSEUDO | FLG_HTML
                     )
                 )
             elif pseudo == ':checked':
@@ -387,8 +394,14 @@ class CSSParser:
                             select > option[selected])
                             '''
                         ),
-                        is_pseudo=True,
-                        html_only=True
+                        FLG_PSEUDO | FLG_HTML
+                    )
+                )
+            elif pseudo == ':default':
+                sel.selectors.append(
+                    self.parse_selectors(
+                        self.selector_iter(':checked, form :is(button, input)[type="submit"])'),
+                        FLG_PSEUDO | FLG_HTML | FLG_DEFAULT
                     )
                 )
             elif pseudo == ":disabled":
@@ -402,8 +415,7 @@ class CSSParser:
                             fieldset[disabled] > :is(input[type!=hidden], button, select, textarea))
                             '''
                         ),
-                        is_pseudo=True,
-                        html_only=True
+                        FLG_PSEUDO | FLG_HTML
                     )
                 )
             elif pseudo == ":enabled":
@@ -420,32 +432,21 @@ class CSSParser:
                             ):not([disabled]))
                             '''
                         ),
-                        is_pseudo=True,
-                        html_only=True
+                        FLG_PSEUDO | FLG_HTML
                     )
                 )
             elif pseudo == ":required":
                 sel.selectors.append(
                     self.parse_selectors(
-                        self.selector_iter(
-                            '''
-                            :is(input, textarea, select)[required])
-                            '''
-                        ),
-                        is_pseudo=True,
-                        html_only=True
+                        self.selector_iter(':is(input, textarea, select)[required])'),
+                        FLG_PSEUDO | FLG_HTML
                     )
                 )
             elif pseudo == ":optional":
                 sel.selectors.append(
                     self.parse_selectors(
-                        self.selector_iter(
-                            '''
-                            :is(input, textarea, select):not([required]))
-                            '''
-                        ),
-                        is_pseudo=True,
-                        html_only=True
+                        self.selector_iter(':is(input, textarea, select):not([required]))'),
+                        FLG_PSEUDO | FLG_HTML
                     )
                 )
             elif pseudo == ':first-child':
@@ -472,7 +473,7 @@ class CSSParser:
                 )
             has_selector = True
         elif complex_pseudo and pseudo in PSEUDO_COMPLEX_NO_MATCH:
-            self.parse_selectors(iselector, is_pseudo=True)
+            self.parse_selectors(iselector, FLG_PSEUDO)
             sel.no_match = True
             has_selector = True
         elif not complex_pseudo and pseudo in PSEUDO_SIMPLE_NO_MATCH:
@@ -528,12 +529,7 @@ class CSSParser:
             else:
                 # Use default `*|*` for `of S`. Simulate un-closed pseudo.
                 temp_sel = self.selector_iter('*|*)')
-            nth_sel = self.parse_selectors(
-                temp_sel,
-                is_pseudo=True,
-                is_not=False,
-                is_has=False
-            )
+            nth_sel = self.parse_selectors(temp_sel, FLG_PSEUDO)
             if pseudo_sel.startswith(':nth-child'):
                 sel.nth.append(ct.SelectorNth(s1, var, s2, False, False, nth_sel))
             elif pseudo_sel.startswith(':nth-last-child'):
@@ -549,14 +545,13 @@ class CSSParser:
     def parse_pseudo_open(self, sel, name, has_selector, iselector):
         """Parse pseudo with opening bracket."""
 
-        sel.selectors.append(
-            self.parse_selectors(
-                iselector,
-                True,
-                name == ':not',
-                name == ':has'
-            )
-        )
+        flags = FLG_PSEUDO
+        if name == ':not':
+            flags |= FLG_NOT
+        if name == ':has':
+            flags |= FLG_HAS
+
+        sel.selectors.append(self.parse_selectors(iselector, flags))
         has_selector = True
         return has_selector
 
@@ -627,7 +622,7 @@ class CSSParser:
         has_selector = True
         return has_selector
 
-    def parse_selectors(self, iselector, is_pseudo=False, is_not=False, is_has=False, html_only=False):
+    def parse_selectors(self, iselector, flags=0):
         """Parse selectors."""
 
         sel = _Selector()
@@ -637,6 +632,11 @@ class CSSParser:
         relations = []
         rel_type = REL_HAS_CHILD
         split_last = False
+        is_pseudo = flags & FLG_PSEUDO
+        is_has = flags & FLG_HAS
+        is_not = flags & FLG_NOT
+        is_html = flags & FLG_HTML
+        is_default = flags & FLG_DEFAULT
         if is_has:
             selectors.append(_Selector())
 
@@ -703,7 +703,13 @@ class CSSParser:
             # We will always need to finish a selector when `:has()` is used as it leads with combining.
             raise SyntaxError('Missing selectors after combining type.')
 
-        return ct.SelectorList([s.freeze() for s in selectors], is_not, html_only)
+        # For default, the last patter in the list will be one that requires additional
+        # logic, flag that selector as "default" so the required logic will be executed
+        # along with the pattern.
+        if is_default:
+            selectors[-1].default = True
+
+        return ct.SelectorList([s.freeze() for s in selectors], is_not, is_html)
 
     def selector_iter(self, pattern):
         """Iterate selector tokens."""
