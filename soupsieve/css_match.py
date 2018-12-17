@@ -73,7 +73,7 @@ class CSSMatch:
                 # Can't match a prefix attribute as we haven't specified one to match
                 # Try to match it normally as a whole `p:a` as selector may be trying `p\:a`.
                 if not prefix and p:
-                    if (attr == k if self.is_xml else util.lower(attr) == util.lower(k)):
+                    if (self.is_xml and attr == k) or (not self.is_xml and util.lower(attr) == util.lower(k)):
                         value = v
                         break
                     continue
@@ -472,8 +472,6 @@ class CSSMatch:
 
         match = False
         name = el.attrs.get('name')
-        if not name:
-            return True
 
         def get_parent_form(el):
             """Find this input's form."""

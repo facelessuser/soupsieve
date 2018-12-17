@@ -446,8 +446,8 @@ class TestLevel3(util.TestCase):
 
         self.assert_selector(
             markup,
-            '[xlink\\:nomatch*=forw],[xlink|href="images/sprites.svg#icon-redo"]',
-            ['1'],
+            '[xlink\\:nomatch*=forw]',
+            [],
             namespaces={"xlink": "http://www.w3.org/1999/xlink"},
             flags=util.HTML5
         )

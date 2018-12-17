@@ -80,6 +80,7 @@ Selector                        | Example                             | Descript
 `:link`                         | `#!css a:link`                      | All links are treated as unvisited, so this will match every `#!html <a>` element with an `href` attribute.
 `:optional`                     | `#!css input:optional`              | Select every `#!html <input>` element without a `required` attribute.
 `:past`                         | `#!css p:past`                      | As the document is not rendered, this will never match.
+`:placeholder-shown`            | `#!css input:placeholder-shown`     | Selects every `#!html <input>` element that is showing a placeholder via the `placeholder` attribute.
 `:required`                     | `#!css input:required`              | Select every `#!html <input>` element with a `required` attribute.
 `:target`                       | `#!css #news:target`                | Elements cannot be targeted, so this will never match.
 `:visited`                      | `#!css a:visited`                   | All links are treated unvisited, so this will never match.

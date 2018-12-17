@@ -24,7 +24,8 @@ PSEUDO_SIMPLE = {
     ':required',
     ':optional',
     ':default',
-    ':indeterminate'
+    ':indeterminate',
+    ':placeholder-shown'
 }
 
 # Supported, simple pseudo classes that match nothing in the Soup Sieve environment
@@ -79,8 +80,8 @@ NTH = r'(?:[-+])?(?:\d+n?|n)(?:(?<=n){ws}*(?:[-+]){ws}*(?:\d+))?'.format(ws=WS)
 
 VALUE = r'''
 (?P<value>
-    "(?:\\.|[^\\"]+)*?"|
-    '(?:\\.|[^\\']+)*?'|
+    "(?:\\.|[^\\"]*)*?"|
+    '(?:\\.|[^\\']*)*?'|
     {ident}+
 )
 '''.format(ident=IDENTIFIER)
@@ -348,7 +349,7 @@ class CSSParser:
             else:
                 # Value matches
                 pattern = re.compile(r'^%s$' % re.escape(value), flags)
-            if is_type:
+            if is_type and pattern:
                 pattern2 = re.compile(pattern.pattern)
             has_selector = True
             sel.attributes.append(ct.SelectorAttribute(attr, ns, pattern, pattern2))
@@ -415,9 +416,9 @@ class CSSParser:
                         self.selector_iter(
                             '''
                             input[type="checkbox"][indeterminate],
-                            input[type="radio"]:not([name]):not([checked]),
+                            input[type="radio"]:is(:not([name]), [name=""]):not([checked]),
                             progress:not([value]),
-                            input[type="radio"][name]:not([checked]))
+                            input[type="radio"][name][name!='']:not([checked]))
                             '''
                         ),
                         FLG_PSEUDO | FLG_HTML | FLG_INDETERMINATE
@@ -465,6 +466,30 @@ class CSSParser:
                 sel.selectors.append(
                     self.parse_selectors(
                         self.selector_iter(':is(input, textarea, select):not([required]))'),
+                        FLG_PSEUDO | FLG_HTML
+                    )
+                )
+            elif pseudo == ":placeholder-shown":
+                sel.selectors.append(
+                    self.parse_selectors(
+                        self.selector_iter(
+                            '''
+                            :is(
+                                input:is(
+                                    [type=text],
+                                    [type=search],
+                                    [type=url],
+                                    [type=tel],
+                                    [type=email],
+                                    [type=password],
+                                    [type=number],
+                                    :not([type]),
+                                    [type=""]
+                                ),
+                                textarea
+                            )[placeholder][placeholder!=''])
+                            '''
+                        ),
                         FLG_PSEUDO | FLG_HTML
                     )
                 )
