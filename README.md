@@ -31,6 +31,20 @@ selectors are:
 - `parent:has(> child)`
 - and many more
 
+## Installation
+
+You must have Beautiful Soup already installed:
+
+```
+pip install beautifulsoup4
+```
+
+Then use `pip` to install Soup Sieve:
+
+```
+pip install soupsieve
+```
+
 ## Documentation
 
 Documentation is found here: http://facelessuser.github.io/soupsieve/.

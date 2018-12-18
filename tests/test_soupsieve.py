@@ -191,7 +191,7 @@ class TestSoupSieve(unittest.TestCase):
     def test_immutable_object(self):
         """Test immutable object."""
 
-        obj = sv.util.Immutable()
+        obj = sv.ct.Immutable()
 
         with self.assertRaises(AttributeError):
             obj.member = 3
@@ -199,17 +199,17 @@ class TestSoupSieve(unittest.TestCase):
     def test_immutable_dict(self):
         """Test immutable dictionary."""
 
-        idict = sv.util.ImmutableDict({'a': 'b', 'c': 'd'})
+        idict = sv.ct.ImmutableDict({'a': 'b', 'c': 'd'})
         self.assertEqual(2, len(idict))
 
         with self.assertRaises(TypeError):
             idict['a'] = 'f'
 
         with self.assertRaises(TypeError):
-            sv.util.ImmutableDict([[3, {}]])
+            sv.ct.ImmutableDict([[3, {}]])
 
         with self.assertRaises(TypeError):
-            sv.util.ImmutableDict([[{}, 3]])
+            sv.ct.ImmutableDict([[{}, 3]])
 
         with self.assertRaises(TypeError):
             sv.ct.Namespaces({'a': {}})
