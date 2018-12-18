@@ -5,6 +5,12 @@ import copyreg
 __all__ = ('Selector', 'SelectorTag', 'SelectorAttribute', 'SelectorNth', 'SelectorList', 'Namespaces')
 
 
+SEL_EMPTY = 0x1
+SEL_ROOT = 0x2
+SEL_DEFAULT = 0x4
+SEL_INDETERMINATE = 0x8
+
+
 class Namespaces(util.ImmutableDict):
     """Namespaces."""
 
@@ -29,15 +35,12 @@ class Selector(util.Immutable):
 
     __slots__ = (
         'tag', 'ids', 'classes', 'attributes', 'nth', 'selectors',
-        'relation', 'rel_type', 'contains', 'lang', 'empty', 'root', 'default', 'indeterminate',
-        'no_match',
-        '_hash'
+        'relation', 'rel_type', 'contains', 'lang', 'flags', '_hash'
     )
 
     def __init__(
         self, tag, ids, classes, attributes, nth, selectors,
-        relation, rel_type, contains, lang, empty, root, default, indeterminate,
-        no_match
+        relation, rel_type, contains, lang, flags
     ):
         """Initialize."""
 
@@ -52,12 +55,17 @@ class Selector(util.Immutable):
             rel_type=rel_type,
             contains=contains,
             lang=lang,
-            empty=empty,
-            root=root,
-            default=default,
-            indeterminate=indeterminate,
-            no_match=no_match
+            flags=flags
         )
+
+
+class NullSelector(util.Immutable):
+    """Null Selector."""
+
+    def __init__(self):
+        """Initialize."""
+
+        super().__init__()
 
 
 class SelectorTag(util.Immutable):

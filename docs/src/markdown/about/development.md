@@ -182,11 +182,17 @@ class Selector:
 
     def __init__(
         self, tag, ids, classes, attributes, nth, selectors, relation,
-        rel_type, contains, lang, empty, root, default, indeterminate,
-        no_match
+        rel_type, contains, lang, flags
     ):
         """Initialize."""
 ```
+
+Flags               | Description
+------------------- | -----------
+`SEL_EMPTY`         | The current compound selector contained a `:empty` pseudo.
+`SEL_ROOT`          | The current compound selector contains `:root`.
+`SEL_DEFAULT`       | The compound selector has a `:default` pattern  and requires additional logic to determine if it is the first `submit` button in a form.
+`SEL_INDETERMINATE` | The compound selector has a `:indeterminate` pattern and requires additional logic to ensure a `radio` element and all of the `radio` elements with the same `name` under a form are not set.
 
 Attribute       | Description
 --------------- | -----------
@@ -200,11 +206,19 @@ Attribute       | Description
 `rel_type`      | `rel_type` is attached to relational selectors. In the case of `#!css div > p + a`, the relational selectors of `div` and `p` would get a relational type of `>` and `+` respectively. `:has()` relational `rel_type` are preceded with `:` to signify a forward looking relation.
 `contains`      | Contains a tuple of strings of content to match in an element.
 `lang`          | Contains a tuple of [`SelectorLang`](#selectorlang) objects.
-`empty`         | This is `True` if the current selector contained a `:empty` pseudo.
-`root`          | This is `True` if the current compound selector contains `:root`.
-`default`       | This compound selector has a `:default` pattern  and requires additional logic to determine if it is the first `submit` button in a form.
-`indeterminate` | This compound selector has a `:indeterminate` pattern and requires additional logic to ensure a `radio` element and all of the `radio` elements with the same `name` under a form are not set.
-`no_match`      | This compound selector has an unmatchable selector, such as `:focus`. Such selectors cannot match as certain states are not applicable to Soup Sieve.
+`flags`         | Selector flags that used to signal a type of selector is present.
+
+### `NullSelector`
+
+```py3
+class NullSelector:
+    """Null Selector."""
+
+    def __init__(self):
+        """Initialize."""
+```
+
+The null selector is like `Selector`, but it matches nothing.
 
 ### `SelectorTag`
 

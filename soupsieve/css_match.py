@@ -3,6 +3,7 @@ from . import util
 import re
 import copyreg
 from .util import deprecated
+from .import css_types as ct
 
 # Empty tag pattern (whitespace okay)
 RE_NOT_EMPTY = re.compile('[^ \t\r\n\f]')
@@ -389,21 +390,20 @@ class CSSMatch:
                 break
         return matched
 
-    def match_empty(self, el, empty):
+    def match_empty(self, el):
         """Check if element is empty (if requested)."""
 
         is_empty = True
-        if empty:
-            for child in el.children:
-                if isinstance(child, util.TAG):
-                    is_empty = False
-                    break
-                elif (
-                    (isinstance(child, util.NAV_STRINGS) and not isinstance(child, util.NON_CONTENT_STRINGS)) and
-                    RE_NOT_EMPTY.search(child)
-                ):
-                    is_empty = False
-                    break
+        for child in el.children:
+            if isinstance(child, util.TAG):
+                is_empty = False
+                break
+            elif (
+                (isinstance(child, util.NAV_STRINGS) and not isinstance(child, util.NON_CONTENT_STRINGS)) and
+                RE_NOT_EMPTY.search(child)
+            ):
+                is_empty = False
+                break
         return is_empty
 
     def match_subselectors(self, el, selectors):
@@ -615,7 +615,7 @@ class CSSMatch:
             for selector in selectors:
                 match = is_not
                 # We have a un-matchable situation (like `:focus` as you can focus an element in this environment)
-                if selector.no_match:
+                if isinstance(selector, ct.NullSelector):
                     continue
                 # Verify tag matches
                 if not self.match_tag(el, selector.tag):
@@ -623,7 +623,7 @@ class CSSMatch:
                 # Verify `nth` matches
                 if not self.match_nth(el, selector.nth):
                     continue
-                if not self.match_empty(el, selector.empty):
+                if selector.flags & ct.SEL_EMPTY and not self.match_empty(el):
                     continue
                 # Verify id matches
                 if selector.ids and not self.match_id(el, selector.ids):
@@ -635,7 +635,7 @@ class CSSMatch:
                 if not self.match_attributes(el, selector.attributes):
                     continue
                 # Verify element is root
-                if selector.root and not self.match_root(el):
+                if selector.flags & ct.SEL_ROOT and not self.match_root(el):
                     continue
                 # Verify language patterns
                 if selector.lang and not self.match_lang(el, selector.lang):
@@ -647,11 +647,11 @@ class CSSMatch:
                 if selector.relation and not self.match_relations(el, selector.relation):
                     continue
                 # Validate that the current default selector match corresponds to the first submit button in the form
-                if selector.default and not self.match_default(el):
+                if selector.flags & ct.SEL_DEFAULT and not self.match_default(el):
                     continue
                 # Validate that the unset radio button is among radio buttons with the same name in a form that are
                 # also not set.
-                if selector.indeterminate and not self.match_indeterminate(el):
+                if selector.flags & ct.SEL_INDETERMINATE and not self.match_indeterminate(el):
                     continue
                 if not self.match_contains(el, selector.contains):
                     continue
