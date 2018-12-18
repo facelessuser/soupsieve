@@ -1,7 +1,6 @@
 """CSS matcher."""
 from . import util
 import re
-import copyreg
 from .util import deprecated
 from .import css_types as ct
 
@@ -194,16 +193,16 @@ class CSSMatch:
         elif relation[0].rel_type == REL_SIBLING:
             sibling = el.previous_sibling
             while not found and sibling:
-                if not isinstance(sibling, util.TAG):
+                if not util.is_tag(sibling):
                     sibling = sibling.previous_sibling
                     continue
                 found = self.match_selectors(sibling, relation)
                 sibling = sibling.previous_sibling
         elif relation[0].rel_type == REL_CLOSE_SIBLING:
             sibling = el.previous_sibling
-            while sibling and not isinstance(sibling, util.TAG):
+            while sibling and not util.is_tag(sibling):
                 sibling = sibling.previous_sibling
-            if sibling and isinstance(sibling, util.TAG):
+            if sibling and util.is_tag(sibling):
                 found = self.match_selectors(sibling, relation)
         return found
 
@@ -212,7 +211,7 @@ class CSSMatch:
 
         match = False
         for child in (parent.descendants if recursive else parent.children):
-            if not isinstance(child, util.TAG):
+            if not util.is_tag(child):
                 continue
             match = self.match_selectors(child, relation)
             if match:
@@ -230,16 +229,16 @@ class CSSMatch:
         elif relation[0].rel_type == REL_HAS_SIBLING:
             sibling = el.next_sibling
             while not found and sibling:
-                if not isinstance(sibling, util.TAG):
+                if not util.is_tag(sibling):
                     sibling = sibling.next_sibling
                     continue
                 found = self.match_selectors(sibling, relation)
                 sibling = sibling.next_sibling
         elif relation[0].rel_type == REL_HAS_CLOSE_SIBLING:
             sibling = el.next_sibling
-            while sibling and not isinstance(sibling, util.TAG):
+            while sibling and not util.is_tag(sibling):
                 sibling = sibling.next_sibling
-            if sibling and isinstance(sibling, util.TAG):
+            if sibling and util.is_tag(sibling):
                 found = self.match_selectors(sibling, relation)
         return found
 
@@ -360,7 +359,7 @@ class CSSMatch:
                 while 0 <= index <= last_index:
                     child = parent.contents[index]
                     index += factor
-                    if not isinstance(child, util.TAG):
+                    if not util.is_tag(child):
                         continue
                     # Handle `of S` in `nth-child`
                     if n.selectors and not self.match_selectors(child, n.selectors):
@@ -395,11 +394,11 @@ class CSSMatch:
 
         is_empty = True
         for child in el.children:
-            if isinstance(child, util.TAG):
+            if util.is_tag(child):
                 is_empty = False
                 break
             elif (
-                (isinstance(child, util.NAV_STRINGS) and not isinstance(child, util.NON_CONTENT_STRINGS)) and
+                (util.is_navigable_string(child) and not util.is_special_string(child)) and
                 RE_NOT_EMPTY.search(child)
             ):
                 is_empty = False
@@ -418,7 +417,7 @@ class CSSMatch:
     def match_contains(self, el, contains):
         """Match element if it contains text."""
 
-        types = (util.NAV_STRINGS,) if not self.is_xml else (util.NAV_STRINGS, util.CDATA)
+        types = (util.get_navigable_string_type(el),)
         match = True
         for c in contains:
             if c not in el.get_text(types=types):
@@ -453,7 +452,7 @@ class CSSMatch:
         if not found_form:
             child_found = False
             for child in form.descendants:
-                if not isinstance(child, util.TAG):
+                if not util.is_tag(child):
                     continue
                 name = util.lower(child.name)
                 # Can't do nested forms (haven't figured out why we never hit this)
@@ -507,7 +506,7 @@ class CSSMatch:
         if not found_form:
             checked = False
             for child in form.descendants:
-                if not isinstance(child, util.TAG) or child is el:
+                if not util.is_tag(child) or child is el:
                     continue
                 tag_name = util.lower(child.name)
                 if tag_name == 'input':
@@ -567,7 +566,7 @@ class CSSMatch:
             for tag in ('html', 'head'):
                 found = False
                 for child in parent.children:
-                    if isinstance(child, util.TAG) and util.lower(child.name) == tag:
+                    if util.is_tag(child) and util.lower(child.name) == tag:
                         found = True
                         parent = child
                         break
@@ -576,7 +575,7 @@ class CSSMatch:
 
             if found:
                 for child in parent:
-                    if isinstance(child, util.TAG) and util.lower(child.name) == 'meta':
+                    if util.is_tag(child) and util.lower(child.name) == 'meta':
                         c_lang = False
                         content = None
                         for k, v in child.attrs.items():
@@ -674,16 +673,16 @@ class CSSMatch:
             doc = doc.parent
         root = None
         for child in doc.children:
-            if isinstance(child, util.TAG):
+            if util.is_tag(child):
                 root = child
                 break
         self.html_namespace = self.is_html_ns(root)
         self.is_xml = doc.is_xml and not self.html_namespace
 
-        return isinstance(el, util.TAG) and el.parent and self.match_selectors(el, self.selectors)
+        return util.is_tag(el) and el.parent and self.match_selectors(el, self.selectors)
 
 
-class SoupSieve(util.Immutable):
+class SoupSieve(ct.Immutable):
     """Match tags in Beautiful Soup with CSS selectors."""
 
     __slots__ = ("pattern", "selectors", "namespaces", "flags", "_hash")
@@ -705,9 +704,9 @@ class SoupSieve(util.Immutable):
 
         # Walk children
         for child in node.descendants:
-            if capture and isinstance(child, util.TAG) and match(child):
+            if capture and util.is_tag(child) and match(child):
                 yield child
-            elif comments and isinstance(child, util.COMMENT):
+            elif comments and util.is_comment(child):
                 yield child
 
     def _sieve(self, node, capture=True, comments=False, limit=0):
@@ -731,8 +730,8 @@ class SoupSieve(util.Immutable):
     def filter(self, nodes):  # noqa A001
         """Filter."""
 
-        if isinstance(nodes, util.TAG):
-            return [node for node in nodes.children if isinstance(node, util.TAG) and self.match(node)]
+        if util.is_tag(nodes):
+            return [node for node in nodes.children if util.is_tag(node) and self.match(node)]
         else:
             return [node for node in nodes if self.match(node)]
 
@@ -777,8 +776,4 @@ class SoupSieve(util.Immutable):
         yield from self.iselect(node, limit)
 
 
-def _pickle(p):
-    return SoupSieve, (p.pattern, p.selectors, p.namespaces, p.flags)
-
-
-copyreg.pickle(SoupSieve, _pickle)
+ct.pickle_register(SoupSieve)

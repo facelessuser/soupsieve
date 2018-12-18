@@ -1,7 +1,4 @@
 """Utility."""
-from collections import Mapping
-from collections.abc import Hashable
-import bs4
 from functools import wraps
 import warnings
 
@@ -11,18 +8,66 @@ XHTML = 0x4
 XML = 0x8
 DEPRECATED_FLAGS = HTML5 | HTML | XHTML | XML
 
-TAG = bs4.Tag
-COMMENT = bs4.Comment
-DECLARATION = bs4.Declaration
-CDATA = bs4.CData
-PROC_INSTRUCT = bs4.ProcessingInstruction
-NAV_STRINGS = bs4.NavigableString
-NON_CONTENT_STRINGS = (COMMENT, DECLARATION, CDATA, PROC_INSTRUCT)
-
 LC_A = ord('a')
 LC_Z = ord('z')
 UC_A = ord('A')
 UC_Z = ord('Z')
+
+
+def is_tag(obj):
+    """Is tag."""
+
+    import bs4
+    return isinstance(obj, bs4.Tag)
+
+
+def is_comment(obj):
+    """Is comment."""
+
+    import bs4
+    return isinstance(obj, bs4.Comment)
+
+
+def is_declaration(obj):  # pragma: no cover
+    """Is declaration."""
+
+    import bs4
+    return isinstance(obj, bs4.Declaration)
+
+
+def is_cdata(obj):  # pragma: no cover
+    """Is CDATA."""
+
+    import bs4
+    return isinstance(obj, bs4.Declaration)
+
+
+def is_processing_instruction(obj):  # pragma: no cover
+    """Is processing instruction."""
+
+    import bs4
+    return isinstance(obj, bs4.ProcessingInstruction)
+
+
+def is_navigable_string(obj):
+    """Is navigable string."""
+
+    import bs4
+    return isinstance(obj, bs4.NavigableString)
+
+
+def is_special_string(obj):
+    """Is special string."""
+
+    import bs4
+    return isinstance(obj, (bs4.Comment, bs4.Declaration, bs4.CData, bs4.ProcessingInstruction))
+
+
+def get_navigable_string_type(obj):
+    """Get navigable string type."""
+
+    import bs4
+    return bs4.NavigableString
 
 
 def lower(string):
@@ -43,107 +88,6 @@ def upper(string):  # pragma: no cover
         o = ord(c)
         new_string.append(chr(o - 32) if LC_A <= o <= LC_Z else c)
     return ''.join(new_string)
-
-
-class Immutable:
-    """Immutable."""
-
-    __slots__ = ('_hash',)
-
-    def __init__(self, **kwargs):
-        """Initialize."""
-
-        temp = []
-        for k, v in kwargs.items():
-            temp.append(type(v))
-            temp.append(v)
-            super().__setattr__(k, v)
-        super().__setattr__('_hash', hash(tuple(temp)))
-
-    @classmethod
-    def __base__(cls):
-        """Get base class."""
-
-        return cls
-
-    def __eq__(self, other):
-        """Equal."""
-
-        return (
-            isinstance(other, self.__base__()) and
-            all([getattr(other, key) == getattr(self, key) for key in self.__slots__ if key != '_hash'])
-        )
-
-    def __ne__(self, other):
-        """Equal."""
-
-        return (
-            not isinstance(other, self.__base__()) or
-            any([getattr(other, key) != getattr(self, key) for key in self.__slots__ if key != '_hash'])
-        )
-
-    def __hash__(self):
-        """Hash."""
-
-        return self._hash
-
-    def __setattr__(self, name, value):
-        """Prevent mutability."""
-
-        raise AttributeError("'{}' is immutable".format(self.__class__.__name__))
-
-    def __repr__(self):  # pragma: no cover
-        """Representation."""
-
-        return "{}({})".format(
-            self.__base__(), ', '.join(["{}={!r}".format(k, getattr(self, k)) for k in self.__slots__[:-1]])
-        )
-
-    __str__ = __repr__
-
-
-class ImmutableDict(Mapping):
-    """Hashable, immutable dictionary."""
-
-    def __init__(self, *args, **kwargs):
-        """Initialize."""
-
-        arg = args[0] if args else kwargs
-        is_dict = isinstance(arg, dict)
-        if (
-            is_dict and not all([isinstance(v, Hashable) for v in arg.values()]) or
-            not is_dict and not all([isinstance(k, Hashable) and isinstance(v, Hashable) for k, v in arg])
-        ):
-            raise TypeError('All values must be hashable')
-
-        self._d = dict(*args, **kwargs)
-        self._hash = hash(tuple([(type(x), x, type(y), y) for x, y in sorted(self._d.items())]))
-
-    def __iter__(self):
-        """Iterator."""
-
-        return iter(self._d)
-
-    def __len__(self):
-        """Length."""
-
-        return len(self._d)
-
-    def __getitem__(self, key):
-        """Get item: `namespace['key']`."""
-        return self._d[key]
-
-    def __hash__(self):
-        """Hash."""
-
-        return self._hash
-
-    def __repr__(self):  # pragma: no cover
-        """Representation."""
-
-        return "%r" % self._d
-
-    __str__ = __repr__
 
 
 def deprecated(message, stacklevel=2):

@@ -7,6 +7,7 @@
 - **NEW**: Add support for `:checked`, `:enabled`, `:disabled`, `:required`, `:optional`, `:default`, and `:placeholder-shown` which will only match in HTML documents as these concepts are not defined in XML.
 - **NEW**: Add support for `:link` and `:any-link`, both of which will target all `<a>`, `<area>`, and `<link>` elements with an `href` attribute as all links will be treated as unvisited in Soup Sieve.
 - **NEW**: Add support for `:lang()` (CSS4) which works in XML and HTML.
+- **NEW**: Users must install Beautiful Soup themselves. This requirement is removed in the hopes that Beautiful Soup may use this in the future.
 - **FIX**: Attributes in the form `prefix:attr` can be matched with the form `[prefix\:attr]` without specifying a namespaces if desired.
 - **FIX**: Fix exception when `[type]` is used (with no value).
 

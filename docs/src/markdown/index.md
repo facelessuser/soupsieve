@@ -24,7 +24,13 @@ Checkout [CSS Selectors](./selectors.md) to see the full list.
 
 ## Installation
 
-Installation is easy with `pip`:
+You must have Beautiful Soup already installed:
+
+```
+pip install beautifulsoup4
+```
+
+Then use `pip` to install Soup Sieve:
 
 ```
 pip install soupsieve
