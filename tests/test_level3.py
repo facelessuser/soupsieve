@@ -19,18 +19,11 @@ E ~ F
 :nth-last-child(an+b)
 :nth-of-type(an+b)
 :nth-of-last-type(an+b)
+:target
+:checked
+:enabled
+:disabled
 ```
-
-Not supported (with current opinions or plans the matter):
-
-- `:target`: Elements cannot be targeted in our environment, so this will not be implemented.
-
-- `:enabled` / `:disabled`: There are currently no plans to implement this.
-
-- `:checked`: Checked could be complicated to implement. Would you select the first item in a `<select>` tag if no
-  option is specified to be selected? Or would you consider this something that occurs when the document is live in the
-  browser?  There would need to be some considerations. What if a user has selected multiple radio boxes on accident?
-  Is this even useful in the context of how Soup Sieve would be used?
 """
 from . import util
 
@@ -445,6 +438,22 @@ class TestLevel3(util.TestCase):
 
         self.assert_selector(
             markup,
+            '[xlink\\:href*=forw],[xlink|href="images/sprites.svg#icon-redo"]',
+            ['1', '2'],
+            namespaces={"xlink": "http://www.w3.org/1999/xlink"},
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            '[xlink\\:nomatch*=forw]',
+            [],
+            namespaces={"xlink": "http://www.w3.org/1999/xlink"},
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
             '[bad|href*=forw]',
             [],
             namespaces={"xlink": "http://www.w3.org/1999/xlink"},
@@ -822,5 +831,222 @@ class TestLevel3(util.TestCase):
             markup,
             "p:nth-last-of-type(2n + 1)",
             ['1', '8', '10'],
+            flags=util.HTML5
+        )
+
+    def test_checked(self):
+        """Test checked."""
+
+        markup = """
+        <div>
+          <input type="radio" name="my-input" id="yes" checked>
+          <label for="yes">Yes</label>
+
+          <input type="radio" name="my-input" id="no">
+          <label for="no">No</label>
+        </div>
+
+        <div>
+          <input type="checkbox" name="my-checkbox" id="opt-in" checked>
+          <label for="opt-in">Check me!</label>
+        </div>
+
+        <select name="my-select" id="fruit">
+          <option id="1" value="opt1">Apples</option>
+          <option id="2" value="opt2" selected>Grapes</option>
+          <option id="3" value="opt3">Pears</option>
+        </select>
+        """
+
+        self.assert_selector(
+            markup,
+            ":checked",
+            ['yes', 'opt-in', '2'],
+            flags=util.HTML5
+        )
+
+    def test_disabled(self):
+        """
+        Test disabled.
+
+        Form elements that have `disabled`.
+        `option` that is child of disabled `optgroup`.
+        Form elements that are children of a disabled `fieldset`, but not it's `legend`.
+        """
+
+        markup = """
+        <form action="#">
+          <fieldset id='a' disabled>
+            <legend>
+              Simple fieldset <input type="radio" id="1" checked>
+              <fieldset id='b' disabled>
+                <legend>Simple fieldset <input type="radio" id="2" checked></legend>
+                <input type="radio" id="3" checked>
+                <label for="radio">radio</label>
+              </fieldset>
+            </legend>
+            <fieldset id='c' disabled>
+              <legend>Simple fieldset <input type="radio" id="4" checked></legend>
+              <input type="radio" id="5" checked>
+              <label for="radio">radio</label>
+            </fieldset>
+            <input type="radio" id="6" checked>
+            <label for="radio">radio</label>
+          </fieldset>
+          <optgroup>
+            <option id="7" disabled>option</option>
+          </optgroup>
+          <optgroup id="8" disabled>
+            <option id="9">option</option>
+          </optgroup>
+        </form>
+        """
+
+        markup2 = """
+        <form action="#">
+          <fieldset id='a' disabled>
+            <legend>
+              Simple fieldset <input type="radio" id="1" checked>
+              <fieldset id='b'>
+                <legend>Simple fieldset <input type="radio" id="2" checked></legend>
+                <input type="radio" id="3" checked>
+                <label for="radio">radio</label>
+              </fieldset>
+            </legend>
+            <fieldset id='c' disabled>
+              <legend>Simple fieldset <input type="radio" id="4" checked></legend>
+              <input type="radio" id="5" checked>
+              <label for="radio">radio</label>
+            </fieldset>
+            <input type="radio" id="6" checked>
+            <label for="radio">radio</label>
+          </fieldset>
+          <optgroup>
+            <option id="7" disabled>option</option>
+          </optgroup>
+          <optgroup id="8" disabled>
+            <option id="9">option</option>
+          </optgroup>
+        </form>
+        """
+
+        self.assert_selector(
+            markup,
+            ":disabled",
+            ['3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup2,
+            ":disabled",
+            ['4', '5', '6', '7', '8', '9', 'a', 'c'],
+            flags=util.HTML5
+        )
+
+    def test_enable(self):
+        """
+        Test enable.
+
+        `:any-link`
+        Form elements that have `disabled`.
+        Form elements that are children of a disabled `fieldset`, but not it's `legend`.
+        """
+
+        markup = """
+        <form action="#">
+          <fieldset id='a' disabled>
+            <legend>
+              Simple fieldset <input type="radio" id="1" checked>
+              <fieldset id='b' disabled>
+                <legend>Simple fieldset <input type="radio" id="2" checked></legend>
+                <input type="radio" id="3" checked>
+                <label for="radio">radio</label>
+              </fieldset>
+            </legend>
+            <fieldset id='c' disabled>
+              <legend>Simple fieldset <input type="radio" id="4" checked></legend>
+              <input type="radio" id="5" checked>
+              <label for="radio">radio</label>
+            </fieldset>
+            <input type="radio" id="6" checked>
+            <label for="radio">radio</label>
+          </fieldset>
+          <optgroup id="opt-enable">
+            <option id="7" disabled>option</option>
+          </optgroup>
+          <optgroup id="8" disabled>
+            <option id="9">option</option>
+          </optgroup>
+          <a href="" id="link">text</a>
+        </form>
+        """
+
+        markup2 = """
+        <form action="#">
+          <fieldset id='a' disabled>
+            <legend>
+              Simple fieldset <input type="radio" id="1" checked>
+              <fieldset id='b'>
+                <legend>Simple fieldset <input type="radio" id="2" checked></legend>
+                <input type="radio" id="3" checked>
+                <label for="radio">radio</label>
+              </fieldset>
+            </legend>
+            <fieldset id='c' disabled>
+              <legend>Simple fieldset <input type="radio" id="4" checked></legend>
+              <input type="radio" id="5" checked>
+              <label for="radio">radio</label>
+            </fieldset>
+            <input type="radio" id="6" checked>
+            <label for="radio">radio</label>
+          </fieldset>
+          <optgroup id="opt-enable">
+            <option id="7" disabled>option</option>
+          </optgroup>
+          <optgroup id="8" disabled>
+            <option id="9">option</option>
+          </optgroup>
+          <a href="" id="link">text</a>
+        </form>
+        """
+
+        self.assert_selector(
+            markup,
+            ":enabled",
+            ['1', '2', 'opt-enable', 'link'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup2,
+            ":enabled",
+            ['1', '2', 'opt-enable', 'b', '3', 'link'],
+            flags=util.HTML5
+        )
+
+    def test_target(self):
+        """Test target."""
+
+        markup = """
+        <div>
+        <h2 id="head-1">Header 1</h1>
+        <div><p>content</p></div>
+        <h2 id="head-2">Header 2</h1>
+        <div><p>content</p></div>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            "#head-2:target",
+            [],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "#head-2:not(:target)",
+            ["head-2"],
             flags=util.HTML5
         )

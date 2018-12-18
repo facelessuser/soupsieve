@@ -15,9 +15,9 @@ filtering with using modern CSS selectors.
 While Beautiful Soup comes with a builtin CSS selection API, it is not without issues. In addition, it also lacks
 support for some more modern CSS features.
 
-Soup Sieve supports a subset of CSS4 selectors which allows for filtering of tags in a Beautiful Soup object. Soup
-Sieve does not attempt to support all CSS4 selectors as many don't make sense in a non-browser environment. Some of the
-supported selectors are:
+Soup Sieve implements most of the CSS4 selectors, though there are a number that don't make sense in a non-browser
+environment. Selectors that cannot provide meaningful functionality simply do not match anything. Some of the supported
+selectors are:
 
 - `.classes`
 - `#ids`

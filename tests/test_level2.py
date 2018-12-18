@@ -10,17 +10,10 @@ E + F
 [foo='bar']
 [foo~='bar']
 [foo|='en']
+:hover
+:focus
+:lang(en)
 ```
-
-Not supported (with current opinions or plans the matter):
-
-- `:lang(en)`: In documents, `:lang()` can take into considerations information in `meta` and other things in the
-  header. At this point, there are no plans to implement this. If a reasonable proposal was introduced on how to
-  support this, it may be considered.
-
-- `:hover`: Items cannot be hovered in our environment, so this has little meaning and will not be implemented.
-
-- `:focus`: Items cannot be focused in our environment, so this has little meaning and will not be implemented.
 """
 from . import util
 
@@ -363,5 +356,99 @@ class TestLevel2(util.TestCase):
             """,
             "span:first-child",
             ["1", "4"],
+            flags=util.HTML5
+        )
+
+    def test_hover(self):
+        """Test hover."""
+
+        markup = """
+        <div>
+        <p>Some text <span id="1" class="foo:bar:foobar"> in a paragraph</span>.
+        <a id="2" class="bar" href="http://google.com">Link</a>
+        <a id="3">Placeholder text.</a>
+        </p>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            "a:hover",
+            [],
+            flags=util.HTML5
+        )
+
+    def test_focus(self):
+        """Test focus."""
+
+        markup = """
+        <form action="#">
+          <fieldset id='a' disabled>
+            <legend>
+              Simple fieldset <input type="radio" id="1" checked>
+              <fieldset id='b' disabled>
+                <legend>Simple fieldset <input type="radio" id="2" checked></legend>
+                <input type="radio" id="3" checked>
+                <label for="radio">radio</label>
+              </fieldset>
+            </legend>
+            <fieldset id='c' disabled>
+              <legend>Simple fieldset <input type="radio" id="4" checked></legend>
+              <input type="radio" id="5" checked>
+              <label for="radio">radio</label>
+            </fieldset>
+            <input type="radio" id="6" checked>
+            <label for="radio">radio</label>
+          </fieldset>
+          <optgroup id="opt-enable">
+            <option id="7" disabled>option</option>
+          </optgroup>
+          <optgroup id="8" disabled>
+            <option id="9">option</option>
+          </optgroup>
+          <a href="" id="link">text</a>
+        </form>
+        """
+
+        self.assert_selector(
+            markup,
+            "input:focus",
+            [],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "input:not(:focus)",
+            ["1", "2", "3", "4", "5", "6"],
+            flags=util.HTML5
+        )
+
+    def test_lang(self):
+        """Test language."""
+
+        markup = """
+        <div lang="de-DE">
+            <p id="1"></p>
+        </div>
+        <div lang="de-DE-1996">
+            <p id="2"></p>
+        </div>
+        <div lang="de-Latn-DE">
+            <p id="3"></p>
+        </div>
+        <div lang="de-Latf-DE">
+            <p id="4"></p>
+        </div>
+        <div lang="de-Latn-DE-1996">
+            <p id="5"></p>
+        </div>
+        <p id="6" lang="de-DE"></p>
+        """
+
+        self.assert_selector(
+            markup,
+            "p:lang(de)",
+            ['1', '2', '3', '4', '5', '6'],
             flags=util.HTML5
         )

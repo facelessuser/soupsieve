@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.1.0
+
+- **NEW**: Adds support for `[attr!=value]` which is equivalent to `:not([attr=value])`.
+- **NEW**: Add support for `:active`, `:focus`, `:hover`, `:visited`, `:target`, `:focus-within`, `:focus-visible`, `:target-within`, `:current()`/`:current`, `:past`, and `:future`, but they will never match as these states don't exist in the Soup Sieve environment.
+- **NEW**: Add support for `:checked`, `:enabled`, `:disabled`, `:required`, `:optional`, `:default`, and `:placeholder-shown` which will only match in HTML documents as these concepts are not defined in XML.
+- **NEW**: Add support for `:link` and `:any-link`, both of which will target all `<a>`, `<area>`, and `<link>` elements with an `href` attribute as all links will be treated as unvisited in Soup Sieve.
+- **NEW**: Add support for `:lang()` (CSS4) which works in XML and HTML.
+- **FIX**: Attributes in the form `prefix:attr` can be matched with the form `[prefix\:attr]` without specifying a namespaces if desired.
+- **FIX**: Fix exception when `[type]` is used (with no value).
+
 ## 1.0.2
 
 - **FIX**: Use proper CSS identifier patterns for tag names, classes, ids, etc. Things like `#3` or `#-3` should not match and should require `#\33` or `#-\33`.

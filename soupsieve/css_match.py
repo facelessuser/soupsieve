@@ -28,6 +28,9 @@ class CSSMatch:
     def __init__(self, selectors, namespaces, flags):
         """Initialize."""
 
+        self.meta_lang = None
+        self.default_forms = []
+        self.indeterminate_forms = []
         self.selectors = selectors
         self.namespaces = namespaces
         self.flags = flags
@@ -69,8 +72,15 @@ class CSSMatch:
                     p = ''
                     a = k
                 # Can't match a prefix attribute as we haven't specified one to match
+                # Try to match it normally as a whole `p:a` as selector may be trying `p\:a`.
                 if not prefix and p:
-                    continue
+                    if (self.is_xml and attr == k) or (not self.is_xml and util.lower(attr) == util.lower(k)):
+                        value = v
+                        break
+                    # Coverage is not finding this even though it is executed.
+                    # Adding a print statement before this (and erasing coverage) causes coverage to find the line.
+                    # Ignore the false positive message.
+                    continue  # pragma: no cover
                 # We can't match our desired prefix attribute as the attribute doesn't have a prefix
                 if prefix and not p and prefix != '*':
                     continue
@@ -416,42 +426,237 @@ class CSSMatch:
                 break
         return match
 
+    def match_default(self, el):
+        """Match default."""
+
+        match = False
+
+        # Find this input's form
+        form = None
+        parent = el.parent
+        while parent and form is None:
+            if util.lower(parent.name) == 'form':
+                form = parent
+            else:
+                parent = parent.parent
+
+        # Look in form cache to see if we've already located its default button
+        found_form = False
+        for f, t in self.default_forms:
+            if f is form:
+                found_form = True
+                if t is el:
+                    match = True
+                break
+
+        # We didn't have the form cached, so look for its default button
+        if not found_form:
+            child_found = False
+            for child in form.descendants:
+                if not isinstance(child, util.TAG):
+                    continue
+                name = util.lower(child.name)
+                # Can't do nested forms (haven't figured out why we never hit this)
+                if name == 'form':  # pragma: no cover
+                    break
+                if name in ('input', 'button'):
+                    for k, v in child.attrs.items():
+                        if util.lower(k) == 'type' and util.lower(v) == 'submit':
+                            child_found = True
+                            self.default_forms.append([form, child])
+                            if el is child:
+                                match = True
+                            break
+                if child_found:
+                    break
+        return match
+
+    def match_indeterminate(self, el):
+        """Match default."""
+
+        match = False
+        name = el.attrs.get('name')
+
+        def get_parent_form(el):
+            """Find this input's form."""
+            form = None
+            parent = el.parent
+            while form is None:
+                if util.lower(parent.name) == 'form':
+                    form = parent
+                    break
+                elif parent.parent:
+                    parent = parent.parent
+                else:
+                    form = parent
+                    break
+            return form
+
+        form = get_parent_form(el)
+
+        # Look in form cache to see if we've already evaluated that its fellow radio buttons are indeterminate
+        found_form = False
+        for f, n, i in self.indeterminate_forms:
+            if f is form and n == name:
+                found_form = True
+                if i is True:
+                    match = True
+                break
+
+        # We didn't have the form cached, so validate that the radio button is indeterminate
+        if not found_form:
+            checked = False
+            for child in form.descendants:
+                if not isinstance(child, util.TAG) or child is el:
+                    continue
+                tag_name = util.lower(child.name)
+                if tag_name == 'input':
+                    is_radio = False
+                    check = False
+                    has_name = False
+                    for k, v in child.attrs.items():
+                        if util.lower(k) == 'type' and util.lower(v) == 'radio':
+                            is_radio = True
+                        elif util.lower(k) == 'name' and v == name:
+                            has_name = True
+                        elif util.lower(k) == 'checked':
+                            check = True
+                        if is_radio and check and has_name and get_parent_form(child) is form:
+                            checked = True
+                            break
+                if checked:
+                    break
+            if not checked:
+                match = True
+            self.indeterminate_forms.append([form, name, match])
+
+        return match
+
+    def match_lang(self, el, langs):
+        """Match languages."""
+
+        match = False
+        has_ns = self.supports_namespaces()
+
+        # Walk parents looking for `lang` (HTML) or `xml:lang` XML property.
+        parent = el
+        found_lang = None
+        while parent.parent and not found_lang:
+            ns = self.is_html_ns(parent)
+            for k, v in parent.attrs.items():
+                if (
+                    (self.is_xml and k == 'xml:lang') or
+                    (
+                        not self.is_xml and (
+                            ((not has_ns or ns) and util.lower(k) == 'lang') or
+                            (has_ns and not ns and util.lower(k) == 'xml:lang')
+                        )
+                    )
+                ):
+                    found_lang = v
+                    break
+            parent = parent.parent
+
+        # Use cached meta language.
+        if not found_lang and self.meta_lang:
+            found_lang = self.meta_lang
+
+        # If we couldn't find a language, and the document is HTML, look to meta to determine language.
+        if not found_lang and not self.is_xml:
+            found = False
+            for tag in ('html', 'head'):
+                found = False
+                for child in parent.children:
+                    if isinstance(child, util.TAG) and util.lower(child.name) == tag:
+                        found = True
+                        parent = child
+                        break
+                if not found:  # pragma: no cover
+                    break
+
+            if found:
+                for child in parent:
+                    if isinstance(child, util.TAG) and util.lower(child.name) == 'meta':
+                        c_lang = False
+                        content = None
+                        for k, v in child.attrs.items():
+                            if util.lower(k) == 'http-equiv' and util.lower(v) == 'content-language':
+                                c_lang = True
+                            if util.lower(k) == 'content':
+                                content = v
+                            if c_lang and content:
+                                found_lang = content
+                                self.meta_lang = found_lang
+                                break
+                    if found_lang:
+                        break
+
+        # If we determined a language, compare.
+        if found_lang:
+            for patterns in langs:
+                match = False
+                for pattern in patterns:
+                    # print('PATTERN: ', pattern)
+                    if pattern.match(found_lang):
+                        # print('MATCHED')
+                        match = True
+                if not match:
+                    break
+
+        return match
+
     def match_selectors(self, el, selectors):
         """Check if element matches one of the selectors."""
 
         match = False
         is_not = selectors.is_not
-        for selector in selectors:
-            match = is_not
-            # Verify tag matches
-            if not self.match_tag(el, selector.tag):
-                continue
-            # Verify `nth` matches
-            if not self.match_nth(el, selector.nth):
-                continue
-            if not self.match_empty(el, selector.empty):
-                continue
-            # Verify id matches
-            if selector.ids and not self.match_id(el, selector.ids):
-                continue
-            # Verify classes match
-            if selector.classes and not self.match_classes(el, selector.classes):
-                continue
-            # Verify attribute(s) match
-            if not self.match_attributes(el, selector.attributes):
-                continue
-            if selector.root and not self.match_root(el):
-                continue
-            # Verify pseudo selector patterns
-            if selector.selectors and not self.match_subselectors(el, selector.selectors):
-                continue
-            # Verify relationship selectors
-            if selector.relation and not self.match_relations(el, selector.relation):
-                continue
-            if not self.match_contains(el, selector.contains):
-                continue
-            match = not is_not
-            break
+        is_html = selectors.is_html
+        if not (is_html and self.is_xml):
+            for selector in selectors:
+                match = is_not
+                # We have a un-matchable situation (like `:focus` as you can focus an element in this environment)
+                if selector.no_match:
+                    continue
+                # Verify tag matches
+                if not self.match_tag(el, selector.tag):
+                    continue
+                # Verify `nth` matches
+                if not self.match_nth(el, selector.nth):
+                    continue
+                if not self.match_empty(el, selector.empty):
+                    continue
+                # Verify id matches
+                if selector.ids and not self.match_id(el, selector.ids):
+                    continue
+                # Verify classes match
+                if selector.classes and not self.match_classes(el, selector.classes):
+                    continue
+                # Verify attribute(s) match
+                if not self.match_attributes(el, selector.attributes):
+                    continue
+                # Verify element is root
+                if selector.root and not self.match_root(el):
+                    continue
+                # Verify language patterns
+                if selector.lang and not self.match_lang(el, selector.lang):
+                    continue
+                # Verify pseudo selector patterns
+                if selector.selectors and not self.match_subselectors(el, selector.selectors):
+                    continue
+                # Verify relationship selectors
+                if selector.relation and not self.match_relations(el, selector.relation):
+                    continue
+                # Validate that the current default selector match corresponds to the first submit button in the form
+                if selector.default and not self.match_default(el):
+                    continue
+                # Validate that the unset radio button is among radio buttons with the same name in a form that are
+                # also not set.
+                if selector.indeterminate and not self.match_indeterminate(el):
+                    continue
+                if not self.match_contains(el, selector.contains):
+                    continue
+                match = not is_not
+                break
 
         return match
 
@@ -496,9 +701,11 @@ class SoupSieve(util.Immutable):
     def _walk(self, node, capture=True, comments=False):
         """Recursively return selected tags."""
 
+        match = CSSMatch(self.selectors, self.namespaces, self.flags).match
+
         # Walk children
         for child in node.descendants:
-            if capture and isinstance(child, util.TAG) and self.match(child):
+            if capture and isinstance(child, util.TAG) and match(child):
                 yield child
             elif comments and isinstance(child, util.COMMENT):
                 yield child

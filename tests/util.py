@@ -26,6 +26,6 @@ class TestCase(unittest.TestCase):
         soup = bs4.BeautifulSoup(textwrap.dedent(markup.replace('\r\n', '\n')), bs_mode)
 
         ids = []
-        for el in sv.select(selectors, soup, namespaces=namespaces, flags=flags):
+        for el in sv.select(selectors, soup, namespaces=namespaces):
             ids.append(el.attrs['id'])
         self.assertEqual(sorted(ids), sorted(expected_ids))
