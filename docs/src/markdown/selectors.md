@@ -4,7 +4,7 @@
 
 ### HTML and XML Selectors
 
-The CSS selectors are based on a limited subset of CSS4 selectors. Primarily support has been added for selectors that were feasible to implement and most likely to get practical use.
+The CSS selectors are based off of the CSS level 4 specification. Primarily support has been added for selectors that were feasible to implement and most likely to get practical use. Selectors that cannot provide meaningful matches, simply match nothing. An example would be `:focus` which will match nothing because elements cannot be focused outside of a browser. Though most of the selectors have been implemented, there are still a few that are not.
 
 Below shows accepted selectors. When speaking about namespaces, they only apply to XML, XHTML, or when dealing with recognized foreign tags in HTML5. You must configure the CSS [namespaces](./api.md#namespaces) when attempting to evaluate namespaces.
 
