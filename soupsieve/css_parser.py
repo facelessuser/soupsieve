@@ -210,10 +210,7 @@ class _Selector:
         self.rel_type = kwargs.get('rel_type', None)
         self.contains = kwargs.get('contains', [])
         self.lang = kwargs.get('lang', [])
-        self.empty = kwargs.get('empty', False)
-        self.root = kwargs.get('root', False)
-        self.default = kwargs.get('default', False)
-        self.indeterminate = kwargs.get('indeterminate', False)
+        self.flags = kwargs.get('flags', 0)
         self.no_match = kwargs.get('no_match', False)
 
     def _freeze_relations(self, relations):
@@ -229,33 +226,32 @@ class _Selector:
     def freeze(self):
         """Freeze self."""
 
-        return ct.Selector(
-            self.tag,
-            tuple(self.ids),
-            tuple(self.classes),
-            tuple(self.attributes),
-            tuple(self.nth),
-            tuple(self.selectors),
-            self._freeze_relations(self.relations),
-            self.rel_type,
-            tuple(self.contains),
-            tuple(self.lang),
-            self.empty,
-            self.root,
-            self.default,
-            self.indeterminate,
-            self.no_match,
-        )
+        if self.no_match:
+            return ct.NullSelector()
+        else:
+            return ct.Selector(
+                self.tag,
+                tuple(self.ids),
+                tuple(self.classes),
+                tuple(self.attributes),
+                tuple(self.nth),
+                tuple(self.selectors),
+                self._freeze_relations(self.relations),
+                self.rel_type,
+                tuple(self.contains),
+                tuple(self.lang),
+                self.flags
+            )
 
     def __str__(self):  # pragma: no cover
         """String representation."""
 
         return (
             '_Selector(tag=%r, ids=%r, classes=%r, attributes=%r, nth=%r, selectors=%r, '
-            'relations=%r, rel_type=%r, contains=%r, lang=%r, empty=%r, root=%r)'
+            'relations=%r, rel_type=%r, contains=%r, lang=%r, flags=%r, no_match=%r)'
         ) % (
             self.tag, self.ids, self.classes, self.attributes, self.nth, self.selectors,
-            self.relations, self.rel_type, self.contains, self.lang, self.empty, self.root
+            self.relations, self.rel_type, self.contains, self.lang, self.flags, self.no_match
         )
 
     __repr__ = __str__
@@ -389,9 +385,9 @@ class CSSParser:
             has_selector = self.parse_pseudo_open(sel, pseudo, has_selector, iselector)
         elif not complex_pseudo and pseudo in PSEUDO_SIMPLE:
             if pseudo == ':root':
-                sel.root = True
+                sel.flags |= ct.SEL_ROOT
             elif pseudo == ':empty':
-                sel.empty = True
+                sel.flags |= ct.SEL_EMPTY
             elif pseudo in (':link', ':any-link'):
                 sel.selectors.append(
                     self.parse_selectors(
@@ -791,9 +787,9 @@ class CSSParser:
         # logic, flag that selector as "default" so the required logic will be executed
         # along with the pattern.
         if is_default:
-            selectors[-1].default = True
+            selectors[-1].flags = ct.SEL_DEFAULT
         if is_indeterminate:
-            selectors[-1].indeterminate = True
+            selectors[-1].flags = ct.SEL_INDETERMINATE
 
         return ct.SelectorList([s.freeze() for s in selectors], is_not, is_html)
 
