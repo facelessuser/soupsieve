@@ -62,7 +62,8 @@ PSEUDO_SPECIAL = {
     ":nth-child",
     ":nth-last-child",
     ":nth-of-type",
-    ":nth-last-of-type"
+    ":nth-last-of-type",
+    ":lang"
 }
 
 PSEUDO_SUPPORTED = PSEUDO_SIMPLE | PSEUDO_SIMPLE_NO_MATCH | PSEUDO_COMPLEX | PSEUDO_COMPLEX_NO_MATCH | PSEUDO_SPECIAL
@@ -79,7 +80,7 @@ IDENTIFIER = r'''
 NTH = r'(?:[-+])?(?:\d+n?|n)(?:(?<=n){ws}*(?:[-+]){ws}*(?:\d+))?'.format(ws=WS)
 
 VALUE = r'''
-(?P<value>
+(?:
     "(?:\\.|[^\\"]*)*?"|
     '(?:\\.|[^\\']*)*?'|
     {ident}+
@@ -87,7 +88,7 @@ VALUE = r'''
 '''.format(ident=IDENTIFIER)
 
 # Attribute value comparison. `!=` is handled special as it is non-standard.
-ATTR = r'''(?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*{value}(?P<case>{ws}+[is])?)?{ws}*\]'''.format(ws=WS, value=VALUE)
+ATTR = r'''(?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*(?P<value>{value})(?P<case>{ws}+[is])?)?{ws}*\]'''.format(ws=WS, value=VALUE)
 
 # Selector patterns
 PAT_ID = r'\#{ident}'.format(ident=IDENTIFIER)
@@ -115,16 +116,20 @@ PAT_PSEUDO_NTH_TYPE = r'''
 \({ws}*(?P<nth_type>{nth}|even|odd){ws}*\))
 '''.format(ws=WS, nth=NTH)
 
+PAT_PSEUDO_LANG = r':lang\({ws}*(?P<lang>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'.format(ws=WS, value=VALUE)
+
 PAT_SPLIT = r'{ws}*?(?P<relation>[,+>~]|{ws}(?![,+>~])){ws}*'.format(ws=WS)
 
 # Extra selector patterns
-PAT_PSEUDO_CONTAINS = r':contains\({ws}*{value}{ws}*\)'.format(ws=WS, value=VALUE)
+PAT_PSEUDO_CONTAINS = r':contains\({ws}*(?P<value>{value}){ws}*\)'.format(ws=WS, value=VALUE)
 
 # CSS escape pattern
 RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{{1,6}}{ws}?)|(\\.))'.format(ws=WS), re.I)
 
 # Pattern to break up `nth` specifiers
 RE_NTH = re.compile(r'(?P<s1>[-+])?(?P<a>\d+n?|n)(?:(?<=n){ws}*(?P<s2>[-+]){ws}*(?P<b>\d+))?'.format(ws=WS), re.I)
+
+RE_LANG = re.compile(r'(?:(?P<value>{value})|(?P<split>{ws}*,{ws}*))'.format(ws=WS, value=VALUE), re.X)
 
 SPLIT = ','
 REL_HAS_CHILD = ": "
@@ -204,6 +209,7 @@ class _Selector:
         self.relations = kwargs.get('relations', [])
         self.rel_type = kwargs.get('rel_type', None)
         self.contains = kwargs.get('contains', [])
+        self.lang = kwargs.get('lang', [])
         self.empty = kwargs.get('empty', False)
         self.root = kwargs.get('root', False)
         self.default = kwargs.get('default', False)
@@ -233,6 +239,7 @@ class _Selector:
             self._freeze_relations(self.relations),
             self.rel_type,
             tuple(self.contains),
+            tuple(self.lang),
             self.empty,
             self.root,
             self.default,
@@ -245,10 +252,10 @@ class _Selector:
 
         return (
             '_Selector(tag=%r, ids=%r, classes=%r, attributes=%r, nth=%r, selectors=%r, '
-            'relations=%r, rel_type=%r, empty=%r, root=%r)'
+            'relations=%r, rel_type=%r, contains=%r, lang=%r, empty=%r, root=%r)'
         ) % (
             self.tag, self.ids, self.classes, self.attributes, self.nth, self.selectors,
-            self.relations, self.rel_type, self.empty, self.root
+            self.relations, self.rel_type, self.contains, self.lang, self.empty, self.root
         )
 
     __repr__ = __str__
@@ -263,6 +270,7 @@ class CSSParser:
             ("pseudo_contains", SelectorPattern(PAT_PSEUDO_CONTAINS)),
             ("pseudo_nth_child", SelectorPattern(PAT_PSEUDO_NTH_CHILD)),
             ("pseudo_nth_type", SelectorPattern(PAT_PSEUDO_NTH_TYPE)),
+            ("pseudo_lang", SelectorPattern(PAT_PSEUDO_LANG)),
             ("pseudo", SelectorPattern(PAT_PSEUDO)),
             ("id", SelectorPattern(PAT_ID)),
             ("class", SelectorPattern(PAT_CLASS)),
@@ -656,14 +664,43 @@ class CSSParser:
             has_selector = True
         return has_selector
 
-    def parse_contains(self, sel, m, has_selector):
+    def parse_pseudo_contains(self, sel, m, has_selector):
         """Parse contains."""
 
-        content = css_unescape(m.group('value').strip())
+        content = m.group('value').strip()
         if content.startswith(("'", '"')):
             content = content[1:-1]
+        content = css_unescape(content)
         sel.contains.append(content)
         has_selector = True
+        return has_selector
+
+    def parse_pseudo_lang(self, sel, m, has_selector):
+        """Parse pseudo language."""
+
+        lang = m.group('lang')
+        patterns = []
+        for token in RE_LANG.finditer(lang):
+            if token.group('split'):
+                continue
+            value = token.group('value')
+            if value.startswith(('"', "'")):
+                value = value[1:-1]
+            parts = css_unescape(value).split('-')
+
+            new_parts = []
+            first = True
+            for part in parts:
+                if part == '*' and first:
+                    new_parts.append('(?!x\b)[a-z0-9]+?')
+                elif part != '*':
+                    new_parts.append(('' if first else '(-(?!x\b)[a-z0-9]+)*?\\-') + re.escape(part))
+                if first:
+                    first = False
+            patterns.append(re.compile(r'^{}(?:-.*)?$'.format(''.join(new_parts)), re.I))
+        sel.lang.append(ct.SelectorLang(patterns))
+        has_selector = True
+
         return has_selector
 
     def parse_selectors(self, iselector, flags=0):
@@ -693,9 +730,11 @@ class CSSParser:
                 if key == 'pseudo':
                     has_selector = self.parse_pseudo(sel, m, has_selector, iselector)
                 elif key == 'pseudo_contains':
-                    has_selector = self.parse_contains(sel, m, has_selector)
+                    has_selector = self.parse_pseudo_contains(sel, m, has_selector)
                 elif key in ('pseudo_nth_type', 'pseudo_nth_child'):
                     has_selector = self.parse_pseudo_nth(sel, m, has_selector, iselector)
+                elif key == 'pseudo_lang':
+                    has_selector = self.parse_pseudo_lang(sel, m, has_selector)
                 elif key == 'pseudo_close':
                     if split_last:
                         raise SyntaxError("Cannot end with a combining character")

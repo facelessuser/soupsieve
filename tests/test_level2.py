@@ -12,12 +12,8 @@ E + F
 [foo|='en']
 :hover
 :focus
+:lang(en)
 ```
-
-Not supported:
-
-- `:lang(en)`: In documents, `:lang()` can take into considerations information in `meta` and other things in the
-  header.
 """
 from . import util
 
@@ -425,5 +421,34 @@ class TestLevel2(util.TestCase):
             markup,
             "input:not(:focus)",
             ["1", "2", "3", "4", "5", "6"],
+            flags=util.HTML5
+        )
+
+    def test_lang(self):
+        """Test language."""
+
+        markup = """
+        <div lang="de-DE">
+            <p id="1"></p>
+        </div>
+        <div lang="de-DE-1996">
+            <p id="2"></p>
+        </div>
+        <div lang="de-Latn-DE">
+            <p id="3"></p>
+        </div>
+        <div lang="de-Latf-DE">
+            <p id="4"></p>
+        </div>
+        <div lang="de-Latn-DE-1996">
+            <p id="5"></p>
+        </div>
+        <p id="6" lang="de-DE"></p>
+        """
+
+        self.assert_selector(
+            markup,
+            "p:lang(de)",
+            ['1', '2', '3', '4', '5', '6'],
             flags=util.HTML5
         )

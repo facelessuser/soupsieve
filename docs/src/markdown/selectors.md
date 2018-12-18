@@ -44,6 +44,7 @@ Selector                        | Example                             | Descript
 `:first-of-type`                | `#!css p:first-of-type`             | Selects every `#!html <p>` element that is the first `#!html <p>` element of its parent.
 `:has(> sel, + sel)`            | `#!css :has(> div, + p)`            | Selects elements that have a direct child that is a `#!html <div>` or that have sibling of `#!html <p>` immediately following.
 `:is(sel, sel)`                 | `#!css :is(div, .some-class)`       | Selects elements that are not `#!html <div>` and do not have class `some-class`. The alias `:matches` is allowed as well. In CSS4 `:where` is like `:is` except specificity is always zero. Soup Sieve doesn't care about specificity, so `:where` is exactly like `:is`.
+`:lang(l1, l2)`                 | `#!css :lang('*-CH', en)`           | Select all elements with language `de-CH`, `it-CH`, `fr-CH`, and `rm-CH`. Will also match `en`, `en-US`, and `en-GB`. See CSS4 specification for more info.
 `:last-child`                   | `#!css p:last-child`                | Selects every `#!html <p>` element that is the last child of its parent.
 `:last-of-type`                 | `#!css p:last-of-type`              | Selects every `#!html <p>` element that is the last `#!html <p>` element of its parent.
 `:not(sel, sel)`                | `#!css :not(.some-class, #some-id)` | Selects elements that do not have class `some-class` and ID `some-id`.

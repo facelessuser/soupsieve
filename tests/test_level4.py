@@ -18,6 +18,7 @@ Test selectors level 4.
 :default
 :indeterminate
 :placeholder-shown
+:lang('*-US', de-DE, ...)
 ```
 
 Not supported:
@@ -35,9 +36,6 @@ Not supported:
   `direction` value, which is a good thing. It is doable, but not sure worth the effort. In addition, it seems there is
   reference to being able to do something like `[dir=auto]` which would select either `ltr` or `rtl`. This seems to add
   additional logic in to attribute selections which would complicate things, but still technically doable.
-
-- `:lang(en-*)`: As mentioned in level 2 tests, in documents, `:lang()` can take into considerations information in
-  `meta` and other things in the header.
 
 - `:local-link`: In our environment, there is no document URL. This isn't currently practical.
 
@@ -776,5 +774,262 @@ class TestLevel4(util.TestCase):
             markup,
             ":placeholder-shown",
             ['0', '1', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+            flags=util.HTML5
+        )
+
+    def test_lang(self):
+        """Test language."""
+
+        markup = """
+        <div lang="de-DE">
+            <p id="1"></p>
+        </div>
+        <div lang="de-DE-1996">
+            <p id="2"></p>
+        </div>
+        <div lang="de-Latn-DE">
+            <p id="3"></p>
+        </div>
+        <div lang="de-Latf-DE">
+            <p id="4"></p>
+        </div>
+        <div lang="de-Latn-DE-1996">
+            <p id="5"></p>
+        </div>
+        <p id="6" lang="de-DE"></p>
+        """
+
+        # Implicit wild
+        self.assert_selector(
+            markup,
+            "p:lang(de-DE)",
+            ['1', '2', '3', '4', '5', '6'],
+            flags=util.HTML5
+        )
+
+        # Explicit wild
+        self.assert_selector(
+            markup,
+            "p:lang(de-\\*-DE)",
+            ['1', '2', '3', '4', '5', '6'],
+            flags=util.HTML5
+        )
+
+        # First wild has meaning (escaped)
+        self.assert_selector(
+            markup,
+            "p:lang(\\*-DE)",
+            ['1', '2', '3', '4', '5', '6'],
+            flags=util.HTML5
+        )
+
+        # First wild quoted
+        self.assert_selector(
+            markup,
+            "p:lang('*-DE')",
+            ['1', '2', '3', '4', '5', '6'],
+            flags=util.HTML5
+        )
+
+        # Normal quoted
+        self.assert_selector(
+            markup,
+            "p:lang('de-DE')",
+            ['1', '2', '3', '4', '5', '6'],
+            flags=util.HTML
+        )
+
+        # Target element with language and language attribute
+        self.assert_selector(
+            markup,
+            "p[lang]:lang(de-DE)",
+            ['6'],
+            flags=util.HTML5
+        )
+
+        # Undetermined language
+        markup = """
+        <div>
+            <p id="1"></p>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            "p:lang(en)",
+            [],
+            flags=util.HTML5
+        )
+
+        # Find language in header
+        markup = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <meta http-equiv="content-language" content="en-US">
+        </head>
+        <body>
+        <div>
+            <p id="1"></p>
+        </div>
+        <div>
+            <p id="2"></p>
+        </div>
+        </body>
+        """
+
+        self.assert_selector(
+            markup,
+            "p:lang('*-US')",
+            ['1', '2'],
+            flags=util.HTML5
+        )
+
+        # XML style language when out of HTML namespace
+        markup = """
+        <math xml:lang="en">
+            <mtext id="1"></mtext>
+        </math>
+        <div xml:lang="en">
+            <mtext id="2"></mtext>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            "mtext:lang(en)",
+            ['1'],
+            flags=util.HTML5
+        )
+
+        # XML style language
+        markup = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <html>
+        <head>
+        </head>
+        <body>
+        <div xml:lang="de-DE">
+            <p id="1"></p>
+        </div>
+        <div xml:lang="de-DE-1996">
+            <p id="2"></p>
+        </div>
+        <div xml:lang="de-Latn-DE">
+            <p id="3"></p>
+        </div>
+        <div xml:lang="de-Latf-DE">
+            <p id="4"></p>
+        </div>
+        <div xml:lang="de-Latn-DE-1996">
+            <p id="5"></p>
+        </div>
+        <p id="6" xml:lang="de-DE"></p>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            "p:lang(de-DE)",
+            ['1', '2', '3', '4', '5', '6'],
+            flags=util.XML
+        )
+
+        # XHTML language: `lang`
+        markup = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+            "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+        <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+        </head>
+        <body>
+        <div xml:lang="de-DE">
+            <p id="1"></p>
+        </div>
+        <div xml:lang="de-DE-1996">
+            <p id="2"></p>
+        </div>
+        <div xml:lang="de-Latn-DE">
+            <p id="3"></p>
+        </div>
+        <div xml:lang="de-Latf-DE">
+            <p id="4"></p>
+        </div>
+        <div xml:lang="de-Latn-DE-1996">
+            <p id="5"></p>
+        </div>
+        <p id="6" xml:lang="de-DE"></p>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            "p:lang(de-DE)",
+            [],
+            flags=util.XHTML
+        )
+
+        markup = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+            "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+        <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+        </head>
+        <body>
+        <div lang="de-DE" xml:lang="de-DE">
+            <p id="1"></p>
+        </div>
+        <div lang="de-DE-1996" xml:lang="de-DE-1996">
+            <p id="2"></p>
+        </div>
+        <div lang="de-Latn-DE" xml:lang="de-Latn-DE">
+            <p id="3"></p>
+        </div>
+        <div lang="de-Latf-DE" xml:lang="de-Latf-DE">
+            <p id="4"></p>
+        </div>
+        <div lang="de-Latn-DE-1996" xml:lang="de-Latn-DE-1996">
+            <p id="5"></p>
+        </div>
+        <p id="6" lang="de-DE" xml:lang="de-DE"></p>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            "p:lang(de-DE)",
+            ['1', '2', '3', '4', '5', '6'],
+            flags=util.XML
+        )
+
+        # Multiple languages
+        markup = """
+        <div lang="de-DE">
+            <p id="1"></p>
+        </div>
+        <div lang="en">
+            <p id="2"></p>
+        </div>
+        <div lang="de-Latn-DE">
+            <p id="3"></p>
+        </div>
+        <div lang="de-Latf-DE">
+            <p id="4"></p>
+        </div>
+        <div lang="en-US">
+            <p id="5"></p>
+        </div>
+        <p id="6" lang="de-DE"></p>
+        """
+
+        self.assert_selector(
+            markup,
+            "p:lang(de-DE, '*-US')",
+            ['1', '3', '4', '5', '6'],
             flags=util.HTML5
         )

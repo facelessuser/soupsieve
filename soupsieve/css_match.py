@@ -28,6 +28,7 @@ class CSSMatch:
     def __init__(self, selectors, namespaces, flags):
         """Initialize."""
 
+        self.meta_lang = None
         self.default_forms = []
         self.indeterminate_forms = []
         self.selectors = selectors
@@ -76,7 +77,10 @@ class CSSMatch:
                     if (self.is_xml and attr == k) or (not self.is_xml and util.lower(attr) == util.lower(k)):
                         value = v
                         break
-                    continue
+                    # Coverage is not finding this even though it is executed.
+                    # Adding a print statement before this (and erasing coverage) causes coverage to find the line.
+                    # Ignore the false positive message.
+                    continue  # pragma: no cover
                 # We can't match our desired prefix attribute as the attribute doesn't have a prefix
                 if prefix and not p and prefix != '*':
                     continue
@@ -528,6 +532,79 @@ class CSSMatch:
 
         return match
 
+    def match_lang(self, el, langs):
+        """Match languages."""
+
+        match = False
+        has_ns = self.supports_namespaces()
+
+        # Walk parents looking for `lang` (HTML) or `xml:lang` XML property.
+        parent = el
+        found_lang = None
+        while parent.parent and not found_lang:
+            ns = self.is_html_ns(parent)
+            for k, v in parent.attrs.items():
+                if (
+                    (self.is_xml and k == 'xml:lang') or
+                    (
+                        not self.is_xml and (
+                            ((not has_ns or ns) and util.lower(k) == 'lang') or
+                            (has_ns and not ns and util.lower(k) == 'xml:lang')
+                        )
+                    )
+                ):
+                    found_lang = v
+                    break
+            parent = parent.parent
+
+        # Use cached meta language.
+        if not found_lang and self.meta_lang:
+            found_lang = self.meta_lang
+
+        # If we couldn't find a language, and the document is HTML, look to meta to determine language.
+        if not found_lang and not self.is_xml:
+            found = False
+            for tag in ('html', 'head'):
+                found = False
+                for child in parent.children:
+                    if isinstance(child, util.TAG) and util.lower(child.name) == tag:
+                        found = True
+                        parent = child
+                        break
+                if not found:  # pragma: no cover
+                    break
+
+            if found:
+                for child in parent:
+                    if isinstance(child, util.TAG) and util.lower(child.name) == 'meta':
+                        c_lang = False
+                        content = None
+                        for k, v in child.attrs.items():
+                            if util.lower(k) == 'http-equiv' and util.lower(v) == 'content-language':
+                                c_lang = True
+                            if util.lower(k) == 'content':
+                                content = v
+                            if c_lang and content:
+                                found_lang = content
+                                self.meta_lang = found_lang
+                                break
+                    if found_lang:
+                        break
+
+        # If we determined a language, compare.
+        if found_lang:
+            for patterns in langs:
+                match = False
+                for pattern in patterns:
+                    # print('PATTERN: ', pattern)
+                    if pattern.match(found_lang):
+                        # print('MATCHED')
+                        match = True
+                if not match:
+                    break
+
+        return match
+
     def match_selectors(self, el, selectors):
         """Check if element matches one of the selectors."""
 
@@ -557,7 +634,11 @@ class CSSMatch:
                 # Verify attribute(s) match
                 if not self.match_attributes(el, selector.attributes):
                     continue
+                # Verify element is root
                 if selector.root and not self.match_root(el):
+                    continue
+                # Verify language patterns
+                if selector.lang and not self.match_lang(el, selector.lang):
                     continue
                 # Verify pseudo selector patterns
                 if selector.selectors and not self.match_subselectors(el, selector.selectors):

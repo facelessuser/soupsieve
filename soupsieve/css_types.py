@@ -29,14 +29,14 @@ class Selector(util.Immutable):
 
     __slots__ = (
         'tag', 'ids', 'classes', 'attributes', 'nth', 'selectors',
-        'relation', 'rel_type', 'contains', 'empty', 'root', 'default', 'indeterminate',
+        'relation', 'rel_type', 'contains', 'lang', 'empty', 'root', 'default', 'indeterminate',
         'no_match',
         '_hash'
     )
 
     def __init__(
         self, tag, ids, classes, attributes, nth, selectors,
-        relation, rel_type, contains, empty, root, default, indeterminate,
+        relation, rel_type, contains, lang, empty, root, default, indeterminate,
         no_match
     ):
         """Initialize."""
@@ -51,6 +51,7 @@ class Selector(util.Immutable):
             relation=relation,
             rel_type=rel_type,
             contains=contains,
+            lang=lang,
             empty=empty,
             root=root,
             default=default,
@@ -107,16 +108,44 @@ class SelectorNth(util.Immutable):
         )
 
 
+class SelectorLang(util.Immutable):
+    """Selector language rules."""
+
+    __slots__ = ("languages", "_hash",)
+
+    def __init__(self, languages):
+        """Initialize."""
+
+        super().__init__(
+            languages=tuple(languages)
+        )
+
+    def __iter__(self):
+        """Iterator."""
+
+        return iter(self.languages)
+
+    def __len__(self):  # pragma: no cover
+        """Length."""
+
+        return len(self.languages)
+
+    def __getitem__(self, index):  # pragma: no cover
+        """Get item."""
+
+        return self.languages[index]
+
+
 class SelectorList(util.Immutable):
     """Selector list."""
 
-    __slots__ = ("_selectors", "is_not", "is_html", "_hash")
+    __slots__ = ("selectors", "is_not", "is_html", "_hash")
 
     def __init__(self, selectors=tuple(), is_not=False, is_html=False):
         """Initialize."""
 
         super().__init__(
-            _selectors=tuple(selectors),
+            selectors=tuple(selectors),
             is_not=is_not,
             is_html=is_html
         )
@@ -124,17 +153,17 @@ class SelectorList(util.Immutable):
     def __iter__(self):
         """Iterator."""
 
-        return iter(self._selectors)
+        return iter(self.selectors)
 
     def __len__(self):
         """Length."""
 
-        return len(self._selectors)
+        return len(self.selectors)
 
     def __getitem__(self, index):
         """Get item."""
 
-        return self._selectors[index]
+        return self.selectors[index]
 
 
 def _pickle(p):
@@ -146,3 +175,4 @@ copyreg.pickle(SelectorTag, _pickle)
 copyreg.pickle(SelectorAttribute, _pickle)
 copyreg.pickle(SelectorNth, _pickle)
 copyreg.pickle(SelectorList, _pickle)
+copyreg.pickle(SelectorLang, _pickle)
