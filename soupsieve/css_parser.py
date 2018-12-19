@@ -141,6 +141,7 @@ FLG_HAS = 0x04
 FLG_DEFAULT = 0x08
 FLG_HTML = 0x10
 FLG_INDETERMINATE = 0x20
+FLG_OPEN = 0x40
 
 _MAXCACHE = 500
 
@@ -296,7 +297,7 @@ class CSSParser(object):
             sel.selectors.append(
                 self.parse_selectors(
                     # Simulate the content of `:not`, but make the attribute as `=` instead of `!=`.
-                    self.selector_iter('[{}={} {}])'.format(attr, value, case)),
+                    self.selector_iter('[{}={} {}]'.format(attr, value, case)),
                     FLG_PSEUDO | FLG_NOT
                 )
             )
@@ -385,7 +386,7 @@ class CSSParser(object):
             elif pseudo in (':link', ':any-link'):
                 sel.selectors.append(
                     self.parse_selectors(
-                        self.selector_iter(':is(a, area, link)[href])'),
+                        self.selector_iter(':is(a, area, link)[href]'),
                         FLG_PSEUDO | FLG_HTML
                     )
                 )
@@ -395,7 +396,7 @@ class CSSParser(object):
                         self.selector_iter(
                             '''
                             :is(input[type=checkbox], input[type=radio])[checked],
-                            select > option[selected])
+                            select > option[selected]
                             '''
                         ),
                         FLG_PSEUDO | FLG_HTML
@@ -404,7 +405,7 @@ class CSSParser(object):
             elif pseudo == ':default':
                 sel.selectors.append(
                     self.parse_selectors(
-                        self.selector_iter(':checked, form :is(button, input)[type="submit"])'),
+                        self.selector_iter(':checked, form :is(button, input)[type="submit"]'),
                         FLG_PSEUDO | FLG_HTML | FLG_DEFAULT
                     )
                 )
@@ -416,7 +417,7 @@ class CSSParser(object):
                             input[type="checkbox"][indeterminate],
                             input[type="radio"]:is(:not([name]), [name=""]):not([checked]),
                             progress:not([value]),
-                            input[type="radio"][name][name!='']:not([checked]))
+                            input[type="radio"][name][name!='']:not([checked])
                             '''
                         ),
                         FLG_PSEUDO | FLG_HTML | FLG_INDETERMINATE
@@ -430,7 +431,7 @@ class CSSParser(object):
                             :is(input[type!=hidden], button, select, textarea, fieldset, optgroup, option)[disabled],
                             optgroup[disabled] > option,
                             fieldset[disabled] > :not(legend) :is(input[type!=hidden], button, select, textarea),
-                            fieldset[disabled] > :is(input[type!=hidden], button, select, textarea))
+                            fieldset[disabled] > :is(input[type!=hidden], button, select, textarea)
                             '''
                         ),
                         FLG_PSEUDO | FLG_HTML
@@ -447,7 +448,7 @@ class CSSParser(object):
                             :is(input[type!=hidden], button, select, textarea):not(
                                 fieldset[disabled] > :not(legend) *,
                                 fieldset[disabled] > *
-                            ):not([disabled]))
+                            ):not([disabled])
                             '''
                         ),
                         FLG_PSEUDO | FLG_HTML
@@ -456,14 +457,14 @@ class CSSParser(object):
             elif pseudo == ":required":
                 sel.selectors.append(
                     self.parse_selectors(
-                        self.selector_iter(':is(input, textarea, select)[required])'),
+                        self.selector_iter(':is(input, textarea, select)[required]'),
                         FLG_PSEUDO | FLG_HTML
                     )
                 )
             elif pseudo == ":optional":
                 sel.selectors.append(
                     self.parse_selectors(
-                        self.selector_iter(':is(input, textarea, select):not([required]))'),
+                        self.selector_iter(':is(input, textarea, select):not([required])'),
                         FLG_PSEUDO | FLG_HTML
                     )
                 )
@@ -485,7 +486,7 @@ class CSSParser(object):
                                     [type=""]
                                 ),
                                 textarea
-                            )[placeholder][placeholder!=''])
+                            )[placeholder][placeholder!='']
                             '''
                         ),
                         FLG_PSEUDO | FLG_HTML
@@ -515,7 +516,7 @@ class CSSParser(object):
                 )
             has_selector = True
         elif complex_pseudo and pseudo in PSEUDO_COMPLEX_NO_MATCH:
-            self.parse_selectors(iselector, FLG_PSEUDO)
+            self.parse_selectors(iselector, FLG_PSEUDO | FLG_OPEN)
             sel.no_match = True
             has_selector = True
         elif not complex_pseudo and pseudo in PSEUDO_SIMPLE_NO_MATCH:
@@ -565,13 +566,15 @@ class CSSParser(object):
 
         pseudo_sel = util.lower(m.group('pseudo_nth' + postfix))
         if postfix == '_child':
+            flags = FLG_PSEUDO
             if pseudo_sel.strip().endswith('of'):
                 # Parse the rest of `of S`.
                 temp_sel = iselector
+                flags |= FLG_OPEN
             else:
-                # Use default `*|*` for `of S`. Simulate un-closed pseudo.
-                temp_sel = self.selector_iter('*|*)')
-            nth_sel = self.parse_selectors(temp_sel, FLG_PSEUDO)
+                # Use default `*|*` for `of S`.
+                temp_sel = self.selector_iter('*|*')
+            nth_sel = self.parse_selectors(temp_sel, flags)
             if pseudo_sel.startswith(':nth-child'):
                 sel.nth.append(ct.SelectorNth(s1, var, s2, False, False, nth_sel))
             elif pseudo_sel.startswith(':nth-last-child'):
@@ -587,7 +590,7 @@ class CSSParser(object):
     def parse_pseudo_open(self, sel, name, has_selector, iselector):
         """Parse pseudo with opening bracket."""
 
-        flags = FLG_PSEUDO
+        flags = FLG_PSEUDO | FLG_OPEN
         if name == ':not':
             flags |= FLG_NOT
         if name == ':has':
@@ -703,6 +706,7 @@ class CSSParser(object):
         relations = []
         rel_type = REL_HAS_CHILD
         split_last = False
+        is_open = flags & FLG_OPEN
         is_pseudo = flags & FLG_PSEUDO
         is_has = flags & FLG_HAS
         is_not = flags & FLG_NOT
@@ -728,7 +732,7 @@ class CSSParser(object):
                 elif key == 'pseudo_close':
                     if split_last:
                         raise SyntaxError("Cannot end with a combining character")
-                    if is_pseudo:
+                    if is_open:
                         closed = True
                         break
                     else:
@@ -756,7 +760,7 @@ class CSSParser(object):
         except StopIteration:
             pass
 
-        if is_pseudo and not closed:
+        if is_open and not closed:
             raise SyntaxError("Unclosed `:pseudo()`")
 
         if split_last:
