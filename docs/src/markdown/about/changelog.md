@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.0
+
+- **NEW**: Add Python 2.7 support.
+- **NEW**: Remove old pre 1.0 deprecations.
+
 ## 1.1.0
 
 - **NEW**: Adds support for `[attr!=value]` which is equivalent to `:not([attr=value])`.

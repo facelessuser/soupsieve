@@ -1,7 +1,7 @@
 """CSS matcher."""
+from __future__ import unicode_literals
 from . import util
 import re
-from .util import deprecated
 from .import css_types as ct
 
 # Empty tag pattern (whitespace okay)
@@ -22,7 +22,7 @@ REL_HAS_CLOSE_SIBLING = ':+'
 NS_XHTML = 'http://www.w3.org/1999/xhtml'
 
 
-class CSSMatch:
+class CSSMatch(object):
     """Perform CSS matching."""
 
     def __init__(self, selectors, namespaces, flags):
@@ -112,7 +112,7 @@ class CSSMatch:
         """Get classes."""
 
         classes = el.attrs.get('class', [])
-        if isinstance(classes, str):
+        if isinstance(classes, util.ustr):
             classes = [c for c in classes.strip().split(' ') if c]
         return classes
 
@@ -595,9 +595,7 @@ class CSSMatch:
             for patterns in langs:
                 match = False
                 for pattern in patterns:
-                    # print('PATTERN: ', pattern)
                     if pattern.match(found_lang):
-                        # print('MATCHED')
                         match = True
                 if not match:
                     break
@@ -690,7 +688,7 @@ class SoupSieve(ct.Immutable):
     def __init__(self, pattern, selectors, namespaces, flags):
         """Initialize."""
 
-        super().__init__(
+        super(SoupSieve, self).__init__(
             pattern=pattern,
             selectors=selectors,
             namespaces=namespaces,
@@ -743,7 +741,8 @@ class SoupSieve(ct.Immutable):
     def icomments(self, node, limit=0):
         """Iterate comments only."""
 
-        yield from self._sieve(node, capture=False, comments=True, limit=limit)
+        for tag in self._sieve(node, capture=False, comments=True, limit=limit):
+            yield tag
 
     def select(self, node, limit=0):
         """Select the specified tags."""
@@ -753,7 +752,8 @@ class SoupSieve(ct.Immutable):
     def iselect(self, node, limit=0):
         """Iterate the specified tags."""
 
-        yield from self._sieve(node, limit=limit)
+        for tag in self._sieve(node, limit=limit):
+            yield tag
 
     def __repr__(self):  # pragma: no cover
         """Representation."""
@@ -761,19 +761,6 @@ class SoupSieve(ct.Immutable):
         return "SoupSieve(pattern=%r, namespaces=%s, flags=%s)" % (self.pattern, self.namespaces, self.flags)
 
     __str__ = __repr__
-
-    # ====== Deprecated ======
-    @deprecated("Use 'SoupSieve.icomments' instead.")
-    def commentsiter(self, node, limit=0):
-        """Iterate comments only."""
-
-        yield from self.icomments(node, limit)
-
-    @deprecated("Use 'SoupSieve.iselect' instead.")
-    def selectiter(self, node, limit=0):
-        """Iterate the specified tags."""
-
-        yield from self.iselect(node, limit)
 
 
 ct.pickle_register(SoupSieve)

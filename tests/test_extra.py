@@ -5,8 +5,10 @@ Extra patterns that are not in the specification, but may be useful.
 
 ```
 :contains(text)
+[attr!=value]
 ```
 """
+from __future__ import unicode_literals
 from . import util
 
 

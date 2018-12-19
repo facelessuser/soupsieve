@@ -1,6 +1,6 @@
 """CSS selector parser."""
+from __future__ import unicode_literals
 import re
-from functools import lru_cache
 from . import util
 from . import css_match as cm
 from . import css_types as ct
@@ -74,7 +74,7 @@ WS = r'[ \t\r\n\f]'
 CSS_ESCAPES = r'(?:\\[a-f0-9]{{1,6}}{ws}?|\\.)'.format(ws=WS)
 
 IDENTIFIER = r'''
-(?:(?!-?\d|--)(?:[^\u0000-\u002c\u002e\u002f\u003A-\u0040\u005B-\u005E\u0060\u007B-\u009f]|{esc})+)
+(?:(?!-?\d|--)(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+)
 '''.format(esc=CSS_ESCAPES)
 
 NTH = r'(?:[-+])?(?:\d+n?|n)(?:(?<=n){ws}*(?:[-+]){ws}*(?:\d+))?'.format(ws=WS)
@@ -145,7 +145,7 @@ FLG_INDETERMINATE = 0x20
 _MAXCACHE = 500
 
 
-@lru_cache(maxsize=_MAXCACHE)
+@util.lru_cache(maxsize=_MAXCACHE)
 def _cached_css_compile(pattern, namespaces, flags):
     """Cached CSS compile."""
 
@@ -169,18 +169,18 @@ def css_unescape(string):
     def replace(m):
         """Replace with the appropriate substitute."""
 
-        return chr(int(m.group(1)[1:], 16)) if m.group(1) else m.group(2)[1:]
+        return util.uchr(int(m.group(1)[1:], 16)) if m.group(1) else m.group(2)[1:]
 
     return RE_CSS_ESC.sub(replace, string)
 
 
-class SelectorPattern:
+class SelectorPattern(object):
     """Selector pattern."""
 
     def __init__(self, pattern):
         """Initialize."""
 
-        self.pattern = re.compile(pattern, re.I | re.X)
+        self.pattern = re.compile(pattern, re.I | re.X | re.U)
 
     def enabled(self, flags):
         """Enabled."""
@@ -188,7 +188,7 @@ class SelectorPattern:
         return True
 
 
-class _Selector:
+class _Selector(object):
     """
     Intermediate selector class.
 
@@ -257,7 +257,7 @@ class _Selector:
     __repr__ = __str__
 
 
-class CSSParser:
+class CSSParser(object):
     """Parse CSS selectors."""
 
     css_tokens = OrderedDict(
@@ -281,12 +281,6 @@ class CSSParser:
 
         self.pattern = selector
         self.flags = flags
-        dflags = self.flags & util.DEPRECATED_FLAGS
-        if dflags:
-            util.warn_deprecated(
-                "The following flags are deprecated and may be repurposed in the future '0x%02X'" % dflags,
-                stacklevel=3
-            )
 
     def parse_attribute_selector(self, sel, m, has_selector):
         """Create attribute selector from the returned regex match."""
@@ -634,14 +628,14 @@ class CSSParser:
                 sel.tag = ct.SelectorTag('*', None)
             sel.relations.extend(relations)
             selectors.append(sel)
-            relations.clear()
+            del relations[:]
         else:
             sel.relations.extend(relations)
             rel_type = m.group('relation').strip()
             if not rel_type:
                 rel_type = ' '
             sel.rel_type = rel_type
-            relations.clear()
+            del relations[:]
             relations.append(sel)
         sel = _Selector()
 
@@ -777,7 +771,7 @@ class CSSParser:
                 selectors[-1].relations.append(sel)
             else:
                 sel.relations.extend(relations)
-                relations.clear()
+                del relations[:]
                 selectors.append(sel)
         elif is_has:
             # We will always need to finish a selector when `:has()` is used as it leads with combining.

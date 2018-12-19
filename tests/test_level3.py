@@ -25,6 +25,7 @@ E ~ F
 :disabled
 ```
 """
+from __future__ import unicode_literals
 from . import util
 
 
@@ -307,6 +308,18 @@ class TestLevel3(util.TestCase):
             },
             flags=util.XML
         )
+
+        if not util.PY3:
+            self.assert_selector(
+                markup,
+                b"foo|title",
+                ["3"],
+                namespaces={
+                    b"foo": b"http://me.com/namespaces/foofoo",
+                    b"bar": b"http://me.com/namespaces/foobar"
+                },
+                flags=util.XML
+            )
 
         self.assert_selector(
             markup,
