@@ -1,4 +1,5 @@
 """Test that we don't fail the same test cases that Beautiful Soup fails for."""
+from __future__ import unicode_literals
 from bs4 import BeautifulSoup
 import unittest
 import soupsieve as sv

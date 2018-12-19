@@ -1,12 +1,35 @@
 """Utility."""
+from __future__ import unicode_literals
 from functools import wraps
 import warnings
+import sys
+import struct
+
+PY3 = sys.version_info >= (3, 0)
+
+if PY3:
+    from functools import lru_cache  # noqa F401
+    import copyreg  # noqa F401
+    from collections.abc import Hashable  # noqa F401
+
+    ustr = str  # noqa
+    bstr = bytes  # noqa
+    unichar = chr  # noqa
+    string = str  # noqa
+else:
+    from backports.functools_lru_cache import lru_cache  # noqa F401
+    import copy_reg as copyreg  # noqa F401
+    from collections import Hashable  # noqa F401
+
+    ustr = unicode  # noqa
+    bstr = str  # noqa
+    unichar = unichr  # noqa
+    string = basestring  # noqa
 
 HTML5 = 0x1
 HTML = 0x2
 XHTML = 0x4
 XML = 0x8
-DEPRECATED_FLAGS = HTML5 | HTML | XHTML | XML
 
 LC_A = ord('a')
 LC_Z = ord('z')
@@ -90,7 +113,16 @@ def upper(string):  # pragma: no cover
     return ''.join(new_string)
 
 
-def deprecated(message, stacklevel=2):
+def uchr(i):
+    """Allow getting Unicode character on narrow python builds."""
+
+    try:
+        return unichar(i)
+    except ValueError:  # pragma: no cover
+        return struct.pack('i', i).decode('utf-32')
+
+
+def deprecated(message, stacklevel=2):  # pragma: no cover
     """
     Raise a `DeprecationWarning` when wrapped function/method is called.
 
@@ -110,7 +142,7 @@ def deprecated(message, stacklevel=2):
     return _decorator
 
 
-def warn_deprecated(message, stacklevel=2):
+def warn_deprecated(message, stacklevel=2):  # pragma: no cover
     """Warn deprecated."""
 
     warnings.warn(

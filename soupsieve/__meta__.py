@@ -114,7 +114,7 @@ class Version(namedtuple("Version", ["major", "minor", "micro", "release", "pre"
             elif dev:
                 raise ValueError("Version is not a development release.")
 
-        return super().__new__(cls, major, minor, micro, release, pre, post, dev)
+        return super(Version, cls).__new__(cls, major, minor, micro, release, pre, post, dev)
 
     def _is_pre(self):
         """Is prerelease."""
@@ -186,5 +186,5 @@ def parse_version(ver, pre=False):
     return Version(major, minor, micro, release, pre, post, dev)
 
 
-__version_info__ = Version(1, 1, 0, "final")
+__version_info__ = Version(1, 2, 0, ".dev")
 __version__ = __version_info__._get_canonical()

@@ -1,7 +1,7 @@
 """CSS selector structure items."""
-import copyreg
+from __future__ import unicode_literals
 from collections import Mapping
-from collections.abc import Hashable
+from . import util
 
 __all__ = ('Selector', 'SelectorTag', 'SelectorAttribute', 'SelectorNth', 'SelectorList', 'Namespaces')
 
@@ -12,7 +12,7 @@ SEL_DEFAULT = 0x4
 SEL_INDETERMINATE = 0x8
 
 
-class Immutable:
+class Immutable(object):
     """Immutable."""
 
     __slots__ = ('_hash',)
@@ -24,8 +24,8 @@ class Immutable:
         for k, v in kwargs.items():
             temp.append(type(v))
             temp.append(v)
-            super().__setattr__(k, v)
-        super().__setattr__('_hash', hash(tuple(temp)))
+            super(Immutable, self).__setattr__(k, v)
+        super(Immutable, self).__setattr__('_hash', hash(tuple(temp)))
 
     @classmethod
     def __base__(cls):
@@ -78,8 +78,8 @@ class ImmutableDict(Mapping):
         arg = args[0] if args else kwargs
         is_dict = isinstance(arg, dict)
         if (
-            is_dict and not all([isinstance(v, Hashable) for v in arg.values()]) or
-            not is_dict and not all([isinstance(k, Hashable) and isinstance(v, Hashable) for k, v in arg])
+            is_dict and not all([isinstance(v, util.Hashable) for v in arg.values()]) or
+            not is_dict and not all([isinstance(k, util.Hashable) and isinstance(v, util.Hashable) for k, v in arg])
         ):
             raise TypeError('All values must be hashable')
 
@@ -124,12 +124,12 @@ class Namespaces(ImmutableDict):
         # so don't bother checking that.
         arg = args[0] if args else kwargs
         is_dict = isinstance(arg, dict)
-        if is_dict and not all([isinstance(k, str) and isinstance(v, str) for k, v in arg.items()]):
+        if is_dict and not all([isinstance(k, util.string) and isinstance(v, util.string) for k, v in arg.items()]):
             raise TypeError('Namespace keys and values must be Unicode strings')
-        elif not is_dict and not all([isinstance(k, str) and isinstance(v, str) for k, v in arg]):
+        elif not is_dict and not all([isinstance(k, util.string) and isinstance(v, util.string) for k, v in arg]):
             raise TypeError('Namespace keys and values must be Unicode strings')
 
-        super().__init__(*args, **kwargs)
+        super(Namespaces, self).__init__(*args, **kwargs)
 
 
 class Selector(Immutable):
@@ -146,7 +146,7 @@ class Selector(Immutable):
     ):
         """Initialize."""
 
-        super().__init__(
+        super(Selector, self).__init__(
             tag=tag,
             ids=ids,
             classes=classes,
@@ -167,7 +167,7 @@ class NullSelector(Immutable):
     def __init__(self):
         """Initialize."""
 
-        super().__init__()
+        super(NullSelector, self).__init__()
 
 
 class SelectorTag(Immutable):
@@ -178,7 +178,7 @@ class SelectorTag(Immutable):
     def __init__(self, name, prefix):
         """Initialize."""
 
-        super().__init__(
+        super(SelectorTag, self).__init__(
             name=name,
             prefix=prefix
         )
@@ -192,7 +192,7 @@ class SelectorAttribute(Immutable):
     def __init__(self, attribute, prefix, pattern, xml_type_pattern):
         """Initialize."""
 
-        super().__init__(
+        super(SelectorAttribute, self).__init__(
             attribute=attribute,
             prefix=prefix,
             pattern=pattern,
@@ -208,7 +208,7 @@ class SelectorNth(Immutable):
     def __init__(self, a, n, b, of_type, last, selectors):
         """Initialize."""
 
-        super().__init__(
+        super(SelectorNth, self).__init__(
             a=a,
             n=n,
             b=b,
@@ -226,7 +226,7 @@ class SelectorLang(Immutable):
     def __init__(self, languages):
         """Initialize."""
 
-        super().__init__(
+        super(SelectorLang, self).__init__(
             languages=tuple(languages)
         )
 
@@ -254,7 +254,7 @@ class SelectorList(Immutable):
     def __init__(self, selectors=tuple(), is_not=False, is_html=False):
         """Initialize."""
 
-        super().__init__(
+        super(SelectorList, self).__init__(
             selectors=tuple(selectors),
             is_not=is_not,
             is_html=is_html
@@ -283,7 +283,7 @@ def _pickle(p):
 def pickle_register(obj):
     """Allow object to be pickled."""
 
-    copyreg.pickle(obj, _pickle)
+    util.copyreg.pickle(obj, _pickle)
 
 
 pickle_register(Selector)

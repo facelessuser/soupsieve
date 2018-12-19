@@ -1,8 +1,12 @@
 """Test utilities."""
+from __future__ import unicode_literals
 import unittest
 import bs4
 import textwrap
 import soupsieve as sv
+import sys
+
+PY3 = sys.version_info >= (3, 0)
 
 HTML5 = 1
 HTML = 2

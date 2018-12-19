@@ -55,6 +55,7 @@ Not supported:
 
 - `:playing` / `:paused`: Elements cannot be played or paused in our environment, so this will not be implemented.
 """
+from __future__ import unicode_literals
 from . import util
 import soupsieve as sv
 

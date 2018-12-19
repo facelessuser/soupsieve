@@ -25,11 +25,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import unicode_literals
 from .__meta__ import __version__, __version_info__  # noqa: F401
 from . import css_parser as cp
 from . import css_match as cm
 from . import css_types as ct
-from .util import HTML, HTML5, XHTML, XML, deprecated
+from .util import HTML, HTML5, XHTML, XML
 
 __all__ = (
     'HTML', 'HTML5', 'XHTML', 'XML',
@@ -85,7 +86,8 @@ def comments(node, limit=0, flags=0):
 def icomments(node, limit=0, flags=0):
     """Iterate comments only."""
 
-    yield from compile("", None, flags).icomments(node, limit)
+    for tag in compile("", None, flags).icomments(node, limit):
+        yield tag
 
 
 def select(select, node, namespaces=None, limit=0, flags=0):
@@ -97,19 +99,5 @@ def select(select, node, namespaces=None, limit=0, flags=0):
 def iselect(select, node, namespaces=None, limit=0, flags=0):
     """Iterate the specified tags."""
 
-    yield from compile(select, namespaces, flags).iselect(node, limit)
-
-
-# ====== Deprecated ======
-@deprecated("Use 'icomments' instead.")
-def commentsiter(node, limit=0, flags=0):
-    """Iterate comments only."""
-
-    yield from icomments(node, limit, flags)
-
-
-@deprecated("Use 'iselect' instead.")
-def selectiter(select, node, namespaces=None, limit=0, flags=0):
-    """Iterate the specified tags."""
-
-    yield from iselect(select, node, namespaces, limit, flags)
+    for tag in compile(select, namespaces, flags).iselect(node, limit):
+        yield tag
