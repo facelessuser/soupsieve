@@ -299,3 +299,18 @@ class TestInvalid(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             sv.ct.Namespaces({'a': {}})
+
+    def test_invalid_type_input(self):
+        """Test bad input into the API."""
+
+        with self.assertRaises(TypeError):
+            sv.match('div', "not a tag")
+
+        with self.assertRaises(TypeError):
+            sv.select('div', "not a tag")
+
+        with self.assertRaises(TypeError):
+            sv.filter('div', "not a tag")
+
+        with self.assertRaises(TypeError):
+            sv.comments('div', "not a tag")

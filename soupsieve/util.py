@@ -26,10 +26,7 @@ else:
     unichar = unichr  # noqa
     string = basestring  # noqa
 
-HTML5 = 0x1
-HTML = 0x2
-XHTML = 0x4
-XML = 0x8
+DEBUG = 0x10000
 
 LC_A = ord('a')
 LC_Z = ord('z')

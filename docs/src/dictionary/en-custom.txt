@@ -25,6 +25,7 @@ builtin
 deprecations
 html
 iterable
+iterables
 linter
 lxml
 matchable

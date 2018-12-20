@@ -28,9 +28,9 @@ class CSSMatch(object):
     def __init__(self, selectors, namespaces, flags):
         """Initialize."""
 
-        self.meta_lang = None
-        self.default_forms = []
-        self.indeterminate_forms = []
+        self.cached_meta_lang = None
+        self.cached_default_forms = []
+        self.cached_indeterminate_forms = []
         self.selectors = selectors
         self.namespaces = namespaces
         self.flags = flags
@@ -441,7 +441,7 @@ class CSSMatch(object):
 
         # Look in form cache to see if we've already located its default button
         found_form = False
-        for f, t in self.default_forms:
+        for f, t in self.cached_default_forms:
             if f is form:
                 found_form = True
                 if t is el:
@@ -462,7 +462,7 @@ class CSSMatch(object):
                     for k, v in child.attrs.items():
                         if util.lower(k) == 'type' and util.lower(v) == 'submit':
                             child_found = True
-                            self.default_forms.append([form, child])
+                            self.cached_default_forms.append([form, child])
                             if el is child:
                                 match = True
                             break
@@ -495,7 +495,7 @@ class CSSMatch(object):
 
         # Look in form cache to see if we've already evaluated that its fellow radio buttons are indeterminate
         found_form = False
-        for f, n, i in self.indeterminate_forms:
+        for f, n, i in self.cached_indeterminate_forms:
             if f is form and n == name:
                 found_form = True
                 if i is True:
@@ -527,7 +527,7 @@ class CSSMatch(object):
                     break
             if not checked:
                 match = True
-            self.indeterminate_forms.append([form, name, match])
+            self.cached_indeterminate_forms.append([form, name, match])
 
         return match
 
@@ -557,11 +557,12 @@ class CSSMatch(object):
             parent = parent.parent
 
         # Use cached meta language.
-        if not found_lang and self.meta_lang:
-            found_lang = self.meta_lang
+        if not found_lang and self.cached_meta_lang is not None:
+            found_lang = self.cached_meta_lang
 
         # If we couldn't find a language, and the document is HTML, look to meta to determine language.
-        if not found_lang and not self.is_xml:
+        if found_lang is None and not self.is_xml:
+            # Find head
             found = False
             for tag in ('html', 'head'):
                 found = False
@@ -573,6 +574,7 @@ class CSSMatch(object):
                 if not found:  # pragma: no cover
                     break
 
+            # Search meta tags
             if found:
                 for child in parent:
                     if util.is_tag(child) and util.lower(child.name) == 'meta':
@@ -585,10 +587,12 @@ class CSSMatch(object):
                                 content = v
                             if c_lang and content:
                                 found_lang = content
-                                self.meta_lang = found_lang
+                                self.cached_meta_lang = found_lang
                                 break
                     if found_lang:
                         break
+                if not found_lang:
+                    self.cached_meta_lang = False
 
         # If we determined a language, compare.
         if found_lang:
@@ -650,6 +654,7 @@ class CSSMatch(object):
                 # also not set.
                 if selector.flags & ct.SEL_INDETERMINATE and not self.match_indeterminate(el):
                     continue
+                # Validate that the tag contains the specified text.
                 if not self.match_contains(el, selector.contains):
                     continue
                 match = not is_not
@@ -677,7 +682,7 @@ class CSSMatch(object):
         self.html_namespace = self.is_html_ns(root)
         self.is_xml = doc.is_xml and not self.html_namespace
 
-        return util.is_tag(el) and el.parent and self.match_selectors(el, self.selectors)
+        return el.parent and self.match_selectors(el, self.selectors)
 
 
 class SoupSieve(ct.Immutable):
@@ -695,70 +700,76 @@ class SoupSieve(ct.Immutable):
             flags=flags
         )
 
-    def _walk(self, node, capture=True, comments=False):
+    def _walk(self, tag, capture=True, comments=False):
         """Recursively return selected tags."""
 
         match = CSSMatch(self.selectors, self.namespaces, self.flags).match
 
         # Walk children
-        for child in node.descendants:
+        for child in tag.descendants:
             if capture and util.is_tag(child) and match(child):
                 yield child
             elif comments and util.is_comment(child):
                 yield child
 
-    def _sieve(self, node, capture=True, comments=False, limit=0):
+    def _sieve(self, tag, capture=True, comments=False, limit=0):
         """Sieve."""
 
+        self._is_valid_input(tag)
         if limit < 1:
             limit = None
 
-        for child in self._walk(node, capture, comments):
+        for child in self._walk(tag, capture, comments):
             yield child
             if limit is not None:
                 limit -= 1
                 if limit < 1:
                     break
 
-    def match(self, node):
+    def _is_valid_input(self, tag):
+        """Check if valid input tag."""
+
+        # Fail on unexpected types.
+        if not util.is_tag(tag):
+            raise TypeError("Expected a BeautifulSoup 'Tag', but instead recieved type {}".format(type(tag)))
+
+    def match(self, tag):
         """Match."""
 
-        return CSSMatch(self.selectors, self.namespaces, self.flags).match(node)
+        self._is_valid_input(tag)
+        return CSSMatch(self.selectors, self.namespaces, self.flags).match(tag)
 
-    def filter(self, nodes):  # noqa A001
+    def filter(self, iterable):  # noqa A001
         """Filter."""
 
-        if util.is_tag(nodes):
-            return [node for node in nodes.children if util.is_tag(node) and self.match(node)]
-        else:
-            return [node for node in nodes if self.match(node)]
+        return [node for node in iterable if not util.is_navigable_string(node) and self.match(node)]
 
-    def comments(self, node, limit=0):
+    def comments(self, parent, limit=0):
         """Get comments only."""
 
-        return list(self.icomments(node, limit))
+        return list(self.icomments(parent, limit))
 
-    def icomments(self, node, limit=0):
+    def icomments(self, parent, limit=0):
         """Iterate comments only."""
 
-        for tag in self._sieve(node, capture=False, comments=True, limit=limit):
+        for tag in self._sieve(parent, capture=False, comments=True, limit=limit):
             yield tag
 
-    def select(self, node, limit=0):
+    def select(self, parent, limit=0):
         """Select the specified tags."""
 
-        return list(self.iselect(node, limit))
+        return list(self.iselect(parent, limit))
 
-    def iselect(self, node, limit=0):
+    def iselect(self, parent, limit=0):
         """Iterate the specified tags."""
 
-        for tag in self._sieve(node, limit=limit):
+        for tag in self._sieve(parent, limit=limit):
             yield tag
 
     def __repr__(self):  # pragma: no cover
         """Representation."""
 
-        return "SoupSieve(pattern=%r, namespaces=%s, flags=%s)" % (self.pattern, self.namespaces, self.flags)
+        return "SoupSieve(pattern={!r}, namespaces={!r}, flags={!r})".format(self.pattern, self.namespaces, self.flags)
 
     __str__ = __repr__
 

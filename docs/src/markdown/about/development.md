@@ -189,7 +189,7 @@ class Selector:
 
 Flags               | Description
 ------------------- | -----------
-`SEL_EMPTY`         | The current compound selector contained a `:empty` pseudo.
+`SEL_EMPTY`         | The current compound selector contained an `:empty` pseudo-class.
 `SEL_ROOT`          | The current compound selector contains `:root`.
 `SEL_DEFAULT`       | The compound selector has a `:default` pattern  and requires additional logic to determine if it is the first `submit` button in a form.
 `SEL_INDETERMINATE` | The compound selector has a `:indeterminate` pattern and requires additional logic to ensure a `radio` element and all of the `radio` elements with the same `name` under a form are not set.
@@ -201,8 +201,8 @@ Attribute       | Description
 `classes`       | Contains a tuple of class names to match.
 `attributes`    | Contains a tuple of attributes. Each attribute is represented as a [`SelectorAttribute`](#selectorattribute).
 `nth`           | Contains a tuple containing `nth` selectors, each selector being represented as a [`SelectorNth`](#selectornth). `nth` selectors contain things like `:first-child`, `:only-child`, `#!css :nth-child()`, `#!css :nth-of-type()`, etc.
-`selectors`     | Contains a tuple of `SelectorList` objects for each pseudo class selector  part of the compound selector: `#!css :is()`, `#!css :not()`, `#!css :has()`, etc.
-`relation`      | This will contain a `SelectorList` object with one `Selector` object, which could in turn chain an additional relation depending on the complexity of the compound selector.  For instance, `div > p + a` would be a `Selector` for `a` that contains a `relation` for `p` (another `SelectorList` object) which also contains a relation of `div`.  When matching, we would match that the tag is `a`, and then walk its relation chain verifying that they all match. In this case, the relation chain would be a direct, previous sibling of `p`, which has a direct parent of `div`. A `:has()` pseudo class would walk this in the opposite order. `div:has(> p + a)` would verify `div`, and then check for a child of `p` with a sibling of `a`.
+`selectors`     | Contains a tuple of `SelectorList` objects for each pseudo-class selector  part of the compound selector: `#!css :is()`, `#!css :not()`, `#!css :has()`, etc.
+`relation`      | This will contain a `SelectorList` object with one `Selector` object, which could in turn chain an additional relation depending on the complexity of the compound selector.  For instance, `div > p + a` would be a `Selector` for `a` that contains a `relation` for `p` (another `SelectorList` object) which also contains a relation of `div`.  When matching, we would match that the tag is `a`, and then walk its relation chain verifying that they all match. In this case, the relation chain would be a direct, previous sibling of `p`, which has a direct parent of `div`. A `:has()` pseudo-class would walk this in the opposite order. `div:has(> p + a)` would verify `div`, and then check for a child of `p` with a sibling of `a`.
 `rel_type`      | `rel_type` is attached to relational selectors. In the case of `#!css div > p + a`, the relational selectors of `div` and `p` would get a relational type of `>` and `+` respectively. `:has()` relational `rel_type` are preceded with `:` to signify a forward looking relation.
 `contains`      | Contains a tuple of strings of content to match in an element.
 `lang`          | Contains a tuple of [`SelectorLang`](#selectorlang) objects.
@@ -268,8 +268,8 @@ Attribute     | Description
 `a`           | The `a` value in the formula `an+b` specifying an index.
 `n`           | `True` if the provided formula has included a literal `n` which signifies the formula is not a static index.
 `b`           | The `b` value in the formula `an+b`.
-`type`        | `True` if the `nth` pseudo class is an `*-of-type` variant.
-`last`        | `True` if the `nth` pseudo class is a `*last*` variant.
+`type`        | `True` if the `nth` pseudo-class is an `*-of-type` variant.
+`last`        | `True` if the `nth` pseudo-class is a `*last*` variant.
 `selectors`   | A `SelectorList` object representing the `of S` portion of `:nth-chld(an+b [of S]?)`.
 
 ### `SelectorLang`

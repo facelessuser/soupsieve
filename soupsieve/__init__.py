@@ -30,11 +30,10 @@ from .__meta__ import __version__, __version_info__  # noqa: F401
 from . import css_parser as cp
 from . import css_match as cm
 from . import css_types as ct
-from .util import HTML, HTML5, XHTML, XML
+from .util import DEBUG
 
 __all__ = (
-    'HTML', 'HTML5', 'XHTML', 'XML',
-    'SoupSieve', 'compile', 'purge',
+    'SoupSieve', 'compile', 'purge', 'DEBUG',
     'comments', 'icomments', 'select', 'iselect', 'match', 'filter'
 )
 
@@ -65,39 +64,39 @@ def purge():
     cp._purge_cache()
 
 
-def match(select, node, namespaces=None, flags=0):
+def match(select, tag, namespaces=None, flags=0):
     """Match node."""
 
-    return compile(select, namespaces, flags).match(node)
+    return compile(select, namespaces, flags).match(tag)
 
 
-def filter(select, nodes, namespaces=None, flags=0):  # noqa: A001
+def filter(select, iterable, namespaces=None, flags=0):  # noqa: A001
     """Filter list of nodes."""
 
-    return compile(select, namespaces, flags).filter(nodes)
+    return compile(select, namespaces, flags).filter(iterable)
 
 
-def comments(node, limit=0, flags=0):
+def comments(parent, limit=0, flags=0):
     """Get comments only."""
 
-    return compile("", None, flags).comments(node, limit)
+    return compile("", None, flags).comments(parent, limit)
 
 
-def icomments(node, limit=0, flags=0):
+def icomments(parent, limit=0, flags=0):
     """Iterate comments only."""
 
-    for tag in compile("", None, flags).icomments(node, limit):
+    for tag in compile("", None, flags).icomments(parent, limit):
         yield tag
 
 
-def select(select, node, namespaces=None, limit=0, flags=0):
+def select(select, parent, namespaces=None, limit=0, flags=0):
     """Select the specified tags."""
 
-    return compile(select, namespaces, flags).select(node, limit)
+    return compile(select, namespaces, flags).select(parent, limit)
 
 
-def iselect(select, node, namespaces=None, limit=0, flags=0):
+def iselect(select, parent, namespaces=None, limit=0, flags=0):
     """Iterate the specified tags."""
 
-    for tag in compile(select, namespaces, flags).iselect(node, limit):
+    for tag in compile(select, namespaces, flags).iselect(parent, limit):
         yield tag

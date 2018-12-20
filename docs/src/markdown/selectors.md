@@ -59,6 +59,9 @@ Selector                        | Example                             | Descript
 !!! warning "Experimental Selectors"
     `:has()` and `of S` support (in `:nth-child(an+b [of S]?)`) is experimental and may change. There are currently no reference implementations available in any browsers, not to mention the CSS4 specifications have not been finalized, so current implementation is based on our best interpretation. Any issues should be reported.
 
+!!! danger "Pseudo-elements"
+    Pseudo elements are not supported as they do not represent real elements.
+
 ### HTML Only Selectors
 
 There are a number of selectors that apply specifically to HTML documents. Such selectors will only match tags in HTML documents. Use of these selectors are not restricted from XML, but when used with XML documents, they will never match.
