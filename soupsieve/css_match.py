@@ -695,70 +695,67 @@ class SoupSieve(ct.Immutable):
             flags=flags
         )
 
-    def _walk(self, node, capture=True, comments=False):
+    def _walk(self, tag, capture=True, comments=False):
         """Recursively return selected tags."""
 
         match = CSSMatch(self.selectors, self.namespaces, self.flags).match
 
         # Walk children
-        for child in node.descendants:
+        for child in tag.descendants:
             if capture and util.is_tag(child) and match(child):
                 yield child
             elif comments and util.is_comment(child):
                 yield child
 
-    def _sieve(self, node, capture=True, comments=False, limit=0):
+    def _sieve(self, tag, capture=True, comments=False, limit=0):
         """Sieve."""
 
         if limit < 1:
             limit = None
 
-        for child in self._walk(node, capture, comments):
+        for child in self._walk(tag, capture, comments):
             yield child
             if limit is not None:
                 limit -= 1
                 if limit < 1:
                     break
 
-    def match(self, node):
+    def match(self, tag):
         """Match."""
 
-        return CSSMatch(self.selectors, self.namespaces, self.flags).match(node)
+        return CSSMatch(self.selectors, self.namespaces, self.flags).match(tag)
 
-    def filter(self, nodes):  # noqa A001
+    def filter(self, iterable):  # noqa A001
         """Filter."""
 
-        if util.is_tag(nodes):
-            return [node for node in nodes.children if util.is_tag(node) and self.match(node)]
-        else:
-            return [node for node in nodes if self.match(node)]
+        return [node for node in iterable if not util.is_navigable_string(node) and self.match(node)]
 
-    def comments(self, node, limit=0):
+    def comments(self, parent, limit=0):
         """Get comments only."""
 
-        return list(self.icomments(node, limit))
+        return list(self.icomments(parent, limit))
 
-    def icomments(self, node, limit=0):
+    def icomments(self, parent, limit=0):
         """Iterate comments only."""
 
-        for tag in self._sieve(node, capture=False, comments=True, limit=limit):
+        for tag in self._sieve(parent, capture=False, comments=True, limit=limit):
             yield tag
 
-    def select(self, node, limit=0):
+    def select(self, parent, limit=0):
         """Select the specified tags."""
 
-        return list(self.iselect(node, limit))
+        return list(self.iselect(parent, limit))
 
-    def iselect(self, node, limit=0):
+    def iselect(self, parent, limit=0):
         """Iterate the specified tags."""
 
-        for tag in self._sieve(node, limit=limit):
+        for tag in self._sieve(parent, limit=limit):
             yield tag
 
     def __repr__(self):  # pragma: no cover
         """Representation."""
 
-        return "SoupSieve(pattern=%r, namespaces=%s, flags=%s)" % (self.pattern, self.namespaces, self.flags)
+        return "SoupSieve(pattern={!r}, namespaces={!r}, flags={!r})".format(self.pattern, self.namespaces, self.flags)
 
     __str__ = __repr__
 

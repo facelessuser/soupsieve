@@ -108,7 +108,7 @@ class ImmutableDict(Mapping):
     def __repr__(self):  # pragma: no cover
         """Representation."""
 
-        return "%r" % self._d
+        return "{!r}".format(self._d)
 
     __str__ = __repr__
 

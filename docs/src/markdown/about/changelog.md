@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1
+
+- **FIX**: More descriptive exceptions. Exceptions will also now mention position in the pattern that is problematic.
+- **FIX**: `filter` ignores `NavigableString` objects in normal iterables and `Tag` iterables. Basically, it filters all Beautiful Soup document parts regardless of iterable type where as it used to only filter out a `NavigableString` in a `Tag` object. This is viewed as fixing an inconsistency.
+- **FIX**: `DEBUG` flag has been added to help with debugging CSS selector parsing.
+
 ## 1.2.0
 
 - **NEW**: Add Python 2.7 support.

@@ -104,7 +104,8 @@ PAT_ATTR = r'''
 
 PAT_PSEUDO_CLOSE = r'{ws}*\)'.format(ws=WS)
 
-PAT_PSEUDO = r':{ident}+(?:\({ws}*)?'.format(ws=WS, ident=IDENTIFIER)
+PAT_PSEUDO_CLASS = r':{ident}+(?:\({ws}*)?'.format(ws=WS, ident=IDENTIFIER)
+PAT_PSEUDO_ELEMENT = r':{}'.format(PAT_PSEUDO_CLASS)
 
 PAT_PSEUDO_NTH_CHILD = r'''
 (?P<pseudo_nth_child>:nth-(?:last-)?child
@@ -248,9 +249,9 @@ class _Selector(object):
         """String representation."""
 
         return (
-            '_Selector(tag=%r, ids=%r, classes=%r, attributes=%r, nth=%r, selectors=%r, '
-            'relations=%r, rel_type=%r, contains=%r, lang=%r, flags=%r, no_match=%r)'
-        ) % (
+            '_Selector(tag={!r}, ids={!r}, classes={!r}, attributes={!r}, nth={!r}, selectors={!r}, '
+            'relations={!r}, rel_type={!r}, contains={!r}, lang={!r}, flags={!r}, no_match={!r})'
+        ).format(
             self.tag, self.ids, self.classes, self.attributes, self.nth, self.selectors,
             self.relations, self.rel_type, self.contains, self.lang, self.flags, self.no_match
         )
@@ -268,7 +269,8 @@ class CSSParser(object):
             ("pseudo_nth_child", SelectorPattern(PAT_PSEUDO_NTH_CHILD)),
             ("pseudo_nth_type", SelectorPattern(PAT_PSEUDO_NTH_TYPE)),
             ("pseudo_lang", SelectorPattern(PAT_PSEUDO_LANG)),
-            ("pseudo", SelectorPattern(PAT_PSEUDO)),
+            ("pseudo_class", SelectorPattern(PAT_PSEUDO_CLASS)),
+            ("pseudo_element", SelectorPattern(PAT_PSEUDO_ELEMENT)),
             ("id", SelectorPattern(PAT_ID)),
             ("class", SelectorPattern(PAT_CLASS)),
             ("tag", SelectorPattern(PAT_TAG)),
@@ -282,6 +284,7 @@ class CSSParser(object):
 
         self.pattern = selector
         self.flags = flags
+        self.debug = self.flags & util.DEBUG
 
     def parse_attribute_selector(self, sel, m, has_selector):
         """Create attribute selector from the returned regex match."""
@@ -298,6 +301,7 @@ class CSSParser(object):
                 self.parse_selectors(
                     # Simulate the content of `:not`, but make the attribute as `=` instead of `!=`.
                     self.selector_iter('[{}={} {}]'.format(attr, value, case)),
+                    m.end(0),
                     FLG_PSEUDO | FLG_NOT
                 )
             )
@@ -368,8 +372,8 @@ class CSSParser(object):
         has_selector = True
         return has_selector
 
-    def parse_pseudo(self, sel, m, has_selector, iselector):
-        """Parse pseudo."""
+    def parse_pseudo_class(self, sel, m, has_selector, iselector):
+        """Parse pseudo class."""
 
         complex_pseudo = False
         pseudo = util.lower(m.group(0)).strip()
@@ -377,7 +381,7 @@ class CSSParser(object):
             complex_pseudo = True
             pseudo = pseudo[:-1]
         if complex_pseudo and pseudo in PSEUDO_COMPLEX:
-            has_selector = self.parse_pseudo_open(sel, pseudo, has_selector, iselector)
+            has_selector = self.parse_pseudo_open(sel, pseudo, has_selector, iselector, m.end(0))
         elif not complex_pseudo and pseudo in PSEUDO_SIMPLE:
             if pseudo == ':root':
                 sel.flags |= ct.SEL_ROOT
@@ -387,6 +391,7 @@ class CSSParser(object):
                 sel.selectors.append(
                     self.parse_selectors(
                         self.selector_iter(':is(a, area, link)[href]'),
+                        m.end(0),
                         FLG_PSEUDO | FLG_HTML
                     )
                 )
@@ -399,6 +404,7 @@ class CSSParser(object):
                             select > option[selected]
                             '''
                         ),
+                        m.end(0),
                         FLG_PSEUDO | FLG_HTML
                     )
                 )
@@ -406,6 +412,7 @@ class CSSParser(object):
                 sel.selectors.append(
                     self.parse_selectors(
                         self.selector_iter(':checked, form :is(button, input)[type="submit"]'),
+                        m.end(0),
                         FLG_PSEUDO | FLG_HTML | FLG_DEFAULT
                     )
                 )
@@ -420,6 +427,7 @@ class CSSParser(object):
                             input[type="radio"][name][name!='']:not([checked])
                             '''
                         ),
+                        m.end(0),
                         FLG_PSEUDO | FLG_HTML | FLG_INDETERMINATE
                     )
                 )
@@ -434,6 +442,7 @@ class CSSParser(object):
                             fieldset[disabled] > :is(input[type!=hidden], button, select, textarea)
                             '''
                         ),
+                        m.end(0),
                         FLG_PSEUDO | FLG_HTML
                     )
                 )
@@ -451,6 +460,7 @@ class CSSParser(object):
                             ):not([disabled])
                             '''
                         ),
+                        m.end(0),
                         FLG_PSEUDO | FLG_HTML
                     )
                 )
@@ -458,6 +468,7 @@ class CSSParser(object):
                 sel.selectors.append(
                     self.parse_selectors(
                         self.selector_iter(':is(input, textarea, select)[required]'),
+                        m.end(0),
                         FLG_PSEUDO | FLG_HTML
                     )
                 )
@@ -465,6 +476,7 @@ class CSSParser(object):
                 sel.selectors.append(
                     self.parse_selectors(
                         self.selector_iter(':is(input, textarea, select):not([required])'),
+                        m.end(0),
                         FLG_PSEUDO | FLG_HTML
                     )
                 )
@@ -489,6 +501,7 @@ class CSSParser(object):
                             )[placeholder][placeholder!='']
                             '''
                         ),
+                        m.end(0),
                         FLG_PSEUDO | FLG_HTML
                     )
                 )
@@ -516,7 +529,7 @@ class CSSParser(object):
                 )
             has_selector = True
         elif complex_pseudo and pseudo in PSEUDO_COMPLEX_NO_MATCH:
-            self.parse_selectors(iselector, FLG_PSEUDO | FLG_OPEN)
+            self.parse_selectors(iselector, m.end(0), FLG_PSEUDO | FLG_OPEN)
             sel.no_match = True
             has_selector = True
         elif not complex_pseudo and pseudo in PSEUDO_SIMPLE_NO_MATCH:
@@ -526,7 +539,7 @@ class CSSParser(object):
             raise SyntaxError("Invalid syntax for pseudo class '{}'".format(pseudo))
         else:
             raise NotImplementedError(
-                "'{}' pseudo class/element is not implemented at this time".format(pseudo)
+                "'{}' pseudo-class is not implemented at this time".format(pseudo)
             )
 
         return has_selector
@@ -574,7 +587,7 @@ class CSSParser(object):
             else:
                 # Use default `*|*` for `of S`.
                 temp_sel = self.selector_iter('*|*')
-            nth_sel = self.parse_selectors(temp_sel, flags)
+            nth_sel = self.parse_selectors(temp_sel, m.end(0), flags)
             if pseudo_sel.startswith(':nth-child'):
                 sel.nth.append(ct.SelectorNth(s1, var, s2, False, False, nth_sel))
             elif pseudo_sel.startswith(':nth-last-child'):
@@ -587,7 +600,7 @@ class CSSParser(object):
         has_selector = True
         return has_selector
 
-    def parse_pseudo_open(self, sel, name, has_selector, iselector):
+    def parse_pseudo_open(self, sel, name, has_selector, iselector, index):
         """Parse pseudo with opening bracket."""
 
         flags = FLG_PSEUDO | FLG_OPEN
@@ -596,7 +609,7 @@ class CSSParser(object):
         if name == ':has':
             flags |= FLG_HAS
 
-        sel.selectors.append(self.parse_selectors(iselector, flags))
+        sel.selectors.append(self.parse_selectors(iselector, index, flags))
         has_selector = True
         return has_selector
 
@@ -696,7 +709,7 @@ class CSSParser(object):
 
         return has_selector
 
-    def parse_selectors(self, iselector, flags=0):
+    def parse_selectors(self, iselector, index=0, flags=0):
         """Parse selectors."""
 
         sel = _Selector()
@@ -713,6 +726,23 @@ class CSSParser(object):
         is_html = flags & FLG_HTML
         is_default = flags & FLG_DEFAULT
         is_indeterminate = flags & FLG_INDETERMINATE
+
+        if self.debug:
+            if is_pseudo:
+                print('    is_pseudo: True')
+            if is_open:
+                print('    is_open: True')
+            if is_has:
+                print('    is_has: True')
+            if is_not:
+                print('    is_not: True')
+            if is_html:
+                print('    is_html: True')
+            if is_default:
+                print('    is_default: True')
+            if is_indeterminate:
+                print('    is_indeterminate: True')
+
         if is_has:
             selectors.append(_Selector())
 
@@ -721,8 +751,10 @@ class CSSParser(object):
                 key, m = next(iselector)
 
                 # Handle parts
-                if key == 'pseudo':
-                    has_selector = self.parse_pseudo(sel, m, has_selector, iselector)
+                if key == 'pseudo_class':
+                    has_selector = self.parse_pseudo_class(sel, m, has_selector, iselector)
+                elif key == 'pseudo_element':
+                    raise NotImplementedError("Psuedo-element found at position {}".format(m.start(0)))
                 elif key == 'pseudo_contains':
                     has_selector = self.parse_pseudo_contains(sel, m, has_selector)
                 elif key in ('pseudo_nth_type', 'pseudo_nth_child'):
@@ -731,15 +763,15 @@ class CSSParser(object):
                     has_selector = self.parse_pseudo_lang(sel, m, has_selector)
                 elif key == 'pseudo_close':
                     if split_last:
-                        raise SyntaxError("Cannot end with a combining character")
+                        raise SyntaxError("Expecting more selectors at postion {}".format(m.start(0)))
                     if is_open:
                         closed = True
                         break
                     else:
-                        raise SyntaxError("Unmatched '{}'".format(m.group(0)))
+                        raise SyntaxError("Unmatched pseudo-class close at postion {}".format(m.start(0)))
                 elif key == 'combine':
                     if split_last:
-                        raise SyntaxError("Cannot have combining character directly after a combining character")
+                        raise SyntaxError("Unexpected combining character at position {}".format(m.start(0)))
                     if is_has:
                         has_selector, sel, rel_type = self.parse_has_split(
                             sel, m, has_selector, selectors, rel_type
@@ -752,19 +784,21 @@ class CSSParser(object):
                     has_selector = self.parse_attribute_selector(sel, m, has_selector)
                 elif key == 'tag':
                     if has_selector:
-                        raise SyntaxError("Tag must come first")
+                        raise SyntaxError("Tag name found at position {} instead of at the start".format(m.start(0)))
                     has_selector = self.parse_tag_pattern(sel, m, has_selector)
                 elif key in ('class', 'id'):
                     has_selector = self.parse_class_id(sel, m, has_selector)
                 split_last = False
+
+                index = m.end(0)
         except StopIteration:
             pass
 
         if is_open and not closed:
-            raise SyntaxError("Unclosed `:pseudo()`")
+            raise SyntaxError("Unclosed pseudo-class at position {}".format(index))
 
         if split_last:
-            raise SyntaxError("Cannot end with a combining character")
+            raise SyntaxError("Expected more selectors at position {}".format(index))
 
         if has_selector:
             if not sel.tag and not is_pseudo:
@@ -797,6 +831,8 @@ class CSSParser(object):
         pattern = pattern.strip()
         index = 0
         end = len(pattern) - 1
+        if self.debug:  # pragma: no cover
+            print('## PARSING: {!r}'.format(pattern))
         while index <= end:
             m = None
             for k, v in self.css_tokens.items():
@@ -804,11 +840,17 @@ class CSSParser(object):
                     continue
                 m = v.pattern.match(pattern, index)
                 if m:
+                    if self.debug:  # pragma: no cover
+                        print("TOKEN: '{}' --> {!r} at position {}".format(k, m.group(0), m.start(0)))
                     index = m.end(0)
                     yield k, m
                     break
             if m is None:
-                raise SyntaxError("Invlaid character '{}'".format(pattern[index]))
+                if self.debug:  # pragma: no cover
+                    print("TOKEN: '{}' --> {}".format(k, pattern[index]))
+                raise SyntaxError("Invlaid character '{}' at position {}".format(pattern[index], index))
+        if self.debug:  # pragma: no cover
+            print('## END PARSING')
 
     def process_selectors(self):
         """

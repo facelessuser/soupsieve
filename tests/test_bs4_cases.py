@@ -69,7 +69,7 @@ class SelectorNthOfTypeBugTest(unittest.TestCase):
     def test_parent_nth_of_type_preconditions(self):
         """Test `nth` type preconditions."""
 
-        els = sv.select('div > h1', self.soup, flags=sv.HTML)
+        els = sv.select('div > h1', self.soup)
         # check that there is a unique selection
         self.assertEqual(len(els), 1)
         self.assertEqual(els[0].string, 'An H1')
@@ -86,6 +86,6 @@ class SelectorNthOfTypeBugTest(unittest.TestCase):
     def test_parent_nth_of_type(self):
         """Test parent of `nth` of type."""
 
-        els = sv.select('div:nth-of-type(1) > h1', self.soup, flags=sv.HTML)
+        els = sv.select('div:nth-of-type(1) > h1', self.soup)
         self.assertEqual(len(els), 1)
         self.assertEqual(els[0].string, 'An H1')
