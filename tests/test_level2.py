@@ -14,9 +14,14 @@ E + F
 :focus
 :lang(en)
 ```
+
+We will currently fail on pseudo-elements `::pseudo-element` as they are not real elements.
+At the time of CSS2, they were known as `:pseudo-element`. Soup Sieve will raise an error about
+an unknown pseudo-class when single `:` is used.
 """
 from __future__ import unicode_literals
 from . import util
+import soupsieve as sv
 
 
 class TestLevel2(util.TestCase):
@@ -453,3 +458,12 @@ class TestLevel2(util.TestCase):
             ['1', '2', '3', '4', '5', '6'],
             flags=util.HTML5
         )
+
+    def test_pseudo_element(self):
+        """Test pseudo element."""
+
+        with self.assertRaises(NotImplementedError):
+            sv.compile(':first-line')
+
+        with self.assertRaises(NotImplementedError):
+            sv.compile('::first-line')

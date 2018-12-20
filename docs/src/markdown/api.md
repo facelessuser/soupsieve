@@ -16,6 +16,10 @@ Soup Sieve will detect the document type being used from the Beautiful Soup obje
 
 - While attribute values are generally treated as case sensitive, HTML5, XHTML, and HTML treat the `type` attribute special. The `type` attribute's value is always case insensitive. This is generally how most browsers treat `type`. If you need `type` to be sensitive, you can use the `s` flag: `#!css [type="submit" s]`.
 
+## Flags
+
+Early in development, flags were used to specify document type, but as of 1.0.0, there are no flags used at this time, but the parameter is provided for potential future use.
+
 ## `soupsieve.select()`
 
 ```py3

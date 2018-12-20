@@ -28,9 +28,9 @@ class CSSMatch(object):
     def __init__(self, selectors, namespaces, flags):
         """Initialize."""
 
-        self.meta_lang = None
-        self.default_forms = []
-        self.indeterminate_forms = []
+        self.cached_meta_lang = None
+        self.cached_default_forms = []
+        self.cached_indeterminate_forms = []
         self.selectors = selectors
         self.namespaces = namespaces
         self.flags = flags
@@ -441,7 +441,7 @@ class CSSMatch(object):
 
         # Look in form cache to see if we've already located its default button
         found_form = False
-        for f, t in self.default_forms:
+        for f, t in self.cached_default_forms:
             if f is form:
                 found_form = True
                 if t is el:
@@ -462,7 +462,7 @@ class CSSMatch(object):
                     for k, v in child.attrs.items():
                         if util.lower(k) == 'type' and util.lower(v) == 'submit':
                             child_found = True
-                            self.default_forms.append([form, child])
+                            self.cached_default_forms.append([form, child])
                             if el is child:
                                 match = True
                             break
@@ -495,7 +495,7 @@ class CSSMatch(object):
 
         # Look in form cache to see if we've already evaluated that its fellow radio buttons are indeterminate
         found_form = False
-        for f, n, i in self.indeterminate_forms:
+        for f, n, i in self.cached_indeterminate_forms:
             if f is form and n == name:
                 found_form = True
                 if i is True:
@@ -527,7 +527,7 @@ class CSSMatch(object):
                     break
             if not checked:
                 match = True
-            self.indeterminate_forms.append([form, name, match])
+            self.cached_indeterminate_forms.append([form, name, match])
 
         return match
 
@@ -557,11 +557,12 @@ class CSSMatch(object):
             parent = parent.parent
 
         # Use cached meta language.
-        if not found_lang and self.meta_lang:
-            found_lang = self.meta_lang
+        if not found_lang and self.cached_meta_lang is not None:
+            found_lang = self.cached_meta_lang
 
         # If we couldn't find a language, and the document is HTML, look to meta to determine language.
-        if not found_lang and not self.is_xml:
+        if found_lang is None and not self.is_xml:
+            # Find head
             found = False
             for tag in ('html', 'head'):
                 found = False
@@ -573,6 +574,7 @@ class CSSMatch(object):
                 if not found:  # pragma: no cover
                     break
 
+            # Search meta tags
             if found:
                 for child in parent:
                     if util.is_tag(child) and util.lower(child.name) == 'meta':
@@ -585,10 +587,12 @@ class CSSMatch(object):
                                 content = v
                             if c_lang and content:
                                 found_lang = content
-                                self.meta_lang = found_lang
+                                self.cached_meta_lang = found_lang
                                 break
                     if found_lang:
                         break
+                if not found_lang:
+                    self.cached_meta_lang = False
 
         # If we determined a language, compare.
         if found_lang:
@@ -650,6 +654,7 @@ class CSSMatch(object):
                 # also not set.
                 if selector.flags & ct.SEL_INDETERMINATE and not self.match_indeterminate(el):
                     continue
+                # Validate that the tag contains the specified text.
                 if not self.match_contains(el, selector.contains):
                     continue
                 match = not is_not
@@ -677,7 +682,7 @@ class CSSMatch(object):
         self.html_namespace = self.is_html_ns(root)
         self.is_xml = doc.is_xml and not self.html_namespace
 
-        return util.is_tag(el) and el.parent and self.match_selectors(el, self.selectors)
+        return el.parent and self.match_selectors(el, self.selectors)
 
 
 class SoupSieve(ct.Immutable):
@@ -710,6 +715,7 @@ class SoupSieve(ct.Immutable):
     def _sieve(self, tag, capture=True, comments=False, limit=0):
         """Sieve."""
 
+        self._is_valid_input(tag)
         if limit < 1:
             limit = None
 
@@ -720,9 +726,17 @@ class SoupSieve(ct.Immutable):
                 if limit < 1:
                     break
 
+    def _is_valid_input(self, tag):
+        """Check if valid input tag."""
+
+        # Fail on unexpected types.
+        if not util.is_tag(tag):
+            raise TypeError("Expected a BeautifulSoup 'Tag', but instead recieved type {}".format(type(tag)))
+
     def match(self, tag):
         """Match."""
 
+        self._is_valid_input(tag)
         return CSSMatch(self.selectors, self.namespaces, self.flags).match(tag)
 
     def filter(self, iterable):  # noqa A001

@@ -727,7 +727,7 @@ class CSSParser(object):
         is_default = flags & FLG_DEFAULT
         is_indeterminate = flags & FLG_INDETERMINATE
 
-        if self.debug:
+        if self.debug:  # pragma: no cover
             if is_pseudo:
                 print('    is_pseudo: True')
             if is_open:

@@ -4,7 +4,9 @@
 
 - **FIX**: More descriptive exceptions. Exceptions will also now mention position in the pattern that is problematic.
 - **FIX**: `filter` ignores `NavigableString` objects in normal iterables and `Tag` iterables. Basically, it filters all Beautiful Soup document parts regardless of iterable type where as it used to only filter out a `NavigableString` in a `Tag` object. This is viewed as fixing an inconsistency.
-- **FIX**: `DEBUG` flag has been added to help with debugging CSS selector parsing.
+- **FIX**: `DEBUG` flag has been added to help with debugging CSS selector parsing. This is mainly for development.
+- **FIX**: If forced to search for language in `meta` tag, and no language is found, cache that there is no language in the `meta` tag to prevent searching again during the current select.
+- **FIX**: If a non `BeautifulSoup`/`Tag` object is given to the API to compare against, raise a `TypeError`.
 
 ## 1.2.0
 
