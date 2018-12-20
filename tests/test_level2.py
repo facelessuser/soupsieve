@@ -328,6 +328,26 @@ class TestLevel2(util.TestCase):
             flags=util.HTML5
         )
 
+        # Shouldn't match anything
+        self.assert_selector(
+            markup,
+            '[class~="test1 test2"]',
+            [],
+            flags=util.HTML5
+        )
+        self.assert_selector(
+            markup,
+            '[class~=""]',
+            [],
+            flags=util.HTML5
+        )
+        self.assert_selector(
+            markup,
+            '[class~="test1\\ test2"]',
+            [],
+            flags=util.HTML5
+        )
+
         # Start of list
         self.assert_selector(
             markup,
