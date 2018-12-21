@@ -69,72 +69,65 @@ PSEUDO_SPECIAL = {
 PSEUDO_SUPPORTED = PSEUDO_SIMPLE | PSEUDO_SIMPLE_NO_MATCH | PSEUDO_COMPLEX | PSEUDO_COMPLEX_NO_MATCH | PSEUDO_SPECIAL
 
 # Sub-patterns parts
+# Whitespace
 WS = r'[ \t\r\n\f]'
-
+# CSS escapes
 CSS_ESCAPES = r'(?:\\[a-f0-9]{{1,6}}{ws}?|\\.)'.format(ws=WS)
-
-IDENTIFIER = r'''
-(?:(?!-?\d|--)(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+)
-'''.format(esc=CSS_ESCAPES)
-
+# CSS Identifier
+IDENTIFIER = r'(?:(?!-?\d|--)(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+)'.format(esc=CSS_ESCAPES)
+# `nth` content
 NTH = r'(?:[-+])?(?:\d+n?|n)(?:(?<=n){ws}*(?:[-+]){ws}*(?:\d+))?'.format(ws=WS)
-
-VALUE = r'''
-(?:
-    "(?:\\.|[^\\"]*)*?"|
-    '(?:\\.|[^\\']*)*?'|
-    {ident}+
-)
-'''.format(ident=IDENTIFIER)
-
+# Value: quoted string or identifier
+VALUE = r'''(?:"(?:\\.|[^\\"]*)*?"|'(?:\\.|[^\\']*)*?'|{ident}+)'''.format(ident=IDENTIFIER)
 # Attribute value comparison. `!=` is handled special as it is non-standard.
-ATTR = r'''(?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*(?P<value>{value})(?P<case>{ws}+[is])?)?{ws}*\]'''.format(ws=WS, value=VALUE)
+ATTR = r'(?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*(?P<value>{value})(?P<case>{ws}+[is])?)?{ws}*\]'.format(ws=WS, value=VALUE)
 
 # Selector patterns
+# IDs (`#id`)
 PAT_ID = r'\#{ident}'.format(ident=IDENTIFIER)
-
+# Classes (`.class`)
 PAT_CLASS = r'\.{ident}'.format(ident=IDENTIFIER)
-
+# Prefix:Tag (`prefix|tag`)
 PAT_TAG = r'(?:(?:{ident}|\*)?\|)?(?:{ident}|\*)'.format(ident=IDENTIFIER)
-
-PAT_ATTR = r'''
-\[{ws}*(?P<ns_attr>(?:(?:{ident}|\*)?\|)?{ident})
-{attr}
-'''.format(ws=WS, ident=IDENTIFIER, attr=ATTR)
-
-PAT_PSEUDO_CLOSE = r'{ws}*\)'.format(ws=WS)
-
+# Attributes (`[attr]`, `[attr=value]`, etc.)
+PAT_ATTR = r'\[{ws}*(?P<ns_attr>(?:(?:{ident}|\*)?\|)?{ident}){attr}'.format(ws=WS, ident=IDENTIFIER, attr=ATTR)
+# Pseudo class (`:pseudo-class`, `:pseudo-class(`)
 PAT_PSEUDO_CLASS = r':{ident}+(?:\({ws}*)?'.format(ws=WS, ident=IDENTIFIER)
+# Closing pseudo group (`)`)
+PAT_PSEUDO_CLOSE = r'{ws}*\)'.format(ws=WS)
+# Pseudo element (`::pseudo-element`)
 PAT_PSEUDO_ELEMENT = r':{}'.format(PAT_PSEUDO_CLASS)
-
+# Pseudo class `nth-child` (`:nth-child(an+b [of S]?)`, `:first-child`, etc.)
 PAT_PSEUDO_NTH_CHILD = r'''
 (?P<pseudo_nth_child>:nth-(?:last-)?child
 \({ws}*(?P<nth_child>{nth}|even|odd){ws}*(?:\)|(?<={ws})of{ws}+))
 '''.format(ws=WS, nth=NTH)
-
+# Pseudo class `nth-of-type` (`:nth-of-type(an+b)`, `:first-of-type`, etc.)
 PAT_PSEUDO_NTH_TYPE = r'''
 (?P<pseudo_nth_type>:nth-(?:last-)?of-type
 \({ws}*(?P<nth_type>{nth}|even|odd){ws}*\))
 '''.format(ws=WS, nth=NTH)
-
+# Pseudo class language (`:lang("*-de", en)`)
 PAT_PSEUDO_LANG = r':lang\({ws}*(?P<lang>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'.format(ws=WS, value=VALUE)
-
+# Combining characters (`>`, `~`, ` `, `+`, `,`)
 PAT_SPLIT = r'{ws}*?(?P<relation>[,+>~]|{ws}(?![,+>~])){ws}*'.format(ws=WS)
-
-# Extra selector patterns
+# Extra: Contains (`:contains(text)`)
 PAT_PSEUDO_CONTAINS = r':contains\({ws}*(?P<value>{value}){ws}*\)'.format(ws=WS, value=VALUE)
 
+# Regular expressions
 # CSS escape pattern
 RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{{1,6}}{ws}?)|(\\.))'.format(ws=WS), re.I)
-
 # Pattern to break up `nth` specifiers
 RE_NTH = re.compile(r'(?P<s1>[-+])?(?P<a>\d+n?|n)(?:(?<=n){ws}*(?P<s2>[-+]){ws}*(?P<b>\d+))?'.format(ws=WS), re.I)
-
+# Pattern to iterate multiple languages.
 RE_LANG = re.compile(r'(?:(?P<value>{value})|(?P<split>{ws}*,{ws}*))'.format(ws=WS, value=VALUE), re.X)
-
+# Whitespace check
 RE_WS = re.compile(WS)
 
+# Constants
+# List split token
 SPLIT = ','
+# Relation type `:has()` descendant, the default relation type.
 REL_HAS_CHILD = ": "
 
 # Parse flags
@@ -146,6 +139,7 @@ FLG_HTML = 0x10
 FLG_INDETERMINATE = 0x20
 FLG_OPEN = 0x40
 
+# Maximum cached patterns to store
 _MAXCACHE = 500
 
 
@@ -393,123 +387,23 @@ class CSSParser(object):
             elif pseudo == ':empty':
                 sel.flags |= ct.SEL_EMPTY
             elif pseudo in (':link', ':any-link'):
-                sel.selectors.append(
-                    self.parse_selectors(
-                        self.selector_iter(':is(a, area, link)[href]'),
-                        m.end(0),
-                        FLG_PSEUDO | FLG_HTML
-                    )
-                )
+                sel.selectors.append(CSS_LINK)
             elif pseudo == ':checked':
-                sel.selectors.append(
-                    self.parse_selectors(
-                        self.selector_iter(
-                            '''
-                            :is(input[type=checkbox], input[type=radio])[checked],
-                            select > option[selected]
-                            '''
-                        ),
-                        m.end(0),
-                        FLG_PSEUDO | FLG_HTML
-                    )
-                )
+                sel.selectors.append(CSS_CHECKED)
             elif pseudo == ':default':
-                sel.selectors.append(
-                    self.parse_selectors(
-                        self.selector_iter(':checked, form :is(button, input)[type="submit"]'),
-                        m.end(0),
-                        FLG_PSEUDO | FLG_HTML | FLG_DEFAULT
-                    )
-                )
+                sel.selectors.append(CSS_DEFAULT)
             elif pseudo == ':indeterminate':
-                sel.selectors.append(
-                    self.parse_selectors(
-                        self.selector_iter(
-                            '''
-                            input[type="checkbox"][indeterminate],
-                            input[type="radio"]:is(:not([name]), [name=""]):not([checked]),
-                            progress:not([value]),
-                            input[type="radio"][name][name!='']:not([checked])
-                            '''
-                        ),
-                        m.end(0),
-                        FLG_PSEUDO | FLG_HTML | FLG_INDETERMINATE
-                    )
-                )
+                sel.selectors.append(CSS_INDETERMINATE)
             elif pseudo == ":disabled":
-                sel.selectors.append(
-                    self.parse_selectors(
-                        self.selector_iter(
-                            '''
-                            :is(input[type!=hidden], button, select, textarea, fieldset, optgroup, option)[disabled],
-                            optgroup[disabled] > option,
-                            fieldset[disabled] > :not(legend) :is(input[type!=hidden], button, select, textarea),
-                            fieldset[disabled] > :is(input[type!=hidden], button, select, textarea)
-                            '''
-                        ),
-                        m.end(0),
-                        FLG_PSEUDO | FLG_HTML
-                    )
-                )
+                sel.selectors.append(CSS_DISABLED)
             elif pseudo == ":enabled":
-                sel.selectors.append(
-                    self.parse_selectors(
-                        self.selector_iter(
-                            '''
-                            :is(a, area, link)[href],
-                            :is(fieldset, optgroup):not([disabled]),
-                            option:not(optgroup[disabled] *):not([disabled]),
-                            :is(input[type!=hidden], button, select, textarea):not(
-                                fieldset[disabled] > :not(legend) *,
-                                fieldset[disabled] > *
-                            ):not([disabled])
-                            '''
-                        ),
-                        m.end(0),
-                        FLG_PSEUDO | FLG_HTML
-                    )
-                )
+                sel.selectors.append(CSS_ENABLED)
             elif pseudo == ":required":
-                sel.selectors.append(
-                    self.parse_selectors(
-                        self.selector_iter(':is(input, textarea, select)[required]'),
-                        m.end(0),
-                        FLG_PSEUDO | FLG_HTML
-                    )
-                )
+                sel.selectors.append(CSS_REQUIRED)
             elif pseudo == ":optional":
-                sel.selectors.append(
-                    self.parse_selectors(
-                        self.selector_iter(':is(input, textarea, select):not([required])'),
-                        m.end(0),
-                        FLG_PSEUDO | FLG_HTML
-                    )
-                )
+                sel.selectors.append(CSS_OPTIONAL)
             elif pseudo == ":placeholder-shown":
-                sel.selectors.append(
-                    self.parse_selectors(
-                        self.selector_iter(
-                            '''
-                            :is(
-                                input:is(
-                                    [type=text],
-                                    [type=search],
-                                    [type=url],
-                                    [type=tel],
-                                    [type=email],
-                                    [type=password],
-                                    [type=number],
-                                    :not([type]),
-                                    [type=""]
-                                ),
-                                textarea
-                            )[placeholder][placeholder!='']
-                            '''
-                        ),
-                        m.end(0),
-                        FLG_PSEUDO | FLG_HTML
-                    )
-                )
+                sel.selectors.append(CSS_PLACEHOLDER_SHOWN)
             elif pseudo == ':first-child':
                 sel.nth.append(ct.SelectorNth(1, False, 0, False, False, ct.SelectorList()))
             elif pseudo == ':last-child':
@@ -584,15 +478,12 @@ class CSSParser(object):
 
         pseudo_sel = util.lower(m.group('pseudo_nth' + postfix))
         if postfix == '_child':
-            flags = FLG_PSEUDO
             if pseudo_sel.strip().endswith('of'):
                 # Parse the rest of `of S`.
-                temp_sel = iselector
-                flags |= FLG_OPEN
+                nth_sel = self.parse_selectors(iselector, m.end(0), FLG_PSEUDO | FLG_OPEN)
             else:
                 # Use default `*|*` for `of S`.
-                temp_sel = self.selector_iter('*|*')
-            nth_sel = self.parse_selectors(temp_sel, m.end(0), flags)
+                nth_sel = CSS_NTH_OF_S_DEFAULT
             if pseudo_sel.startswith(':nth-child'):
                 sel.nth.append(ct.SelectorNth(s1, var, s2, False, False, nth_sel))
             elif pseudo_sel.startswith(':nth-last-child'):
@@ -852,12 +743,12 @@ class CSSParser(object):
                     break
             if m is None:
                 if self.debug:  # pragma: no cover
-                    print("TOKEN: '{}' --> {}".format(k, pattern[index]))
-                raise SyntaxError("Invlaid character '{}' at position {}".format(pattern[index], index))
+                    print("TOKEN: 'invalid' --> {!r} at position {}".format(pattern[index], index))
+                raise SyntaxError("Invlaid character {!r} at position {}".format(pattern[index], index))
         if self.debug:  # pragma: no cover
             print('## END PARSING')
 
-    def process_selectors(self):
+    def process_selectors(self, index=0, flags=0):
         """
         Process selectors.
 
@@ -866,4 +757,86 @@ class CSSParser(object):
         descendants etc.
         """
 
-        return self.parse_selectors(self.selector_iter(self.pattern))
+        return self.parse_selectors(self.selector_iter(self.pattern), index, flags)
+
+
+# Precompile CSS selector lists for pseudo-classes (additional logic may be required beyond the pattern)
+# CSS pattern for `:link` and `:any-link`
+CSS_LINK = CSSParser(
+    ':is(a, area, link)[href]'
+).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
+# CSS pattern for `:checked`
+CSS_CHECKED = CSSParser(
+    '''
+    :is(input[type=checkbox], input[type=radio])[checked],
+    select > option[selected]
+    '''
+).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
+# CSS pattern for `:default` (must compile CSS_CHECKED first)
+CSS_DEFAULT = CSSParser(
+    '''
+    :checked,
+    form :is(button, input)[type="submit"]
+    '''
+).process_selectors(flags=FLG_PSEUDO | FLG_HTML | FLG_DEFAULT)
+# CSS pattern for `:indeterminate`
+CSS_INDETERMINATE = CSSParser(
+    '''
+    input[type="checkbox"][indeterminate],
+    input[type="radio"]:is(:not([name]), [name=""]):not([checked]),
+    progress:not([value]),
+    input[type="radio"][name][name!='']:not([checked])
+    '''
+).process_selectors(flags=FLG_PSEUDO | FLG_HTML | FLG_INDETERMINATE)
+# CSS pattern for `:disabled`
+CSS_DISABLED = CSSParser(
+    '''
+    :is(input[type!=hidden], button, select, textarea, fieldset, optgroup, option)[disabled],
+    optgroup[disabled] > option,
+    fieldset[disabled] > :not(legend) :is(input[type!=hidden], button, select, textarea),
+    fieldset[disabled] > :is(input[type!=hidden], button, select, textarea)
+    '''
+).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
+# CSS pattern for `:enabled`
+CSS_ENABLED = CSSParser(
+    '''
+    :is(a, area, link)[href],
+    :is(fieldset, optgroup):not([disabled]),
+    option:not(optgroup[disabled] *):not([disabled]),
+    :is(input[type!=hidden], button, select, textarea):not(
+        fieldset[disabled] > :not(legend) *,
+        fieldset[disabled] > *
+    ):not([disabled])
+    '''
+).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
+# CSS pattern for `:required`
+CSS_REQUIRED = CSSParser(
+    ':is(input, textarea, select)[required]'
+).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
+# CSS pattern for `:optional`
+CSS_OPTIONAL = CSSParser(
+    ':is(input, textarea, select):not([required])'
+).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
+# CSS pattern for `:placeholder-shown`
+CSS_PLACEHOLDER_SHOWN = CSSParser(
+    '''
+    :is(
+        input:is(
+            [type=text],
+            [type=search],
+            [type=url],
+            [type=tel],
+            [type=email],
+            [type=password],
+            [type=number],
+            :not([type]),
+            [type=""]
+        ),
+        textarea
+    )[placeholder][placeholder!='']
+    '''
+).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
+# CSS pattern default for `:nth-of-child` "of S" feature
+CSS_NTH_OF_S_DEFAULT = CSSParser(
+    '*|*'
+).process_selectors(flags=FLG_PSEUDO)

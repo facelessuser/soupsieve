@@ -3,6 +3,7 @@
 ## 1.2.2
 
 - **FIX**: Fix `[attr~=value]` handling of whitespace. According to the spec, if the value contains whitespace, or is an empty string, it should not match anything.
+- **FIX**: Precompile internal patterns for pseudo-classes to prevent having to parse them again.
 
 ## 1.2.1
 
