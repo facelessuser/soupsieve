@@ -11,6 +11,7 @@ JQuery
 MERCHANTABILITY
 MkDocs
 NONINFRINGEMENT
+Precompile
 PyPI
 PySpelling
 SVG
