@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2
+
+- **FIX**: Fix `[attr~=value]` handling of whitespace. According to the spec, if the value contains whitespace, or is an empty string, it should not match anything.
+
 ## 1.2.1
 
 - **FIX**: More descriptive exceptions. Exceptions will also now mention position in the pattern that is problematic.

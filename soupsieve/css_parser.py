@@ -132,6 +132,8 @@ RE_NTH = re.compile(r'(?P<s1>[-+])?(?P<a>\d+n?|n)(?:(?<=n){ws}*(?P<s2>[-+]){ws}*
 
 RE_LANG = re.compile(r'(?:(?P<value>{value})|(?P<split>{ws}*,{ws}*))'.format(ws=WS, value=VALUE), re.X)
 
+RE_WS = re.compile(WS)
+
 SPLIT = ','
 REL_HAS_CHILD = ": "
 
@@ -345,7 +347,10 @@ class CSSParser(object):
                 pattern = re.compile(r'.*?%s.*' % re.escape(value), flags)
             elif op.startswith('~'):
                 # Value contains word within space separated list
-                pattern = re.compile(r'.*?(?:(?<=^)|(?<= ))%s(?=(?:[ ]|$)).*' % re.escape(value), flags)
+                # `~=` should match nothing if it is empty or contains whitespace,
+                # so if either of these cases is present, use `[^\s\S]` which cannot be matched.
+                value = r'[^\s\S]' if not value or RE_WS.search(value) else re.escape(value)
+                pattern = re.compile(r'.*?(?:(?<=^)|(?<= ))%s(?=(?:[ ]|$)).*' % value, flags)
             elif op.startswith('|'):
                 # Value starts with word in dash separated list
                 pattern = re.compile(r'^%s(?:-.*)?$' % re.escape(value), flags)
