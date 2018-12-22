@@ -19,6 +19,11 @@ Test selectors level 4.
 :indeterminate
 :placeholder-shown
 :lang('*-US', de-DE, ...)
+:user-invalid
+:playing
+:paused
+:scope
+:local-link
 ```
 
 Not supported:
@@ -32,28 +37,17 @@ Not supported:
 - `:blank`: This applies to inputs with empty or otherwise null input.
 
 - `:dir(ltr)`: This applies to direction of text. This direction can be inherited from parents. Due to the way Soup
-  Sieve process things, it would have to scan the parents and evaluate what is inherited. it doesn't account for the CSS
-  `direction` value, which is a good thing. It is doable, but not sure worth the effort. In addition, it seems there is
-  reference to being able to do something like `[dir=auto]` which would select either `ltr` or `rtl`. This seems to add
-  additional logic in to attribute selections which would complicate things, but still technically doable.
+  Sieve processes things, it would have to scan the parents and evaluate what is inherited. it doesn't account for the
+  CSS `direction` value, which is a good thing. It is doable, but not sure worth the effort. In addition, it seems there
+  is reference to being able to do something like `[dir=auto]` which would select either `ltr` or `rtl`. This seems to
+  add additional logic in to attribute selections which would complicate things, but still technically doable.
 
-- `:local-link`: In our environment, there is no document URL. This isn't currently practical.
-
-- `:read-only` / `:read-write`: There are no plans to implement this at this time.
+- `:read-only` / `:read-write`: We need to understand exactly what these match before implementing..
 
 - `:valid` / `:invalid`: We currently to not validate values, so this doesn't make sense at this time.
 
-- `:user-invalid`: User cannot alter things in our environment because there is no user interaction (we are not a
-  browser). This will not be implemented.
-
-- `:scope`: I'm not sure what this means or if it is even useful in our context. More information would be needed. It
-  seems in an HTML document, this would normally just be `:root` as there is no way to specify a different reference at
-  this time. I'm not sure it makes sense to bother implementing this.
-
 - `:in-range` / `:out-of-range`: This applies to form elements only. You'd have to evaluate `value`, `min`, and `max`. I
   guess you can have numerical ranges and alphabetic ranges. Currently, there are no plans to implement this.
-
-- `:playing` / `:paused`: Elements cannot be played or paused in our environment, so this will not be implemented.
 """
 from __future__ import unicode_literals
 from . import util
@@ -1104,3 +1098,114 @@ class TestLevel4(util.TestCase):
         for el in sv.select(':scope .wordshere', el, flags=sv.DEBUG):
             ids.append(el.attrs['id'])
         self.assertEqual(sorted(ids), sorted(['pre']))
+
+    def test_user_invalid(self):
+        """Test user invalid (matches nothing)."""
+
+        markup = """
+        <form id="form">
+          <input id="1" type="text">
+        </form>
+        """
+
+        self.assert_selector(
+            markup,
+            "input:user-invalid",
+            [],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "input:not(:user-invalid)",
+            ["1"],
+            flags=util.HTML5
+        )
+
+    def test_playing(self):
+        """Test playing (matches nothing)."""
+
+        markup = """
+        <!DOCTYPE html>
+        <html>
+        <body>
+
+        <video id="vid" width="320" height="240" controls>
+          <source src="movie.mp4" type="video/mp4">
+          <source src="movie.ogg" type="video/ogg">
+          Your browser does not support the video tag.
+        </video>
+
+        </body>
+        </html>
+        """
+
+        # Not actually sure how this is used, but it won't match anything anyways
+        self.assert_selector(
+            markup,
+            "video:playing",
+            [],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "video:not(:playing)",
+            ["vid"],
+            flags=util.HTML5
+        )
+
+    def test_paused(self):
+        """Test paused (matches nothing)."""
+
+        markup = """
+        <!DOCTYPE html>
+        <html>
+        <body>
+
+        <video id="vid" width="320" height="240" controls>
+          <source src="movie.mp4" type="video/mp4">
+          <source src="movie.ogg" type="video/ogg">
+          Your browser does not support the video tag.
+        </video>
+
+        </body>
+        </html>
+        """
+
+        # Not actually sure how this is used, but it won't match anything anyways
+        self.assert_selector(
+            markup,
+            "video:paused",
+            [],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "video:not(:paused)",
+            ["vid"],
+            flags=util.HTML5
+        )
+
+    def test_local_link(self):
+        """Test local link (matches nothing)."""
+
+        markup = """
+        <a id="1" href="./somelink/index.html">Link</link>
+        <a id="2" href="http://somelink.com/somelink/index.html">Another link</a>
+        """
+
+        self.assert_selector(
+            markup,
+            "a:local-link",
+            [],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "a:not(:local-link)",
+            ["1", "2"],
+            flags=util.HTML5
+        )

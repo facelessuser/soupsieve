@@ -88,6 +88,7 @@ Selector                        | Example                             | Descript
 `:placeholder-shown`            | `#!css input:placeholder-shown`     | Selects every `#!html <input>` element that is showing a placeholder via the `placeholder` attribute.
 `:required`                     | `#!css input:required`              | Select every `#!html <input>` element with a `required` attribute.
 `:target`                       | `#!css #news:target`                | Elements cannot be targeted, so this will never match.
+`:user-invalid`                 | `#!css input:user-invalid`          | User interaction is not applicable, so this will never match.
 `:visited`                      | `#!css a:visited`                   | All links are treated unvisited, so this will never match.
 
 ## Custom Selectors

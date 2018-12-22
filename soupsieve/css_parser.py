@@ -38,9 +38,13 @@ PSEUDO_SIMPLE_NO_MATCH = {
     ':focus-within',
     ':future',
     ':hover',
+    ':local-link',
     ':past',
+    ':paused',
+    ':playing',
     ':target',
     ':target-within',
+    ':user-invalid',
     ':visited'
 }
 
