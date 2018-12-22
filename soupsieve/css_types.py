@@ -10,6 +10,7 @@ SEL_EMPTY = 0x1
 SEL_ROOT = 0x2
 SEL_DEFAULT = 0x4
 SEL_INDETERMINATE = 0x8
+SEL_SCOPE = 0x10
 
 
 class Immutable(object):

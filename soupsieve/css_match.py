@@ -25,7 +25,7 @@ NS_XHTML = 'http://www.w3.org/1999/xhtml'
 class CSSMatch(object):
     """Perform CSS matching."""
 
-    def __init__(self, selectors, namespaces, flags):
+    def __init__(self, selectors, scope, namespaces, flags):
         """Initialize."""
 
         self.cached_meta_lang = None
@@ -34,6 +34,18 @@ class CSSMatch(object):
         self.selectors = selectors
         self.namespaces = namespaces
         self.flags = flags
+        doc = scope
+        while doc.parent:
+            doc = doc.parent
+        root = None
+        for child in doc.children:
+            if util.is_tag(child):
+                root = child
+                break
+        self.root = root
+        self.scope = scope if scope is not doc else root
+        self.html_namespace = self.is_html_ns(root)
+        self.is_xml = doc.is_xml and not self.html_namespace
 
     def get_namespace(self, el):
         """Get the namespace for the element."""
@@ -278,8 +290,12 @@ class CSSMatch(object):
     def match_root(self, el):
         """Match element as root."""
 
-        parent = el.parent
-        return parent and not parent.parent
+        return self.root and self.root is el
+
+    def match_scope(self, el):
+        """Match element as scope."""
+
+        return self.scope is el
 
     def match_nth_tag_type(self, el, child):
         """Match tag type for `nth` matches."""
@@ -621,6 +637,12 @@ class CSSMatch(object):
                 # Verify tag matches
                 if not self.match_tag(el, selector.tag):
                     continue
+                # Verify element is root
+                if selector.flags & ct.SEL_ROOT and not self.match_root(el):
+                    continue
+                # Verify element is scope
+                if selector.flags & ct.SEL_SCOPE and not self.match_scope(el):
+                    continue
                 # Verify `nth` matches
                 if not self.match_nth(el, selector.nth):
                     continue
@@ -634,9 +656,6 @@ class CSSMatch(object):
                     continue
                 # Verify attribute(s) match
                 if not self.match_attributes(el, selector.attributes):
-                    continue
-                # Verify element is root
-                if selector.flags & ct.SEL_ROOT and not self.match_root(el):
                     continue
                 # Verify language patterns
                 if selector.lang and not self.match_lang(el, selector.lang):
@@ -671,17 +690,6 @@ class CSSMatch(object):
     def match(self, el):
         """Match."""
 
-        doc = el
-        while doc.parent:
-            doc = doc.parent
-        root = None
-        for child in doc.children:
-            if util.is_tag(child):
-                root = child
-                break
-        self.html_namespace = self.is_html_ns(root)
-        self.is_xml = doc.is_xml and not self.html_namespace
-
         return el.parent and self.match_selectors(el, self.selectors)
 
 
@@ -703,7 +711,7 @@ class SoupSieve(ct.Immutable):
     def _walk(self, tag, capture=True, comments=False):
         """Recursively return selected tags."""
 
-        match = CSSMatch(self.selectors, self.namespaces, self.flags).match
+        match = CSSMatch(self.selectors, tag, self.namespaces, self.flags).match
 
         # Walk children
         for child in tag.descendants:
@@ -737,34 +745,34 @@ class SoupSieve(ct.Immutable):
         """Match."""
 
         self._is_valid_input(tag)
-        return CSSMatch(self.selectors, self.namespaces, self.flags).match(tag)
+        return CSSMatch(self.selectors, tag, self.namespaces, self.flags).match(tag)
 
     def filter(self, iterable):  # noqa A001
         """Filter."""
 
         return [node for node in iterable if not util.is_navigable_string(node) and self.match(node)]
 
-    def comments(self, parent, limit=0):
+    def comments(self, tag, limit=0):
         """Get comments only."""
 
-        return list(self.icomments(parent, limit))
+        return list(self.icomments(tag, limit))
 
-    def icomments(self, parent, limit=0):
+    def icomments(self, tag, limit=0):
         """Iterate comments only."""
 
-        for tag in self._sieve(parent, capture=False, comments=True, limit=limit):
-            yield tag
+        for comment in self._sieve(tag, capture=False, comments=True, limit=limit):
+            yield comment
 
-    def select(self, parent, limit=0):
+    def select(self, tag, limit=0):
         """Select the specified tags."""
 
-        return list(self.iselect(parent, limit))
+        return list(self.iselect(tag, limit))
 
-    def iselect(self, parent, limit=0):
+    def iselect(self, tag, limit=0):
         """Iterate the specified tags."""
 
-        for tag in self._sieve(parent, limit=limit):
-            yield tag
+        for el in self._sieve(tag, limit=limit):
+            yield el
 
     def __repr__(self):  # pragma: no cover
         """Representation."""

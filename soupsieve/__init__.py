@@ -76,27 +76,27 @@ def filter(select, iterable, namespaces=None, flags=0):  # noqa: A001
     return compile(select, namespaces, flags).filter(iterable)
 
 
-def comments(parent, limit=0, flags=0):
+def comments(tag, limit=0, flags=0):
     """Get comments only."""
 
-    return compile("", None, flags).comments(parent, limit)
+    return compile("", None, flags).comments(tag, limit)
 
 
-def icomments(parent, limit=0, flags=0):
+def icomments(tag, limit=0, flags=0):
     """Iterate comments only."""
 
-    for tag in compile("", None, flags).icomments(parent, limit):
-        yield tag
+    for comment in compile("", None, flags).icomments(tag, limit):
+        yield comment
 
 
-def select(select, parent, namespaces=None, limit=0, flags=0):
+def select(select, tag, namespaces=None, limit=0, flags=0):
     """Select the specified tags."""
 
-    return compile(select, namespaces, flags).select(parent, limit)
+    return compile(select, namespaces, flags).select(tag, limit)
 
 
-def iselect(select, parent, namespaces=None, limit=0, flags=0):
+def iselect(select, tag, namespaces=None, limit=0, flags=0):
     """Iterate the specified tags."""
 
-    for tag in compile(select, namespaces, flags).iselect(parent, limit):
-        yield tag
+    for el in compile(select, namespaces, flags).iselect(tag, limit):
+        yield el

@@ -31,5 +31,6 @@ class TestCase(unittest.TestCase):
 
         ids = []
         for el in sv.select(selectors, soup, namespaces=namespaces, flags=sv.DEBUG):
+            print('TAG: ', el.name)
             ids.append(el.attrs['id'])
         self.assertEqual(sorted(ids), sorted(expected_ids))

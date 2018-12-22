@@ -55,6 +55,7 @@ Selector                        | Example                             | Descript
 `:only-child`                   | `#!css p:only-child`                | Selects every `#!html <p>` element that is the only child of its parent.
 `:only-of-type`                 | `#!css p:only-of-type`              | Selects every `#!html <p>` element that is the only `#!html <p>` element of its parent.
 `:root`                         | `#!css :root`                       | Selects the root element. In HTML, this is usually the `#!html <html>` element.
+`:scope`                        | `#!css :scope div`                  | Selects all `#!html <div>` elements under the current scope element. `:scope` is the element under match or select. In the case where a document (`BeautifulSoup` object, not a `Tag` object) is under select or match, `:scope` equals `:root`.
 
 !!! warning "Experimental Selectors"
     `:has()` and `of S` support (in `:nth-child(an+b [of S]?)`) is experimental and may change. There are currently no reference implementations available in any browsers, not to mention the CSS4 specifications have not been finalized, so current implementation is based on our best interpretation. Any issues should be reported.
