@@ -3,6 +3,7 @@
 ## 1.3.0
 
 - **NEW**: Add support for `:scope`.
+- **NEW**: `:user-invalid`, `:playing`, `:paused`, and `:local-link` will not cause a failure, but all will match nothing as their use cases are not possible in an environment outside a web browser.
 - **FIX**: Fix `[attr~=value]` handling of whitespace. According to the spec, if the value contains whitespace, or is an empty string, it should not match anything.
 - **FIX**: Precompile internal patterns for pseudo-classes to prevent having to parse them again.
 
