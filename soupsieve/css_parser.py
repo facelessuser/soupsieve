@@ -8,62 +8,63 @@ from collections import OrderedDict
 
 # Simple pseudo classes that take no parameters
 PSEUDO_SIMPLE = {
-    ":root",
-    ":empty",
-    ":link",
     ":any-link",
+    ":empty",
     ":first-child",
     ":first-of-type",
     ":last-child",
     ":last-of-type",
+    ":link",
     ":only-child",
     ":only-of-type",
+    ":root",
     ':checked',
+    ':default',
     ':disabled',
     ':enabled',
-    ':required',
-    ':optional',
-    ':default',
     ':indeterminate',
-    ':placeholder-shown'
+    ':optional',
+    ':placeholder-shown',
+    ':required',
+    ':scope'
 }
 
 # Supported, simple pseudo classes that match nothing in the Soup Sieve environment
 PSEUDO_SIMPLE_NO_MATCH = {
-    ":visited",
-    ':hover',
     ':active',
-    ':focus',
-    ':target',
     ':current',
-    ':past',
-    ':future',
-    ':focus-within',
+    ':focus',
     ':focus-visible',
-    ':target-within'
+    ':focus-within',
+    ':future',
+    ':hover',
+    ':past',
+    ':target',
+    ':target-within',
+    ':visited'
 }
 
 # Complex pseudo classes that take selector lists
 PSEUDO_COMPLEX = {
-    ":has",
-    ":contains",
-    ":is",
-    ":matches",
-    ":not",
-    ":where"
+    ':contains',
+    ':has',
+    ':is',
+    ':matches',
+    ':not',
+    ':where'
 }
 
 PSEUDO_COMPLEX_NO_MATCH = {
-    ":current"
+    ':current'
 }
 
 # Complex pseudo classes that take very specific parameters and are handled special
 PSEUDO_SPECIAL = {
-    ":nth-child",
-    ":nth-last-child",
-    ":nth-of-type",
-    ":nth-last-of-type",
-    ":lang"
+    ':lang',
+    ':nth-child',
+    ':nth-last-child',
+    ':nth-last-of-type',
+    ':nth-of-type'
 }
 
 PSEUDO_SUPPORTED = PSEUDO_SIMPLE | PSEUDO_SIMPLE_NO_MATCH | PSEUDO_COMPLEX | PSEUDO_COMPLEX_NO_MATCH | PSEUDO_SPECIAL
@@ -384,6 +385,8 @@ class CSSParser(object):
         elif not complex_pseudo and pseudo in PSEUDO_SIMPLE:
             if pseudo == ':root':
                 sel.flags |= ct.SEL_ROOT
+            elif pseudo == ':scope':
+                sel.flags |= ct.SEL_SCOPE
             elif pseudo == ':empty':
                 sel.flags |= ct.SEL_EMPTY
             elif pseudo in (':link', ':any-link'):

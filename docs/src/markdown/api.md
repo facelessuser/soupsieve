@@ -23,7 +23,7 @@ Early in development, flags were used to specify document type, but as of 1.0.0,
 ## `soupsieve.select()`
 
 ```py3
-def select(select, parent, namespaces=None, limit=0, flags=0):
+def select(select, tag, namespaces=None, limit=0, flags=0):
     """Select the specified tags."""
 ```
 
@@ -84,7 +84,7 @@ def filter(select, nodes, namespaces=None, flags=0):
 ## `soupsieve.comments()`
 
 ```
-def comments(parent, limit=0, flags=0):
+def comments(tag, limit=0, flags=0):
     """Get comments only."""
 ```
 
@@ -120,16 +120,16 @@ class SoupSieve:
     def filter(self, iterable):
         """Filter."""
 
-    def comments(self, parent, limit=0):
+    def comments(self, tag, limit=0):
         """Get comments only."""
 
-    def icomments(self, parent, limit=0):
+    def icomments(self, tag, limit=0):
         """Iterate comments only."""
 
-    def select(self, parent, limit=0):
+    def select(self, tag, limit=0):
         """Select the specified tags."""
 
-    def iselect(self, parent, limit=0):
+    def iselect(self, tag, limit=0):
         """Iterate the specified tags."""
 ```
 

@@ -1,7 +1,8 @@
 # Changelog
 
-## 1.2.2
+## 1.3.0
 
+- **NEW**: Add support for `:scope`.
 - **FIX**: Fix `[attr~=value]` handling of whitespace. According to the spec, if the value contains whitespace, or is an empty string, it should not match anything.
 - **FIX**: Precompile internal patterns for pseudo-classes to prevent having to parse them again.
 
