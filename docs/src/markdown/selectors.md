@@ -58,7 +58,10 @@ Selector                        | Example                             | Descript
 `:scope`                        | `#!css :scope div`                  | Selects all `#!html <div>` elements under the current scope element. `:scope` is the element under match or select. In the case where a document (`BeautifulSoup` object, not a `Tag` object) is under select or match, `:scope` equals `:root`.
 
 !!! warning "Experimental Selectors"
-    `:has()` and `of S` support (in `:nth-child(an+b [of S]?)`) is experimental and may change. There are currently no reference implementations available in any browsers, not to mention the CSS4 specifications have not been finalized, so current implementation is based on our best interpretation. Any issues should be reported.
+
+    In general, CSS4 specific features and selectors may change in the future as the CSS4 specification is not finalized. While some are most likely quite stable, some may be less certain.
+
+    Some implementations are based from our interpretation of the specification. It is possible our interpretation is incorrect. This is more likely with selectors that currently have no reference implementations in browsers such as `:has()` and `of S` support in `:nth-child(an+b [of S]?)`. If any issues are discovered please report the issue with details and examples so we can get them right.
 
 !!! danger "Pseudo-elements"
     Pseudo elements are not supported as they do not represent real elements.
@@ -88,6 +91,8 @@ Selector                        | Example                             | Descript
 `:paused`                       | `#!css :paused`                     | Pausing is not applicable in the Soup Sieve environment, so this will match nothing.
 `:placeholder-shown`            | `#!css input:placeholder-shown`     | Selects every `#!html <input>` element that is showing a placeholder via the `placeholder` attribute.
 `:playing`                      | `#!css :playing`                    | Playing is not applicable in the Soup Sieve environment, so this will match nothing.
+`:read-only`                    | `#!css input:read-only`             | Selects every `#!html <input>` element that is not editable by the user.
+`:read-write`                   | `#!css input:read-write`            | Selects every `#!html <input>` elment that is editable by the user. 
 `:required`                     | `#!css input:required`              | Select every `#!html <input>` element with a `required` attribute.
 `:target`                       | `#!css #news:target`                | Elements cannot be targeted, so this will never match.
 `:user-invalid`                 | `#!css input:user-invalid`          | User interaction is not applicable, so this will never match.

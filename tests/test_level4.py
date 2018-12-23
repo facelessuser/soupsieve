@@ -24,6 +24,8 @@ Test selectors level 4.
 :paused
 :scope
 :local-link
+:read-only
+:read-write
 ```
 
 Not supported:
@@ -41,8 +43,6 @@ Not supported:
   CSS `direction` value, which is a good thing. It is doable, but not sure worth the effort. In addition, it seems there
   is reference to being able to do something like `[dir=auto]` which would select either `ltr` or `rtl`. This seems to
   add additional logic in to attribute selections which would complicate things, but still technically doable.
-
-- `:read-only` / `:read-write`: We need to understand exactly what these match before implementing..
 
 - `:valid` / `:invalid`: We currently to not validate values, so this doesn't make sense at this time.
 
