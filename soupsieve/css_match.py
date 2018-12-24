@@ -134,6 +134,7 @@ class CSSMatch(object):
         match = True
         namespace = self.get_namespace(el)
         default_namespace = self.namespaces.get('')
+        tag_ns = '' if tag.prefix is None else self.namespaces.get(tag.prefix, None)
         # We must match the default namespace if one is not provided
         if tag.prefix is None and (default_namespace is not None and namespace != default_namespace):
             match = False
@@ -143,7 +144,7 @@ class CSSMatch(object):
         # Verify prefix matches
         elif (
             tag.prefix and
-            tag.prefix != '*' and namespace != self.namespaces.get(tag.prefix, '')
+            tag.prefix != '*' and (tag_ns is None or namespace != tag_ns)
         ):
             match = False
         return match
