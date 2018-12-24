@@ -1,6 +1,6 @@
 # Changelog
 
-## Next
+## 1.3.1
 
 - **FIX**: Fix issue with undefined namespaces.
 
