@@ -408,6 +408,32 @@ class TestLevel3(util.TestCase):
             flags=util.XML
         )
 
+    def test_undefined_namespace(self):
+        """Test undefined namespace."""
+
+        # Namespaces are defined wrong
+        markup = """
+        <tag id="1" xmlns:ns1=http://namespace1/ xmlns:ns2=http://namespace2/>
+            <ns1:el id="2">...</ns1:el>
+            <ns2:el id="3">...</ns2:el>
+        </tag>
+        """
+
+        # We are not feeding in the namespaces so they shouldn't be found.
+        self.assert_selector(
+            markup,
+            "ns1|el",
+            [],
+            flags=util.XML
+        )
+
+        self.assert_selector(
+            markup,
+            "ns2|el",
+            [],
+            flags=util.XML
+        )
+
     def test_attribute_namespace(self):
         """Test attribute namespace."""
 

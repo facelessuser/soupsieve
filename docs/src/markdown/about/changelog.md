@@ -1,5 +1,9 @@
 # Changelog
 
+## Next
+
+- **FIX**: Fix issue with undefined namespaces.
+
 ## 1.3.0
 
 - **NEW**: Add support for `:scope`.
