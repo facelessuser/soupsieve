@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0
+
+- **NEW**: Throw `NotImplementedError` for at-rules: `@page`, etc.
+- **NEW**: Match nothing for `:left`, `:right`, `:host`, `:host()`, and `:host-context()`.
+- **NEW**: Add support for `:read-write` and `:read-only`.
+
 ## 1.3.1
 
 - **FIX**: Fix issue with undefined namespaces.

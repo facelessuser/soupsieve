@@ -6,6 +6,7 @@ CDATA
 CSS
 CSS's
 Changelog
+DOM
 Hashable
 JQuery
 MERCHANTABILITY
