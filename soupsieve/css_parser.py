@@ -25,6 +25,8 @@ PSEUDO_SIMPLE = {
     ':indeterminate',
     ':optional',
     ':placeholder-shown',
+    ':read-only',
+    ':read-write',
     ':required',
     ':scope'
 }
@@ -409,6 +411,10 @@ class CSSParser(object):
                 sel.selectors.append(CSS_REQUIRED)
             elif pseudo == ":optional":
                 sel.selectors.append(CSS_OPTIONAL)
+            elif pseudo == ":read-only":
+                sel.selectors.append(CSS_READ_ONLY)
+            elif pseudo == ":read-write":
+                sel.selectors.append(CSS_READ_WRITE)
             elif pseudo == ":placeholder-shown":
                 sel.selectors.append(CSS_PLACEHOLDER_SHOWN)
             elif pseudo == ':first-child':
@@ -768,6 +774,8 @@ class CSSParser(object):
 
 
 # Precompile CSS selector lists for pseudo-classes (additional logic may be required beyond the pattern)
+# A few patterns are order dependent as they use patterns previous compiled.
+
 # CSS pattern for `:link` and `:any-link`
 CSS_LINK = CSSParser(
     ':is(a, area, link)[href]'
@@ -829,21 +837,52 @@ CSS_PLACEHOLDER_SHOWN = CSSParser(
     '''
     :is(
         input:is(
+            :not([type]),
+            [type=""],
             [type=text],
             [type=search],
             [type=url],
             [type=tel],
             [type=email],
             [type=password],
-            [type=number],
-            :not([type]),
-            [type=""]
+            [type=number]
         ),
         textarea
     )[placeholder][placeholder!='']
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
-# CSS pattern default for `:nth-of-child` "of S" feature
+# CSS pattern default for `:nth-child` "of S" feature
 CSS_NTH_OF_S_DEFAULT = CSSParser(
     '*|*'
 ).process_selectors(flags=FLG_PSEUDO)
+# CSS pattern for `:read-write` (CSS_DISABLED must be compiled first)
+CSS_READ_WRITE = CSSParser(
+    '''
+    :is(
+        textarea,
+        input:is(
+            :not([type]),
+            [type=""],
+            [type=text],
+            [type=search],
+            [type=url],
+            [type=tel],
+            [type=email],
+            [type=number],
+            [type=password],
+            [type=date],
+            [type=datetime-local],
+            [type=month],
+            [type=time],
+            [type=week]
+        )
+    ):not([readonly], :disabled),
+    :is([contenteditable=""], [contenteditable="true" i])
+    '''
+).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
+# CSS pattern for `:read-only`
+CSS_READ_ONLY = CSSParser(
+    '''
+    :not(:read-write)
+    '''
+).process_selectors(flags=FLG_PSEUDO | FLG_HTML)

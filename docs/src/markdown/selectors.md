@@ -58,7 +58,10 @@ Selector                        | Example                             | Descript
 `:scope`                        | `#!css :scope div`                  | Selects all `#!html <div>` elements under the current scope element. `:scope` is the element under match or select. In the case where a document (`BeautifulSoup` object, not a `Tag` object) is under select or match, `:scope` equals `:root`.
 
 !!! warning "Experimental Selectors"
-    `:has()` and `of S` support (in `:nth-child(an+b [of S]?)`) is experimental and may change. There are currently no reference implementations available in any browsers, not to mention the CSS4 specifications have not been finalized, so current implementation is based on our best interpretation. Any issues should be reported.
+
+    In general, CSS4 specific features and selectors are not finalized in the official CSS4 specification, and may change in the future. While some are most likely quite stable, some may be less certain.
+
+    Some implementations are based from our interpretation of the specification. It is possible our interpretation is incorrect. This is more likely with selectors that currently have no reference implementations in browsers such as `:has()` and `of S` support in `:nth-child(an+b [of S]?)`. If any issues are discovered please report the issue with details and examples so we can get them right.
 
 !!! danger "Pseudo-elements"
     Pseudo elements are not supported as they do not represent real elements.
@@ -88,6 +91,8 @@ Selector                        | Example                             | Descript
 `:paused`                       | `#!css :paused`                     | Pausing is not applicable in the Soup Sieve environment, so this will match nothing.
 `:placeholder-shown`            | `#!css input:placeholder-shown`     | Selects every `#!html <input>` element that is showing a placeholder via the `placeholder` attribute.
 `:playing`                      | `#!css :playing`                    | Playing is not applicable in the Soup Sieve environment, so this will match nothing.
+`:read-only`                    | `#!css input:read-only`             | Selects every `#!html <input>` element that is not editable by the user.
+`:read-write`                   | `#!css input:read-write`            | Selects every `#!html <input>` element that is editable by the user. 
 `:required`                     | `#!css input:required`              | Select every `#!html <input>` element with a `required` attribute.
 `:target`                       | `#!css #news:target`                | Elements cannot be targeted, so this will never match.
 `:user-invalid`                 | `#!css input:user-invalid`          | User interaction is not applicable, so this will never match.
@@ -103,6 +108,11 @@ Selector                        | Example                             | Descript
 ------------------------------- | ----------------------------------- | -----------
 `[attribute!=value]`            | `#!css [target!=_blank]`            | Equivalent to `#!css :not([target=_blank])`.
 `:contains(text)`               | `#!css p:contains(text)`            | Select all `#!html <p>` elements that contain "text" in their content, either directly in themselves or indirectly in their decedents.
+
+!!! warning "Contains"
+    Contains is an expensive operation as it scans every element's content, which includes all of the content of each child of the element under consideration.
+
+    If you use a pattern such as `#!css *:contains(text)` it will scan all the children of every element. This will cause some elements to get scanned over and over again as the tree is walked. The more specific you are the better. If you use `#!css p.special:contains(text)`, only `#!html <p>` elements with the class `special` will have their content scanned (along with their children). `contains` is evaluated as one of the last checks, so if any other comparison invalidates the match, `contains` will not be performed.
 
 --8<--
 refs.txt
