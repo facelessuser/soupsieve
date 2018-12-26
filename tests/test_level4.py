@@ -26,6 +26,9 @@ Test selectors level 4.
 :local-link
 :read-only
 :read-write
+:host
+:host(sel1, sel2, ...)
+:host-context(sel1, sel2, ...)
 ```
 
 Not supported:
@@ -1317,5 +1320,36 @@ class TestLevel4(util.TestCase):
                 '3', '13', '14', '15', '18', '19', '20', '22',
                 '23', '24', '25', '31', '32', '33'
             ],
+            flags=util.HTML5
+        )
+
+    def test_host(self):
+        """Test host (not supported)."""
+
+        markup = """<h1>header</h1><div><p>some text</p></div>"""
+
+        self.assert_selector(
+            markup,
+            ":host",
+            [],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            ":host(h1)",
+            [],
+            flags=util.HTML5
+        )
+
+    def test_host_context(self):
+        """Test host context (not supported)."""
+
+        markup = """<h1>header</h1><div><p>some text</p></div>"""
+
+        self.assert_selector(
+            markup,
+            ":host-context(h1, h2)",
+            [],
             flags=util.HTML5
         )

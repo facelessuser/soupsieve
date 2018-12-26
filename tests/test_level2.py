@@ -13,11 +13,17 @@ E + F
 :hover
 :focus
 :lang(en)
+:left
+:right
+::pseudo-element (not implemented)
+@at-rule (not implemented)
 ```
 
 We will currently fail on pseudo-elements `::pseudo-element` as they are not real elements.
 At the time of CSS2, they were known as `:pseudo-element`. Soup Sieve will raise an error about
 an unknown pseudo-class when single `:` is used.
+
+We currently fail on at-rules `@at-rule` as they are not applicable in the Soup Sieve environment.
 """
 from __future__ import unicode_literals
 from . import util
@@ -487,3 +493,33 @@ class TestLevel2(util.TestCase):
 
         with self.assertRaises(NotImplementedError):
             sv.compile('::first-line')
+
+    def test_left(self):
+        """Test left (not supported)."""
+
+        markup = """<h1>header</h1><div><p>some text</p></div>"""
+
+        self.assert_selector(
+            markup,
+            ":left",
+            [],
+            flags=util.HTML5
+        )
+
+    def test_right(self):
+        """Test right (not supported)."""
+
+        markup = """<h1>header</h1><div><p>some text</p></div>"""
+
+        self.assert_selector(
+            markup,
+            ":right",
+            [],
+            flags=util.HTML5
+        )
+
+    def test_at_rule(self):
+        """Test at-rule (not supported)."""
+
+        with self.assertRaises(NotImplementedError):
+            sv.compile('@page :left')

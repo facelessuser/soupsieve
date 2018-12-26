@@ -39,11 +39,14 @@ PSEUDO_SIMPLE_NO_MATCH = {
     ':focus-visible',
     ':focus-within',
     ':future',
+    ':host',
     ':hover',
+    ':left',
     ':local-link',
     ':past',
     ':paused',
     ':playing',
+    ':right',
     ':target',
     ':target-within',
     ':user-invalid',
@@ -61,7 +64,9 @@ PSEUDO_COMPLEX = {
 }
 
 PSEUDO_COMPLEX_NO_MATCH = {
-    ':current'
+    ':current',
+    ':host',
+    ':host-context'
 }
 
 # Complex pseudo classes that take very specific parameters and are handled special
@@ -104,6 +109,8 @@ PAT_PSEUDO_CLASS = r':{ident}+(?:\({ws}*)?'.format(ws=WS, ident=IDENTIFIER)
 PAT_PSEUDO_CLOSE = r'{ws}*\)'.format(ws=WS)
 # Pseudo element (`::pseudo-element`)
 PAT_PSEUDO_ELEMENT = r':{}'.format(PAT_PSEUDO_CLASS)
+# At rule (`@page`, etc.) (not supported)
+PAT_AT_RULE = r'@P{ident}'.format(ident=IDENTIFIER)
 # Pseudo class `nth-child` (`:nth-child(an+b [of S]?)`, `:first-child`, etc.)
 PAT_PSEUDO_NTH_CHILD = r'''
 (?P<pseudo_nth_child>:nth-(?:last-)?child
@@ -274,6 +281,7 @@ class CSSParser(object):
             ("pseudo_lang", SelectorPattern(PAT_PSEUDO_LANG)),
             ("pseudo_class", SelectorPattern(PAT_PSEUDO_CLASS)),
             ("pseudo_element", SelectorPattern(PAT_PSEUDO_ELEMENT)),
+            ("at_rule", SelectorPattern(PAT_AT_RULE)),
             ("id", SelectorPattern(PAT_ID)),
             ("class", SelectorPattern(PAT_CLASS)),
             ("tag", SelectorPattern(PAT_TAG)),
@@ -660,7 +668,9 @@ class CSSParser(object):
                 key, m = next(iselector)
 
                 # Handle parts
-                if key == 'pseudo_class':
+                if key == "at_rule":
+                    raise NotImplementedError("At-rules found at position {}".format(m.start(0)))
+                elif key == 'pseudo_class':
                     has_selector = self.parse_pseudo_class(sel, m, has_selector, iselector)
                 elif key == 'pseudo_element':
                     raise NotImplementedError("Psuedo-element found at position {}".format(m.start(0)))
