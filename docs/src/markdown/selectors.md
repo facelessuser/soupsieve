@@ -90,7 +90,6 @@ Selector                        | Example                             | Descript
 `:host(sel, sel)`               | `#!css :host(h1)`                   | Matches nothing as there is no Shadow DOM.
 `:host-context(sel, sel)`       | `#!css :host-context(h1)`           | Matches nothing as there is no Shadow DOM.
 `:hover`                        | `#!css a:focus`                     | Focus states are not applicable, so this will never match.
-`:left`                         | `#!css @page :left`                 | Matches nothing as there is no print state.
 `:link`                         | `#!css a:link`                      | All links are treated as unvisited, so this will match every `#!html <a>` element with an `href` attribute.
 `:optional`                     | `#!css input:optional`              | Select every `#!html <input>` element without a `required` attribute.
 `:past`                         | `#!css p:past`                      | As the document is not rendered, this will never match.
@@ -100,7 +99,6 @@ Selector                        | Example                             | Descript
 `:read-only`                    | `#!css input:read-only`             | Selects every `#!html <input>` element that is not editable by the user.
 `:read-write`                   | `#!css input:read-write`            | Selects every `#!html <input>` element that is editable by the user. 
 `:required`                     | `#!css input:required`              | Select every `#!html <input>` element with a `required` attribute.
-`:right`                        | `#!css @page :right`                | Matches nothing as there is no print state.
 `:target`                       | `#!css #news:target`                | Elements cannot be targeted, so this will never match.
 `:user-invalid`                 | `#!css input:user-invalid`          | User interaction is not applicable, so this will never match.
 `:visited`                      | `#!css a:visited`                   | All links are treated unvisited, so this will never match.

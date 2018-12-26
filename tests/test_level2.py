@@ -13,8 +13,6 @@ E + F
 :hover
 :focus
 :lang(en)
-:left
-:right
 ::pseudo-element (not implemented)
 @at-rule (not implemented)
 ```
@@ -493,30 +491,6 @@ class TestLevel2(util.TestCase):
 
         with self.assertRaises(NotImplementedError):
             sv.compile('::first-line')
-
-    def test_left(self):
-        """Test left (not supported)."""
-
-        markup = """<h1>header</h1><div><p>some text</p></div>"""
-
-        self.assert_selector(
-            markup,
-            ":left",
-            [],
-            flags=util.HTML5
-        )
-
-    def test_right(self):
-        """Test right (not supported)."""
-
-        markup = """<h1>header</h1><div><p>some text</p></div>"""
-
-        self.assert_selector(
-            markup,
-            ":right",
-            [],
-            flags=util.HTML5
-        )
 
     def test_at_rule(self):
         """Test at-rule (not supported)."""
