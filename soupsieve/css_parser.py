@@ -41,12 +41,10 @@ PSEUDO_SIMPLE_NO_MATCH = {
     ':future',
     ':host',
     ':hover',
-    ':left',
     ':local-link',
     ':past',
     ':paused',
     ':playing',
-    ':right',
     ':target',
     ':target-within',
     ':user-invalid',
@@ -83,16 +81,22 @@ PSEUDO_SUPPORTED = PSEUDO_SIMPLE | PSEUDO_SIMPLE_NO_MATCH | PSEUDO_COMPLEX | PSE
 # Sub-patterns parts
 # Whitespace
 WS = r'[ \t\r\n\f]'
+# Comments
+COMMENTS = r'(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)'
+# Whitespace with comments included
+WSC = r'(?:{ws}|{comments})'.format(ws=WS, comments=COMMENTS)
 # CSS escapes
-CSS_ESCAPES = r'(?:\\[a-f0-9]{{1,6}}{ws}?|\\.)'.format(ws=WS)
+CSS_ESCAPES = r'(?:\\[a-f0-9]{{1,6}}{ws}?|\\[^\r\n\f])'.format(ws=WS)
 # CSS Identifier
 IDENTIFIER = r'(?:(?!-?\d|--)(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+)'.format(esc=CSS_ESCAPES)
 # `nth` content
-NTH = r'(?:[-+])?(?:\d+n?|n)(?:(?<=n){ws}*(?:[-+]){ws}*(?:\d+))?'.format(ws=WS)
+NTH = r'(?:[-+])?(?:\d+n?|n)(?:(?<=n){ws}*(?:[-+]){ws}*(?:\d+))?'.format(ws=WSC)
 # Value: quoted string or identifier
 VALUE = r'''(?:"(?:\\.|[^\\"]*)*?"|'(?:\\.|[^\\']*)*?'|{ident}+)'''.format(ident=IDENTIFIER)
 # Attribute value comparison. `!=` is handled special as it is non-standard.
-ATTR = r'(?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*(?P<value>{value})(?P<case>{ws}+[is])?)?{ws}*\]'.format(ws=WS, value=VALUE)
+ATTR = r'''
+(?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*(?P<value>{value})(?:{ws}+(?P<case>[is]))?)?{ws}*\]
+'''.format(ws=WSC, value=VALUE)
 
 # Selector patterns
 # IDs (`#id`)
@@ -102,11 +106,11 @@ PAT_CLASS = r'\.{ident}'.format(ident=IDENTIFIER)
 # Prefix:Tag (`prefix|tag`)
 PAT_TAG = r'(?:(?:{ident}|\*)?\|)?(?:{ident}|\*)'.format(ident=IDENTIFIER)
 # Attributes (`[attr]`, `[attr=value]`, etc.)
-PAT_ATTR = r'\[{ws}*(?P<ns_attr>(?:(?:{ident}|\*)?\|)?{ident}){attr}'.format(ws=WS, ident=IDENTIFIER, attr=ATTR)
+PAT_ATTR = r'\[{ws}*(?P<ns_attr>(?:(?:{ident}|\*)?\|)?{ident}){attr}'.format(ws=WSC, ident=IDENTIFIER, attr=ATTR)
 # Pseudo class (`:pseudo-class`, `:pseudo-class(`)
-PAT_PSEUDO_CLASS = r':{ident}+(?:\({ws}*)?'.format(ws=WS, ident=IDENTIFIER)
+PAT_PSEUDO_CLASS = r'(?P<name>:{ident}+)(?P<open>\({ws}*)?'.format(ws=WSC, ident=IDENTIFIER)
 # Closing pseudo group (`)`)
-PAT_PSEUDO_CLOSE = r'{ws}*\)'.format(ws=WS)
+PAT_PSEUDO_CLOSE = r'{ws}*\)'.format(ws=WSC)
 # Pseudo element (`::pseudo-element`)
 PAT_PSEUDO_ELEMENT = r':{}'.format(PAT_PSEUDO_CLASS)
 # At rule (`@page`, etc.) (not supported)
@@ -114,29 +118,31 @@ PAT_AT_RULE = r'@P{ident}'.format(ident=IDENTIFIER)
 # Pseudo class `nth-child` (`:nth-child(an+b [of S]?)`, `:first-child`, etc.)
 PAT_PSEUDO_NTH_CHILD = r'''
 (?P<pseudo_nth_child>:nth-(?:last-)?child
-\({ws}*(?P<nth_child>{nth}|even|odd){ws}*(?:\)|(?<={ws})of{ws}+))
-'''.format(ws=WS, nth=NTH)
+\({ws}*(?P<nth_child>{nth}|even|odd))(?:{wsc}*\)|(?P<of>{comments}*{ws}{wsc}*of{comments}*{ws}{wsc}*))
+'''.format(wsc=WSC, comments=COMMENTS, ws=WS, nth=NTH)
 # Pseudo class `nth-of-type` (`:nth-of-type(an+b)`, `:first-of-type`, etc.)
 PAT_PSEUDO_NTH_TYPE = r'''
 (?P<pseudo_nth_type>:nth-(?:last-)?of-type
-\({ws}*(?P<nth_type>{nth}|even|odd){ws}*\))
-'''.format(ws=WS, nth=NTH)
+\({ws}*(?P<nth_type>{nth}|even|odd)){ws}*\)
+'''.format(ws=WSC, nth=NTH)
 # Pseudo class language (`:lang("*-de", en)`)
-PAT_PSEUDO_LANG = r':lang\({ws}*(?P<lang>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'.format(ws=WS, value=VALUE)
+PAT_PSEUDO_LANG = r':lang\({ws}*(?P<lang>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'.format(ws=WSC, value=VALUE)
 # Combining characters (`>`, `~`, ` `, `+`, `,`)
-PAT_SPLIT = r'{ws}*?(?P<relation>[,+>~]|{ws}(?![,+>~])){ws}*'.format(ws=WS)
+PAT_COMBINE = r'{ws}*?(?P<relation>[,+>~]|[ \t\r\n\f](?![,+>~])){ws}*'.format(ws=WSC)
 # Extra: Contains (`:contains(text)`)
-PAT_PSEUDO_CONTAINS = r':contains\({ws}*(?P<value>{value}){ws}*\)'.format(ws=WS, value=VALUE)
+PAT_PSEUDO_CONTAINS = r':contains\({ws}*(?P<value>{value}){ws}*\)'.format(ws=WSC, value=VALUE)
 
 # Regular expressions
 # CSS escape pattern
-RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{{1,6}}{ws}?)|(\\.))'.format(ws=WS), re.I)
+RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{{1,6}}{ws}?)|(\\[^\r\n\f]))'.format(ws=WSC), re.I)
 # Pattern to break up `nth` specifiers
-RE_NTH = re.compile(r'(?P<s1>[-+])?(?P<a>\d+n?|n)(?:(?<=n){ws}*(?P<s2>[-+]){ws}*(?P<b>\d+))?'.format(ws=WS), re.I)
+RE_NTH = re.compile(r'(?P<s1>[-+])?(?P<a>\d+n?|n)(?:(?<=n){ws}*(?P<s2>[-+]){ws}*(?P<b>\d+))?'.format(ws=WSC), re.I)
 # Pattern to iterate multiple languages.
-RE_LANG = re.compile(r'(?:(?P<value>{value})|(?P<split>{ws}*,{ws}*))'.format(ws=WS, value=VALUE), re.X)
-# Whitespace check
+RE_LANG = re.compile(r'(?:(?P<value>{value})|(?P<split>{ws}*,{ws}*))'.format(ws=WSC, value=VALUE), re.X)
+# Whitespace checks
 RE_WS = re.compile(WS)
+RE_WS_BEGIN = re.compile('^{}*'.format(WSC))
+RE_WS_END = re.compile('{}*$'.format(WSC))
 
 # Constants
 # List split token
@@ -286,7 +292,7 @@ class CSSParser(object):
             ("class", SelectorPattern(PAT_CLASS)),
             ("tag", SelectorPattern(PAT_TAG)),
             ("attribute", SelectorPattern(PAT_ATTR)),
-            ("combine", SelectorPattern(PAT_SPLIT))
+            ("combine", SelectorPattern(PAT_COMBINE))
         ]
     )
 
@@ -318,8 +324,8 @@ class CSSParser(object):
             )
             has_selector = True
         else:
-            case = util.lower(m.group('case').strip()) if m.group('case') else None
-            parts = [css_unescape(a.strip()) for a in m.group('ns_attr').split('|')]
+            case = util.lower(m.group('case')) if m.group('case') else None
+            parts = [css_unescape(a) for a in m.group('ns_attr').split('|')]
             ns = ''
             is_type = False
             pattern2 = None
@@ -390,10 +396,9 @@ class CSSParser(object):
         """Parse pseudo class."""
 
         complex_pseudo = False
-        pseudo = util.lower(m.group(0)).strip()
-        if pseudo.endswith('('):
+        pseudo = util.lower(m.group('name'))
+        if m.group('open'):
             complex_pseudo = True
-            pseudo = pseudo[:-1]
         if complex_pseudo and pseudo in PSEUDO_COMPLEX:
             has_selector = self.parse_pseudo_open(sel, pseudo, has_selector, iselector, m.end(0))
         elif not complex_pseudo and pseudo in PSEUDO_SIMPLE:
@@ -499,7 +504,7 @@ class CSSParser(object):
 
         pseudo_sel = util.lower(m.group('pseudo_nth' + postfix))
         if postfix == '_child':
-            if pseudo_sel.strip().endswith('of'):
+            if m.group('of'):
                 # Parse the rest of `of S`.
                 nth_sel = self.parse_selectors(iselector, m.end(0), FLG_PSEUDO | FLG_OPEN)
             else:
@@ -590,7 +595,7 @@ class CSSParser(object):
     def parse_pseudo_contains(self, sel, m, has_selector):
         """Parse contains."""
 
-        content = m.group('value').strip()
+        content = m.group('value')
         if content.startswith(("'", '"')):
             content = content[1:-1]
         content = css_unescape(content)
@@ -747,9 +752,12 @@ class CSSParser(object):
     def selector_iter(self, pattern):
         """Iterate selector tokens."""
 
-        pattern = pattern.strip()
-        index = 0
-        end = len(pattern) - 1
+        # Ignore whitespace and comments at start and end of pattern
+        m = RE_WS_BEGIN.search(pattern)
+        index = m.end(0) if m else 0
+        m = RE_WS_END.search(pattern)
+        end = (m.start(0) - 1) if m else (len(pattern) - 1)
+
         if self.debug:  # pragma: no cover
             print('## PARSING: {!r}'.format(pattern))
         while index <= end:
@@ -801,6 +809,11 @@ CSS_CHECKED = CSSParser(
 CSS_DEFAULT = CSSParser(
     '''
     :checked,
+
+    /*
+    This pattern must be at the end.
+    Special logic is applied to the last selector.
+    */
     form :is(button, input)[type="submit"]
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML | FLG_DEFAULT)
@@ -810,6 +823,11 @@ CSS_INDETERMINATE = CSSParser(
     input[type="checkbox"][indeterminate],
     input[type="radio"]:is(:not([name]), [name=""]):not([checked]),
     progress:not([value]),
+
+    /*
+    This pattern must be at the end.
+    Special logic is applied to the last selector.
+    */
     input[type="radio"][name][name!='']:not([checked])
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML | FLG_INDETERMINATE)
