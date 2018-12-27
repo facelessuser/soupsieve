@@ -68,6 +68,19 @@ class TestSoupSieve(unittest.TestCase):
         self.assertEqual(sorted(['5', 'some-id']), sorted(ids))
 
         ids = []
+        for el in sv.select('span[id]', soup, limit=1):
+            ids.append(el.attrs['id'])
+
+        self.assertEqual(sorted(['5']), sorted(ids))
+
+        self.assertEqual(
+            sv.select('span[id]', soup, limit=1)[0].attrs['id'],
+            sv.select_one('span[id]', soup).attrs['id']
+        )
+
+        self.assertEqual(None, sv.select_one('h1', soup))
+
+        ids = []
         for el in sv.iselect('span[id]', soup):
             ids.append(el.attrs['id'])
 

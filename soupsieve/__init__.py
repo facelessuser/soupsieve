@@ -89,6 +89,12 @@ def icomments(tag, limit=0, flags=0):
         yield comment
 
 
+def select_one(select, tag, namespaces=None, flags=0):
+    """Select a single tag."""
+
+    return compile(select, namespaces, flags).select_one(tag)
+
+
 def select(select, tag, namespaces=None, limit=0, flags=0):
     """Select the specified tags."""
 

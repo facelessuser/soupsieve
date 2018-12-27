@@ -764,6 +764,12 @@ class SoupSieve(ct.Immutable):
         for comment in self._sieve(tag, capture=False, comments=True, limit=limit):
             yield comment
 
+    def select_one(self, tag):
+        """Select a single tag."""
+
+        tags = self.select(tag, limit=1)
+        return tags[0] if tags else None
+
     def select(self, tag, limit=0):
         """Select the specified tags."""
 
