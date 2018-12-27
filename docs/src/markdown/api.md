@@ -16,9 +16,30 @@ Soup Sieve will detect the document type being used from the Beautiful Soup obje
 
 - While attribute values are generally treated as case sensitive, HTML5, XHTML, and HTML treat the `type` attribute special. The `type` attribute's value is always case insensitive. This is generally how most browsers treat `type`. If you need `type` to be sensitive, you can use the `s` flag: `#!css [type="submit" s]`.
 
+As far as the API is concerned, Soup Sieve mimics Beautiful Soup's original API at the time of writing this, which is why the names `select` and `select_one` are used. As of today, Beautiful Soup has agreed to include Soup Sieve as the official select library which is slated for the 4.7.0 release.
+
+Soup Sieve will always be available as an external API as well for more controlled tag selection if needed.
+
 ## Flags
 
 Early in development, flags were used to specify document type, but as of 1.0.0, there are no flags used at this time, but the parameter is provided for potential future use.
+
+## `soupsieve.select_one()`
+
+```py3
+def select(select, tag, namespaces=None, flags=0):
+    """Select the specified tags."""
+```
+
+`select_one` will return the first tag under the given tag that matches the given CSS selectors provided, or it will return `None` if a suitable tag was not found.
+
+`select_one` accepts a CSS selector string, a `Tag`/`BeautifulSoup` object, an optional [namespace](#namespaces) dictionary, and `flags`.
+
+```pycon3
+>>> import soupsieve as sv
+>>> sv.select_one('p:is(.a, .b, .c)', soup)
+<p class="a">Cat</p>
+```
 
 ## `soupsieve.select()`
 
@@ -125,6 +146,9 @@ class SoupSieve:
 
     def icomments(self, tag, limit=0):
         """Iterate comments only."""
+
+    def select_one(self, tag):
+        """Select a single tag."""
 
     def select(self, tag, limit=0):
         """Select the specified tags."""

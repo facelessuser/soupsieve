@@ -56,7 +56,15 @@ To use Soup Sieve, you must create a `BeautifulSoup` object:
 >>> soup = bs4.BeautifulSoup(text, 'html5lib')
 ```
 
-Then you can begin to use Soup Sieve to select:
+Then you can begin to use Soup Sieve to select a single tag:
+
+```pycon3
+>>> import soupsieve as sv
+>>> sv.select_one('p:is(.a, .b, .c)', soup)
+<p class="a">Cat</p>
+```
+
+To select all tags:
 
 ```pycon3
 >>> import soupsieve as sv

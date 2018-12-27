@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.1
+
+- **NEW**: Add `select_one` method like Beautiful Soup has.
+
 ## 1.4.0
 
 - **NEW**: Throw `NotImplementedError` for at-rules: `@page`, etc.
