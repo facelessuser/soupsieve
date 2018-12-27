@@ -40,7 +40,7 @@ If you want to manually install it, run `#!bash python setup.py build` and `#!ba
 
 ## Usage
 
-To use Soup Sieve, you must create a Beautiful Soup object:
+To use Soup Sieve, you must create a `BeautifulSoup` object:
 
 ```pycon3
 >>> import bs4
@@ -86,6 +86,34 @@ Or even just extracting comments:
 ```pycon3
 >>> sv.comments(soup)
 [' These are animals ']
+```
+
+Selectors do not have to be constrained to one line either. You can span selectors over multiple lines just like you would in a CSS file.
+
+```pycon3
+>>> selector = """
+... .a,
+... .b,
+... .c
+... """
+>>> sv.select(selector, soup)
+[<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
+```
+
+You can even use comments to annotate a particularly complex selector.
+
+```pycon3
+>>> selector = """
+... /* This isn't complicated, but we're going to annotate it anyways.
+...    This is the a class */
+... .a,
+... /* This is the b class */
+... .b,
+... /* This is the c class */
+... .c
+... """
+>>> sv.select(selector, soup)
+[<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
 ```
 
 If you've ever used Python's Re library for regular expressions, you may know that it is often useful to pre-compile a regular expression pattern, especially if you plan to use it more than once.  The same is true for Soup Sieve's matchers, though is not required.  If you have a pattern that you want to use more than once, it may be wise to pre-compile it early on:

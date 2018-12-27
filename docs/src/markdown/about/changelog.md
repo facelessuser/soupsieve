@@ -5,6 +5,8 @@
 - **NEW**: Throw `NotImplementedError` for at-rules: `@page`, etc.
 - **NEW**: Match nothing for `:host`, `:host()`, and `:host-context()`.
 - **NEW**: Add support for `:read-write` and `:read-only`.
+- **NEW**: Selector patterns can be annotated with CSS comments.
+- **FIX**: `\r`, `\n`, and `\f` cannot be escaped with `\` in CSS. You must use Unicode escapes.
 
 ## 1.3.1
 

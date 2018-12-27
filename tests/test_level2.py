@@ -15,6 +15,7 @@ E + F
 :lang(en)
 ::pseudo-element (not implemented)
 @at-rule (not implemented)
+/* comments */
 ```
 
 We will currently fail on pseudo-elements `::pseudo-element` as they are not real elements.
@@ -497,3 +498,45 @@ class TestLevel2(util.TestCase):
 
         with self.assertRaises(NotImplementedError):
             sv.compile('@page :left')
+
+    def test_comments(self):
+        """Test comments."""
+
+        markup = """
+        <div>
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre>
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            """
+            /* Start comment */
+            div
+            /* This still works as new lines and whitespace count as descendant combiner.
+               This comment won't be seen. */
+            span#\\33
+            /* End comment */
+            """,
+            ['3'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            """
+            span:not(
+                /* Comments should basically work like they do in real CSS. */
+                span#\\33 /* Don't select id 3 */
+            )
+            """,
+            ['1', '4', '5', '6'],
+            flags=util.HTML5
+        )
