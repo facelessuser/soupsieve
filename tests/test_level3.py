@@ -27,6 +27,8 @@ E ~ F
 """
 from __future__ import unicode_literals
 from . import util
+import bs4
+import soupsieve as sv
 
 
 class TestLevel3(util.TestCase):
@@ -762,6 +764,12 @@ class TestLevel3(util.TestCase):
             ['1', '7', '9'],
             flags=util.HTML5
         )
+
+        # Paragraph is the root. There is no document.
+        markup = """<p id="1">text</p>"""
+        soup = bs4.BeautifulSoup(markup, 'html5lib')
+        fragment = soup.p.extract()
+        self.assertTrue(sv.match("p:nth-child(1)", fragment, flags=sv.DEBUG))
 
     def test_nth_last_child(self):
         """Test `nth` last child."""

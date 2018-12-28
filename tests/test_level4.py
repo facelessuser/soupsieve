@@ -1353,20 +1353,35 @@ class TestLevel4(util.TestCase):
         """Test direction."""
 
         markup = """
+        <html id="0">
+        <head></head>
+        <body>
         <div id="1" dir="rtl">
           <span id="2">test1</span>
           <div id="3" dir="ltr">test2
-            <div id="4" dir="auto"><!-- comment -->עִבְרִית</div>
-            <div id="5" dir="auto"><script></script><b> </b><span id="6"><!-- comment -->עִבְרִית</span></div>
-            <span id="7" dir="auto">test3</span>
+            <div id="4" dir="auto"><!-- comment -->עִבְרִית<span id="5" dir="auto">()</span></div>
+            <div id="6" dir="auto"><script></script><b> </b><span id="7"><!-- comment -->עִבְרִית</span></div>
+            <span id="8" dir="auto">test3</span>
           </div>
+          <input id="9" type="tel" value="333-444-5555" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
+          <input id="10" type="tel" dir="auto" value="333-444-5555" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
+          <input id="11" type="email" dir="auto" value="test@mail.com">
+          <input id="12" type="search" dir="auto" value="()">
+          <input id="13" type="url" dir="auto" value="https://test.com">
+          <input id="14" type="search" dir="auto" value="עִבְרִית">
+          <input id="15" type="search" dir="auto" value="">
+          <input id="16" type="search" dir="auto">
+          <textarea id="17" dir="auto">עִבְרִית</textarea>
+          <textarea id="18" dir="auto"></textarea>
         </div>
+        </body>
+        </html>
         """
 
         self.assert_selector(
             markup,
             "div:dir(rtl)",
-            ["1", "4", "5"],
+            ["1", "4", "6"],
             flags=util.HTML5
         )
 
@@ -1394,13 +1409,48 @@ class TestLevel4(util.TestCase):
         self.assert_selector(
             markup,
             "span:dir(rtl)",
-            ['2', '6'],
+            ['2', '5', '7'],
             flags=util.HTML5
         )
 
         self.assert_selector(
             markup,
             "span:dir(ltr)",
-            ['7'],
+            ['8'],
             flags=util.HTML5
         )
+
+        self.assert_selector(
+            markup,
+            ":is(input, textarea):dir(ltr)",
+            ['9', '10', '11', '12', '13'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "html:dir(ltr)",
+            ['0'],
+            flags=util.HTML5
+        )
+
+        markup = """
+        <html id="0" dir="auto">
+        <head></head>
+        <body>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            "html:dir(ltr)",
+            ['0'],
+            flags=util.HTML5
+        )
+
+        # Input is root
+        markup = """<input id="1" type="text" dir="auto">"""
+        soup = bs4.BeautifulSoup(markup, 'html5lib')
+        fragment = soup.input.extract()
+        self.assertTrue(sv.match(":root:dir(ltr)", fragment, flags=sv.DEBUG))

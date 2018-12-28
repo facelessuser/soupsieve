@@ -31,6 +31,21 @@ DIR_MAP = {
 }
 
 
+class FakeNthParent(object):
+    """
+    Fake parent for `nth` selector.
+
+    When we have a fragment with no `BeautifulSoup` document object,
+    we can't evaluate `nth` selectors properly.  Create a temporary
+    fake parent so we can traverse the root element as a child.
+    """
+
+    def __init__(self, element):
+        """Initialize."""
+
+        self.contents = [element]
+
+
 class CSSMatch(object):
     """Perform CSS matching."""
 
@@ -47,14 +62,17 @@ class CSSMatch(object):
         while doc.parent:
             doc = doc.parent
         root = None
-        for child in doc.children:
-            if util.is_tag(child):
-                root = child
-                break
+        if not util.is_doc(doc):
+            root = doc
+        else:
+            for child in doc.children:
+                if util.is_tag(child):
+                    root = child
+                    break
         self.root = root
         self.scope = scope if scope is not doc else root
         self.html_namespace = self.is_html_ns(root)
-        self.is_xml = doc.is_xml and not self.html_namespace
+        self.is_xml = doc._is_xml and not self.html_namespace
 
     def get_namespace(self, el):
         """Get the namespace for the element."""
@@ -335,6 +353,8 @@ class CSSMatch(object):
             if n.selectors and not self.match_selectors(el, n.selectors):
                 break
             parent = el.parent
+            if parent is None:
+                parent = FakeNthParent(el)
             last = n.last
             last_index = len(parent.contents) - 1
             relative_index = 0
@@ -389,9 +409,9 @@ class CSSMatch(object):
                 idx = last_idx = a * count + b if var else a
 
             # Evaluate elements while our calculated nth index is still in range
-            while 1 <= idx <= last_index:
+            while 1 <= idx <= last_index + 1:
                 child = None
-                # Evaluate while our child index is still range.
+                # Evaluate while our child index is still in range.
                 while 0 <= index <= last_index:
                     child = parent.contents[index]
                     index += factor
@@ -576,7 +596,7 @@ class CSSMatch(object):
         # Walk parents looking for `lang` (HTML) or `xml:lang` XML property.
         parent = el
         found_lang = None
-        while parent.parent and not found_lang:
+        while parent and parent.parent and not found_lang:
             ns = self.is_html_ns(parent)
             for k, v in parent.attrs.items():
                 if (
@@ -643,23 +663,34 @@ class CSSMatch(object):
         return match
 
     def get_bidi(self, el):
-        """Get directionality from text."""
+        """Get directionality from element text."""
 
         for node in el.children:
+
+            # Analyze child text nodes
             if util.is_tag(node):
+
+                # Avoid analyzing certain elements specified in the specification.
                 direction = DIR_MAP.get(util.lower(node.attrs.get('dir', '')), None)
-                # Coverage isn't seeing the continue here, so we will ignore for now.
                 if (
                     util.lower(node.name) in ('bdi', 'script', 'style', 'textarea') or
                     direction is not None
                 ):
                     continue  # pragma: no cover
+
+                # Check directionality of this node's text
                 value = self.get_bidi(node)
                 if value is not None:
                     return value
+
+                # Direction could not be determined
                 continue  # pragma: no cover
+
+            # Skip `doctype` comments, etc.
             if util.is_special_string(node):
                 continue
+
+            # Analyze text nodes for directionality.
             for c in node:
                 bidi = unicodedata.bidirectional(c)
                 if bidi in ('AL', 'R', 'L'):
@@ -673,26 +704,32 @@ class CSSMatch(object):
         if directionality & ct.SEL_DIR_LTR and directionality & ct.SEL_DIR_RTL:
             return False
 
+        # Element has defined direction of left to right or right to left
         direction = DIR_MAP.get(util.lower(el.attrs.get('dir', '')), None)
-        # Element has defined direction
         if direction not in (None, 0):
             return direction == directionality
-        is_root = self.match_root(el)
+
         # Element is the document element (the root) and no direction assigned, assume left to right.
+        is_root = self.match_root(el)
         if is_root and direction is None:
             return ct.SEL_DIR_LTR == directionality
 
+        # If `input[type=telephone]` and no direction is assigned, assume left to right.
         is_input = util.lower(el.name) == 'input'
         is_textarea = util.lower(el.name) == 'textarea'
         is_bdi = util.lower(el.name) == 'bdi'
         itype = util.lower(self.get_attribute_by_name(el, 'type', '')) if is_input else ''
-        # If `input[type=telephone]` and no direction is assigned, assume left to right.
-        if is_input and itype == 'telephone' and direction is None:
+        if is_input and itype == 'tel' and direction is None:
             return ct.SEL_DIR_LTR == directionality
-        # Detect case #1 for direction
-        if ((is_input and itype in ('text', 'search', 'telephone', 'url', 'email')) or is_textarea) and direction == 0:
+
+        # Auto handling for text inputs
+        if ((is_input and itype in ('text', 'search', 'tel', 'url', 'email')) or is_textarea) and direction == 0:
             if is_textarea:
-                value = el.get_text()
+                value = []
+                for node in el.contents:
+                    if util.is_navigable_string(node) and not util.is_special_string(node):
+                        value.append(node)
+                value = ''.join(value)
             else:
                 value = self.get_attribute_by_name(el, 'value', '')
             if value:
@@ -701,10 +738,13 @@ class CSSMatch(object):
                     if bidi in ('AL', 'R', 'L'):
                         direction = ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
                         return direction == directionality
+                # Assume left to right
+                return ct.SEL_DIR_LTR == directionality
             elif is_root:
                 return ct.SEL_DIR_LTR == directionality
             return self.match_dir(el.parent, directionality)
-        # Detect case #2 for direction
+
+        # Auto handling for `bdi` and other non text inputs.
         if (is_bdi and direction is None) or direction == 0:
             direction = self.get_bidi(el)
             if direction is not None:
@@ -712,11 +752,9 @@ class CSSMatch(object):
             elif is_root:
                 return ct.SEL_DIR_LTR == directionality
             return self.match_dir(el.parent, directionality)
-        # Match parents direction
-        if direction is None and not is_root and el.parent:
-            return self.match_dir(el.parent, directionality)
 
-        return False
+        # Match parents direction
+        return self.match_dir(el.parent, directionality)
 
     def match_selectors(self, el, selectors):
         """Check if element matches one of the selectors."""
@@ -770,7 +808,7 @@ class CSSMatch(object):
                 if selector.flags & ct.SEL_INDETERMINATE and not self.match_indeterminate(el):
                     continue
                 # Validate element directionality
-                if selector.flags & DIR_FLAGS and not self.match_dir(el, selector.flags):
+                if selector.flags & DIR_FLAGS and not self.match_dir(el, selector.flags & DIR_FLAGS):
                     continue
                 # Validate that the tag contains the specified text.
                 if not self.match_contains(el, selector.contains):
@@ -789,7 +827,7 @@ class CSSMatch(object):
     def match(self, el):
         """Match."""
 
-        return el.parent and self.match_selectors(el, self.selectors)
+        return not util.is_doc(el) and util.is_tag(el) and self.match_selectors(el, self.selectors)
 
 
 class SoupSieve(ct.Immutable):

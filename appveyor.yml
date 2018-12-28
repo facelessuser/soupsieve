@@ -24,6 +24,7 @@ init:
 
 install:
   # Setup Python test tools
+  - "%PYTHON%/Scripts/pip.exe install -U setuptools"
   - "%PYTHON%/Scripts/pip.exe install virtualenv"
   - "%PYTHON%/Scripts/pip.exe install tox"
   - "%PYTHON%/Scripts/pip.exe install codecov"
