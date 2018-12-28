@@ -69,6 +69,7 @@ PSEUDO_COMPLEX_NO_MATCH = {
 
 # Complex pseudo classes that take very specific parameters and are handled special
 PSEUDO_SPECIAL = {
+    ':dir',
     ':lang',
     ':nth-child',
     ':nth-last-child',
@@ -127,6 +128,8 @@ PAT_PSEUDO_NTH_TYPE = r'''
 '''.format(ws=WSC, nth=NTH)
 # Pseudo class language (`:lang("*-de", en)`)
 PAT_PSEUDO_LANG = r':lang\({ws}*(?P<lang>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'.format(ws=WSC, value=VALUE)
+# Pseudo class direction (`:dir(ltr)`)
+PAT_PSEUDO_DIR = r':dir\({ws}*(?P<dir>ltr|rtl){ws}*\)'.format(ws=WSC)
 # Combining characters (`>`, `~`, ` `, `+`, `,`)
 PAT_COMBINE = r'{ws}*?(?P<relation>[,+>~]|[ \t\r\n\f](?![,+>~])){ws}*'.format(ws=WSC)
 # Extra: Contains (`:contains(text)`)
@@ -285,6 +288,7 @@ class CSSParser(object):
             ("pseudo_nth_child", SelectorPattern(PAT_PSEUDO_NTH_CHILD)),
             ("pseudo_nth_type", SelectorPattern(PAT_PSEUDO_NTH_TYPE)),
             ("pseudo_lang", SelectorPattern(PAT_PSEUDO_LANG)),
+            ("pseudo_dir", SelectorPattern(PAT_PSEUDO_DIR)),
             ("pseudo_class", SelectorPattern(PAT_PSEUDO_CLASS)),
             ("pseudo_element", SelectorPattern(PAT_PSEUDO_ELEMENT)),
             ("at_rule", SelectorPattern(PAT_AT_RULE)),
@@ -631,6 +635,14 @@ class CSSParser(object):
 
         return has_selector
 
+    def parse_pseudo_dir(self, sel, m, has_selector):
+        """Parse pseudo direction."""
+
+        value = ct.SEL_DIR_LTR if util.lower(m.group('dir')) == 'ltr' else ct.SEL_DIR_RTL
+        sel.flags |= value
+        has_selector = True
+        return has_selector
+
     def parse_selectors(self, iselector, index=0, flags=0):
         """Parse selectors."""
 
@@ -685,6 +697,10 @@ class CSSParser(object):
                     has_selector = self.parse_pseudo_nth(sel, m, has_selector, iselector)
                 elif key == 'pseudo_lang':
                     has_selector = self.parse_pseudo_lang(sel, m, has_selector)
+                elif key == 'pseudo_dir':
+                    has_selector = self.parse_pseudo_dir(sel, m, has_selector)
+                    # Currently only supports HTML
+                    is_html = True
                 elif key == 'pseudo_close':
                     if split_last:
                         raise SyntaxError("Expecting more selectors at postion {}".format(m.start(0)))

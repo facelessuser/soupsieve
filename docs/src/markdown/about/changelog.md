@@ -1,8 +1,9 @@
 # Changelog
 
-## 1.4.1
+## 1.5.0
 
 - **NEW**: Add `select_one` method like Beautiful Soup has.
+- **NEW**: Add `:dir()` selector (HTML only).
 
 ## 1.4.0
 

@@ -11,6 +11,8 @@ SEL_ROOT = 0x2
 SEL_DEFAULT = 0x4
 SEL_INDETERMINATE = 0x8
 SEL_SCOPE = 0x10
+SEL_DIR_LTR = 0x20
+SEL_DIR_RTL = 0x40
 
 
 class Immutable(object):

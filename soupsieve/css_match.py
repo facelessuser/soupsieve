@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from . import util
 import re
 from .import css_types as ct
+import unicodedata
 
 # Empty tag pattern (whitespace okay)
 RE_NOT_EMPTY = re.compile('[^ \t\r\n\f]')
@@ -20,6 +21,14 @@ REL_HAS_SIBLING = ':~'
 REL_HAS_CLOSE_SIBLING = ':+'
 
 NS_XHTML = 'http://www.w3.org/1999/xhtml'
+
+DIR_FLAGS = ct.SEL_DIR_LTR | ct.SEL_DIR_RTL
+
+DIR_MAP = {
+    'ltr': ct.SEL_DIR_LTR,
+    'rtl': ct.SEL_DIR_RTL,
+    'auto': 0
+}
 
 
 class CSSMatch(object):
@@ -127,6 +136,16 @@ class CSSMatch(object):
         if isinstance(classes, util.ustr):
             classes = [c for c in classes.strip().split(' ') if c]
         return classes
+
+    def get_attribute_by_name(self, el, name, default=None):
+        """Get attribute by name."""
+
+        value = default
+        for k, v in el.attrs.items():
+            if (k if self.is_xml else util.lower(k)) == name:
+                value = v
+                break
+        return value
 
     def match_namespace(self, el, tag):
         """Match the namespace of the element."""
@@ -623,6 +642,82 @@ class CSSMatch(object):
 
         return match
 
+    def get_bidi(self, el):
+        """Get directionality from text."""
+
+        for node in el.children:
+            if util.is_tag(node):
+                direction = DIR_MAP.get(util.lower(node.attrs.get('dir', '')), None)
+                # Coverage isn't seeing the continue here, so we will ignore for now.
+                if (
+                    util.lower(node.name) in ('bdi', 'script', 'style', 'textarea') or
+                    direction is not None
+                ):
+                    continue  # pragma: no cover
+                value = self.get_bidi(node)
+                if value is not None:
+                    return value
+                continue  # pragma: no cover
+            if util.is_special_string(node):
+                continue
+            for c in node:
+                bidi = unicodedata.bidirectional(c)
+                if bidi in ('AL', 'R', 'L'):
+                    return ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
+        return None
+
+    def match_dir(self, el, directionality):
+        """Check directionality."""
+
+        # If we have to match both left and right, we can't match either.
+        if directionality & ct.SEL_DIR_LTR and directionality & ct.SEL_DIR_RTL:
+            return False
+
+        direction = DIR_MAP.get(util.lower(el.attrs.get('dir', '')), None)
+        # Element has defined direction
+        if direction not in (None, 0):
+            return direction == directionality
+        is_root = self.match_root(el)
+        # Element is the document element (the root) and no direction assigned, assume left to right.
+        if is_root and direction is None:
+            return ct.SEL_DIR_LTR == directionality
+
+        is_input = util.lower(el.name) == 'input'
+        is_textarea = util.lower(el.name) == 'textarea'
+        is_bdi = util.lower(el.name) == 'bdi'
+        itype = util.lower(self.get_attribute_by_name(el, 'type', '')) if is_input else ''
+        # If `input[type=telephone]` and no direction is assigned, assume left to right.
+        if is_input and itype == 'telephone' and direction is None:
+            return ct.SEL_DIR_LTR == directionality
+        # Detect case #1 for direction
+        if ((is_input and itype in ('text', 'search', 'telephone', 'url', 'email')) or is_textarea) and direction == 0:
+            if is_textarea:
+                value = el.get_text()
+            else:
+                value = self.get_attribute_by_name(el, 'value', '')
+            if value:
+                for c in value:
+                    bidi = unicodedata.bidirectional(c)
+                    if bidi in ('AL', 'R', 'L'):
+                        direction = ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
+                        return direction == directionality
+            elif is_root:
+                return ct.SEL_DIR_LTR == directionality
+            return self.match_dir(el.parent, directionality)
+        # Detect case #2 for direction
+        if (is_bdi and direction is None) or direction == 0:
+            direction = self.get_bidi(el)
+            if direction is not None:
+                return direction == directionality
+            elif is_root:
+                return ct.SEL_DIR_LTR == directionality
+            return self.match_dir(el.parent, directionality)
+        # Match parents direction
+        if direction is None and not is_root and el.parent:
+            return self.match_dir(el.parent, directionality)
+
+        return False
+
     def match_selectors(self, el, selectors):
         """Check if element matches one of the selectors."""
 
@@ -673,6 +768,9 @@ class CSSMatch(object):
                 # Validate that the unset radio button is among radio buttons with the same name in a form that are
                 # also not set.
                 if selector.flags & ct.SEL_INDETERMINATE and not self.match_indeterminate(el):
+                    continue
+                # Validate element directionality
+                if selector.flags & DIR_FLAGS and not self.match_dir(el, selector.flags):
                     continue
                 # Validate that the tag contains the specified text.
                 if not self.match_contains(el, selector.contains):

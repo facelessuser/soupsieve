@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Test selectors level 4.
 
@@ -40,12 +41,6 @@ Not supported:
   XHTML, and HTML5. This would not be implemented for XML.
 
 - `:blank`: This applies to inputs with empty or otherwise null input.
-
-- `:dir(ltr)`: This applies to direction of text. This direction can be inherited from parents. Due to the way Soup
-  Sieve processes things, it would have to scan the parents and evaluate what is inherited. it doesn't account for the
-  CSS `direction` value, which is a good thing. It is doable, but not sure worth the effort. In addition, it seems there
-  is reference to being able to do something like `[dir=auto]` which would select either `ltr` or `rtl`. This seems to
-  add additional logic in to attribute selections which would complicate things, but still technically doable.
 
 - `:valid` / `:invalid`: We currently to not validate values, so this doesn't make sense at this time.
 
@@ -1351,5 +1346,61 @@ class TestLevel4(util.TestCase):
             markup,
             ":host-context(h1, h2)",
             [],
+            flags=util.HTML5
+        )
+
+    def test_dir(self):
+        """Test direction."""
+
+        markup = """
+        <div id="1" dir="rtl">
+          <span id="2">test1</span>
+          <div id="3" dir="ltr">test2
+            <div id="4" dir="auto"><!-- comment -->עִבְרִית</div>
+            <div id="5" dir="auto"><script></script><b> </b><span id="6"><!-- comment -->עִבְרִית</span></div>
+            <span id="7" dir="auto">test3</span>
+          </div>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            "div:dir(rtl)",
+            ["1", "4", "5"],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "div:dir(ltr)",
+            ["3"],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "div:dir(ltr):dir(rtl)",
+            [],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "div:dir(ltr)",
+            [],
+            flags=util.XML
+        )
+
+        self.assert_selector(
+            markup,
+            "span:dir(rtl)",
+            ['2', '6'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "span:dir(ltr)",
+            ['7'],
             flags=util.HTML5
         )
