@@ -25,6 +25,7 @@ accessor
 boolean
 builtin
 deprecations
+directionality
 html
 iterable
 iterables

@@ -81,7 +81,8 @@ Selector                        | Example                             | Descript
 `:checked`                      | `#!css input:checked`               | Selects every checked `#!html <input>` element.
 `:current`                      | `#!css p:current`                   | As the document is not rendered, this will never match.
 `:current(sel, sel)`            | `#!css :current(p, li, dt, dd)`     | As the document is not rendered, this will never match.
-`:default`                      | `#!css input:default`               | Selects all `#!html <inputs>` that are the default among their related elements. See CSS specification to learn more about all that this targets.
+`:default`                      | `#!css input:default`               | Selects all `#!html <inputs>` elements that are the default among their related elements. See CSS specification to learn more about all that this targets.
+`:dir(direction)`               | `#!css div:dir(ltr)`                | Selects all `#!html <div>` elements that have a text direction of left to right.
 `:disabled`                     | `#!css input:disabled`              | Selects every disabled `#!html <input>` element.
 `:enabled`                      | `#!css input:enabled`               | Selects every enabled `#!html <input>` element.
 `:focus`                        | `#!css input:focus`                 | Focus states are not applicable, so this will never match.

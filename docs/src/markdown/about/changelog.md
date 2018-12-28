@@ -1,8 +1,11 @@
 # Changelog
 
-## 1.4.1
+## 1.5.0
 
 - **NEW**: Add `select_one` method like Beautiful Soup has.
+- **NEW**: Add `:dir()` selector (HTML only).
+- **FIX**: Fix issue handling issues of HTML fragments (elements without a `BeautifulSoup` object as a parent).
+- **FIX**: Fix internal `nth` range check.
 
 ## 1.4.0
 

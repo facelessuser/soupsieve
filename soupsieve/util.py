@@ -34,6 +34,13 @@ UC_A = ord('A')
 UC_Z = ord('Z')
 
 
+def is_doc(obj):
+    """Is `BeautifulSoup` object."""
+
+    import bs4
+    return isinstance(obj, bs4.BeautifulSoup)
+
+
 def is_tag(obj):
     """Is tag."""
 
