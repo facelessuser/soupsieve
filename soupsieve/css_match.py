@@ -878,11 +878,35 @@ class SoupSieve(ct.Immutable):
         if not util.is_tag(tag):
             raise TypeError("Expected a BeautifulSoup 'Tag', but instead recieved type {}".format(type(tag)))
 
+    def _is_ancestor(self, el, tag):
+        """Check if element is an ancestor of the tag (can be the tag as well)."""
+
+        is_ancestor = False
+        while tag is not None and not is_ancestor:
+            if el is tag:
+                is_ancestor = True
+            tag = tag.parent
+        return is_ancestor
+
     def match(self, tag):
         """Match."""
 
         self._is_valid_input(tag)
         return CSSMatch(self.selectors, tag, self.namespaces, self.flags).match(tag)
+
+    def closest(self, tag):
+        """Match closest ancestor."""
+
+        self._is_valid_input(tag)
+        current = tag
+        closest = None
+        match = CSSMatch(self.selectors, tag, self.namespaces, self.flags).match
+        while closest is None and current is not None:
+            if match(current) and self._is_ancestor(current, tag):
+                closest = current
+            else:
+                current = current.parent
+        return closest
 
     def filter(self, iterable):  # noqa A001
         """Filter."""

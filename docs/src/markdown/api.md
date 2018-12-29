@@ -67,6 +67,17 @@ def iselect(select, node, namespaces=None, limit=0, flags=0):
 
 `iselect` is exactly like `select` except that it returns a generator instead of a list.
 
+## `soupsieve.closest()`
+
+```py3
+def closest(select, tag, namespaces=None, flags=0):
+    """Match closest ancestor to the provided tag."""
+```
+
+`closest` returns the tag closest to the given tag that matches the given selector. The element found must be a direct ancestor of the tag or the tag itself.
+
+`closest` accepts a CSS selector string, a `Tag`/`BeautifulSoup` object, an optional [namespace](#namespaces) dictionary, and `flags`.
+
 ## `soupsieve.match()`
 
 ```py3
@@ -137,6 +148,9 @@ class SoupSieve:
 
     def match(self, tag):
         """Match."""
+
+    def closest(self, tag):
+        """Match closest ancestor."""
 
     def filter(self, iterable):
         """Filter."""
