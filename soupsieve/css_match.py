@@ -89,17 +89,6 @@ class CSSMatch(object):
         ns = getattr(el, 'namespace') if el else None
         return ns and ns == NS_XHTML
 
-    def is_ancestor(self, el):
-        """Check if element is an ancestor of the tag (can be the tag as well)."""
-
-        tag = self.tag
-        is_ancestor = False
-        while tag is not None and not is_ancestor:
-            if el is tag:
-                is_ancestor = True
-            tag = tag.parent
-        return is_ancestor
-
     def get_namespace(self, el):
         """Get the namespace for the element."""
 
@@ -878,7 +867,7 @@ class CSSMatch(object):
         current = self.tag
         closest = None
         while closest is None and current is not None:
-            if self.match(current) and self.is_ancestor(current):
+            if self.match(current):
                 closest = current
             else:
                 current = current.parent
