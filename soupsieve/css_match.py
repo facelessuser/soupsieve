@@ -52,6 +52,8 @@ class CSSMatch(object):
     def __init__(self, selectors, scope, namespaces, flags):
         """Initialize."""
 
+        self.assert_valid_input(scope)
+        self.tag = scope
         self.cached_meta_lang = None
         self.cached_default_forms = []
         self.cached_indeterminate_forms = []
@@ -74,6 +76,30 @@ class CSSMatch(object):
         self.html_namespace = self.is_html_ns(root)
         self.is_xml = doc._is_xml and not self.html_namespace
 
+    def assert_valid_input(self, tag):
+        """Check if valid input tag."""
+
+        # Fail on unexpected types.
+        if not util.is_tag(tag):
+            raise TypeError("Expected a BeautifulSoup 'Tag', but instead recieved type {}".format(type(tag)))
+
+    def is_html_ns(self, el):
+        """Check if in HTML namespace."""
+
+        ns = getattr(el, 'namespace') if el else None
+        return ns and ns == NS_XHTML
+
+    def is_ancestor(self, el):
+        """Check if element is an ancestor of the tag (can be the tag as well)."""
+
+        tag = self.tag
+        is_ancestor = False
+        while tag is not None and not is_ancestor:
+            if el is tag:
+                is_ancestor = True
+            tag = tag.parent
+        return is_ancestor
+
     def get_namespace(self, el):
         """Get the namespace for the element."""
 
@@ -87,6 +113,41 @@ class CSSMatch(object):
         """Check if namespaces are supported in the HTML type."""
 
         return self.is_xml or self.html_namespace
+
+    def get_bidi(self, el):
+        """Get directionality from element text."""
+
+        for node in el.children:
+
+            # Analyze child text nodes
+            if util.is_tag(node):
+
+                # Avoid analyzing certain elements specified in the specification.
+                direction = DIR_MAP.get(util.lower(node.attrs.get('dir', '')), None)
+                if (
+                    util.lower(node.name) in ('bdi', 'script', 'style', 'textarea') or
+                    direction is not None
+                ):
+                    continue  # pragma: no cover
+
+                # Check directionality of this node's text
+                value = self.get_bidi(node)
+                if value is not None:
+                    return value
+
+                # Direction could not be determined
+                continue  # pragma: no cover
+
+            # Skip `doctype` comments, etc.
+            if util.is_special_string(node):
+                continue
+
+            # Analyze text nodes for directionality.
+            for c in node:
+                bidi = unicodedata.bidirectional(c)
+                if bidi in ('AL', 'R', 'L'):
+                    return ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
+        return None
 
     def get_attribute(self, el, attr, prefix):
         """Get attribute from element if it exists."""
@@ -662,41 +723,6 @@ class CSSMatch(object):
 
         return match
 
-    def get_bidi(self, el):
-        """Get directionality from element text."""
-
-        for node in el.children:
-
-            # Analyze child text nodes
-            if util.is_tag(node):
-
-                # Avoid analyzing certain elements specified in the specification.
-                direction = DIR_MAP.get(util.lower(node.attrs.get('dir', '')), None)
-                if (
-                    util.lower(node.name) in ('bdi', 'script', 'style', 'textarea') or
-                    direction is not None
-                ):
-                    continue  # pragma: no cover
-
-                # Check directionality of this node's text
-                value = self.get_bidi(node)
-                if value is not None:
-                    return value
-
-                # Direction could not be determined
-                continue  # pragma: no cover
-
-            # Skip `doctype` comments, etc.
-            if util.is_special_string(node):
-                continue
-
-            # Analyze text nodes for directionality.
-            for c in node:
-                bidi = unicodedata.bidirectional(c)
-                if bidi in ('AL', 'R', 'L'):
-                    return ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
-        return None
-
     def match_dir(self, el, directionality):
         """Check directionality."""
 
@@ -818,11 +844,45 @@ class CSSMatch(object):
 
         return match
 
-    def is_html_ns(self, el):
-        """Check if in HTML namespace."""
+    def select(self, limit=0):
+        """Sieve."""
 
-        ns = getattr(el, 'namespace') if el else None
-        return ns and ns == NS_XHTML
+        if limit < 1:
+            limit = None
+
+        for child in self.tag.descendants:
+            if util.is_tag(child) and self.match(child):
+                yield child
+                if limit is not None:
+                    limit -= 1
+                    if limit < 1:
+                        break
+
+    def comments(self, limit=0):
+        """Sieve."""
+
+        if limit < 1:
+            limit = None
+
+        for child in self.tag.descendants:
+            if util.is_comment(child):
+                yield child
+                if limit is not None:
+                    limit -= 1
+                    if limit < 1:
+                        break
+
+    def closest(self):
+        """Match closest ancestor."""
+
+        current = self.tag
+        closest = None
+        while closest is None and current is not None:
+            if self.match(current) and self.is_ancestor(current):
+                closest = current
+            else:
+                current = current.parent
+        return closest
 
     def match(self, el):
         """Match."""
@@ -845,68 +905,15 @@ class SoupSieve(ct.Immutable):
             flags=flags
         )
 
-    def _walk(self, tag, capture=True, comments=False):
-        """Recursively return selected tags."""
-
-        match = CSSMatch(self.selectors, tag, self.namespaces, self.flags).match
-
-        # Walk children
-        for child in tag.descendants:
-            if capture and util.is_tag(child) and match(child):
-                yield child
-            elif comments and util.is_comment(child):
-                yield child
-
-    def _sieve(self, tag, capture=True, comments=False, limit=0):
-        """Sieve."""
-
-        self._is_valid_input(tag)
-        if limit < 1:
-            limit = None
-
-        for child in self._walk(tag, capture, comments):
-            yield child
-            if limit is not None:
-                limit -= 1
-                if limit < 1:
-                    break
-
-    def _is_valid_input(self, tag):
-        """Check if valid input tag."""
-
-        # Fail on unexpected types.
-        if not util.is_tag(tag):
-            raise TypeError("Expected a BeautifulSoup 'Tag', but instead recieved type {}".format(type(tag)))
-
-    def _is_ancestor(self, el, tag):
-        """Check if element is an ancestor of the tag (can be the tag as well)."""
-
-        is_ancestor = False
-        while tag is not None and not is_ancestor:
-            if el is tag:
-                is_ancestor = True
-            tag = tag.parent
-        return is_ancestor
-
     def match(self, tag):
         """Match."""
 
-        self._is_valid_input(tag)
         return CSSMatch(self.selectors, tag, self.namespaces, self.flags).match(tag)
 
     def closest(self, tag):
         """Match closest ancestor."""
 
-        self._is_valid_input(tag)
-        current = tag
-        closest = None
-        match = CSSMatch(self.selectors, tag, self.namespaces, self.flags).match
-        while closest is None and current is not None:
-            if match(current) and self._is_ancestor(current, tag):
-                closest = current
-            else:
-                current = current.parent
-        return closest
+        return CSSMatch(self.selectors, tag, self.namespaces, self.flags).closest()
 
     def filter(self, iterable):  # noqa A001
         """Filter."""
@@ -921,7 +928,7 @@ class SoupSieve(ct.Immutable):
     def icomments(self, tag, limit=0):
         """Iterate comments only."""
 
-        for comment in self._sieve(tag, capture=False, comments=True, limit=limit):
+        for comment in CSSMatch(self.selectors, tag, self.namespaces, self.flags).comments(limit):
             yield comment
 
     def select_one(self, tag):
@@ -938,7 +945,7 @@ class SoupSieve(ct.Immutable):
     def iselect(self, tag, limit=0):
         """Iterate the specified tags."""
 
-        for el in self._sieve(tag, limit=limit):
+        for el in CSSMatch(self.selectors, tag, self.namespaces, self.flags).select(limit):
             yield el
 
     def __repr__(self):  # pragma: no cover
