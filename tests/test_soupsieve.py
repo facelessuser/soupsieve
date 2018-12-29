@@ -147,6 +147,31 @@ class TestSoupSieve(unittest.TestCase):
         self.assertEqual(len(nodes), 1)
         self.assertEqual(nodes[0].attrs['id'], '6')
 
+    def test_closest(self):
+        """Test closest."""
+
+        markup = """
+        <article id="article">
+          <div id="div-01">Here is div-01
+            <div id="div-02">Here is div-02
+              <div id="div-04">Here is div-04</div>
+              <div id="div-03">Here is div-03</div>
+            </div>
+            <div id="div-05">Here is div-05</div>
+          </div>
+        </article>
+        """
+
+        soup = bs4.BeautifulSoup(markup, 'html5lib')
+        el = sv.select_one('#div-03', soup)
+
+        self.assertTrue(sv.closest('#div-02', el).attrs['id'] == 'div-02')
+        self.assertTrue(sv.closest('div div', el).attrs['id'] == 'div-03')
+        self.assertTrue(sv.closest('article > div', el).attrs['id'] == 'div-01')
+        self.assertTrue(sv.closest(':not(div)', el).attrs['id'] == 'article')
+        self.assertTrue(sv.closest('div #div-05', el) is None)
+        self.assertTrue(sv.closest('a', el) is None)
+
     def test_copy_pickle(self):
         """Test copy and pickle."""
 

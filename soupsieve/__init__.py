@@ -34,7 +34,8 @@ from .util import DEBUG
 
 __all__ = (
     'SoupSieve', 'compile', 'purge', 'DEBUG',
-    'comments', 'icomments', 'select', 'iselect', 'match', 'filter'
+    'comments', 'icomments', 'closest', 'select', 'select_one',
+    'iselect', 'match', 'filter'
 )
 
 SoupSieve = cm.SoupSieve
@@ -62,6 +63,12 @@ def purge():
     """Purge cached patterns."""
 
     cp._purge_cache()
+
+
+def closest(select, tag, namespaces=None, flags=0):
+    """Match closest ancestor."""
+
+    return compile(select, namespaces, flags).closest(tag)
 
 
 def match(select, tag, namespaces=None, flags=0):

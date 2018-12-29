@@ -72,6 +72,20 @@ To select all tags:
 [<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
 ```
 
+To select closest, direct ancestor:
+
+```pycon3
+>>> import soupsieve as sv
+>>> el = sv.select_one('.c', soup)
+>>> sv.closest('div', el)
+<div>
+<!-- These are animals -->
+<p class="a">Cat</p>
+<p class="b">Dog</p>
+<p class="c">Mouse</p>
+</div>
+```
+
 To filter:
 
 ```pycon3
@@ -82,10 +96,10 @@ To filter:
 To match:
 
 ```pycon3
->>> nodes = sv.select('p:is(.a, .b, .c)', soup)
->>> sv.match(nodes[0], 'p:not(.b)')
+>>> els = sv.select('p:is(.a, .b, .c)', soup)
+>>> sv.match(els[0], 'p:not(.b)')
 True
->>> sv.match(nodes[1], 'p:not(.b)')
+>>> sv.match(els[1], 'p:not(.b)')
 False
 ```
 

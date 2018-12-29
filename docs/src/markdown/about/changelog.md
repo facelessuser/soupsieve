@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.0
+
+- **NEW**: Add `closest` method to the API that matches closest ancestor.
+- **FIX**: Add missing `select_one` reference to module's `__all__`.
+
 ## 1.5.0
 
 - **NEW**: Add `select_one` method like Beautiful Soup has.
