@@ -8,7 +8,7 @@ import os
 REPO_NAME = 'soupsieve'
 
 # Options
-DELETE_SKIPPED = True
+DELETE_UNSPECIFIED = True
 
 # Colors
 BUG = 'c45b46'
@@ -16,10 +16,8 @@ FEATURE = '7b17d8'
 SUPPORT = 'efbe62'
 DOCS = 'b2ffeb'
 
-CORE = '0b02e1'
-AUX1 = '709ad8'
-
-GENERAL = 'bfd4f2'
+CATEGORY = '709ad8'
+SUBCATEGORY = 'bfd4f2'
 
 PENDING = 'f0f49a'
 REJECTED = 'f7c7be'
@@ -36,17 +34,17 @@ label_list = {
     'support': (SUPPORT, "Support request."),
 
     # Category
-    'API': (CORE, "Related to the API"),
-    'selectors': (AUX1, "Related to selector implementations"),
-    'docs': (DOCS, "Related to documentation."),
+    'API': (CATEGORY, "Related to the API"),
+    'selectors': (CATEGORY, "Related to selector implementations"),
+    'docs': (CATEGORY, "Related to documentation."),
 
     # Sub categories
-    'css-level-1': (GENERAL, "CSS level 1 selectors."),
-    'css-level-2': (GENERAL, "CSS level 2 selectors."),
-    'css-level-3': (GENERAL, "CSS level 3 selectors."),
-    'css-level-4': (GENERAL, "CSS level 4 selectors."),
-    'css-level-5': (GENERAL, "CSS level 5 selectors."),
-    'css-custom': (GENERAL, "CSS custom selectors."),
+    'css-level-1': (SUBCATEGORY, "CSS level 1 selectors."),
+    'css-level-2': (SUBCATEGORY, "CSS level 2 selectors."),
+    'css-level-3': (SUBCATEGORY, "CSS level 3 selectors."),
+    'css-level-4': (SUBCATEGORY, "CSS level 4 selectors."),
+    'css-level-5': (SUBCATEGORY, "CSS level 5 selectors."),
+    'css-custom': (SUBCATEGORY, "CSS custom selectors."),
 
     # Issue status
     'more-info-needed': (PENDING, "More information is required."),
@@ -68,7 +66,7 @@ label_list = {
 
 
 # Label handling
-class LabelEdit(namedtuple('LabelEdit', ['old', 'new', 'color', 'description', 'edit'])):
+class LabelEdit(namedtuple('LabelEdit', ['old', 'new', 'color', 'description'])):
     """Label Edit tuple."""
 
 
@@ -84,10 +82,7 @@ def find_label(label, label_color, label_description):
             old_name = name
             new_name = name
         if label.lower() == old_name.lower():
-            if new_name != label or color != label_color or label_description != description:
-                edit = LabelEdit(old_name, new_name, color, description, True)
-            else:
-                edit = LabelEdit(old_name, new_name, color, description, False)
+            edit = LabelEdit(old_name, new_name, color, description)
             break
     return edit
 
@@ -97,25 +92,17 @@ def update_labels(repo):
     updated = set()
     for label in repo.get_labels():
         edit = find_label(label.name, label.color, label.description)
-        if edit is not None and edit.edit:
-            print(
-                "    Updating '%s'='%s' -> '%s'='%s'" % (
-                    label.name, label.color,
-                    edit.new, edit.color
-                )
-            )
+        if edit is not None:
+            print('Updating {}: #{} "{}"'.format(edit.new, edit.color, edit.description))
             label.edit(edit.new, edit.color, edit.description)
             updated.add(edit.old)
             updated.add(edit.new)
-        elif edit is not None and not edit.edit:
-            print("    Up to Date '%s'='%s'" % (label.name, label.color))
-            updated.add(label.name)
         else:
-            if DELETE_SKIPPED:
-                print("    Deleting '%s'='%s'" % (label.name, label.color))
+            if DELETE_UNSPECIFIED:
+                print('    Deleting {}: #{} "{}"'.format(label.name, label.color, label.description))
                 label.delete()
             else:
-                print("    Skipping '%s'='%s'" % (label.name, label.color))
+                print('    Skipping {}: #{} "{}"'.format(label.name, label.color, label.description))
             updated.add(label.name)
     for name, values in label_list.items():
         color, description = values
@@ -124,7 +111,7 @@ def update_labels(repo):
         else:
             new_name = name
         if new_name not in updated:
-            print("    Creating '%s'='%s'" % (new_name, color))
+            print('    Creating {}: #{} "{}"'.format(new_name, color, description))
             repo.create_label(new_name, color, description)
 
 
@@ -132,8 +119,8 @@ def update_labels(repo):
 def get_auth():
     """Get authentication."""
     import getpass
-    user = input("User Name:")  # noqa
-    pswd = getpass.getpass('Password:')
+    user = input("User Name: ")  # noqa
+    pswd = getpass.getpass('Password: ')
     return Github(user, pswd)
 
 
@@ -153,7 +140,7 @@ def main():
 
     user = git.get_user()
 
-    print('Finding repos...')
+    print('Finding repo...')
     for repo in user.get_repos():
         if repo.owner.name == user.name:
             if repo.name == REPO_NAME:
