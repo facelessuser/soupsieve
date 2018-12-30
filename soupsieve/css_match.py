@@ -31,6 +31,21 @@ DIR_MAP = {
 }
 
 
+def get_comments(el, limit=0):
+    """Get comments."""
+
+    if limit < 1:
+        limit = None
+
+    for child in el.descendants:
+        if util.is_comment(child):
+            yield child
+            if limit is not None:
+                limit -= 1
+                if limit < 1:
+                    break
+
+
 class FakeNthParent(object):
     """
     Fake parent for `nth` selector.
@@ -834,27 +849,13 @@ class CSSMatch(object):
         return match
 
     def select(self, limit=0):
-        """Sieve."""
+        """Match all tags under the targeted tag."""
 
         if limit < 1:
             limit = None
 
         for child in self.tag.descendants:
             if util.is_tag(child) and self.match(child):
-                yield child
-                if limit is not None:
-                    limit -= 1
-                    if limit < 1:
-                        break
-
-    def comments(self, limit=0):
-        """Sieve."""
-
-        if limit < 1:
-            limit = None
-
-        for child in self.tag.descendants:
-            if util.is_comment(child):
                 yield child
                 if limit is not None:
                     limit -= 1
@@ -880,7 +881,7 @@ class CSSMatch(object):
 
 
 class SoupSieve(ct.Immutable):
-    """Match tags in Beautiful Soup with CSS selectors."""
+    """Compiled Soup Sieve selector matching object."""
 
     __slots__ = ("pattern", "selectors", "namespaces", "flags", "_hash")
 
@@ -917,7 +918,7 @@ class SoupSieve(ct.Immutable):
     def icomments(self, tag, limit=0):
         """Iterate comments only."""
 
-        for comment in CSSMatch(self.selectors, tag, self.namespaces, self.flags).comments(limit):
+        for comment in get_comments(tag, limit):
             yield comment
 
     def select_one(self, tag):

@@ -86,13 +86,13 @@ def filter(select, iterable, namespaces=None, flags=0):  # noqa: A001
 def comments(tag, limit=0, flags=0):
     """Get comments only."""
 
-    return compile("", None, flags).comments(tag, limit)
+    return list(icomments(tag, limit, flags))
 
 
 def icomments(tag, limit=0, flags=0):
     """Iterate comments only."""
 
-    for comment in compile("", None, flags).icomments(tag, limit):
+    for comment in cm.get_comments(tag, limit):
         yield comment
 
 
