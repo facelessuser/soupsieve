@@ -40,6 +40,14 @@ class TestSoupSieve(unittest.TestCase):
         comments = [util.ustr(c).strip() for c in sv.icomments(soup, limit=2)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
 
+        # Check that comments on compiled object work just like `sv.comments`
+        pattern = sv.compile('', None, 0)
+        comments = [util.ustr(c).strip() for c in pattern.comments(soup)]
+        self.assertEqual(sorted(comments), sorted(['before header', 'comment', "don't ignore"]))
+
+        comments = [util.ustr(c).strip() for c in pattern.icomments(soup, limit=2)]
+        self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
+
     def test_select(self):
         """Test select."""
 

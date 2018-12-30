@@ -31,8 +31,18 @@ DIR_MAP = {
 }
 
 
+def assert_valid_input(tag):
+    """Check if valid input tag."""
+
+    # Fail on unexpected types.
+    if not util.is_tag(tag):
+        raise TypeError("Expected a BeautifulSoup 'Tag', but instead recieved type {}".format(type(tag)))
+
+
 def get_comments(el, limit=0):
     """Get comments."""
+
+    assert_valid_input(el)
 
     if limit < 1:
         limit = None
@@ -67,7 +77,7 @@ class CSSMatch(object):
     def __init__(self, selectors, scope, namespaces, flags):
         """Initialize."""
 
-        self.assert_valid_input(scope)
+        assert_valid_input(scope)
         self.tag = scope
         self.cached_meta_lang = None
         self.cached_default_forms = []
@@ -90,13 +100,6 @@ class CSSMatch(object):
         self.scope = scope if scope is not doc else root
         self.html_namespace = self.is_html_ns(root)
         self.is_xml = doc._is_xml and not self.html_namespace
-
-    def assert_valid_input(self, tag):
-        """Check if valid input tag."""
-
-        # Fail on unexpected types.
-        if not util.is_tag(tag):
-            raise TypeError("Expected a BeautifulSoup 'Tag', but instead recieved type {}".format(type(tag)))
 
     def is_html_ns(self, el):
         """Check if in HTML namespace."""
