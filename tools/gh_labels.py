@@ -1,4 +1,4 @@
-"""Populate github labes for issue tracker."""
+"""Populate GitHub labels for issue tracker."""
 from github import Github
 from collections import namedtuple
 import sys
@@ -27,7 +27,7 @@ APPROVED = 'beed6d'
 
 LOW = 'dddddd'
 
-# Lables.
+# Labels.
 # To rename a label, use ('old_name', 'new_name') as the key.
 label_list = {
     # Issue type
