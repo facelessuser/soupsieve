@@ -877,6 +877,11 @@ class CSSMatch(object):
                 current = current.parent
         return closest
 
+    def filter(self):  # noqa A001
+        """Filter tag's children."""
+
+        return [node for node in self.tag if not util.is_navigable_string(node) and self.match(node)]
+
     def match(self, el):
         """Match."""
 
@@ -909,9 +914,21 @@ class SoupSieve(ct.Immutable):
         return CSSMatch(self.selectors, tag, self.namespaces, self.flags).closest()
 
     def filter(self, iterable):  # noqa A001
-        """Filter."""
+        """
+        Filter.
 
-        return [node for node in iterable if not util.is_navigable_string(node) and self.match(node)]
+        `CSSMatch` can cache certain searches for tags of the same document,
+        so if we are given a tag, all tags are from the same document,
+        and we can take advantage of the optimization.
+
+        Any other kind of iterable could have tags from different documents or detached tags,
+        so for those, we use a new `CSSMatch` for each item in the iterable.
+        """
+
+        if util.is_tag(iterable):
+            return CSSMatch(self.selectors, iterable, self.namespaces, self.flags).filter()
+        else:
+            return [node for node in iterable if not util.is_navigable_string(node) and self.match(node)]
 
     def comments(self, tag, limit=0):
         """Get comments only."""
