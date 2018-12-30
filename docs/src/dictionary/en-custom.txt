@@ -7,6 +7,7 @@ CSS
 CSS's
 Changelog
 DOM
+GitHub
 Hashable
 JQuery
 MERCHANTABILITY
