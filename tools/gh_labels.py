@@ -36,6 +36,7 @@ label_list = {
     # Category
     'API': (CATEGORY, "Related to the API"),
     'selectors': (CATEGORY, "Related to selector implementations"),
+    'integration': (CATEGORY, "Related to packaging and/or testing."),
     'docs': (CATEGORY, "Related to documentation."),
 
     # Sub categories
@@ -93,7 +94,7 @@ def update_labels(repo):
     for label in repo.get_labels():
         edit = find_label(label.name, label.color, label.description)
         if edit is not None:
-            print('Updating {}: #{} "{}"'.format(edit.new, edit.color, edit.description))
+            print('    Updating {}: #{} "{}"'.format(edit.new, edit.color, edit.description))
             label.edit(edit.new, edit.color, edit.description)
             updated.add(edit.old)
             updated.add(edit.new)
