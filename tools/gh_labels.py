@@ -14,7 +14,7 @@ DELETE_UNSPECIFIED = True
 BUG = 'c45b46'
 FEATURE = '7b17d8'
 SUPPORT = 'efbe62'
-DOCS = 'b2ffeb'
+MAINTENANCE = 'b2ffeb'
 
 CATEGORY = '709ad8'
 SUBCATEGORY = 'bfd4f2'
@@ -31,11 +31,12 @@ label_list = {
     # Issue type
     'bug': (BUG, "Bug report."),
     'feature': (FEATURE, "Feature request."),
+    'maintenance': (MAINTENANCE, "Maintenance chore."),
     'support': (SUPPORT, "Support request."),
 
     # Category
-    'API': (CATEGORY, "Related to the API"),
-    'selectors': (CATEGORY, "Related to selector implementations"),
+    'API': (CATEGORY, "Related to the API."),
+    'selectors': (CATEGORY, "Related to selector implementations."),
     'integration': (CATEGORY, "Related to packaging and/or testing."),
     'docs': (CATEGORY, "Related to documentation."),
 
