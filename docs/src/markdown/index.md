@@ -2,11 +2,17 @@
 
 ## Overview
 
-Soup Sieve is a CSS selector library designed to be used with [Beautiful Soup 4][bs4]. It aims to provide selecting, matching, and filtering using modern CSS selectors. Soup Sieve currently provides selectors from the CSS level 1 specifications up through the latest CSS level 4 drafts (though some are not yet implemented).
+Soup Sieve is a CSS selector library designed to be used with [Beautiful Soup 4][bs4]. It aims to provide selecting,
+matching, and filtering using modern CSS selectors. Soup Sieve currently provides selectors from the CSS level 1
+specifications up through the latest CSS level 4 drafts (though some are not yet implemented).
 
-While Beautiful Soup comes with a builtin CSS selection API, it is very basic and not without issues. It lacks support for many modern CSS features. Soup Sieve is planned to officially replace Beautiful Soup's current internal CSS selector implementation, but can also be imported in order to use its API directly.
+While Beautiful Soup comes with a builtin CSS selection API, it is very basic and not without issues. It lacks support
+for many modern CSS features. Soup Sieve is planned to officially replace Beautiful Soup's current internal CSS selector
+implementation, but can also be imported in order to use its API directly.
 
-Soup Sieve implements most of the CSS selectors, though there are a number that don't make sense in a non-browser environment. Selectors that cannot provide meaningful functionality simply do not match anything. Some of the supported selectors are:
+Soup Sieve implements most of the CSS selectors, though there are a number that don't make sense in a non-browser
+environment. Selectors that cannot provide meaningful functionality simply do not match anything. Some of the supported
+selectors are:
 
 - `#!css .classes`
 - `#!css #ids`
@@ -110,7 +116,8 @@ Or even just extracting comments:
 [' These are animals ']
 ```
 
-Selectors do not have to be constrained to one line either. You can span selectors over multiple lines just like you would in a CSS file.
+Selectors do not have to be constrained to one line either. You can span selectors over multiple lines just like you
+would in a CSS file.
 
 ```pycon3
 >>> selector = """
@@ -138,7 +145,10 @@ You can even use comments to annotate a particularly complex selector.
 [<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
 ```
 
-If you've ever used Python's Re library for regular expressions, you may know that it is often useful to pre-compile a regular expression pattern, especially if you plan to use it more than once.  The same is true for Soup Sieve's matchers, though is not required.  If you have a pattern that you want to use more than once, it may be wise to pre-compile it early on:
+If you've ever used Python's Re library for regular expressions, you may know that it is often useful to pre-compile a
+regular expression pattern, especially if you plan to use it more than once.  The same is true for Soup Sieve's
+matchers, though is not required.  If you have a pattern that you want to use more than once, it may be wise to
+pre-compile it early on:
 
 ```pycon3
 >>> selector = sv.compile('p:is(.a, .b, .c)')
@@ -146,7 +156,8 @@ If you've ever used Python's Re library for regular expressions, you may know th
 [<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
 ```
 
-A compiled object has all the same methods, though the parameters will be slightly different as they don't need things like the pattern or flags once compiled. See [API](./api.md) documentation for more info.
+A compiled object has all the same methods, though the parameters will be slightly different as they don't need things
+like the pattern or flags once compiled. See [API](./api.md) documentation for more info.
 
 Compiled patterns are cached, so if for any reason you need to clear the cache, simply issue the `purge` command.
 
