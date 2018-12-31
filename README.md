@@ -24,7 +24,8 @@ Soup Sieve implements most of the CSS selectors, though there are a number that 
 - `#!css :not(element.class, element2.class)`
 - `#!css :is(element.class, element2.class)`
 - `#!css parent:has(> child)`
-- and many more
+- and [many more](https://facelessuser.github.io/soupsieve/selectors/)
+
 
 ## Installation
 
