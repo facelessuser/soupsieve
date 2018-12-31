@@ -1,0 +1,16 @@
+<style>
+table tr > td code,
+table tr > td + td code {
+    white-space: nowrap;
+}
+
+.lab::before {
+    position: relative;
+    padding-right: .25rem;
+    font-family: FontAwesome;
+    -moz-osx-font-smoothing: initial;
+    -webkit-font-smoothing: initial;
+    font-weight: 400;
+    content: '\f0c3';
+}
+</style>

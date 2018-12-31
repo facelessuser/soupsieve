@@ -30,6 +30,8 @@ Test selectors level 4.
 :host
 :host(sel1, sel2, ...)
 :host-context(sel1, sel2, ...)
+:required
+:optional
 ```
 
 Not supported:
