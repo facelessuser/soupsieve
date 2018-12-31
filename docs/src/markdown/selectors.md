@@ -4,11 +4,11 @@
 
 ### HTML and XML Selectors
 
-The CSS selectors are based off of the CSS level 4 specification. Primarily support has been added for selectors that were feasible to implement and most likely to get practical use. Selectors that cannot provide meaningful matches, simply match nothing. An example would be `:focus` which will match nothing because elements cannot be focused outside of a browser. Though most of the selectors have been implemented, there are still a few that are not.
+The CSS selectors are based off of the CSS level 4 specification. Primarily support has been added for selectors that were feasible to implement and most likely to get practical use. Selectors that cannot provide meaningful matches will match nothing. An example would be `:focus` which will match nothing because elements cannot be focused outside of a browser. Though most of the selectors have been implemented, there are still a few that have not.
 
 Below shows accepted selectors. When speaking about namespaces, they only apply to XML, XHTML, or when dealing with recognized foreign tags in HTML5. You must configure the CSS [namespaces](./api.md#namespaces) when attempting to evaluate namespaces.
 
-While an effort is made to mimic CSS selector behavior, there may be some differences or quirks, please report issues if any are found. We do not support all CSS selector features, but enough to make filtering and searching more enjoyable.
+While an effort is made to mimic CSS selector behavior, there may be some differences or quirks, please report issues if any are found.
 
 Selector                        | Example                             | Description
 ------------------------------- | ----------------------------------- | -----------
@@ -57,16 +57,23 @@ Selector                        | Example                             | Descript
 `:root`                         | `#!css :root`                       | Selects the root element. In HTML, this is usually the `#!html <html>` element.
 `:scope`                        | `#!css :scope div`                  | Selects all `#!html <div>` elements under the current scope element. `:scope` is the element under match or select. In the case where a document (`BeautifulSoup` object, not a `Tag` object) is under select or match, `:scope` equals `:root`.
 
-!!! warning "Experimental Selectors"
+!!! warning "Expensive Selectors"
+    Some selectors are more expensive to use than others. For instance, `:has()` can be a bit more expensive as `:has(a)` will search all children of every element to find if the element contains an `#!html <a>` element.
+
+    While an effort is made to prioritize evaluation of less expensive selectors first in the hopes to invalidate the search early on and avoid evaluating expensive selectors unless needed, you should still try to be as specific as possible to limit how often expensive selectors are evaluated. For instance, using `p.special:has(a)` will limit evaluating `:has()` to only `#!html <p>` elements that contain the `special` class.
+
+!!! warning "CSS4 Selectors"
 
     In general, CSS4 specific features and selectors are not finalized in the official CSS4 specification, and may change in the future. While some are most likely quite stable, some may be less certain.
 
-    Some implementations are based from our interpretation of the specification. It is possible our interpretation is incorrect. This is more likely with selectors that currently have no reference implementations in browsers such as `:has()` and `of S` support in `:nth-child(an+b [of S]?)`. If any issues are discovered please report the issue with details and examples so we can get them right.
+    Some implementations are based off our interpretation of the specification. It is possible our interpretation is incorrect. This is more likely with selectors that currently have no reference implementations in browsers, such as `:has()` and `of S` support in `:nth-child(an+b [of S]?)`. If any issues are discovered please report the issue with details and examples so we can get them right.
+
+    If at anytime CSS4 drops a selector from the current draft, it will most likely also be removed here, except in the rare case that the selector is found to be far too useful despite being rejected.
 
 !!! danger "Not Implemented"
     Pseudo elements are not supported as they do not represent real elements.
 
-    At-rules (`@page`) are not supported.
+    At-rules (`@page`, etc.) are not supported.
 
 ### HTML Only Selectors
 
@@ -106,19 +113,17 @@ Selector                        | Example                             | Descript
 
 ## Custom Selectors
 
-Below is listed non-standard CSS selectors. These can contain useful selectors that were rejected from the official CSS specifications, selectors implemented by other systems such as JQuery, or even selectors specific to Soup Sieve.
+Below is a list of non-standard CSS selectors that we support. These can contain useful selectors that were rejected from the official CSS specifications, selectors implemented by other systems such as JQuery, or even selectors specifically created for Soup Sieve.
 
-Just because we include selectors from one source, does not mean we have intentions of implementing other selectors from the same source.
+Just because we include selectors from one source, does not mean we have intentions of implementing other selectors from the same such source.
 
 Selector                        | Example                             | Description
 ------------------------------- | ----------------------------------- | -----------
 `[attribute!=value]`            | `#!css [target!=_blank]`            | Equivalent to `#!css :not([target=_blank])`.
-`:contains(text)`               | `#!css p:contains(text)`            | Select all `#!html <p>` elements that contain "text" in their content, either directly in themselves or indirectly in their decedents.
+`:contains(text)`               | `#!css p:contains(text)`            | Select all `#!html <p>` elements that contain "text" in their content, either directly in themselves or indirectly in their descendants.
 
 !!! warning "Contains"
-    Contains is an expensive operation as it scans every element's content, which includes all of the content of each child of the element under consideration.
-
-    If you use a pattern such as `#!css *:contains(text)` it will scan all the children of every element. This will cause some elements to get scanned over and over again as the tree is walked. The more specific you are the better. If you use `#!css p.special:contains(text)`, only `#!html <p>` elements with the class `special` will have their content scanned (along with their children). `contains` is evaluated as one of the last checks, so if any other comparison invalidates the match, `contains` will not be performed.
+    `:contains()` is an expensive operation as it scans all the text nodes of an element under consideration, which includes all descendants. Using highly specific selectors can reduce how often it is evaluated.
 
 --8<--
 refs.txt

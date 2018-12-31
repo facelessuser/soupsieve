@@ -2,11 +2,11 @@
 
 ## Overview
 
-Soup Sieve is a CSS selector library designed to be used with [Beautiful Soup 4][bs4]. It aims to provide selecting, matching, and filtering using modern CSS selectors. Soup Sieve currently provides selectors from a subset of the CSS4 specification.
+Soup Sieve is a CSS selector library designed to be used with [Beautiful Soup 4][bs4]. It aims to provide selecting, matching, and filtering using modern CSS selectors. Soup Sieve currently provides selectors from the CSS level 1 specifications up through the latest CSS level 4 drafts (though some are not yet implemented).
 
-While Beautiful Soup comes with a builtin CSS selection API, it is not without issues. In addition, it also lacks support for some more modern CSS features.
+While Beautiful Soup comes with a builtin CSS selection API, it is very basic and not without issues. It lacks support for many modern CSS features. Soup Sieve is planned to officially replace Beautiful Soup's current internal CSS selector implementation, but can also be imported in order to use its API directly.
 
-Soup Sieve implements most of the CSS4 selectors, though there are a number that don't make sense in a non-browser environment. Selectors that cannot provide meaningful functionality simply do not match anything. Some of the supported selectors are:
+Soup Sieve implements most of the CSS selectors, though there are a number that don't make sense in a non-browser environment. Selectors that cannot provide meaningful functionality simply do not match anything. Some of the supported selectors are:
 
 - `#!css .classes`
 - `#!css #ids`
