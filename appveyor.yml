@@ -24,18 +24,19 @@ init:
 
 install:
   # Setup Python test tools
-  - "%PYTHON%/Scripts/pip.exe install -U setuptools"
-  - "%PYTHON%/Scripts/pip.exe install virtualenv"
-  - "%PYTHON%/Scripts/pip.exe install tox"
-  - "%PYTHON%/Scripts/pip.exe install codecov"
   - "SET STATIC_DEPS=true"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - "python -m pip install -U pip"
+  - "python -m pip install -U setuptools"
+  - "python -m pip install virtualenv"
+  - "python -m pip install tox"
+  - "python -m pip install codecov"
 
 test_script:
   - pip --version
   - virtualenv --version
   - tox --version
-  - tox
+  - python -m tox
 
 after_test:
   - if not ("%TOXENV%" == "lint") if not ("%TOXENV%" == "documents") codecov
