@@ -19,10 +19,10 @@ def get_version():
         fp.close()
 
 
-def get_requirements():
+def get_requirements(requirements_path):
     """Get the dependencies."""
 
-    with open("requirements/project.txt") as f:
+    with open(requirements_path) as f:
         requirements = []
         for line in f.readlines():
             line = line.strip()
@@ -52,7 +52,8 @@ setup(
     author_email='Isaac.Muse@gmail.com',
     url='https://github.com/facelessuser/soupsieve',
     packages=find_packages(exclude=['tests', 'tools']),
-    install_requires=get_requirements(),
+    install_requires=get_requirements("requirements/project.txt"),
+    tests_require=get_requirements("requirements/tests.txt"),
     license='MIT License',
     classifiers=[
         'Development Status :: %s' % DEVSTATUS,
