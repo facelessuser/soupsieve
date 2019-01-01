@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.1
+
+- **FIX**: Fix warning about not importing `Mapping` from `collections.abc`.
+
 ## 1.6.0
 
 - **NEW**: Add `closest` method to the API that matches closest ancestor.
