@@ -1,6 +1,9 @@
 """CSS selector structure items."""
 from __future__ import unicode_literals
-from collections import Mapping
+try:
+    from collections.abc import Mapping
+except ImportError:
+    from collections import Mapping
 from . import util
 
 __all__ = ('Selector', 'SelectorTag', 'SelectorAttribute', 'SelectorNth', 'SelectorList', 'Namespaces')
