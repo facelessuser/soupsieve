@@ -156,7 +156,7 @@ REL_HAS_CHILD = ": "
 # Parse flags
 FLG_PSEUDO = 0x01
 FLG_NOT = 0x02
-FLG_HAS = 0x04
+FLG_RELATIVE = 0x04
 FLG_DEFAULT = 0x08
 FLG_HTML = 0x10
 FLG_INDETERMINATE = 0x20
@@ -533,7 +533,7 @@ class CSSParser(object):
         if name == ':not':
             flags |= FLG_NOT
         if name == ':has':
-            flags |= FLG_HAS
+            flags |= FLG_RELATIVE
 
         sel.selectors.append(self.parse_selectors(iselector, index, flags))
         has_selector = True
@@ -655,7 +655,7 @@ class CSSParser(object):
         split_last = False
         is_open = flags & FLG_OPEN
         is_pseudo = flags & FLG_PSEUDO
-        is_has = flags & FLG_HAS
+        is_relative = flags & FLG_RELATIVE
         is_not = flags & FLG_NOT
         is_html = flags & FLG_HTML
         is_default = flags & FLG_DEFAULT
@@ -666,8 +666,8 @@ class CSSParser(object):
                 print('    is_pseudo: True')
             if is_open:
                 print('    is_open: True')
-            if is_has:
-                print('    is_has: True')
+            if is_relative:
+                print('    is_relative: True')
             if is_not:
                 print('    is_not: True')
             if is_html:
@@ -677,7 +677,7 @@ class CSSParser(object):
             if is_indeterminate:
                 print('    is_indeterminate: True')
 
-        if is_has:
+        if is_relative:
             selectors.append(_Selector())
 
         try:
@@ -712,7 +712,7 @@ class CSSParser(object):
                 elif key == 'combine':
                     if split_last:
                         raise SyntaxError("Unexpected combining character at position {}".format(m.start(0)))
-                    if is_has:
+                    if is_relative:
                         has_selector, sel, rel_type = self.parse_has_split(
                             sel, m, has_selector, selectors, rel_type
                         )
@@ -744,14 +744,14 @@ class CSSParser(object):
             if not sel.tag and not is_pseudo:
                 # Implied `*`
                 sel.tag = ct.SelectorTag('*', None)
-            if is_has:
+            if is_relative:
                 sel.rel_type = rel_type
                 selectors[-1].relations.append(sel)
             else:
                 sel.relations.extend(relations)
                 del relations[:]
                 selectors.append(sel)
-        elif is_has:
+        elif is_relative:
             # We will always need to finish a selector when `:has()` is used as it leads with combining.
             raise SyntaxError('Missing selectors after combining type.')
 
