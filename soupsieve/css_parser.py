@@ -12,6 +12,8 @@ PSEUDO_SIMPLE = {
     ":empty",
     ":first-child",
     ":first-of-type",
+    ":in-range",
+    ":out-of-range",
     ":last-child",
     ":last-of-type",
     ":link",
@@ -161,6 +163,8 @@ FLG_DEFAULT = 0x08
 FLG_HTML = 0x10
 FLG_INDETERMINATE = 0x20
 FLG_OPEN = 0x40
+FLG_IN_RANGE = 0x80
+FLG_OUT_OF_RANGE = 0x100
 
 # Maximum cached patterns to store
 _MAXCACHE = 500
@@ -432,6 +436,10 @@ class CSSParser(object):
                 sel.selectors.append(CSS_READ_ONLY)
             elif pseudo == ":read-write":
                 sel.selectors.append(CSS_READ_WRITE)
+            elif pseudo == ":in-range":
+                sel.selectors.append(CSS_IN_RANGE)
+            elif pseudo == ":out-of-range":
+                sel.selectors.append(CSS_OUT_OF_RANGE)
             elif pseudo == ":placeholder-shown":
                 sel.selectors.append(CSS_PLACEHOLDER_SHOWN)
             elif pseudo == ':first-child':
@@ -660,6 +668,8 @@ class CSSParser(object):
         is_html = flags & FLG_HTML
         is_default = flags & FLG_DEFAULT
         is_indeterminate = flags & FLG_INDETERMINATE
+        is_in_range = flags & FLG_IN_RANGE
+        is_out_of_range = flags & FLG_OUT_OF_RANGE
 
         if self.debug:  # pragma: no cover
             if is_pseudo:
@@ -676,6 +686,10 @@ class CSSParser(object):
                 print('    is_default: True')
             if is_indeterminate:
                 print('    is_indeterminate: True')
+            if is_in_range:
+                print('    is_in_range: True')
+            if is_out_of_range:
+                print('    is_out_of_range: True')
 
         if is_relative:
             selectors.append(_Selector())
@@ -755,13 +769,17 @@ class CSSParser(object):
             # We will always need to finish a selector when `:has()` is used as it leads with combining.
             raise SyntaxError('Missing selectors after combining type.')
 
-        # For default, the last patter in the list will be one that requires additional
-        # logic, flag that selector as "default" so the required logic will be executed
-        # along with the pattern.
+        # Some patterns require additional logic, such as default. We try to make these the
+        # last pattern, and append the appropriate flag to that selector which communicates
+        # to the matcher what additional logic is required.
         if is_default:
             selectors[-1].flags = ct.SEL_DEFAULT
         if is_indeterminate:
             selectors[-1].flags = ct.SEL_INDETERMINATE
+        if is_in_range:
+            selectors[-1].flags = ct.SEL_IN_RANGE
+        if is_out_of_range:
+            selectors[-1].flags = ct.SEL_OUT_OF_RANGE
 
         return ct.SelectorList([s.freeze() for s in selectors], is_not, is_html)
 
@@ -930,3 +948,37 @@ CSS_READ_ONLY = CSSParser(
     :not(:read-write)
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
+# CSS pattern for `:in-range`
+CSS_IN_RANGE = CSSParser(
+    '''
+    input:is(
+        [type="date"],
+        [type="month"],
+        [type="week"],
+        [type="time"],
+        [type="datetime-local"],
+        [type="number"],
+        [type="range"]
+    ):is(
+        [min],
+        [max]
+    )
+    '''
+).process_selectors(flags=FLG_PSEUDO | FLG_IN_RANGE | FLG_HTML)
+# CSS pattern for `:out-of-range`
+CSS_OUT_OF_RANGE = CSSParser(
+    '''
+    input:is(
+        [type="date"],
+        [type="month"],
+        [type="week"],
+        [type="time"],
+        [type="datetime-local"],
+        [type="number"],
+        [type="range"]
+    ):is(
+        [min],
+        [max]
+    )
+    '''
+).process_selectors(flags=FLG_PSEUDO | FLG_OUT_OF_RANGE | FLG_HTML)
