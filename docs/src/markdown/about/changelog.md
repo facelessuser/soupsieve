@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.2
+
+- **FIX**: Fix pattern compile issues on Python < 2.7.4.
+- **FIX**: Don't use `\d` in Unicode `Re` patterns as they will contain characters outside the range of `[0-9]`.
+
 ## 1.6.1
 
 - **FIX**: Fix warning about not importing `Mapping` from `collections.abc`.
