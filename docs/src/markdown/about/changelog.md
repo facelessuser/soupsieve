@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.0
+
+- **NEW**: Add support for `:in-range` and `:out-of-range` selectors.
+
 ## 1.6.1
 
 - **FIX**: Fix warning about not importing `Mapping` from `collections.abc`.

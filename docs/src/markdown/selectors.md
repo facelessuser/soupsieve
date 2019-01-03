@@ -121,11 +121,13 @@ Selector                        | Example                             | Descript
 `:host`{.lab}                   | `#!css :host`                       | Matches nothing as there is no Shadow DOM.
 `:host(sel, sel)`{.lab}         | `#!css :host(h1)`                   | Matches nothing as there is no Shadow DOM.
 `:host-context(sel, sel)`{.lab} | `#!css :host-context(h1)`           | Matches nothing as there is no Shadow DOM.
+`:in-range`{.lab}               | `#!css input:in-range`              | Matches all `#!html <input>` elements whose values are in range according to their `type`, `min`, and `max` attributes.
 `:hover`                        | `#!css a:focus`                     | Focus states are not applicable, so this will never match.
 `:indeterminate`{.lab}          | `#!css input:indeterminate`         | Selects every `#!html <input>` element in an indeterminate state.
 `:local-link`{.lab}             | `#!css a:local-link`                | As there is no local URL associated with a document in Soup Sieve, this will match nothing.
 `:link`                         | `#!css a:link`                      | All links are treated as unvisited, so this will match every `#!html <a>` element with an `href` attribute.
 `:optional`{.lab}               | `#!css input:optional`              | Select every `#!html <input>` element without a `required` attribute.
+`:out-of-range`{.lab}           | `#!css input:out-of-range`          | Matches all `#!html <input>` elements whose values are out of range according to their `type`, `min`, and `max` attributes.
 `:past`{.lab}                   | `#!css p:past`                      | As the document is not rendered, this will never match.
 `:paused`{.lab}                 | `#!css :paused`                     | Pausing is not applicable in the Soup Sieve environment, so this will match nothing.
 `:placeholder-shown`{.lab}      | `#!css input:placeholder-shown`     | Selects every `#!html <input>` element that is showing a placeholder via the `placeholder` attribute.
