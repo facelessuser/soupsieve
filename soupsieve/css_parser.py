@@ -91,9 +91,9 @@ WSC = r'(?:{ws}|{comments})'.format(ws=WS, comments=COMMENTS)
 # CSS escapes
 CSS_ESCAPES = r'(?:\\[a-f0-9]{{1,6}}{ws}?|\\[^\r\n\f])'.format(ws=WS)
 # CSS Identifier
-IDENTIFIER = r'(?:(?!-?\d|--)(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+)'.format(esc=CSS_ESCAPES)
+IDENTIFIER = r'(?:(?!-?[0-9]|--)(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+)'.format(esc=CSS_ESCAPES)
 # `nth` content
-NTH = r'(?:[-+])?(?:\d+n?|n)(?:(?<=n){ws}*(?:[-+]){ws}*(?:\d+))?'.format(ws=WSC)
+NTH = r'(?:[-+])?(?:[0-9]+n?|n)(?:(?<=n){ws}*(?:[-+]){ws}*(?:[0-9]+))?'.format(ws=WSC)
 # Value: quoted string or identifier
 VALUE = r'''(?:"(?:\\.|[^\\"]*)*?"|'(?:\\.|[^\\']*)*?'|{ident}+)'''.format(ident=IDENTIFIER)
 # Attribute value comparison. `!=` is handled special as it is non-standard.
@@ -141,7 +141,10 @@ PAT_PSEUDO_CONTAINS = r':contains\({ws}*(?P<value>{value}){ws}*\)'.format(ws=WSC
 # CSS escape pattern
 RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{{1,6}}{ws}?)|(\\[^\r\n\f]))'.format(ws=WSC), re.I)
 # Pattern to break up `nth` specifiers
-RE_NTH = re.compile(r'(?P<s1>[-+])?(?P<a>\d+n?|n)(?:(?<=n){ws}*(?P<s2>[-+]){ws}*(?P<b>\d+))?'.format(ws=WSC), re.I)
+RE_NTH = re.compile(
+    r'(?P<s1>[-+])?(?P<a>[0-9]+n?|n)(?:(?<=n){ws}*(?P<s2>[-+]){ws}*(?P<b>[0-9]+))?'.format(ws=WSC),
+    re.I
+)
 # Pattern to iterate multiple languages.
 RE_LANG = re.compile(r'(?:(?P<value>{value})|(?P<split>{ws}*,{ws}*))'.format(ws=WSC, value=VALUE), re.X)
 # Whitespace checks
