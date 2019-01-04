@@ -62,7 +62,7 @@ Selector                              | Example                               | 
 `:first-child`                        | `#!css p:first-child`                 | Selects every `#!html <p>` element that is the first child of its parent.
 `:first-of-type`                      | `#!css p:first-of-type`               | Selects every `#!html <p>` element that is the first `#!html <p>` element of its parent.
 `:has(> sel, + sel)`{.lab}            | `#!css :has(> div, + p)`              | Selects elements that have a direct child that is a `#!html <div>` or that have sibling of `#!html <p>` immediately following.
-`:is(sel, sel)`{.lab}                 | `#!css :is(div, .some-class)`         | Selects elements that are not `#!html <div>` and do not have class `some-class`. The alias `:matches()`{.lab} is currently allowed as well, but may be removed in the future.
+`:is(sel, sel)`{.lab}                 | `#!css :is(div, .some-class)`         | Selects all `#!html <div>` elements and elements that have the class `some-class`. The alias `:matches()`{.lab} is currently allowed as well, but may be removed in the future.
 `:lang(l1)`                           | `#!css :lang(en)`                     | Selects all elements with language `en`. Will also match `en-US`, and `en-GB`.
 `:lang(l1, l2)`{.lab}                 | `#!css :lang('*-CH', en)`             | Select all elements with language `de-CH`, `it-CH`, `fr-CH`, and `rm-CH`. Will also match `en`, `en-US`, and `en-GB`. See CSS4 specification for more info.
 `:last-child`                         | `#!css p:last-child`                  | Selects every `#!html <p>` element that is the last child of its parent.
@@ -79,7 +79,7 @@ Selector                              | Example                               | 
 `:only-of-type`                       | `#!css p:only-of-type`                | Selects every `#!html <p>` element that is the only `#!html <p>` element of its parent.
 `:root`                               | `#!css :root`                         | Selects the root element. In HTML, this is usually the `#!html <html>` element.
 `:scope`{.lab}                        | `#!css :scope div`                    | Selects all `#!html <div>` elements under the current scope element. `:scope` is the element under match or select. In the case where a document (`BeautifulSoup` object, not a `Tag` object) is under select or match, `:scope` equals `:root`.
-`:where(s1, s2)`{.lab}                | `#!css :where(div, .some-class)`      | Selects elements that are not `#!html <div>` and do not have class `some-class`. In CSS4 `:where()` is like `:is` except specificity is always zero. Soup Sieve doesn't care about specificity, so `:where` is exactly like `:is`.
+`:where(s1, s2)`{.lab}                | `#!css :where(div, .some-class)`      | Selects all `#!html <div>` elements and elements that have the class `some-class`. In CSS4 `:where()` is like `:is` except specificity is always zero. Soup Sieve doesn't care about specificity, so `:where` is exactly like `:is`.
 
 !!! warning "Expensive Selectors"
     Some selectors are more expensive to use than others. For instance, `:has()` can be a bit more expensive as
