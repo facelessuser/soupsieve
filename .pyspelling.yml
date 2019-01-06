@@ -19,9 +19,7 @@ matrix:
       - title
       - alt
       ignores:
-      - ':is(code, pre)'
-      - 'a:is(.magiclink-compare, .magiclink-commit, .magiclink-repository)'
-      - 'span.keys'
+      - ':is(code, pre, a.magiclink, span.keys)'
       - ':is(.MathJax_Preview, .md-nav__link, .md-footer-custom-text, .md-source__repository, .headerlink, .md-icon)'
   - pyspelling.filters.url:
 

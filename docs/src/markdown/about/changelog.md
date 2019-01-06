@@ -3,6 +3,7 @@
 ## 1.7.0
 
 - **NEW**: Add support for `:in-range` and `:out-of-range` selectors.
+- **NEW**: `namespaces` parameter in functions will accept a `None` key as an alias for the default namespace. (#68)
 
 ## 1.6.2
 

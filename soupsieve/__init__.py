@@ -47,7 +47,7 @@ def compile(pattern, namespaces=None, flags=0):  # noqa: A001
     if namespaces is None:
         namespaces = ct.Namespaces()
     if not isinstance(namespaces, ct.Namespaces):
-        namespaces = ct.Namespaces(**(namespaces))
+        namespaces = ct.Namespaces(namespaces)
 
     if isinstance(pattern, SoupSieve):
         if flags != pattern.flags:

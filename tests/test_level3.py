@@ -311,6 +311,41 @@ class TestLevel3(util.TestCase):
             flags=util.XML
         )
 
+        self.assert_selector(
+            markup,
+            "prefix|title",
+            ["3"],
+            namespaces={
+                "prefix": "http://me.com/namespaces/foofoo",
+                "bar": "http://me.com/namespaces/foobar"
+            },
+            flags=util.XML
+        )
+
+        self.assert_selector(
+            markup,
+            "title",
+            ["3"],
+            namespaces={
+                None: "http://me.com/namespaces/foofoo",
+                "bar": "http://me.com/namespaces/foobar"
+            },
+            flags=util.XML
+        )
+
+        # Empty string is always preferred
+        self.assert_selector(
+            markup,
+            "title",
+            ["3"],
+            namespaces={
+                "": "http://me.com/namespaces/foofoo",
+                None: "http://me.com/namespaces/something_else",
+                "bar": "http://me.com/namespaces/foobar"
+            },
+            flags=util.XML
+        )
+
         if not util.PY3:
             self.assert_selector(
                 markup,

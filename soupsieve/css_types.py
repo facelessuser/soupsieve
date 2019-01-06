@@ -123,17 +123,16 @@ class Namespaces(ImmutableDict):
     def __init__(self, *args, **kwargs):
         """Initialize."""
 
-        # If there are arguments, check the first index.
-        # `super` should fail if the user gave multiple arguments,
-        # so don't bother checking that.
-        arg = args[0] if args else kwargs
-        is_dict = isinstance(arg, dict)
-        if is_dict and not all([isinstance(k, util.string) and isinstance(v, util.string) for k, v in arg.items()]):
-            raise TypeError('Namespace keys and values must be Unicode strings')
-        elif not is_dict and not all([isinstance(k, util.string) and isinstance(v, util.string) for k, v in arg]):
+        namespaces = dict(*args, **kwargs)
+        if None in namespaces:
+            if "" not in namespaces:
+                namespaces[""] = namespaces[None]
+            del namespaces[None]
+
+        if not all([isinstance(k, util.string) and isinstance(v, util.string) for k, v in namespaces.items()]):
             raise TypeError('Namespace keys and values must be Unicode strings')
 
-        super(Namespaces, self).__init__(*args, **kwargs)
+        super(Namespaces, self).__init__(namespaces)
 
 
 class Selector(Immutable):

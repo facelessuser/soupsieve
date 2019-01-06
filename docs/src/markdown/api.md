@@ -223,6 +223,9 @@ namespace = {
 }
 ```
 
+You can use either `None` or an empty string to define the default namespace key, but you shouldn't use both. If an
+attempt to use both is tried, the empty string will always be preferred.
+
 Tags do not necessarily have to have a prefix for Soup Sieve to recognize them.  For instance, in HTML5, SVG *should*
 automatically get the SVG namespace. Depending how namespaces were defined in the documentation, tags may inherit
 namespaces in some conditions.  Namespace assignment is mainly handled by the parser and exposed through the Beautiful
