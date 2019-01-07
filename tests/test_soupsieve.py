@@ -184,17 +184,26 @@ class TestSoupSieve(unittest.TestCase):
         """Test copy and pickle."""
 
         # Test that we can pickle and unpickle
-        p1 = sv.compile('p[id]')
+        # We force a pattern that contains all custom types:
+        # `Selector`, `NullSelector`, `SelectorTag`, `SelectorAttribute`,
+        # `SelectorNth`, `SelectorLang`, `SelectorList`, and `Namespaces`
+        p1 = sv.compile(
+            'p.class#id[id]:nth-child(2):lang(en):focus', {'html': 'http://www.w3.org/TR/html4/'}
+        )
         sp1 = pickle.dumps(p1)
         pp1 = pickle.loads(sp1)
         self.assertTrue(pp1 == p1)
 
         # Test that we pull the same one from cache
-        p2 = sv.compile('p[id]')
+        p2 = sv.compile(
+            'p.class#id[id]:nth-child(2):lang(en):focus', {'html': 'http://www.w3.org/TR/html4/'}
+        )
         self.assertTrue(p1 is p2)
 
         # Test that we compile a new one when providing a different flags
-        p3 = sv.compile('p[id]', flags=0x10)
+        p3 = sv.compile(
+            'p.class#id[id]:nth-child(2):lang(en):focus', {'html': 'http://www.w3.org/TR/html4/'}, flags=0x10
+        )
         self.assertTrue(p1 is not p3)
         self.assertTrue(p1 != p3)
 
