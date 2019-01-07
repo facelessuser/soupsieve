@@ -2,7 +2,16 @@
 from __future__ import unicode_literals
 from . import util
 
-__all__ = ('Selector', 'SelectorTag', 'SelectorAttribute', 'SelectorNth', 'SelectorList', 'Namespaces')
+__all__ = (
+    'Selector',
+    'NullSelector',
+    'SelectorTag',
+    'SelectorAttribute',
+    'SelectorNth',
+    'SelectorLang',
+    'SelectorList',
+    'Namespaces'
+)
 
 
 SEL_EMPTY = 0x1
@@ -291,8 +300,9 @@ def pickle_register(obj):
 
 
 pickle_register(Selector)
+pickle_register(NullSelector)
 pickle_register(SelectorTag)
 pickle_register(SelectorAttribute)
 pickle_register(SelectorNth)
-pickle_register(SelectorList)
 pickle_register(SelectorLang)
+pickle_register(SelectorList)
