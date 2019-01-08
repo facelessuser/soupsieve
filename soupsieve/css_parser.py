@@ -154,9 +154,9 @@ RE_WS_END = re.compile('{}*$'.format(WSC))
 
 # Constants
 # List split token
-SPLIT = ','
-# Relation type `:has()` descendant, the default relation type.
-REL_HAS_CHILD = ": "
+COMMA_COMBINATOR = ','
+# Relation token for descendant
+WS_COMBINATOR = " "
 
 # Parse flags
 FLG_PSEUDO = 0x01
@@ -550,32 +550,42 @@ class CSSParser(object):
         has_selector = True
         return has_selector
 
-    def parse_has_split(self, sel, m, has_selector, selectors, rel_type):
-        """Parse splitting tokens."""
+    def parse_has_combinator(self, sel, m, has_selector, selectors, rel_type, index):
+        """Parse combinator tokens."""
 
-        if m.group('relation') == SPLIT:
+        combinator = m.group('relation').strip()
+        if not combinator:
+            combinator = WS_COMBINATOR
+        if combinator == COMMA_COMBINATOR:
             if not has_selector:
-                raise SyntaxError("Cannot start or end selector with '{}'".format(m.group('relation')))
+                raise SyntaxError(
+                    "The combinator '{}' at postion {}, must have a selector before it".format(combinator, index)
+                )
             sel.rel_type = rel_type
             selectors[-1].relations.append(sel)
-            rel_type = REL_HAS_CHILD
+            rel_type = ":" + WS_COMBINATOR
             selectors.append(_Selector())
         else:
             if has_selector:
                 sel.rel_type = rel_type
                 selectors[-1].relations.append(sel)
-            rel_type = ':' + m.group('relation')
+            rel_type = ':' + combinator
         sel = _Selector()
 
         has_selector = False
         return has_selector, sel, rel_type
 
-    def parse_split(self, sel, m, has_selector, selectors, relations, is_pseudo):
-        """Parse splitting tokens."""
+    def parse_combinator(self, sel, m, has_selector, selectors, relations, is_pseudo, index):
+        """Parse combinator tokens."""
 
+        combinator = m.group('relation').strip()
+        if not combinator:
+            combinator = WS_COMBINATOR
         if not has_selector:
-            raise SyntaxError("Cannot start or end selector with '{}'".format(m.group('relation')))
-        if m.group('relation') == SPLIT:
+            raise SyntaxError(
+                "The combinator '{}' at postion {}, must have a selector before it".format(combinator, index)
+            )
+        if combinator == COMMA_COMBINATOR:
             if not sel.tag and not is_pseudo:
                 # Implied `*`
                 sel.tag = ct.SelectorTag('*', None)
@@ -584,10 +594,7 @@ class CSSParser(object):
             del relations[:]
         else:
             sel.relations.extend(relations)
-            rel_type = m.group('relation').strip()
-            if not rel_type:
-                rel_type = ' '
-            sel.rel_type = rel_type
+            sel.rel_type = combinator
             del relations[:]
             relations.append(sel)
         sel = _Selector()
@@ -662,7 +669,7 @@ class CSSParser(object):
         has_selector = False
         closed = False
         relations = []
-        rel_type = REL_HAS_CHILD
+        rel_type = ":" + WS_COMBINATOR
         split_last = False
         is_open = flags & FLG_OPEN
         is_pseudo = flags & FLG_PSEUDO
@@ -720,7 +727,7 @@ class CSSParser(object):
                     is_html = True
                 elif key == 'pseudo_close':
                     if split_last:
-                        raise SyntaxError("Expecting more selectors at postion {}".format(m.start(0)))
+                        raise SyntaxError("Expected a selector at postion {}".format(m.start(0)))
                     if is_open:
                         closed = True
                         break
@@ -728,14 +735,17 @@ class CSSParser(object):
                         raise SyntaxError("Unmatched pseudo-class close at postion {}".format(m.start(0)))
                 elif key == 'combine':
                     if split_last:
-                        raise SyntaxError("Unexpected combining character at position {}".format(m.start(0)))
+                        raise SyntaxError("Unexpected combinator at position {}".format(m.start(0)))
                     if is_relative:
-                        has_selector, sel, rel_type = self.parse_has_split(
-                            sel, m, has_selector, selectors, rel_type
+                        has_selector, sel, rel_type = self.parse_has_combinator(
+                            sel, m, has_selector, selectors, rel_type, index
                         )
                     else:
-                        has_selector, sel = self.parse_split(sel, m, has_selector, selectors, relations, is_pseudo)
+                        has_selector, sel = self.parse_combinator(
+                            sel, m, has_selector, selectors, relations, is_pseudo, index
+                        )
                     split_last = True
+                    index = m.end(0)
                     continue
                 elif key == 'attribute':
                     has_selector = self.parse_attribute_selector(sel, m, has_selector)
@@ -755,7 +765,7 @@ class CSSParser(object):
             raise SyntaxError("Unclosed pseudo-class at position {}".format(index))
 
         if split_last:
-            raise SyntaxError("Expected more selectors at position {}".format(index))
+            raise SyntaxError("Expected a selector at position {}".format(index))
 
         if has_selector:
             if not sel.tag and not is_pseudo:
@@ -770,7 +780,7 @@ class CSSParser(object):
                 selectors.append(sel)
         elif is_relative:
             # We will always need to finish a selector when `:has()` is used as it leads with combining.
-            raise SyntaxError('Missing selectors after combining type.')
+            raise SyntaxError('Expected a selector at position {}'.format(index))
 
         # Some patterns require additional logic, such as default. We try to make these the
         # last pattern, and append the appropriate flag to that selector which communicates

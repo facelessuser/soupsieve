@@ -25,6 +25,7 @@ XHTML
 accessor
 boolean
 builtin
+combinator
 deprecations
 directionality
 html
