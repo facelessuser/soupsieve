@@ -111,7 +111,7 @@ PAT_TAG = r'(?:(?:{ident}|\*)?\|)?(?:{ident}|\*)'.format(ident=IDENTIFIER)
 # Attributes (`[attr]`, `[attr=value]`, etc.)
 PAT_ATTR = r'\[{ws}*(?P<ns_attr>(?:(?:{ident}|\*)?\|)?{ident}){attr}'.format(ws=WSC, ident=IDENTIFIER, attr=ATTR)
 # Pseudo class (`:pseudo-class`, `:pseudo-class(`)
-PAT_PSEUDO_CLASS = r'(?P<name>:{ident}+)(?P<open>\({ws}*)?'.format(ws=WSC, ident=IDENTIFIER)
+PAT_PSEUDO_CLASS = r'(?P<name>:{ident})(?P<open>\({ws}*)?'.format(ws=WSC, ident=IDENTIFIER)
 # Closing pseudo group (`)`)
 PAT_PSEUDO_CLOSE = r'{ws}*\)'.format(ws=WSC)
 # Pseudo element (`::pseudo-element`)
@@ -820,9 +820,21 @@ class CSSParser(object):
                     yield k, m
                     break
             if m is None:
-                if self.debug:  # pragma: no cover
-                    print("TOKEN: 'invalid' --> {!r} at position {}".format(pattern[index], index))
-                raise SyntaxError("Invlaid character {!r} at position {}".format(pattern[index], index))
+                c = pattern[index]
+                # If the character represents the start of one of the known selector types,
+                # throw an exception mentions that the known selector type in error;
+                # otherwise, report the invalid character.
+                if c == '[':
+                    msg = "Malformed attribute selector at position {}".format(index)
+                elif c == '.':
+                    msg = "Malformed class selector at position {}".format(index)
+                elif c == '#':
+                    msg = "Malformed id selector at position {}".format(index)
+                elif c == ':':
+                    msg = "Malformed pseudo-class selector at position {}".format(index)
+                else:
+                    msg = "Invalid character {!r} position {}".format(c, index)
+                raise SyntaxError(msg)
         if self.debug:  # pragma: no cover
             print('## END PARSING')
 
