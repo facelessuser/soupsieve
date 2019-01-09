@@ -1,6 +1,6 @@
 <style>
-table tr > td code,
-table tr > td + td code {
+table tr > td:first-child code,
+table tr > td:first-child + td code {
     white-space: nowrap;
 }
 
@@ -11,6 +11,9 @@ table tr > td + td code {
     -moz-osx-font-smoothing: initial;
     -webkit-font-smoothing: initial;
     font-weight: 400;
+}
+
+.lab::before {
     content: '\f0c3';
 }
 </style>
