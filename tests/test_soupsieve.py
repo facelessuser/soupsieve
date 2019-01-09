@@ -346,6 +346,25 @@ class TestInvalid(unittest.TestCase):
         with self.assertRaises(SyntaxError):
             sv.compile('div?')
 
+    def test_malformed_selectors(self):
+        """Test malformed selectors."""
+
+        # Malformed attribute
+        with self.assertRaises(SyntaxError):
+            sv.compile('div[attr={}]')
+
+        # Malformed class
+        with self.assertRaises(SyntaxError):
+            sv.compile('td.+#some-id')
+
+        # Malformed id
+        with self.assertRaises(SyntaxError):
+            sv.compile('td#.some-class')
+
+        # Malformed pseudo-class
+        with self.assertRaises(SyntaxError):
+            sv.compile('td:[href]')
+
     def test_invalid_namespace(self):
         """Test invalid namespace."""
 

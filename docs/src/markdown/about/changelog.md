@@ -7,6 +7,7 @@
 ## 1.6.3
 
 - **FIX**: Fix pickling issue when compiled selector contains a `NullSelector` object. (#70)
+- **FIX**: Report better, more descriptive exception messages in the CSS selector parser.
 
 ## 1.6.2
 
