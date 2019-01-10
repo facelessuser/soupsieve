@@ -9,6 +9,8 @@ import unicodedata
 # Empty tag pattern (whitespace okay)
 RE_NOT_EMPTY = re.compile('[^ \t\r\n\f]')
 
+RE_NOT_WS = re.compile('[^ \t\r\n\f]+')
+
 # Relationships
 REL_PARENT = ' '
 REL_CLOSE_PARENT = '>'
@@ -233,7 +235,7 @@ class CSSMatch(object):
 
         classes = el.attrs.get('class', [])
         if isinstance(classes, util.ustr):
-            classes = [c for c in classes.strip().split(' ') if c]
+            classes = RE_NOT_WS.findall(classes)
         return classes
 
     def get_attribute_by_name(self, el, name, default=None):
