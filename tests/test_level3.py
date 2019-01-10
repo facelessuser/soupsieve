@@ -891,6 +891,57 @@ class TestLevel3(util.TestCase):
         fragment = soup.p.extract()
         self.assertTrue(sv.match("p:nth-child(1)", fragment, flags=sv.DEBUG))
 
+    def test_nth_child_issue_78(self):
+        """Test issue for https://github.com/facelessuser/soupsieve/issues/78."""
+
+        markup = """<html><body>
+        <div id= "1">1</div>
+        <div id= "2">2</div>
+        <div id= "3">3</div>
+        <div id= "4">4</div>
+        <div id= "5">5</div>
+        <div id= "6">6</div>
+        <div id= "7">7</div>
+        <div id= "8">8</div>
+        <div id= "9">9</div>
+        <div id= "10">10</div>
+        <div id= "11">11</div>
+        <div id= "12">12</div>
+        <div id= "13">13</div>
+        <div id= "14">14</div>
+        <div id= "15">15</div>
+        <div id= "16">16</div>
+        <div id= "17">17</div>
+        </body></html>"""
+
+        self.assert_selector(
+            markup,
+            "div:nth-of-type(10)",
+            ['10'],
+            flags=util.XML
+        )
+
+        self.assert_selector(
+            markup,
+            "div:nth-child(10)",
+            ['10'],
+            flags=util.XML
+        )
+
+        self.assert_selector(
+            markup,
+            "div:nth-of-type(n+10)",
+            ['10', '11', '12', '13', '14', '15', '16', '17'],
+            flags=util.XML
+        )
+
+        self.assert_selector(
+            markup,
+            "div:nth-of-type(n+10)",
+            ['10', '11', '12', '13', '14', '15', '16', '17'],
+            flags=util.XML
+        )
+
     def test_nth_last_child(self):
         """Test `nth` last child."""
 
