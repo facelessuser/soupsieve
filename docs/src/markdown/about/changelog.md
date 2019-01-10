@@ -9,6 +9,7 @@
   some exceptions. (#72, #73)
 - **FIX**: Don't compare prefixes when evaluating attribute namespaces, compare the actual namespace. (#75)
 - **FIX**: Split whitespace attribute lists by all whitespace characters, not just space.
+- **FIX**: `:nth-*` patterns were converting numbers to base 16 when they should have been converting to base 10.
 
 ## 1.6.2
 

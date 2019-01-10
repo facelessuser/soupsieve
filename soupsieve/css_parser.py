@@ -518,8 +518,8 @@ class CSSParser(object):
                 s2 += nth_parts.group('b')
             else:
                 s2 = '0'
-            s1 = int(s1, 16)
-            s2 = int(s2, 16)
+            s1 = int(s1, 10)
+            s2 = int(s2, 10)
 
         pseudo_sel = util.lower(m.group('pseudo_nth' + postfix))
         if postfix == '_child':
