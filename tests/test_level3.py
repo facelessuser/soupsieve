@@ -516,6 +516,87 @@ class TestLevel3(util.TestCase):
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
             "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+        <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+        </head>
+        <body>
+          <h1>A contrived example</h1>
+          <svg viewBox="0 0 20 32" class="icon icon-1">
+            <use id="0" xlink:href="images/sprites.svg#icon-undo"></use>
+          </svg>
+          <svg viewBox="0 0 30 32" class="icon icon-2">
+            <use id="1" xlink:href="images/sprites.svg#icon-redo"></use>
+          </svg>
+          <svg viewBox="0 0 40 32" class="icon icon-3">
+            <use id="2" xlink:href="images/sprites.svg#icon-forward"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="3" xlink:href="other/sprites.svg#icon-reply"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="4" :href="other/sprites.svg#icon-reply"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="5" other:href="other/sprites.svg#icon-reply"></use>
+          </svg>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            '[xlink|href*=forw],[xlink|href="images/sprites.svg#icon-redo"]',
+            ['1', '2'],
+            namespaces={"xlink": "http://www.w3.org/1999/xlink"},
+            flags=util.XHTML
+        )
+
+        markup = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+            "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+        <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+        </head>
+        <body>
+          <h1>A contrived example</h1>
+          <svg viewBox="0 0 20 32" class="icon icon-1">
+            <use id="0" xlink:href="images/sprites.svg#icon-undo"></use>
+          </svg>
+          <svg viewBox="0 0 30 32" class="icon icon-2">
+            <use id="1" xlink:other="images/sprites.svg#icon-redo"></use>
+          </svg>
+          <svg viewBox="0 0 40 32" class="icon icon-3">
+            <use id="2" xlink:href="images/sprites.svg#icon-forward"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="3" xlink:href="other/sprites.svg#icon-reply"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="4" :href="other/sprites.svg#icon-reply"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="5" other:href="other/sprites.svg#icon-reply"></use>
+          </svg>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            '[xlink|href]',
+            ['0', '2', '3'],
+            namespaces={"xlink": "http://www.w3.org/1999/xlink", "xlink2": "foo"},
+            flags=util.XHTML
+        )
+
+    def test_attribute_namespace_xml(self):
+        """Test attribute namespace in XML."""
+
+        markup = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+            "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
         <html xmlns:xlink="http://www.w3.org/1999/xlink">
         <head>
         </head>
@@ -548,6 +629,45 @@ class TestLevel3(util.TestCase):
             '[xlink|href*=forw],[xlink|href="images/sprites.svg#icon-redo"]',
             ['1', '2'],
             namespaces={"xlink": "http://www.w3.org/1999/xlink"},
+            flags=util.XHTML
+        )
+
+        markup = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+            "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+        <html xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+        </head>
+        <body>
+          <h1>A contrived example</h1>
+          <svg viewBox="0 0 20 32" class="icon icon-1">
+            <use id="0" xlink:href="images/sprites.svg#icon-undo"></use>
+          </svg>
+          <svg viewBox="0 0 30 32" class="icon icon-2">
+            <use id="1" xlink:other="images/sprites.svg#icon-redo"></use>
+          </svg>
+          <svg viewBox="0 0 40 32" class="icon icon-3">
+            <use id="2" xlink:href="images/sprites.svg#icon-forward"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="3" xlink:href="other/sprites.svg#icon-reply"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="4" :href="other/sprites.svg#icon-reply"></use>
+          </svg>
+          <svg viewBox="0 0 50 32" class="icon icon-4">
+            <use id="5" other:href="other/sprites.svg#icon-reply"></use>
+          </svg>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            '[xlink|href]',
+            ['0', '2', '3'],
+            namespaces={"xlink": "http://www.w3.org/1999/xlink", "xlink2": "foo"},
             flags=util.XHTML
         )
 
