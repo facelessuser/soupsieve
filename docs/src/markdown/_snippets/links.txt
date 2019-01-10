@@ -2,3 +2,4 @@
 [bs4]: https://beautiful-soup-4.readthedocs.io/en/latest/#
 [html5lib]: https://github.com/html5lib/html5lib-python
 [lxml]: https://github.com/lxml/lxml
+[registry]: https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry

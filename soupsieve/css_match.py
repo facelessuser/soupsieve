@@ -944,6 +944,27 @@ class CSSMatch(object):
 
         return not out_of_range if condition & ct.SEL_IN_RANGE else out_of_range
 
+    def match_defined(self, el):
+        """
+        Match defined.
+
+        `:defined` is related to custom elements in a browser.
+
+        - If the document is XML (not XHTML), all tags will match.
+        - Tags that are not custom (don't have a hyphen) are marked defined.
+        - If the tag has a prefix (without or without a namespace), it will not match.
+
+        This is of course requires the parser to provide us with the proper prefix and namespace info,
+        if it doesn't, there is nothing we can do.
+        """
+
+        return (
+            self.is_xml or
+            el.name.find('-') == -1 or
+            el.name.find(':') != -1 or
+            el.prefix is not None
+        )
+
     def match_selectors(self, el, selectors):
         """Check if element matches one of the selectors."""
 
@@ -958,6 +979,9 @@ class CSSMatch(object):
                     continue
                 # Verify tag matches
                 if not self.match_tag(el, selector.tag):
+                    continue
+                # Verify tag is defined
+                if selector.flags & ct.SEL_DEFINED and not self.match_defined(el):
                     continue
                 # Verify element is root
                 if selector.flags & ct.SEL_ROOT and not self.match_root(el):

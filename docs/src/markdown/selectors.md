@@ -56,30 +56,30 @@ Selector                              | Example                               | 
 `[attribute^=value]`                  | `#!css a[href^="https"]`              | Selects every `#!html <a>` element whose `href` attribute value begins with `https`.
 `[attribute$=value]`                  | `#!css a[href$=".pdf"]`               | Selects every `#!html <a>` element whose `href` attribute value ends with `.pdf`.
 `[attribute*=value]`                  | `#!css a[href*="sometext"]`           | Selects every `#!html <a>` element whose `href` attribute value contains the substring `sometext`.
-`[attribute=value i]`{.lab}           | `#!css [title=flower i]`              | Selects any element with a `title` that equals `flower` regardless of case.
-`[attribute=value s]`{.lab}           | `#!css [type=submit s]`               | Selects any element with a `type` that equals `submit`. Case sensitivity will be forced.
+`[attribute=value i]`{:.lab}          | `#!css [title=flower i]`              | Selects any element with a `title` that equals `flower` regardless of case.
+`[attribute=value s]`{:.lab}          | `#!css [type=submit s]`               | Selects any element with a `type` that equals `submit`. Case sensitivity will be forced.
 `:empty`{.lab}                        | `#!css p:empty`                       | Selects every `#!html <p>` element that has no children and either no text. Whitespace and comments are ignored.
 `:first-child`                        | `#!css p:first-child`                 | Selects every `#!html <p>` element that is the first child of its parent.
 `:first-of-type`                      | `#!css p:first-of-type`               | Selects every `#!html <p>` element that is the first `#!html <p>` element of its parent.
-`:has(> sel, + sel)`{.lab}            | `#!css :has(> div, + p)`              | Selects elements that have a direct child that is a `#!html <div>` or that have sibling of `#!html <p>` immediately following.
-`:is(sel, sel)`{.lab}                 | `#!css :is(div, .some-class)`         | Selects all `#!html <div>` elements and elements that have the class `some-class`. The alias `:matches()`{.lab} is currently allowed as well, but may be removed in the future.
+`:has(> sel, + sel)`{:.lab}           | `#!css :has(> div, + p)`              | Selects elements that have a direct child that is a `#!html <div>` or that have sibling of `#!html <p>` immediately following.
+`:is(sel, sel)`{:.lab}                | `#!css :is(div, .some-class)`         | Selects all `#!html <div>` elements and elements that have the class `some-class`. The alias `:matches()`{.lab} is currently allowed as well, but may be removed in the future.
 `:lang(l1)`                           | `#!css :lang(en)`                     | Selects all elements with language `en`. Will also match `en-US`, and `en-GB`.
-`:lang(l1, l2)`{.lab}                 | `#!css :lang('*-CH', en)`             | Select all elements with language `de-CH`, `it-CH`, `fr-CH`, and `rm-CH`. Will also match `en`, `en-US`, and `en-GB`. See CSS4 specification for more info.
+`:lang(l1, l2)`{:.lab}                | `#!css :lang('*-CH', en)`             | Select all elements with language `de-CH`, `it-CH`, `fr-CH`, and `rm-CH`. Will also match `en`, `en-US`, and `en-GB`. See CSS4 specification for more info.
 `:last-child`                         | `#!css p:last-child`                  | Selects every `#!html <p>` element that is the last child of its parent.
 `:last-of-type`                       | `#!css p:last-of-type`                | Selects every `#!html <p>` element that is the last `#!html <p>` element of its parent.
 `:not(sel)`                           | `#!css :not(.some-class)`             | Selects elements that do not have class `some-class`.
-`:not(sel, sel)`{.lab}                | `#!css :not(.some-class, #some-id)`   | Selects elements that do not have class `some-class` and ID `some-id`.
+`:not(sel, sel)`{:.lab}               | `#!css :not(.some-class, #some-id)`   | Selects elements that do not have class `some-class` and ID `some-id`.
 `:nth-child(an+b)`                    | `#!css p:nth-child(2)`                | Selects every `#!html <p>` element that is the second child of its parent.
-`:nth-child(an+b [of S]?)`{.lab}      | `#!css p:nth-child(2 of .class)`      | Selects every `#!html <p>` element that matches the provided `of S` selector and is the second child of its parent.
+`:nth-child(an+b [of S]?)`{:.lab}     | `#!css p:nth-child(2 of .class)`      | Selects every `#!html <p>` element that matches the provided `of S` selector and is the second child of its parent.
 `:nth-last-child(an+b)`               | `#!css p:nth-last-child(2)`           | Selects every `#!html <p>` element that is the second child of its parent, counting from the last child.
-`:nth-last-child(an+b [of S]?)`{.lab} | `#!css p:nth-last-child(2 of .class)` | Selects every `#!html <p>` element that matches the provided `of S` selector and is the second child of its parent, counting from the last child. Please see CSS specification for more info on format.
+`:nth-last-child(an+b [of S]?)`{:.lab}| `#!css p:nth-last-child(2 of .class)` | Selects every `#!html <p>` element that matches the provided `of S` selector and is the second child of its parent, counting from the last child. Please see CSS specification for more info on format.
 `:nth-last-of-type(an+b)`             | `#!css p:nth-last-of-type(2)`         | Selects every `#!html <p>` element that is the second `#!html <p>` element of its parent, counting from the last child. Please see CSS specification for more info on format.
 `:nth-of-type(an+b)`                  | `#!css p:nth-of-type(2)`              | Selects every `#!html <p>` element that is the second `#!html <p>` element of its parent. Please see CSS specification for more info on format.
 `:only-child`                         | `#!css p:only-child`                  | Selects every `#!html <p>` element that is the only child of its parent.
 `:only-of-type`                       | `#!css p:only-of-type`                | Selects every `#!html <p>` element that is the only `#!html <p>` element of its parent.
 `:root`                               | `#!css :root`                         | Selects the root element. In HTML, this is usually the `#!html <html>` element.
 `:scope`{.lab}                        | `#!css :scope div`                    | Selects all `#!html <div>` elements under the current scope element. `:scope` is the element under match or select. In the case where a document (`BeautifulSoup` object, not a `Tag` object) is under select or match, `:scope` equals `:root`.
-`:where(s1, s2)`{.lab}                | `#!css :where(div, .some-class)`      | Selects all `#!html <div>` elements and elements that have the class `some-class`. In CSS4 `:where()` is like `:is` except specificity is always zero. Soup Sieve doesn't care about specificity, so `:where` is exactly like `:is`.
+`:where(s1, s2)`{:.lab}               | `#!css :where(div, .some-class)`      | Selects all `#!html <div>` elements and elements that have the class `some-class`. In CSS4 `:where()` is like `:is` except specificity is always zero. Soup Sieve doesn't care about specificity, so `:where` is exactly like `:is`.
 
 !!! warning "Expensive Selectors"
     Some selectors are more expensive to use than others. For instance, `:has()` can be a bit more expensive as
@@ -106,38 +106,38 @@ with a live document are allowed (if implemented), but will never match as well.
 Selector                        | Example                             | Description
 ------------------------------- | ----------------------------------- | -----------
 `:active`                       | `#!css a:active`                    | Active states are not applicable, so this will never match.
-`:any-link`{.lab}               | `#!css a:any-link`                  | All links are treated as unvisited, so this will match every `#!html <a>` element with an `href` attribute.
+`:any-link`{:.lab}              | `#!css a:any-link`                  | All links are treated as unvisited, so this will match every `#!html <a>` element with an `href` attribute.
 `:checked`                      | `#!css input:checked`               | Selects every checked `#!html <input>` element.
-`:current`{.lab}                | `#!css p:current`                   | As the document is not rendered, this will never match.
-`:current(sel, sel)`{.lab}      | `#!css :current(p, li, dt, dd)`     | As the document is not rendered, this will never match.
-`:default`{.lab}                | `#!css input:default`               | Selects all `#!html <inputs>` elements that are the default among their related elements. See CSS specification to learn more about all that this targets.
-`:dir(direction)`{.lab}         | `#!css div:dir(ltr)`                | Selects all `#!html <div>` elements that have a text direction of left to right.
+`:current`{:.lab}               | `#!css p:current`                   | As the document is not rendered, this will never match.
+`:current(sel, sel)`{:.lab}     | `#!css :current(p, li, dt, dd)`     | As the document is not rendered, this will never match.
+`:default`{:.lab}               | `#!css input:default`               | Selects all `#!html <inputs>` elements that are the default among their related elements. See CSS specification to learn more about all that this targets.
+`:dir(direction)`{:.lab}        | `#!css div:dir(ltr)`                | Selects all `#!html <div>` elements that have a text direction of left to right.
 `:disabled`                     | `#!css input:disabled`              | Selects every disabled `#!html <input>` element.
 `:enabled`                      | `#!css input:enabled`               | Selects every enabled `#!html <input>` element.
 `:focus`                        | `#!css input:focus`                 | Focus states are not applicable, so this will never match.
-`:focus-within`{.lab}           | `#!css div:focus-within`            | Focus states are not applicable, so this will never match.
-`:focus-visible`{.lab}          | `#!css a:focus-visible`             | Focus states are not applicable, so this will never match.
-`:future`{.lab}                 | `#!css p:future`                    | As the document is not rendered, this will never match.
-`:host`{.lab}                   | `#!css :host`                       | Matches nothing as there is no Shadow DOM.
-`:host(sel, sel)`{.lab}         | `#!css :host(h1)`                   | Matches nothing as there is no Shadow DOM.
-`:host-context(sel, sel)`{.lab} | `#!css :host-context(h1)`           | Matches nothing as there is no Shadow DOM.
-`:in-range`{.lab}               | `#!css input:in-range`              | Matches all `#!html <input>` elements whose values are in range according to their `type`, `min`, and `max` attributes.
-`:hover`                        | `#!css a:focus`                     | Focus states are not applicable, so this will never match.
-`:indeterminate`{.lab}          | `#!css input:indeterminate`         | Selects every `#!html <input>` element in an indeterminate state.
-`:local-link`{.lab}             | `#!css a:local-link`                | As there is no local URL associated with a document in Soup Sieve, this will match nothing.
+`:focus-within`{:.lab}          | `#!css div:focus-within`            | Focus states are not applicable, so this will never match.
+`:focus-visible`{:.lab}         | `#!css a:focus-visible`             | Focus states are not applicable, so this will never match.
+`:future`{:.lab}                | `#!css p:future`                    | As the document is not rendered, this will never match.
+`:host`{:.lab}                  | `#!css :host`                       | Matches nothing as there is no Shadow DOM.
+`:host(sel, sel)`{:.lab}        | `#!css :host(h1)`                   | Matches nothing as there is no Shadow DOM.
+`:host-context(sel, sel)`{:.lab}| `#!css :host-context(h1)`           | Matches nothing as there is no Shadow DOM.
+`:in-range`{:.lab}              | `#!css input:in-range`              | Matches all `#!html <input>` elements whose values are in range according to their `type`, `min`, and `max` attributes.
+`:hover`                        | `#!css a:focus`                     | Hover states are not applicable, so this will never match.
+`:indeterminate`{:.lab}         | `#!css input:indeterminate`         | Selects every `#!html <input>` element in an indeterminate state.
+`:local-link`{:.lab}            | `#!css a:local-link`                | As there is no local URL associated with a document in Soup Sieve, this will match nothing.
 `:link`                         | `#!css a:link`                      | All links are treated as unvisited, so this will match every `#!html <a>` element with an `href` attribute.
-`:optional`{.lab}               | `#!css input:optional`              | Select every `#!html <input>` element without a `required` attribute.
-`:out-of-range`{.lab}           | `#!css input:out-of-range`          | Matches all `#!html <input>` elements whose values are out of range according to their `type`, `min`, and `max` attributes.
-`:past`{.lab}                   | `#!css p:past`                      | As the document is not rendered, this will never match.
-`:paused`{.lab}                 | `#!css :paused`                     | Pausing is not applicable in the Soup Sieve environment, so this will match nothing.
-`:placeholder-shown`{.lab}      | `#!css input:placeholder-shown`     | Selects every `#!html <input>` element that is showing a placeholder via the `placeholder` attribute.
-`:playing`{.lab}                | `#!css :playing`                    | Playing is not applicable in the Soup Sieve environment, so this will match nothing.
-`:read-only`{.lab}              | `#!css input:read-only`             | Selects every `#!html <input>` element that is not editable by the user.
-`:read-write`{.lab}             | `#!css input:read-write`            | Selects every `#!html <input>` element that is editable by the user.
-`:required`{.lab}               | `#!css input:required`              | Select every `#!html <input>` element with a `required` attribute.
+`:optional`{:.lab}              | `#!css input:optional`              | Select every `#!html <input>` element without a `required` attribute.
+`:out-of-range`{:.lab}          | `#!css input:out-of-range`          | Matches all `#!html <input>` elements whose values are out of range according to their `type`, `min`, and `max` attributes.
+`:past`{:.lab}                  | `#!css p:past`                      | As the document is not rendered, this will never match.
+`:paused`{:.lab}                | `#!css :paused`                     | Pausing is not applicable in the Soup Sieve environment, so this will match nothing.
+`:placeholder-shown`{:.lab}     | `#!css input:placeholder-shown`     | Selects every `#!html <input>` element that is showing a placeholder via the `placeholder` attribute.
+`:playing`{:.lab}               | `#!css :playing`                    | Playing is not applicable in the Soup Sieve environment, so this will match nothing.
+`:read-only`{:.lab}             | `#!css input:read-only`             | Selects every `#!html <input>` element that is not editable by the user.
+`:read-write`{:.lab}            | `#!css input:read-write`            | Selects every `#!html <input>` element that is editable by the user.
+`:required`{:.lab}              | `#!css input:required`              | Select every `#!html <input>` element with a `required` attribute.
 `:target`                       | `#!css #news:target`                | Elements cannot be targeted, so this will never match.
-`:target-within`{.lab}          | `#!css article:target`              | Elements cannot be targeted, so this will never match.
-`:user-invalid`{.lab}           | `#!css input:user-invalid`          | User interaction is not applicable, so this will never match.
+`:target-within`{:.lab}         | `#!css article:target`              | Elements cannot be targeted, so this will never match.
+`:user-invalid`{:.lab}          | `#!css input:user-invalid`          | User interaction is not applicable, so this will never match.
 `:visited`                      | `#!css a:visited`                   | All links are treated unvisited, so this will never match.
 
 ## Custom Selectors
@@ -153,6 +153,7 @@ Selector                        | Example                             | Descript
 ------------------------------- | ----------------------------------- | -----------
 `[attribute!=value]`            | `#!css [target!=_blank]`            | Equivalent to `#!css :not([target=_blank])`.
 `:contains(text)`               | `#!css p:contains(text)`            | Select all `#!html <p>` elements that contain "text" in their content, either directly in themselves or indirectly in their descendants.
+`:defined`                      | `#!css :defined`                    | Normally, this represents normal elements (names without hyphens) and custom elements (names with hyphens) that have been properly added to the [custom element registry][registry]. Since elements cannot be added to the custom element registry with JavaScript in the Soup Sieve environment, this will select all elements that are not custom tags. `:defined` is a browser selector, so it doesn't apply to XML.
 
 !!! warning "Contains"
     `:contains()` is an expensive operation as it scans all the text nodes of an element under consideration, which

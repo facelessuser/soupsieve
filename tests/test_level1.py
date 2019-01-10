@@ -34,6 +34,15 @@ class TestLevel1(util.TestCase):
             flags=util.HTML5
         )
 
+        self.assert_selector(
+            """
+            <prefix:p id="0"></prefix:p>
+            """,
+            "prefix\\:p",
+            ["0"],
+            flags=util.HTML5
+        )
+
     def test_tags(self):
         """Test multiple selectors."""
 

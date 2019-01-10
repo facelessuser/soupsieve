@@ -30,7 +30,8 @@ PSEUDO_SIMPLE = {
     ':read-only',
     ':read-write',
     ':required',
-    ':scope'
+    ':scope',
+    ':defined'
 }
 
 # Supported, simple pseudo classes that match nothing in the Soup Sieve environment
@@ -403,7 +404,7 @@ class CSSParser(object):
         has_selector = True
         return has_selector
 
-    def parse_pseudo_class(self, sel, m, has_selector, iselector):
+    def parse_pseudo_class(self, sel, m, has_selector, iselector, is_html):
         """Parse pseudo class."""
 
         complex_pseudo = False
@@ -415,6 +416,9 @@ class CSSParser(object):
         elif not complex_pseudo and pseudo in PSEUDO_SIMPLE:
             if pseudo == ':root':
                 sel.flags |= ct.SEL_ROOT
+            elif pseudo == ':defined':
+                sel.flags |= ct.SEL_DEFINED
+                is_html = True
             elif pseudo == ':scope':
                 sel.flags |= ct.SEL_SCOPE
             elif pseudo == ':empty':
@@ -482,7 +486,7 @@ class CSSParser(object):
                 "'{}' pseudo-class is not implemented at this time".format(pseudo)
             )
 
-        return has_selector
+        return has_selector, is_html
 
     def parse_pseudo_nth(self, sel, m, has_selector, iselector):
         """Parse `nth` pseudo."""
@@ -712,7 +716,7 @@ class CSSParser(object):
                 if key == "at_rule":
                     raise NotImplementedError("At-rules found at position {}".format(m.start(0)))
                 elif key == 'pseudo_class':
-                    has_selector = self.parse_pseudo_class(sel, m, has_selector, iselector)
+                    has_selector, is_html = self.parse_pseudo_class(sel, m, has_selector, iselector, is_html)
                 elif key == 'pseudo_element':
                     raise NotImplementedError("Psuedo-element found at position {}".format(m.start(0)))
                 elif key == 'pseudo_contains':
