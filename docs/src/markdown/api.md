@@ -223,8 +223,13 @@ namespace = {
 }
 ```
 
-Tags do not necessarily have to have a prefix for Soup Sieve to recognize them.  For instance, in HTML5, SVG *should*
-automatically get the SVG namespace. Depending how namespaces were defined in the documentation, tags may inherit
+Prefixes used in the namespace dictionary do not have to match the prefixes in the document. The provided prefix is
+never compared against the prefixes in the document, only the namespaces are compared. The prefixes in the document are
+only there for the parser to know which tags get which namespace. And the prefixes in the namespace dictionary are only
+defined in order to provide an alias for the namespaces when using the namespace selector syntax: `ns|name`.
+
+Tags do not necessarily have to have a prefix for Soup Sieve to recognize them either.  For instance, in HTML5, SVG
+*should* automatically get the SVG namespace. Depending how namespaces were defined in the document, tags may inherit
 namespaces in some conditions.  Namespace assignment is mainly handled by the parser and exposed through the Beautiful
 Soup API. Soup Sieve uses the Beautiful Soup API to then compare namespaces for supported documents.
 

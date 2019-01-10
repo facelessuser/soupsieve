@@ -182,24 +182,22 @@ class CSSMatch(object):
         if self.supports_namespaces():
             value = None
             # If we have not defined namespaces, we can't very well find them, so don't bother trying.
-            if prefix and prefix not in self.namespaces and prefix != '*':
-                return None
+            if prefix:
+                ns = self.namespaces.get(prefix)
+                if ns is None and prefix != '*':
+                    return None
+            else:
+                ns = None
 
             for k, v in el.attrs.items():
-                parts = k.split(':', 1)
-                if len(parts) > 1:
-                    if not parts[0]:
-                        a = k
-                        p = ''
-                    else:
-                        p = parts[0]
-                        a = parts[1]
-                else:
-                    p = ''
-                    a = k
+
+                # Get attribute parts
+                namespace = getattr(k, 'namespace', None)
+                name = getattr(k, 'name', None)
+
                 # Can't match a prefix attribute as we haven't specified one to match
                 # Try to match it normally as a whole `p:a` as selector may be trying `p\:a`.
-                if not prefix and p:
+                if ns is None:
                     if (self.is_xml and attr == k) or (not self.is_xml and util.lower(attr) == util.lower(k)):
                         value = v
                         break
@@ -207,22 +205,18 @@ class CSSMatch(object):
                     # Adding a print statement before this (and erasing coverage) causes coverage to find the line.
                     # Ignore the false positive message.
                     continue  # pragma: no cover
+
                 # We can't match our desired prefix attribute as the attribute doesn't have a prefix
-                if prefix and not p and prefix != '*':
+                if namespace is None or ns != namespace and prefix != '*':
                     continue
+
                 if self.is_xml:
-                    # The prefix doesn't match
-                    if prefix and p and prefix != '*' and prefix != p:
-                        continue
                     # The attribute doesn't match.
-                    if attr != a:
+                    if attr != name:
                         continue
                 else:
-                    # The prefix doesn't match
-                    if prefix and p and prefix != '*' and util.lower(prefix) != util.lower(p):
-                        continue
                     # The attribute doesn't match.
-                    if util.lower(attr) != util.lower(a):
+                    if util.lower(attr) != util.lower(name):
                         continue
                 value = v
                 break
