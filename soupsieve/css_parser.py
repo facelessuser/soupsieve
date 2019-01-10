@@ -377,7 +377,7 @@ class CSSParser(object):
                 # `~=` should match nothing if it is empty or contains whitespace,
                 # so if either of these cases is present, use `[^\s\S]` which cannot be matched.
                 value = r'[^\s\S]' if not value or RE_WS.search(value) else re.escape(value)
-                pattern = re.compile(r'.*?(?:(?<=^)|(?<= ))%s(?=(?:[ ]|$)).*' % value, flags)
+                pattern = re.compile(r'.*?(?:(?<=^)|(?<=[ \t\r\n\f]))%s(?=(?:[ \t\r\n\f]|$)).*' % value, flags)
             elif op.startswith('|'):
                 # Value starts with word in dash separated list
                 pattern = re.compile(r'^%s(?:-.*)?$' % re.escape(value), flags)

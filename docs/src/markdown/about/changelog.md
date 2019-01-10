@@ -2,14 +2,13 @@
 
 ## 1.7.0
 
-- **NEW**: Add support for `:in-range` and `:out-of-range` selectors.
-
-## 1.6.3
-
+- **NEW**: Add support for `:in-range` and `:out-of-range` selectors. (#60)
+- **NEW**: Add support for `:defined` selector. (#76)
 - **FIX**: Fix pickling issue when compiled selector contains a `NullSelector` object. (#70)
 - **FIX**: Better exception messages in the CSS selector parser and fix a position reporting issue that can occur in
-  some exceptions.
-- **FIX**: Don't compare prefixes when evaluating attribute namespaces, compare the actual namespace.
+  some exceptions. (#72, #73)
+- **FIX**: Don't compare prefixes when evaluating attribute namespaces, compare the actual namespace. (#75)
+- **FIX**: Split whitespace attribute lists by all whitespace characters, not just space.
 
 ## 1.6.2
 
