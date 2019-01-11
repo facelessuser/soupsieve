@@ -6,6 +6,7 @@ CDATA
 CSS
 CSS's
 Changelog
+Combinators
 DOM
 GitHub
 Hashable
@@ -26,6 +27,7 @@ accessor
 boolean
 builtin
 combinator
+combinators
 deprecations
 directionality
 html
@@ -52,4 +54,5 @@ unmatchable
 unpickle
 unvisited
 whitespace
+wildcard
 wordlist
