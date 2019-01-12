@@ -782,9 +782,10 @@ class CSSParser(object):
                 elif key in ('attribute', 'quirks_attribute'):
                     quirks = key == 'quirks_attribute'
                     if quirks:
+                        temp_index = index + m.group(0).find('=') + 1
                         util.warn_quirks(
                             "You have attempted to use an attribute " +
-                            "value that should have been quoted at position {}.".format(index),
+                            "value that should have been quoted at position {}.".format(temp_index),
                             self.pattern
                         )
                     has_selector = self.parse_attribute_selector(sel, m, has_selector, quirks)
