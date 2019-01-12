@@ -738,8 +738,6 @@ class CSSParser(object):
                     else:
                         raise SyntaxError("Unmatched pseudo-class close at postion {}".format(m.start(0)))
                 elif key == 'combine':
-                    if split_last:
-                        raise SyntaxError("Unexpected combinator at position {}".format(m.start(0)))
                     if is_relative:
                         has_selector, sel, rel_type = self.parse_has_combinator(
                             sel, m, has_selector, selectors, rel_type, index

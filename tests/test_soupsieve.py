@@ -297,6 +297,12 @@ class TestInvalid(unittest.TestCase):
         with self.assertRaises(SyntaxError):
             sv.compile('div >')
 
+        with self.assertRaises(SyntaxError):
+            sv.compile('div, > a')
+
+        with self.assertRaises(SyntaxError):
+            sv.compile('div,, a')
+
     def test_invalid_pseudo(self):
         """Test invalid pseudo class."""
 
@@ -329,6 +335,18 @@ class TestInvalid(unittest.TestCase):
 
         with self.assertRaises(SyntaxError):
             sv.compile(':has()')
+
+        with self.assertRaises(SyntaxError):
+            sv.compile(':has(> has,, a)')
+
+        with self.assertRaises(SyntaxError):
+            sv.compile(':has(> has,, a)')
+
+        with self.assertRaises(SyntaxError):
+            sv.compile(':has(> has >)')
+
+        with self.assertRaises(SyntaxError):
+            sv.compile(':has(> has,)')
 
     def test_invalid_tag(self):
         """

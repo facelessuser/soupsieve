@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.1
+
+- **FIX**: Fix issue with `:has()` selector where a leading combinator can only be provided in the first selector in a
+  relative selector list.
+
 ## 1.7.0
 
 - **NEW**: Add support for `:in-range` and `:out-of-range` selectors. (#60)
