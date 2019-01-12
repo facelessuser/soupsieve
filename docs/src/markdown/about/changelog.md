@@ -4,6 +4,8 @@
 
 - **FIX**: Fix issue with `:has()` selector where a leading combinator can only be provided in the first selector in a
   relative selector list.
+- **FIX**: Provide a way for Beautiful Soup to parse selectors in a quirks mode to mimic some of the quirks of the old
+  select method prior to Soup Sieve. This is to help old scripts to not break with newest Beautiful Soup.
 
 ## 1.7.0
 

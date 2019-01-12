@@ -26,6 +26,7 @@ else:
     unichar = unichr  # noqa
     string = basestring  # noqa
 
+_QUIRKS = 0x20000
 DEBUG = 0x10000
 
 LC_A = ord('a')

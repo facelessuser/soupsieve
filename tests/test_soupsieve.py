@@ -3,7 +3,8 @@ from __future__ import unicode_literals
 import unittest
 import bs4
 import soupsieve as sv
-from soupsieve import util
+from soupsieve import util as sv_util
+from . import util
 import copy
 import random
 import pytest
@@ -34,18 +35,18 @@ class TestSoupSieve(unittest.TestCase):
         """
 
         soup = bs4.BeautifulSoup(markup, 'html5lib')
-        comments = [util.ustr(c).strip() for c in sv.comments(soup)]
+        comments = [sv_util.ustr(c).strip() for c in sv.comments(soup)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment', "don't ignore"]))
 
-        comments = [util.ustr(c).strip() for c in sv.icomments(soup, limit=2)]
+        comments = [sv_util.ustr(c).strip() for c in sv.icomments(soup, limit=2)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
 
         # Check that comments on compiled object work just like `sv.comments`
         pattern = sv.compile('', None, 0)
-        comments = [util.ustr(c).strip() for c in pattern.comments(soup)]
+        comments = [sv_util.ustr(c).strip() for c in pattern.comments(soup)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment', "don't ignore"]))
 
-        comments = [util.ustr(c).strip() for c in pattern.icomments(soup, limit=2)]
+        comments = [sv_util.ustr(c).strip() for c in pattern.icomments(soup, limit=2)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
 
     def test_select(self):
@@ -223,7 +224,7 @@ class TestSoupSieve(unittest.TestCase):
         sv.purge()
         self.assertEqual(sv.cp._cached_css_compile.cache_info().currsize, 0)
         for x in range(1000):
-            value = '[value="{}"]'.format(util.ustr(random.randint(1, 10000)))
+            value = '[value="{}"]'.format(sv_util.ustr(random.randint(1, 10000)))
             p = sv.compile(value)
             self.assertTrue(p.pattern == value)
             self.assertTrue(sv.cp._cached_css_compile.cache_info().currsize > 0)
@@ -271,7 +272,7 @@ class TestSoupSieve(unittest.TestCase):
             sv.ct.Namespaces({'a': {}})
 
 
-class TestInvalid(unittest.TestCase):
+class TestInvalid(util.TestCase):
     """Test invalid."""
 
     def test_invalid_combination(self):
@@ -282,71 +283,66 @@ class TestInvalid(unittest.TestCase):
         `:has()` cannot start with `,`.
         """
 
-        with self.assertRaises(SyntaxError):
-            sv.compile('> p')
+        self.assert_raises(', p', SyntaxError)
 
-        with self.assertRaises(SyntaxError):
-            sv.compile(', p')
+        self.assert_raises(':has(, p)', SyntaxError)
 
-        with self.assertRaises(SyntaxError):
-            sv.compile(':has(, p)')
+        self.assert_raises('div >> p', SyntaxError)
 
-        with self.assertRaises(SyntaxError):
-            sv.compile('div >> p')
+        self.assert_raises('div >', SyntaxError)
 
-        with self.assertRaises(SyntaxError):
-            sv.compile('div >')
+        self.assert_raises('div,, a', SyntaxError)
 
-        with self.assertRaises(SyntaxError):
-            sv.compile('div, > a')
+        self.assert_raises(':is(> div)', SyntaxError)
 
-        with self.assertRaises(SyntaxError):
-            sv.compile('div,, a')
+        self.assert_raises(':is(div, > div)', SyntaxError)
+
+    @util.skip_quirks
+    def test_invalid_non_quirk_combination(self):
+        """
+        Test invalid combination.
+
+        Selectors cannot start with relational symbols unless in `:has()`.
+        `:has()` cannot start with `,`.
+        """
+
+        self.assert_raises('> p', SyntaxError)
+
+        self.assert_raises('div, > a', SyntaxError)
 
     def test_invalid_pseudo(self):
         """Test invalid pseudo class."""
 
-        with self.assertRaises(NotImplementedError):
-            sv.compile(':before')
+        self.assert_raises(':before', NotImplementedError)
 
-        with self.assertRaises(SyntaxError):
-            sv.compile(':nth-child(a)')
+        self.assert_raises(':nth-child(a)', SyntaxError)
 
     def test_invalid_pseudo_close(self):
         """Test invalid pseudo close."""
 
-        with self.assertRaises(SyntaxError):
-            sv.compile('div)')
+        self.assert_raises('div)', SyntaxError)
 
-        with self.assertRaises(SyntaxError):
-            sv.compile(':is(div,)')
+        self.assert_raises(':is(div,)', SyntaxError)
 
     def test_invalid_pseudo_open(self):
         """Test invalid pseudo close."""
 
-        with self.assertRaises(SyntaxError):
-            sv.compile(':is(div')
+        self.assert_raises(':is(div', SyntaxError)
 
     def test_invalid_incomplete_has(self):
         """Test invalid `:has()`."""
 
-        with self.assertRaises(SyntaxError):
-            sv.compile(':has(>)')
+        self.assert_raises(':has(>)', SyntaxError)
 
-        with self.assertRaises(SyntaxError):
-            sv.compile(':has()')
+        self.assert_raises(':has()', SyntaxError)
 
-        with self.assertRaises(SyntaxError):
-            sv.compile(':has(> has,, a)')
+        self.assert_raises(':has(> has,, a)', SyntaxError)
 
-        with self.assertRaises(SyntaxError):
-            sv.compile(':has(> has,, a)')
+        self.assert_raises(':has(> has,, a)', SyntaxError)
 
-        with self.assertRaises(SyntaxError):
-            sv.compile(':has(> has >)')
+        self.assert_raises(':has(> has >)', SyntaxError)
 
-        with self.assertRaises(SyntaxError):
-            sv.compile(':has(> has,)')
+        self.assert_raises(':has(> has,)', SyntaxError)
 
     def test_invalid_tag(self):
         """
@@ -355,33 +351,31 @@ class TestInvalid(unittest.TestCase):
         Tag must come first.
         """
 
-        with self.assertRaises(SyntaxError):
-            sv.compile(':is(div)p')
+        self.assert_raises(':is(div)p', SyntaxError)
 
     def test_invalid_syntax(self):
         """Test invalid syntax."""
 
-        with self.assertRaises(SyntaxError):
-            sv.compile('div?')
+        self.assert_raises('div?', SyntaxError)
 
     def test_malformed_selectors(self):
         """Test malformed selectors."""
 
-        # Malformed attribute
-        with self.assertRaises(SyntaxError):
-            sv.compile('div[attr={}]')
-
         # Malformed class
-        with self.assertRaises(SyntaxError):
-            sv.compile('td.+#some-id')
+        self.assert_raises('td.+#some-id', SyntaxError)
 
         # Malformed id
-        with self.assertRaises(SyntaxError):
-            sv.compile('td#.some-class')
+        self.assert_raises('td#.some-class', SyntaxError)
 
         # Malformed pseudo-class
-        with self.assertRaises(SyntaxError):
-            sv.compile('td:[href]')
+        self.assert_raises('td:[href]', SyntaxError)
+
+    @util.skip_quirks
+    def test_malformed_no_quirk(self):
+        """Test malformed with no quirk mode."""
+
+        # Malformed attribute
+        self.assert_raises('div[attr={}]', SyntaxError)
 
     def test_invalid_namespace(self):
         """Test invalid namespace."""
@@ -395,14 +389,28 @@ class TestInvalid(unittest.TestCase):
     def test_invalid_type_input(self):
         """Test bad input into the API."""
 
-        with self.assertRaises(TypeError):
-            sv.match('div', "not a tag")
+        flags = sv.DEBUG
+        if self.quirks:
+            flags = sv._QUIRKS
 
         with self.assertRaises(TypeError):
-            sv.select('div', "not a tag")
+            sv.match('div', "not a tag", flags=flags)
 
         with self.assertRaises(TypeError):
-            sv.filter('div', "not a tag")
+            sv.select('div', "not a tag", flags=flags)
 
         with self.assertRaises(TypeError):
-            sv.comments('div', "not a tag")
+            sv.filter('div', "not a tag", flags=flags)
+
+        with self.assertRaises(TypeError):
+            sv.comments('div', "not a tag", flags=flags)
+
+
+class TestInvalidQuirks(TestInvalid):
+    """Test invalid with QUIRKS."""
+
+    def setUp(self):
+        """Setup."""
+
+        sv.purge()
+        self.quirks = True

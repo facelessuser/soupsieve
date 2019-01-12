@@ -88,8 +88,7 @@ class TestLevel4(util.TestCase):
             flags=util.HTML5
         )
 
-        with self.assertRaises(SyntaxError):
-            sv.compile('[id i]')
+        self.assert_raises('[id i]', SyntaxError)
 
     def test_attribute_type_case(self):
         """Type is treated as case insensitive in HTML."""
@@ -1888,3 +1887,13 @@ class TestLevel4(util.TestCase):
             ['8', '9', '10', '11', '12', '13', '14'],
             flags=util.HTML5
         )
+
+
+class TestLevel4Quirks(TestLevel4):
+    """Test level 4 with quirks."""
+
+    def setUp(self):
+        """Setup."""
+
+        self.purge()
+        self.quirks = True
