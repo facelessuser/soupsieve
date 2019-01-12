@@ -613,6 +613,10 @@ class CSSParser(object):
                 raise SyntaxError(
                     "The combinator '{}' at postion {}, must have a selector before it".format(combinator, index)
                 )
+            util.warn_quirks(
+                'You have attempted to use a combinator without a selector before it at position {}.'.format(index),
+                self.pattern
+            )
             sel.flags |= ct.SEL_SCOPE
 
         if combinator == COMMA_COMBINATOR:
@@ -776,7 +780,14 @@ class CSSParser(object):
                     index = m.end(0)
                     continue
                 elif key in ('attribute', 'quirks_attribute'):
-                    has_selector = self.parse_attribute_selector(sel, m, has_selector, key == 'quirks_attribute')
+                    quirks = key == 'quirks_attribute'
+                    if quirks:
+                        util.warn_quirks(
+                            "You have attempted to use an attribute " +
+                            "value that should have been quoted at position {}.".format(index),
+                            self.pattern
+                        )
+                    has_selector = self.parse_attribute_selector(sel, m, has_selector, quirks)
                 elif key == 'tag':
                     if has_selector:
                         raise SyntaxError("Tag name found at position {} instead of at the start".format(m.start(0)))
