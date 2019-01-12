@@ -286,6 +286,13 @@ class TestLevel4(util.TestCase):
 
         self.assert_selector(
             markup2,
+            'div:has(.ffff, > .bbbb, .jjjj)',
+            ['0', '4', '8'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup2,
             'div:has(> :not(.bbbb, .ffff, .jjjj))',
             ['2', '6', '8'],
             flags=util.HTML5
