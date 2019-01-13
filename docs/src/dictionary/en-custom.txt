@@ -19,11 +19,13 @@ PyPI
 PySpelling
 SVG
 Tox
+URL's
 Unescape
 Virtualenv
 WIP
 XHTML
 accessor
+amongst
 boolean
 builtin
 combinator

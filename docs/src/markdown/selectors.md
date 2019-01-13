@@ -82,7 +82,7 @@ as they are part of a working draft, or even both.
 !!! danger "Not Implemented"
     Pseudo elements are not supported as they do not represent real elements.
 
-    At-rules (`@page`, etc.) are not supported.
+    At-rules (`@page`, etc.) are also not supported.
 
 ## Basic Selectors
 
@@ -755,13 +755,206 @@ absolute URL matches the element’s own document URL.
     ```
 
 ### `:not()` {:#:not}
+
+`:not(selector)`
+: 
+    Selects all elements that do not match the selector.
+
+    !!! example
+        Selects all `#!html <p>` elements that do not have class `exclude`.
+
+        ```css
+        p:not(.exclude)
+        ```
+
+`:not(selector1, selector2, ...)`<span class="lab badge"></span>
+: 
+    Selects all elements that do not match any of the selectors in the selector list.
+
+    !!! example
+        Selects all `#!html <p>` elements that do not have class `exclude` and attribute `style`.
+
+        ```css
+        p:not(.exclude, [style])
+        ```
+
 ### `:nth-child()` {:#:nth-child}
+
+`:nth-child(keyword)`
+: 
+    `:nth-child` allows the keywords `even` and `odd`, and will respectively select elements whose position is either
+    even or odd amongst a group of siblings.
+
+    !!! example
+        Select every odd element that is also a `#!html <p>` element.
+
+        ```css
+        p:nth-child(odd)
+        ```
+
+`:nth-child(an+b)`
+: 
+    Selects elements based on their position in a group of siblings, using the pattern `an+b`, for every positive integer
+    or zero value of `n`. The index of the first element is `1`. The values `a` and `b` must both be integers.
+
+    !!! example
+        Selects the first three elements: `1 = 1*0+3`, `2 = -1*1+3`, `3 = -1*2+3`.
+
+        ```css
+        :nth-child(-n+3)
+        ```
+
+`:nth-child(an+b [of S]?)`</span><span class="lab badge"></span>
+: 
+    Selects from a sub-group of sibling elements that all match the selector list (`[of S]?`), based on their position
+    within that sub-group, using the pattern `an+b`, for every positive integer or zero value of `n`. The index of the
+    first element is `1`. The values `a` and `b` must both be integers.
+
+    Essentially, `#!css img:nth-of-type(2)` would be equivalent to `#!css :nth-child(2 of img)`. The advantage of this
+    of using `:nth-child(an+b [of S]?)` is that `:nth-of-type` is restricted to types, while `:nth-child(an+b [of S]?)`
+    can use compound selectors.
+
+    !!! example
+        Selects the second element of a group of sibling elements that match all match `img`.
+
+        ```css
+        :nth-child(2 of img)
+        ```
+
 ### `:nth-last-child()` {:#:nth-last-child}
+
+`:nth-last-child(keyword)`
+: 
+    `:nth-last-child` allows the keywords `even` and `odd`, and will respectively select elements whose position is either
+    even or odd amongst a group of siblings, counting from the end.
+
+    !!! example
+        Select every odd element that is also a `#!html <p>` element, counting from the end.
+
+        ```css
+        p:nth-child(odd)
+        ```
+
+`:nth-last-child(an+b)`
+: 
+    Counting from the end, selects elements based on their position in a group of siblings, using the pattern `an+b`,
+    for every positive integer or zero value of `n`. The index of the first element is `1`. The values `a` and `b` must
+    both be integers.
+
+    !!! example
+        Selects the last three elements: `1 = 1*0+3`, `2 = -1*1+3`, `3 = -1*2+3`.
+
+        ```css
+        :nth-child(-n+3)
+        ```
+
+`:nth-last-child(an+b [of S]?)`</span><span class="lab badge"></span>
+: 
+    Counting from the end, selects from a sub-group of sibling elements that all match the selector list (`[of S]?`),
+    based on their position within that sub-group, using the pattern `an+b`, for every positive integer or zero value of
+    `n`. The index of the first element is `1`. The values `a` and `b` must both be integers.
+
+    Essentially, `#!css img:nth-last-of-type(2)` would be equivalent to `#!css :nth-last-child(2 of img)`. The advantage
+    of this of using `:nth-last-child(an+b [of S]?)` is that `:nth-last-of-type` is restricted to types, while
+    `:nth-last-child(an+b [of S]?)` can use compound selectors.
+
+    !!! example
+        Selects the second element (counting from the end) of a group of sibling elements that match all match `img`.
+
+        ```css
+        :nth-last-child(2 of img)
+        ```
+
 ### `:nth-last-of-type()` {:#:nth-last-of-type}
+
+`:nth-last-of-type(keyword)`
+: 
+    `:nth-last-of-type` allows the keywords `even` and `odd`, and will respectively select elements, from a sub-group of
+    sibling elements that all match the given type, whose position is either even or odd amongst that sub-group of
+    siblings, counting from the end.
+
+    !!! example
+        Counting from the end, selects every even `#!html <p>` amongst sibling `#!html <p>` elements.
+
+        ```css
+        p:nth-last-of-type(even)
+        ```
+
+`:nth-last-of-child(an+b)`
+: 
+    Counting from the end, selects from a sub-group of sibling elements that all match the given type, based on their
+    position within that sub-group, using the pattern `an+b`, for every positive integer or zero value of `n`. The index
+    of the first element is `1`. The values `a` and `b` must both be integers.
+
+    !!! example
+        Counting from the end, selects every `#!html <p>` element that is the second `#!html <p>` element of its parent.
+
+        ```css
+        p:nth-last-of-type(2)
+        ```
+
 ### `:nth-of-type()` {:#:nth-of-type}
+
+`:nth-of-type(keyword)`
+: 
+    `:nth-of-type` allows the keywords `even` and `odd`, and will respectively select elements, from a sub-group of
+    sibling elements that all match the given type, whose position is either even or odd amongst that sub-group of
+    siblings.
+
+    !!! example
+        Selects every even `#!html <p>` amongst sibling `#!html <p>` elements.
+
+        ```css
+        p:nth-last-of-type(even)
+        ```
+
+`:nth-of-type(an+b)`
+: 
+    Selects from a sub-group of sibling elements that all match the given type, based on their position within that
+    sub-group, using the pattern `an+b`, for every positive integer or zero value of `n`. The index of the first element
+    is `1`. The values `a` and `b` must both be integers.
+
+    !!! example
+        Selects every `#!html <p>` element that is the second `#!html <p>` element of its parent.
+
+        ```css
+        p:nth-of-type(2)
+        ```
+
 ### `:only-child` {:#:only-child}
+
+Selects element without any siblings.
+
+!!! example
+    Selects any `#!html <p>` element that is the only child of its parent.
+
+    ```css
+    p:only-child
+    ```
+
 ### `:only-of-type` {:#:only-of-type}
+
+Selects element without any siblings that matches a given type.
+
+!!! example
+    Selects every `#!html <p>` element that is the only `#!html <p>` element of its parent.
+
+    ```css
+    p:only-of-type
+    ```
+
 ### `:optional`<span class="html5 badge"></span><span class="lab badge"></span> {:#:optional}
+
+Selects any `#!html <input>`, `#!html <select>`, or `#!html <textarea>` element that does not have the `required`
+attribute set on it.
+
+!!! example
+    Select every `#!html <input>` element without a `required` attribute.
+
+    ```css
+    input:optional
+    ```
+
 ### `:out-of-range`<span class="html5 badge"></span><span class="lab badge"></span> {:#:out-of-range}
 
 Selects all `#!html <input>` elements whose values are out of range according to their `type`, `min`, and `max`
@@ -782,93 +975,171 @@ Selects an element that is defined to occur entirely prior to a `:current` eleme
     Time-dimensional pseudo-classes require a user agent which is not present in Beautiful Soup, so this will match
     nothing.
 
-    ```
+    ```css
     p:past
     ```
 
 ### `:paused`<span class="html5 badge"></span><span class="lab badge"></span><span class="null badge"></span> {:#:paused}
+
+Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and is
+currently "paused".
+
+!!! example
+    It is not possible to play or pause a media element in Beautiful Soup, so this will match nothing.
+
+    ```css
+    :paused
+    ```
+
 ### `:placeholder-shown`<span class="html5 badge"></span><span class="lab badge"></span> {:#:placeholder-shown}
+
+Selects any `#!html <input>` or `#!html <textarea>` element that is currently displaying placeholder text via the
+`placeholder` attribute.
+
+!!! example
+    Matches all `#!html <input>` elements that have placeholder text that is shown.
+
+    ```css
+    input:placeholder-shown
+    ```
+
 ### `:playing`<span class="html5 badge"></span><span class="lab badge"></span><span class="null badge"></span> {:#:playing}
+
+Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and is
+currently “playing”.
+
+!!! example
+    It is not possible to play or pause a media element in Beautiful Soup, so this will match nothing.
+
+    ```css
+    :playing
+    ```
+
 ### `:read-only`<span class="html5 badge"></span><span class="lab badge"></span> {:#:read-only}
+
+Selects elements (such as `#!html <input>` or `#!html <textarea>`) that are *not* editable by the user. This does not
+just apply to form elements with `readonly` set, but it applies to **any** element that cannot be edited by the user.
+
+!!! example
+    Selects every `#!html <input>` element that is not editable by the user.
+
+    ```css
+    input:read-only
+    ```
+
 ### `:read-write`<span class="html5 badge"></span><span class="lab badge"></span> {:#:read-write}
+
+Selects elements (such as `#!html <input>` or `#!html <textarea>`) that are editable by the user. This does not just
+apply to form elements as it applies to **any** element that can be edited by the user, such as a `#!html <p>` element
+with `contenteditable` set on it.
+
+!!! example
+    Selects every `#!html <input>` element that is editable by the user.
+
+    ```css
+    input:read-only
+    ```
+
 ### `:required`<span class="html5 badge"></span><span class="lab badge"></span> {:#:required}
+
+Selects any `#!html <input>`, `#!html <select>`, or `#!html <textarea>` element that has the `required` attribute set on
+it.
+
+!!! example
+    Select every `#!html <input>` element with a `required` attribute.
+
+    ```css
+    input:required
+    ```
+
 ### `:root` {:#:root}
+
+Selects the root element of a document tree.
+
+!!! example
+    For HTML, this would select the `#!html <html>` element.
+
+    ```css
+    :root
+    ```
+
 ### `:scope`<span class="lab badge"></span> {:#:scope}
-### `:target-within`<span class="html5 badge"></span><span class="lab badge"></span><span class="null badge"></span> {:#:target-within}
+
+`:scope` represents the the element a `match`, `select`, or `filter` is being called on. If we had were for instance
+using scope in on a div (`#!py3 sv.select(':scope > p', soup.div)`) soup would represent **that** div element, and no
+others. If called on the Beautiful Soup object which represents the entire document, it would simply select
+[`:root`](#:root).
+
+!!! example
+    Assuming that the following selector was called on a div element, it would select all `#!html <p>` elements that
+    are direct children of **that** associated `#!html <div>` element.
+
+    ```css
+    :scope > p
+    ```
+
 ### `:target`<span class="html5 badge"></span><span class="null badge"></span> {:#:target}
+
+Selects a unique element (the target element) with an id matching the URL's fragment.
+
+!!! example
+    Since there is no concept of a "targeted" element outside a user agent/browser without simulation, this will match
+    nothing.
+
+    ```css
+    h1:target
+    ```
+
+### `:target-within`<span class="html5 badge"></span><span class="lab badge"></span><span class="null badge"></span> {:#:target-within}
+
+Selects a unique element with an id matching the URL's fragment or an element which contains the element.
+
+!!! example
+    Since there is no concept of a "targeted" element outside a user agent/browser without simulation, this will match
+    nothing.
+
+    ```css
+    div:target-within
+    ```
+
 ### `:user-invalid`<span class="html5 badge"></span><span class="lab badge"></span><span class="null badge"></span> {:#:user-invalid}
+
+Selects an element with incorrect input, but only after the user has significantly interacted with it.
+
+!!! example
+    Since a user cannot interact with the HTML outside a user agent (or some simulated environment), this will match
+    nothing.
+
+    ```css
+    input:user-invalid
+    ```
+
 ### `:visited`<span class="html5 badge"></span><span class="null badge"></span> {:#:visited}
+
+Selects links that have already been visited.
+
+!!! example
+    In the Beautiful Soup, there links cannot be "visited", that is a concept that only applies with a
+    user agent/browser. As all links in Beautiful Soup are considered to be unvisited, this will match nothing.
+
+    ```css
+    a:visited
+    ```
+
 ### `:where()`<span class="lab badge"></span> {:#:where}
 
-<!--
-&nbsp;               | Selector                                                                  | Example                               | Description
--------------------- | ------------------------------------------------------------------------- | ------------------------------------- | -----------
-&nbsp;               | [`:not(sel)`](#:not){:#:not}                                              | `#!css :not(.some-class)`             | Selects elements that do not have class `some-class`.
-{:.lab}              | [`:not(sel, sel)`](#:not_1){:#:not_1}                                     | `#!css :not(.some-class, #some-id)`   | Selects elements that do not have class `some-class` and ID `some-id`.
-&nbsp;               | [`:nth-child(an+b)`](#:nth-child){:#:nth-child}                           | `#!css p:nth-child(2)`                | Selects every `#!html <p>` element that is the second child of its parent.
-{:.lab}              | [`:nth-child(an+b [of S]?)`](#:nth-child_1){:#:nth-child_1}               | `#!css p:nth-child(2 of .class)`      | Selects every `#!html <p>` element that matches the provided `of S` selector and is the second child of its parent.
-&nbsp;               | [`:nth-last-child(an+b)`](#:nth-last-child){:#:nth-last-child}            | `#!css p:nth-last-child(2)`           | Selects every `#!html <p>` element that is the second child of its parent, counting from the last child.
-{:.lab}              | [`:nth-last-child(an+b [of S]?)`](#:nth-last-child_1){:#:nth-last-child_1}| `#!css p:nth-last-child(2 of .class)` | Selects every `#!html <p>` element that matches the provided `of S` selector and is the second child of its parent, counting from the last child. Please see CSS specification for more info on format.
-&nbsp;               | [`:nth-last-of-type(an+b)`](#:nth-last-of-type){:#:nth-last-of-type}      | `#!css p:nth-last-of-type(2)`         | Selects every `#!html <p>` element that is the second `#!html <p>` element of its parent, counting from the last child. Please see CSS specification for more info on format.
-&nbsp;               | [`:nth-of-type(an+b)`](#:nth-of-type){:#:nth-of-type}                     | `#!css p:nth-of-type(2)`              | Selects every `#!html <p>` element that is the second `#!html <p>` element of its parent. Please see CSS specification for more info on format.
-&nbsp;               | [`:only-child`](#:only-child){:#:only-child}                              | `#!css p:only-child`                  | Selects every `#!html <p>` element that is the only child of its parent.
-&nbsp;               | [`:only-of-type`](#:only-of-type){:#:only-of-type}                        | `#!css p:only-of-type`                | Selects every `#!html <p>` element that is the only `#!html <p>` element of its parent.
-{:.html5 .lab}       | [`:optional`](#:optional){:#:optional}                                    | `#!css input:optional`                | Select every `#!html <input>` element without a `required` attribute.
-{:.html5 .lab .null} | [`:paused`](#:paused){:#:paused}                                          | `#!css :paused`                       | Pausing is not applicable in the Soup Sieve environment, so this will match nothing.
-{:.html5 .lab}       | [`:placeholder-shown`](#:placeholder-shown){:#:placeholder-shown}         | `#!css input:placeholder-shown`       | Selects every `#!html <input>` element that is showing a placeholder via the `placeholder` attribute.
-{:.html5 .lab .null} | [`:playing`](#:playing){:#:playing}                                       | `#!css :playing`                      | Playing is not applicable in the Soup Sieve environment, so this will match nothing.
-{:.html5 .lab}       | [`:read-only`](#:read-only){:#:read-only}                                 | `#!css input:read-only`               | Selects every `#!html <input>` element that is not editable by the user.
-{:.html5 .lab}       | [`:read-write`](#:read-write){:#:read-write}                              | `#!css input:read-write`              | Selects every `#!html <input>` element that is editable by the user.
-{:.html5 .lab}       | [`:required`](#:required){:#:required}                                    | `#!css input:required`                | Select every `#!html <input>` element with a `required` attribute.
-&nbsp;               | [`:root`](#:root){:#:root}                                                | `#!css :root`                         | Selects the root element. In HTML, this is usually the `#!html <html>` element.
-{:.lab}              | [`:scope`](#:scope){:#:scope}                                             | `#!css :scope div`                    | Selects all `#!html <div>` elements under the current scope element. `:scope` is the element under match or select. In the case where a document (`BeautifulSoup` object, not a `Tag` object) is under select or match, `:scope` equals `:root`.
-{:.html5 .lab .null} | [`:target-within`](#:target-within){:#:target-within}                     | `#!css article:target`                | Elements cannot be targeted, so this will never match.
-{:.html5 .null}      | [`:target`](#:target){:#:target}                                          | `#!css #news:target`                  | Elements cannot be targeted, so this will never match.
-{:.html5 .lab .null} | [`:user-invalid`](#:user-invalid){:#:user-invalid}                        | `#!css input:user-invalid`            | User interaction is not applicable, so this will never match.
-{:.html5 .null}      | [`:visited`](#:visited){:#:visited}                                       | `#!css a:visited`                     | All links are treated unvisited, so this will never match.
-{:.lab}              | [`:where(s1, s2)`](#:where){:#:where}                                     | `#!css :where(div, .some-class)`      | Selects all `#!html <div>` elements and elements that have the class `some-class`. In CSS4 `:where()` is like `:is` except specificity is always zero. Soup Sieve doesn't care about specificity, so `:where` is exactly like `:is`.
--->
+Selects an element, but only if it matches at least one selector in the selector list. In browsers, this also has zero
+specificity, but this only has relevance in a browser environment where you have multiple CSS styles, and specificity is
+used to see which applies. Beautiful Soup and Soup Sieve don't care about specificity.
 
-<style>
-span.lab::after,
-span.html5::after,
-span.null::after,
-span.star::after {
-  position: relative;
-  display: inline-block;
-  font: normal normal normal 16px/1 FontAwesome;
-  padding-right: .50rem;
-  -moz-osx-font-smoothing: initial;
-  -webkit-font-smoothing: initial;
-  font-weight: 400;
-}
+!!! example
+    Matches `#!html <div>` elements and `#!html <p>` elements.
 
-.badge {
-  float: right;
-}
-
-span.lab::after {
-  color: purple;
-  content: '\f0c3';
-}
-
-span.html5::after {
-  color: orange;
-  content: '\f13b';
-}
-
-span.null::after {
-  color: red;
-  content: '\f071'
-}
-
-span.star::after {
-   color: green;
-   content: '\f005'
-}
-</style>
+    ```css
+    :where(div, p)
+    ```
 
 --8<--
-;selector_styles.txt
+selector_styles.txt
 refs.txt
 --8<--
