@@ -20,16 +20,16 @@ Soup Sieve has implemented most of the CSS selectors up through the level 4 draf
 make sense in a non-browser environment. Selectors that cannot provide meaningful functionality simply do not match
 anything. Some of the supported selectors are:
 
-- `#!css .classes`
-- `#!css #ids`
-- `#!css [attributes=value]`
-- `#!css parent child`
-- `#!css parent > child`
-- `#!css sibling ~ sibling`
-- `#!css sibling + sibling`
-- `#!css :not(element.class, element2.class)`
-- `#!css :is(element.class, element2.class)`
-- `#!css parent:has(> child)`
+- `.classes`
+- `#ids`
+- `[attributes=value]`
+- `parent child`
+- `parent > child`
+- `sibling ~ sibling`
+- `sibling + sibling`
+- `:not(element.class, element2.class)`
+- `:is(element.class, element2.class)`
+- `parent:has(> child)`
 - and [many more](https://facelessuser.github.io/soupsieve/selectors/)
 
 
