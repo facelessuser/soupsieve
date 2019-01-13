@@ -164,7 +164,7 @@ class QuirksWarning(UserWarning):  # pragma: no cover
     """Warning for quirks mode."""
 
 
-def warn_quirks(message, pattern):
+def warn_quirks(message, recommend, pattern):
     """Warn quirks."""
 
     import traceback
@@ -187,8 +187,9 @@ def warn_quirks(message, pattern):
         "\nCSS selector pattern: {!r}\n".format(pattern) +
         "    {}\n".format(message) +
         "    This behavior is only allowed temporarily for Beautiful Soup's transition to Soup Sieve.\n" +
-        "    This is against the CSS spec, and it is strongly suggested that the value be quoted in the future.\n" +
-        "    In the future an exception will be raised instead.\n",
+        "    In order to confrom to the CSS spec, {}\n".format(recommend) +
+        "    It is strongly recommended the selector be altered to conform to the CSS spec " +
+        "as an exception will be raised for this case in the future.\n",
         QuirksWarning,
         filename,
         lineno

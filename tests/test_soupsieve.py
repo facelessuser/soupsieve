@@ -9,6 +9,7 @@ import copy
 import random
 import pytest
 import pickle
+import warnings
 
 
 class TestSoupSieve(unittest.TestCase):
@@ -404,6 +405,30 @@ class TestInvalid(util.TestCase):
 
         with self.assertRaises(TypeError):
             sv.comments('div', "not a tag", flags=flags)
+
+    @util.skip_no_quirks
+    def test_quirks_warn(self):
+        """Test that quirks mode raises a warning."""
+
+        sv.purge()
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+            # Trigger a warning.
+            sv.compile('> p', flags=sv._QUIRKS)
+            # Verify some things
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, sv_util.QuirksWarning))
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+            # Trigger a warning.
+            sv.compile('[data={}]', flags=sv._QUIRKS)
+            # Verify some things
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, sv_util.QuirksWarning))
 
 
 class TestInvalidQuirks(TestInvalid):

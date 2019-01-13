@@ -615,6 +615,7 @@ class CSSParser(object):
                 )
             util.warn_quirks(
                 'You have attempted to use a combinator without a selector before it at position {}.'.format(index),
+                'the :scope pseudo class (or another appropriate selector) should be placed before the combinator.',
                 self.pattern
             )
             sel.flags |= ct.SEL_SCOPE
@@ -786,6 +787,7 @@ class CSSParser(object):
                         util.warn_quirks(
                             "You have attempted to use an attribute " +
                             "value that should have been quoted at position {}.".format(temp_index),
+                            "the attribute value should be quoted.",
                             self.pattern
                         )
                     has_selector = self.parse_attribute_selector(sel, m, has_selector, quirks)
