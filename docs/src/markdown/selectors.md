@@ -1,163 +1,1143 @@
 # CSS Selectors
 
-## Level 1-4 Selectors
-
-### HTML and XML Selectors
-
 The CSS selectors are based off of the CSS level 4 specification. Primarily support has been added for selectors that
-were feasible to implement and most likely to get practical use. Selectors that cannot provide meaningful matches will
-match nothing. An example would be `:focus` which will match nothing because elements cannot be focused outside of a
-browser. Though most of the selectors have been implemented, there are still a few that have not.
+were feasible to implement and most likely to get practical use.
 
-Below shows accepted selectors. When speaking about namespaces, they only apply to XML, XHTML, or when dealing with
-recognized foreign tags in HTML5. You must configure the CSS [namespaces](./api.md#namespaces) when attempting to
-evaluate namespaces.
+When speaking about namespaces, they only apply to XML, XHTML, or when dealing with recognized foreign tags in HTML5.
+Currently, Beautiful Soup's `html5lib` parser is the only parser that will return the appropriate namespaces for a HTML5
+document. If you are using XHTML, you have to use the Beautiful Soup's `lxml-xml` parser (or `xml` for short) to get the
+appropriate namespaces in an XHTML document. In addition to using the correct parser, you must provide a dictionary of
+namespaces to Soup Sieve in order to use namespace selectors. See the documentation on [namespaces](./api.md#namespaces)
+to learn more.
 
 While an effort is made to mimic CSS selector behavior, there may be some differences or quirks, please report issues if
 any are found.
 
-!!! note "Experimental"
-    All selectors that are from the current working draft of CSS4 are considered experimental and are marked with
-    <span class="lab"></span>. Additionally, if there are other immature selectors, they may be marked as experimental
-    as well.
+<table markdown="1">
+<tr>
+    <th>Symbol</th>
+    <th>Description</th>
+</tr>
+<tr markdown="1">
+<td><span class="null"></span></td>
+<td markdown="1">
+Some selectors are dependent upon certain states in a web browser or other context which is simply not present outside a
+web browser. An example would be the `:focus` selector. In Soup Sieve, `:focus` will match nothing because elements
+cannot be focused outside of a browser without simulation, or somehow connecting to a browser. These types of selectors,
+that provide no meaningful information in Soup Sieve, will be marked with <span class="null"></span>.
+</td>
+</tr>
+<tr markdown="1">
+<td><span class="html5"></span></td>
+<td markdown="1">
+Some selectors are very specific to HTML and either have no meaningful representation in XML, or such functionality has
+not been implemented. Selectors that are HTML only will be noted with <span class="html5"></span>,
+and will match nothing if used in XML.
+</td>
+</tr>
+<tr markdown="1">
+<td><span class="star"></span></td>
+<td markdown="1">
+Soup Sieve has implemented a couple non-standard selectors. These can contain useful selectors that were rejected
+from the official CSS specifications, selectors implemented by other systems such as JQuery, or even selectors
+specifically created for Soup Sieve. If a selector is considered non standard, it will be marked with
+<span class="star"></span>.
+</td>
+</tr>
+<tr markdown="1">
+<td><span class="lab"></span></td>
+<td markdown="1">
+All selectors that are from the current working draft of CSS4 are considered experimental and are marked with
+<span class="lab"></span>. Additionally, if there are other immature selectors, they may be marked as experimental as
+well. Experimental may mean we are not entirely sure if our implementation is correct, that things may still be in flux
+as they are part of a working draft, or even both.
+</td>
+</tr>
+</table>
 
-    Experimental may mean we are not entirely sure if our implementation is correct, that things may still be in flux
-    as they are part of a working draft, or even both.
+!!! tip "Additional Reading"
+    If usage of a selector is not clear in this documentation, you can find more information by reading these specification
+    documents:
+
+    [CSS Level 3 Working Draft](https://drafts.csswg.org/selectors-3/)
+    : Contains the latest official document outlying official behaviors of CSS selectors.
+
+    [CSS Level 4 Working Draft](https://drafts.csswg.org/selectors-4/)
+    : Contains the latest working draft of the CSS level 4 selectors which outlines the experimental new selectors and
+    experimental behavioral changes.
+
+    [HTML5](https://www.w3.org/TR/html50/)
+    : The HTML 5.0 specification document. Defines the semantics regarding HTML.
+
+    [HTML Living Standard](https://html.spec.whatwg.org/)
+    : The HTML Living Standard document. Defines semantics regarding HTML.
+
+!!! warning "Working Draft Selectors"
 
     If at anytime a working draft drops a selector from the current draft, it will most likely also be removed here,
     most likely with a deprecation path, except where there may be a conflict that requires a less graceful transition.
     One exception is in the rare case that the selector is found to be far too useful despite being rejected. In these
     cases, we may adopt them as "custom" selectors.
 
-Selector                              | Example                               | Description
-------------------------------------- | ------------------------------------- | -----------
-`Element`                             | `#!css div`                           | Select all `#!html <div>` elements.
-`Element, Element`                    | `#!css div, h1`                       | Select all `#!html <div>` elements and `#!html <h1>` elements.
-`Element Element`                     | `#!css div p`                         | Select all `#!html <p>` elements inside `#!html <div>` elements.
-`Element>Element`                     | `#!css div > p`                       | Select all `#!html <p>` elements where the parent is a `#!html <div>` element.
-`Element+Element`                     | `#!css div + p`                       | Select all `#!html <p>` elements that are placed immediately after `#!html <div>` elements.
-`Element~Element`                     | `#!css p ~ ul`                        | Select every `#!html <ul>` element that is preceded by a `#!html <p>` element.
-`namespace|Element`                   | `#!css svg|circle`                    | Select the `#!html <circle>` element which also has the namespace `svg`.
-`*|Element`                           | `#!css *|div`                         | Select the `#!html <div>` element with or without a namespace.
-`namespace|*`                         | `#!css svg|*`                         | Select any element with the namespace `svg`.
-`|Element`                            | `#!css |div`                          | Select `#!html <div>` elements without a namespace.
-`|*`                                  | `#!css |*`                            | Select any element without a namespace.
-`*|*`                                 | `#!css *|*`                           | Select all elements with any or no namespace.
-`*`                                   | `#!css *`                             | Select all elements. If a default namespace is defined, it will be any element under the default namespace.
-`.class`                              | `#!css .some-class`                   | Select all elements with the class `some-class`.
-`#id`                                 | `#!css #some-id`                      | Select the element with the ID `some-id`.
-`[attribute]`                         | `#!css [target]`                      | Select all elements with a `target` attribute.
-`[ns|attribute]`                      | `#!css [xlink|href]`                  | Select elements with the attribute `href` and the namespace `xlink` (assuming it has been configured in the `namespaces` option).
-`[*|attribute]`                       | `#!css [*|name]`                      | Select any element with a `name` attribute that has a namespace or not.
-`[|attribute]`                        | `#!css [|name]`                       | Select any element with a `name` attribute. `[|name]` is equivalent to `[name]`.
-`[attribute=value]`                   | `#!css [target=_blank]`               | Select all attributes with `target="_blank"`.
-`[attribute~=value]`                  | `#!css [title~=flower]`               | Select all elements with a `title` attribute containing the word `flower`.
-`[attribute|=value]`                  | `#!css [lang|=en]`                    | Select all elements with a `lang` attribute value starting with `en`.
-`[attribute^=value]`                  | `#!css a[href^="https"]`              | Select every `#!html <a>` element whose `href` attribute value begins with `https`.
-`[attribute$=value]`                  | `#!css a[href$=".pdf"]`               | Select every `#!html <a>` element whose `href` attribute value ends with `.pdf`.
-`[attribute*=value]`                  | `#!css a[href*="sometext"]`           | Select every `#!html <a>` element whose `href` attribute value contains the substring `sometext`.
-`[attribute=value i]`{:.lab}          | `#!css [title=flower i]`              | Select any element with a `title` that equals `flower` regardless of case.
-`[attribute=value s]`{:.lab}          | `#!css [type=submit s]`               | Select any element with a `type` that equals `submit`. Case sensitivity will be forced.
-`:empty`{.lab}                        | `#!css p:empty`                       | Select every `#!html <p>` element that has no children and either no text. Whitespace and comments are ignored.
-`:first-child`                        | `#!css p:first-child`                 | Select every `#!html <p>` element that is the first child of its parent.
-`:first-of-type`                      | `#!css p:first-of-type`               | Select every `#!html <p>` element that is the first `#!html <p>` element of its parent.
-`:has(> sel, + sel)`{:.lab}           | `#!css :has(> div, + p)`              | Select elements that have a direct child that is a `#!html <div>` or that have sibling of `#!html <p>` immediately following.
-`:is(sel, sel)`{:.lab}                | `#!css :is(div, .some-class)`         | Select all `#!html <div>` elements and elements that have the class `some-class`. The alias `:matches()`{.lab} is currently allowed as well, but may be removed in the future.
-`:lang(l1)`                           | `#!css :lang(en)`                     | Select all elements with language `en`. Will also match `en-US`, and `en-GB`.
-`:lang(l1, l2)`{:.lab}                | `#!css :lang('*-CH', en)`             | Select all elements with language `de-CH`, `it-CH`, `fr-CH`, and `rm-CH`. Will also match `en`, `en-US`, and `en-GB`. See CSS4 specification for more info.
-`:last-child`                         | `#!css p:last-child`                  | Select every `#!html <p>` element that is the last child of its parent.
-`:last-of-type`                       | `#!css p:last-of-type`                | Select every `#!html <p>` element that is the last `#!html <p>` element of its parent.
-`:not(sel)`                           | `#!css :not(.some-class)`             | Select elements that do not have class `some-class`.
-`:not(sel, sel)`{:.lab}               | `#!css :not(.some-class, #some-id)`   | Select elements that do not have class `some-class` and ID `some-id`.
-`:nth-child(an+b)`                    | `#!css p:nth-child(2)`                | Select every `#!html <p>` element that is the second child of its parent.
-`:nth-child(an+b [of S]?)`{:.lab}     | `#!css p:nth-child(2 of .class)`      | Select every `#!html <p>` element that matches the provided `of S` selector and is the second child of its parent.
-`:nth-last-child(an+b)`               | `#!css p:nth-last-child(2)`           | Select every `#!html <p>` element that is the second child of its parent, counting from the last child.
-`:nth-last-child(an+b [of S]?)`{:.lab}| `#!css p:nth-last-child(2 of .class)` | Select every `#!html <p>` element that matches the provided `of S` selector and is the second child of its parent, counting from the last child. Please see CSS specification for more info on format.
-`:nth-last-of-type(an+b)`             | `#!css p:nth-last-of-type(2)`         | Select every `#!html <p>` element that is the second `#!html <p>` element of its parent, counting from the last child. Please see CSS specification for more info on format.
-`:nth-of-type(an+b)`                  | `#!css p:nth-of-type(2)`              | Select every `#!html <p>` element that is the second `#!html <p>` element of its parent. Please see CSS specification for more info on format.
-`:only-child`                         | `#!css p:only-child`                  | Select every `#!html <p>` element that is the only child of its parent.
-`:only-of-type`                       | `#!css p:only-of-type`                | Select every `#!html <p>` element that is the only `#!html <p>` element of its parent.
-`:root`                               | `#!css :root`                         | Select the root element. In HTML, this is usually the `#!html <html>` element.
-`:scope`{.lab}                        | `#!css :scope div`                    | Select all `#!html <div>` elements under the current scope element. `:scope` is the element under match or select. In the case where a document (`BeautifulSoup` object, not a `Tag` object) is under select or match, `:scope` equals `:root`.
-`:where(s1, s2)`{:.lab}               | `#!css :where(div, .some-class)`      | Select all `#!html <div>` elements and elements that have the class `some-class`. In CSS4 `:where()` is like `:is` except specificity is always zero. Soup Sieve doesn't care about specificity, so `:where` is exactly like `:is`.
-
-!!! warning "Expensive Selectors"
-    Some selectors are more expensive to use than others. For instance, `:has()` can be a bit more expensive as
-    `:has(a)` will search all children of every element to find if the element contains an `#!html <a>` element.
-
-    While an effort is made to prioritize evaluation of less expensive selectors first in the hopes to invalidate the
-    search early on and avoid evaluating expensive selectors unless needed, you should still try to be as specific as
-    possible to limit how often expensive selectors are evaluated. For instance, using `p.special:has(a)` will limit
-    evaluating `:has()` to only `#!html <p>` elements that contain the `special` class.
-
 !!! danger "Not Implemented"
     Pseudo elements are not supported as they do not represent real elements.
 
-    At-rules (`@page`, etc.) are not supported.
+    At-rules (`@page`, etc.) are also not supported.
 
-### HTML Only Selectors
+## Basic Selectors
 
-There are a number of selectors that apply specifically to HTML documents. Such selectors will only match tags in HTML
-documents. Use of these selectors are not restricted from XML, but when used with XML documents, they will never match.
+### Type Selectors
 
-Selectors that require states that only exist within a live HTML document, or are specifically tied to user interaction
-with a live document are allowed (if implemented), but will never match as well.
+Type selectors match elements by node name.
 
-Selector                        | Example                             | Description
-------------------------------- | ----------------------------------- | -----------
-`:active`                       | `#!css a:active`                    | Active states are not applicable, so this will never match.
-`:any-link`{:.lab}              | `#!css a:any-link`                  | All links are treated as unvisited, so this will match every `#!html <a>` element with an `href` attribute.
-`:checked`                      | `#!css input:checked`               | Selects every checked `#!html <input>` element.
-`:current`{:.lab}               | `#!css p:current`                   | As the document is not rendered, this will never match.
-`:current(sel, sel)`{:.lab}     | `#!css :current(p, li, dt, dd)`     | As the document is not rendered, this will never match.
-`:default`{:.lab}               | `#!css input:default`               | Select all `#!html <inputs>` elements that are the default among their related elements. See CSS specification to learn more about all that this targets.
-`:dir(direction)`{:.lab}        | `#!css div:dir(ltr)`                | Select all `#!html <div>` elements that have a text direction of left to right.
-`:disabled`                     | `#!css input:disabled`              | Select every disabled `#!html <input>` element.
-`:enabled`                      | `#!css input:enabled`               | Select every enabled `#!html <input>` element.
-`:focus`                        | `#!css input:focus`                 | Focus states are not applicable, so this will never match.
-`:focus-visible`{:.lab}         | `#!css a:focus-visible`             | Focus states are not applicable, so this will never match.
-`:focus-within`{:.lab}          | `#!css div:focus-within`            | Focus states are not applicable, so this will never match.
-`:future`{:.lab}                | `#!css p:future`                    | As the document is not rendered, this will never match.
-`:host`{:.lab}                  | `#!css :host`                       | Matches nothing as there is no Shadow DOM.
-`:host(sel, sel)`{:.lab}        | `#!css :host(h1)`                   | Matches nothing as there is no Shadow DOM.
-`:host-context(sel, sel)`{:.lab}| `#!css :host-context(h1)`           | Matches nothing as there is no Shadow DOM.
-`:in-range`{:.lab}              | `#!css input:in-range`              | Matches all `#!html <input>` elements whose values are in range according to their `type`, `min`, and `max` attributes.
-`:hover`                        | `#!css a:focus`                     | Hover states are not applicable, so this will never match.
-`:indeterminate`{:.lab}         | `#!css input:indeterminate`         | Selects every `#!html <input>` element in an indeterminate state.
-`:local-link`{:.lab}            | `#!css a:local-link`                | As there is no local URL associated with a document in Soup Sieve, this will match nothing.
-`:link`                         | `#!css a:link`                      | All links are treated as unvisited, so this will match every `#!html <a>` element with an `href` attribute.
-`:optional`{:.lab}              | `#!css input:optional`              | Select every `#!html <input>` element without a `required` attribute.
-`:out-of-range`{:.lab}          | `#!css input:out-of-range`          | Matches all `#!html <input>` elements whose values are out of range according to their `type`, `min`, and `max` attributes.
-`:past`{:.lab}                  | `#!css p:past`                      | As the document is not rendered, this will never match.
-`:paused`{:.lab}                | `#!css :paused`                     | Pausing is not applicable in the Soup Sieve environment, so this will match nothing.
-`:placeholder-shown`{:.lab}     | `#!css input:placeholder-shown`     | Select every `#!html <input>` element that is showing a placeholder via the `placeholder` attribute.
-`:playing`{:.lab}               | `#!css :playing`                    | Playing is not applicable in the Soup Sieve environment, so this will match nothing.
-`:read-only`{:.lab}             | `#!css input:read-only`             | Select every `#!html <input>` element that is not editable by the user.
-`:read-write`{:.lab}            | `#!css input:read-write`            | Select every `#!html <input>` element that is editable by the user.
-`:required`{:.lab}              | `#!css input:required`              | Select every `#!html <input>` element with a `required` attribute.
-`:target`                       | `#!css #news:target`                | Elements cannot be targeted, so this will never match.
-`:target-within`{:.lab}         | `#!css article:target`              | Elements cannot be targeted, so this will never match.
-`:user-invalid`{:.lab}          | `#!css input:user-invalid`          | User interaction is not applicable, so this will never match.
-`:visited`                      | `#!css a:visited`                   | All links are treated unvisited, so this will never match.
+If a default namespace is defined in the [namespace dictionary](./api.md#namespaces), and no
+[namespace](#namespace-selectors) is explicitly defined, it will be assumed that the element must be in the default
+namespace.
 
-## Custom Selectors
+!!! example "Type Example"
+    The following would select all `#!html <div>` elements.
 
-Below is a list of non-standard CSS selectors that we support. These can contain useful selectors that were rejected
-from the official CSS specifications, selectors implemented by other systems such as JQuery, or even selectors
-specifically created for Soup Sieve.
+    ```css
+    div
+    ```
 
-Just because we include selectors from one source, does not mean we have intentions of implementing other selectors from
-the same such source.
+### Universal Selectors
 
-Selector                        | Example                             | Description
-------------------------------- | ----------------------------------- | -----------
-`[attribute!=value]`            | `#!css [target!=_blank]`            | Equivalent to `#!css :not([target=_blank])`.
-`:contains(text)`               | `#!css p:contains(text)`            | Select all `#!html <p>` elements that contain "text" in their content, either directly in themselves or indirectly in their descendants.
-`:defined`                      | `#!css :defined`                    | Normally, this represents normal elements (names without hyphens) and custom elements (names with hyphens) that have been properly added to the [custom element registry][registry]. Since elements cannot be added to the custom element registry with JavaScript in the Soup Sieve environment, this will select all elements that are not custom tags. `:defined` is a browser selector, so it doesn't apply to XML.
+The Universal selector (`*`) matches elements of any type.
+
+!!! example
+    The following would match any element: `div`, `a`, `p`, etc.
+
+    ```css
+    *
+    ```
+
+### ID Selectors
+
+The ID selector matches an element based on its `id` attribute. The ID must match exactly.
+
+!!! example
+    The following would select the element with the id `some-id`.
+
+    ```css
+    #some-id
+    ```
+
+### Class Selectors
+
+The class selector matches an element based on the values contained in the `class` attribute. The `class` attribute is
+treated as a whitespace separated list, where each item is a **class**.
+
+!!! example
+    The following would select the elements with the class `some-class`.
+
+    ```css
+    .some-class
+    ```
+
+### Attribute Selectors
+
+The attribute selector matches an element based on its attributes. When specifying a value of an attribute, if it
+contains whitespace or special characters, you should quote them with either single or double quotes.
+
+`[attribute]`
+: 
+    Represents elements with an attribute named **attribute**.
+
+    !!! example
+        The following would select all elements with a `target` attribute.
+
+        ```css
+        [target]
+        ```
+
+`[attribute=value]`
+: 
+    Represents elements with an attribute named **attribute** that also has a value of **value**.
+
+    !!! example
+        The following would select all elements with the `target` attribute whose value was `_blank`.
+
+        ```css
+        [target=_blank]
+        ```
+
+`[attribute~=value]`
+: 
+    Represents elements with an attribute named **attribute** whose value is a space separated list which contains
+    **value**.
+
+    !!! example
+        The following would select all elements with a `title` attribute containing the word `flower`.
+
+        ```css
+        [title~=flower]
+        ```
+
+`[attribute|=value]`
+: 
+    Represents elements with an attribute named **attribute** whose value is a dash separated list that starts with
+    **value**.
+
+    !!! example
+        The following would select all elements with a `lang` attribute value starting with `en`.
+
+        ```css
+        [lang|=en]
+        ```
+
+`[attribute^=value]`
+: 
+    Represents elements with an attribute named **attribute** whose value starts with **value**.
+
+    !!! example
+        The following selects every `#!html <a>` element whose `href` attribute value begins with `https`.
+
+        ```css
+        a[href^="https"]
+        ```
+
+`[attribute$=value]`
+: 
+    Represents elements with an attribute named **attribute** whose value ends with **value**.
+
+    !!! example
+        The following would select every `#!html <a>` element whose `href` attribute value ends with `.pdf`.
+
+        ```css
+        a[href$=".pdf"]
+        ```
+
+`[attribute*=value]`
+: 
+    Represents elements with an attribute named **attribute** whose value containing the substring **value**.
+
+    !!! example
+        The following would select every `#!html <a>` element whose `href` attribute value contains the substring
+        `sometext`.
+
+        ```css
+        a[href*="sometext"]
+        ```
+
+`[attribute!=value]`<span class="star badge"></span>
+: 
+    Equivalent to `#!css :not([attribute=value])`.
+
+    !!! example
+        Selects all elements who do not have a `target` attribute or do not have one with a value that matches `_blank`.
+
+        ```css
+        [target!=_blank]
+        ```
+
+`[attribute operator value i]`<span class="lab badge"></span>
+: 
+    Represents elements with an attribute named **attribute** and whose value, when the **operator** is applied, matches
+    **value** *without* case sensitivity.
+
+    !!! example
+        The following would select any element with a `title` that equals `flower` regardless of case.
+
+        ```css
+        [title=flower i]
+        ```
+
+`[attribute operator value s]` <span class="lab badge"></span>
+: 
+    Represents elements with an attribute named **attribute** and whose value, when the **operator** is applied, matches
+    **value** *with* case sensitivity.
+
+    !!! example
+        The following would select any element with a `type` that equals `submit`. Case sensitivity will be forced.
+
+        ```css
+        [type=submit s]
+        ```
+
+### Namespace Selectors
+
+Namespace selectors are used in conjunction with type selectors. They are specified with by declaring the namespace and
+the type separated with `|`: `namespace|type`. `namespace` in this context is the prefix defined via the [namespace
+dictionary](./api.md#namespaces). The prefix does not need to match the prefix in the document as it is the namespace
+that is compared, not the prefix.
+
+The universal selector (`*`) can be used to represent any namespace as it can with type.
+
+Namespaces can be used with attribute selectors as well except that when `[|attribute`] is used, it is equivalent to
+`[attribute]`.
+
+`*|*`
+: 
+    Represents any element with or without a namespace.
+
+    !!! example
+        The following would select the `#!html <div>` element with or without a namespace.
+
+        ```css
+        *|div
+        ```
+
+`namespace|*`
+: 
+    Represents any element with a namespace that is associated with the prefix `namespace` as defined in the [namespace
+    dictionary](./api.md#namespaces).
+
+    !!! example
+        The following would select the `#!html <circle>` element with the namespace `svg`.
+
+        ```css
+        svg|circle
+        ```
+
+`|*`
+: 
+    Represents any element with no defined namespace.
+
+    !!! example
+        The following would select a `#!html <div>` element that has no namespace.
+
+        ```css
+        |div
+        ```
+
+## Combinators and Selector Lists
+
+CSS employs a number of tokens in order to represent lists or to provide relational context between two selectors.
+
+### Selector Lists
+
+Selector lists use the comma (`,`) to join multiple selectors in a list.
+
+!!! example
+    The following would select both `#!html <div>` elements and `#!html <h1>` elements.
+
+    ```
+    div, h1
+    ```
+
+### Descendant Combinator
+
+Descendant combinators combine two selectors with whitespace (<code> </code>) in order to signify that the second
+element is matched if it has an ancestor that matches the first element.
+
+!!! example
+    The following would select all `#!html <p>` elements inside `#!html <div>` elements.
+
+    ```css
+    div p
+    ```
+
+### Child combinator
+
+Child combinators combine two selectors with `>` in order to signify that the second element is matched if it has a
+parent that matches the first element.
+
+!!! example
+    The following would select all `#!html <p>` elements where the parent is a `#!html <div>` element.
+
+    ```css
+    div > p
+    ```
+
+### General sibling combinator
+
+General sibling combinators combine two selectors with `~` in order to signify that the second element is matched if it
+has a sibling that precedes it that matches the first element.
+
+!!! example
+    The following would select every `#!html <ul>` element that is preceded by a `#!html <p>` element.
+
+    ```css
+    p ~ ul
+    ```
+
+### Adjacent sibling combinator
+
+Adjacent sibling combinators combine two selectors with `+` in order to signify that the second element is matched if it
+has an adjacent sibling that precedes it that matches the first element.
+
+!!! example
+    The following would select all `#!html <p>` elements that are placed immediately after `#!html <div>` elements.
+
+    ```css
+    div + p
+    ```
+
+## Pseudo-Classes
+
+### `:active`<span class="html5 badge"></span><span class="null badge"></span> {:#:active}
+
+Selects active elements.
+
+!!! example
+    Active states are not applicable, so this will never match.
+
+    ```css
+    a:active
+    ```
+
+### `:any-link`<span class="html5 badge"></span><span class="lab badge"></span> {:#:any-link}
+
+Selects every `#!html <a>`, `#!html <area>`, or `#!html <link>` element that has an `href` attribute, independent of
+whether it has been visited.
+
+!!! example
+    All links are treated as unvisited, so this will match every `#!html <a>` element with an `href` attribute.
+
+    ```css
+    a:any-link
+    ```
+
+### `:checked`<span class="html5 badge"></span> {:#:checked}
+
+Selects any `#!html <input type="radio"/>`, `#!html <input type="checkbox"/>`, or `#!html <option>` element (in a
+`#!html <select>` element) that is checked or toggled to an on state.
+
+!!! example
+    Selects every checked `#!html <input>` element.
+
+    ```css
+    input:checked
+    ```
+
+### `:contains`<span class="star badge"></span> {:#:contains}
+
+Selects elements that contain the text provided text. Text can be found in either itself, or its descendants.
 
 !!! warning "Contains"
     `:contains()` is an expensive operation as it scans all the text nodes of an element under consideration, which
     includes all descendants. Using highly specific selectors can reduce how often it is evaluated.
+
+!!! example
+    Select all `#!html <p>` elements that contain "text" in their content.
+
+    ```css
+    p:contains(text)
+    ```
+
+### `:current`<span class="html5 badge"></span><span class="lab badge"></span><span class="null badge"></span> {:#:current}
+
+`:current`
+: 
+    Selects the element, or an ancestor of the element, that is currently being displayed.
+
+    !!! example
+        Time-dimensional pseudo-classes require a user agent which is not present in Beautiful Soup, so this will match
+        nothing.
+
+        ```css
+        p:current
+        ```
+
+`:current(sel1, sel2, ...)`
+: 
+    The functional form is like `:is()` and takes a selector list:
+
+    !!! example
+        Time-dimensional pseudo-classes require a user agent which is not present in Beautiful Soup, so this will match
+        nothing.
+
+        ```css
+        :current(p, li, dt, dd)
+        ```
+
+### `:default`<span class="html5 badge"></span><span class="lab badge"></span> {:#:default}
+
+Selects any form element that is the default among a group of related elements, including: `#!html <button>`,
+`#!html <input type="checkbox">`, `#!html <input type="radio">`, `#!html <option>` elements.
+
+!!! example
+    Selects all `#!html <inputs>` elements that are the default among their related elements.
+
+    ```css
+    input:default
+    ```
+
+### `:defined`<span class="html5 badge"></span> {:#:defined}
+
+Normally, this represents normal elements (names without hyphens) and custom elements (names with hyphens) that have
+been properly added to the custom element registry. Since elements cannot be added to a custom element registry in
+Beautiful Soup, this will select all elements that are not custom tags. `:defined` is a HTML specific selector, so it
+doesn't apply to XML.
+
+!!! example
+    Selects all defined elements under body.
+
+    ```css
+    body :defined
+    ```
+
+### `:dir()`<span class="html5 badge"></span><span class="lab badge"></span> {:#:dir}
+
+Selects elements based on text directionality. Accepts either `ltr` or `rtl` for "left to right" and "right to left"
+respectively.
+
+!!! example
+    Selects all `#!html <div>` elements that have a text direction of left to right.
+
+    ```css
+    div:dir(ltr)
+    ```
+
+### `:disabled`<span class="html5 badge"></span> {:#:disabled}
+
+Selects any element that is disabled.
+
+!!! example
+    Selects every disabled `#!html <input>` element.
+
+    ```css
+    input:disabled
+    ```
+
+### `:empty`<span class="lab badge"></span> {:#:empty}
+
+Selects elements that have no children and no text (whitespace is ignored).
+
+!!! example
+    Selects every `#!html <p>` element that has no children and either no text.
+
+    ```css
+    p:empty
+    ```
+
+### `:enabled`<span class="html5 badge"></span> {:#:enabled}
+
+Selects any element that is enabled.
+
+!!! example
+    Selects every enabled `#!html <input>` element.
+
+    ```css
+    input:enabled
+    ```
+
+### `:first-child` {:#:first-child}
+
+Selects the first child in a group of sibling elements.
+
+!!! example
+    Selects every `#!html <p>` that is also the first child of its parent.
+
+    ```css
+    p:first-child
+    ```
+
+### `:first-of-type` {:#:first-of-type}
+
+Selects the first child of a given type in a group of sibling elements.
+
+!!! example
+    Selects every `#!html <p>` element that is the first `#!html <p>` element of its parent.
+
+    ```css
+    p:first-of-type
+    ```
+
+### `:focus`<span class="html5 badge"></span><span class="null badge"></span> {:#:focus}
+
+Represents an an element that has received focus.
+
+!!! example
+    Focus states are not possible in Beautiful Soup, so this will never match.
+
+    ```css
+    input:focus
+    ```
+
+### `:focus-visible`<span class="html5 badge"></span><span class="lab badge"></span><span class="null badge"></span> {:#:focus-visible}
+
+Selects an element that matches `:focus` and the user agent determines that the focus should be made evident on the
+element.
+
+!!! example
+
+    Focus states are not possible in Beautiful Soup, and since a user agent also needs to raise that the focus should be
+    made evident, this will never match.
+
+    ```css
+    a:focus-visible
+    ```
+
+### `:focus-within`<span class="html5 badge"></span><span class="lab badge"></span><span class="null badge"></span> {:#:focus-within}
+
+Selects an element that has received focus or contains an element that has received focus.
+
+!!! example
+
+    Focus states are not possible in Beautiful Soup, so this will never match.
+
+    ```css
+    div:focus-within
+    ```
+
+### `:future`<span class="html5 badge"></span><span class="lab badge"></span><span class="null badge"></span> {:#:future}
+
+Selects an element that is defined to occur entirely after a `:current` element.
+
+!!! example
+    Time-dimensional pseudo-classes require a user agent which is not present in Beautiful Soup, so this will match
+    nothing.
+
+    ```css
+    p:future
+    ```
+
+### `:has()`<span class="lab badge"></span> {:#has}
+
+Selects an element if any of the relative selectors passed as parameters (which are relative to the `:scope` of the
+given element), match at least one element.
+
+!!! example
+    Selects elements that have a direct child that is a `#!html <div>` or that have a sibling of `#!html <p>`
+    immediately following it.
+
+    ```css
+    :has(> div, + p)
+    ```
+
+### `:host`<span class="html5 badge"></span><span class="lab badge"></span><span class="null badge"></span> {:#host}
+
+`:host`
+: 
+    Select the element hosting a shadow tree.
+
+    !!! example
+        Matches nothing as there is no Shadow DOM in Beautiful Soup.
+
+        ```css
+        :host
+        ```
+
+`:host(sel1, sel2, ...)`
+: 
+
+    The functional form of `:host` takes a selector list and matches the shadow host only if it matches one of the
+    selectors in the list.
+
+    !!! example
+        Matches nothing as there is no Shadow DOM in Beautiful Soup.
+
+        ```css
+        :host(h1)
+        ```
+
+### `:host-context()`<span class="html5 badge"></span><span class="lab badge"></span><span class="null badge"></span> {:#:host-context}
+
+Selects the element hosting shadow tree, but only if one of the element's ancestors match a selector in the selector
+list.
+
+!!! example
+    Matches nothing as there is no Shadow DOM in Beautiful Soup.
+
+    ```css
+    :host-context(main article)
+    ```
+
+### `:hover`<span class="html5 badge"></span><span class="null badge"></span> {:#:hover}
+
+Selects an element when the user interacts with it by hovering over it with a pointing device.
+
+!!! example
+    Hovering is not possible in Beautiful Soup, so this will match nothing.
+
+    ```css
+    a:hover
+    ```
+
+### `:in-range`<span class="html5 badge"></span><span class="lab badge"></span> {:#:in-range}
+
+Selects all `#!html <input>` elements whose values are in range according to their `type`, `min`, and `max` attributes.
+
+!!! example
+    Matches all `#!html <input type="number"/>` elements whose values are in range.
+
+    ```css
+    input[type="number"]:in-range
+    ```
+
+### `:indeterminate`<span class="html5 badge"></span><span class="lab badge"></span> {:#:indeterminate}
+
+Selects all form elements whose are in an indeterminate state.
+
+!!! example
+    Matches all `#!html <input type="radio"/>` elements that are in a form and none of the other radio controls with the
+    same name are selected.
+
+    ```css
+    input[type="radio"]:indeterminate
+    ```
+
+### `:is()`<span class="lab badge"></span> {:#:is}
+
+Selects an element, but only if it matches at least one selector in the selector list.
+
+!!! example
+    Matches `#!html <div>` elements and `#!html <p>` elements.
+
+    ```css
+    :is(div, p)
+    ```
+
+### `:lang()` {:#:lang}
+
+`:lang(language)`
+: 
+    Selects an element whose associated language matches the provided **language** or whose language starts with the
+    provided **language** followed by a `-`. Language is determined by the rules of the document type.
+
+    !!! example
+        Selects all elements with language `en`. Will also match languages of `en-US`, `en-GB`, etc.
+
+        ```css
+        :lang(en)
+        ```
+
+`:lang(language1, language2, ...)`<span class="lab badge"></span>
+: 
+    The level 4 `:lang()` adds the ability to define multiple languages, the ability to use `*` for wildcard language
+    matching.
+
+    !!! example
+        Select all elements with language `de-CH`, `it-CH`, `fr-CH`, and `rm-CH`. Will also match `en`, `en-US`, and
+        `en-GB`. See CSS4 specification for more info on wildcard matching rules.
+
+        ```css
+        :lang('*-CH', en)
+        ```
+
+### `:last-child` {:#:last-child}
+
+Selects the last element among a group of sibling elements.
+
+!!! example
+    Selects every `#!html <p>` element that is also the last child of its parent.
+
+    ```css
+    p:last-child
+    ```
+
+### `:last-of-type` {:#:last-of-type}
+
+Selects the last child of a given type in a group of sibling elements.
+
+!!! example
+    Selects every `#!html <p>` element that is the last `#!html <p>` element of its parent.
+
+    ```css
+    p:last-of-type
+    ```
+
+### `:link`<span class="html5 badge"></span> {:#:link}
+
+Selects a link (every `#!html <a>`, `#!html <link>`, and `#!html <area>` element with an `href` attribute) that has not
+yet been visited.
+
+!!! example
+    Selects all `#!html <a>` elements since Beautiful Soup does not have *visited* states.
+
+    ```css
+    a:link
+    ```
+
+### `:local-link`<span class="html5 badge"></span><span class="lab badge"></span><span class="null badge"></span> {:#:local-link}
+
+Selects link (every `#!html <a>`, `#!html <link>`, and `#!html <area>` element with an `href` attribute) elements whose
+absolute URL matches the element’s own document URL.
+
+!!! example
+    Since documents in Beautiful Soup are not live documents, they do not contain the context of the document's URL, so
+    this will not match anything.
+
+    ```css
+    a:local-link
+    ```
+
+### `:not()` {:#:not}
+
+`:not(selector)`
+: 
+    Selects all elements that do not match the selector.
+
+    !!! example
+        Selects all `#!html <p>` elements that do not have class `exclude`.
+
+        ```css
+        p:not(.exclude)
+        ```
+
+`:not(selector1, selector2, ...)`<span class="lab badge"></span>
+: 
+    Selects all elements that do not match any of the selectors in the selector list.
+
+    !!! example
+        Selects all `#!html <p>` elements that do not have class `exclude` and attribute `style`.
+
+        ```css
+        p:not(.exclude, [style])
+        ```
+
+### `:nth-child()` {:#:nth-child}
+
+`:nth-child(keyword)`
+: 
+    `:nth-child` allows the keywords `even` and `odd`, and will respectively select elements whose position is either
+    even or odd amongst a group of siblings.
+
+    !!! example
+        Select every odd element that is also a `#!html <p>` element.
+
+        ```css
+        p:nth-child(odd)
+        ```
+
+`:nth-child(an+b)`
+: 
+    Selects elements based on their position in a group of siblings, using the pattern `an+b`, for every positive integer
+    or zero value of `n`. The index of the first element is `1`. The values `a` and `b` must both be integers.
+
+    !!! example
+        Selects the first three elements: `1 = 1*0+3`, `2 = -1*1+3`, `3 = -1*2+3`.
+
+        ```css
+        :nth-child(-n+3)
+        ```
+
+`:nth-child(an+b [of S]?)`</span><span class="lab badge"></span>
+: 
+    Selects from a sub-group of sibling elements that all match the selector list (`[of S]?`), based on their position
+    within that sub-group, using the pattern `an+b`, for every positive integer or zero value of `n`. The index of the
+    first element is `1`. The values `a` and `b` must both be integers.
+
+    Essentially, `#!css img:nth-of-type(2)` would be equivalent to `#!css :nth-child(2 of img)`. The advantage of this
+    of using `:nth-child(an+b [of S]?)` is that `:nth-of-type` is restricted to types, while `:nth-child(an+b [of S]?)`
+    can use compound selectors.
+
+    !!! example
+        Selects the second element of a group of sibling elements that match all match `img`.
+
+        ```css
+        :nth-child(2 of img)
+        ```
+
+### `:nth-last-child()` {:#:nth-last-child}
+
+`:nth-last-child(keyword)`
+: 
+    `:nth-last-child` allows the keywords `even` and `odd`, and will respectively select elements whose position is either
+    even or odd amongst a group of siblings, counting from the end.
+
+    !!! example
+        Select every odd element that is also a `#!html <p>` element, counting from the end.
+
+        ```css
+        p:nth-child(odd)
+        ```
+
+`:nth-last-child(an+b)`
+: 
+    Counting from the end, selects elements based on their position in a group of siblings, using the pattern `an+b`,
+    for every positive integer or zero value of `n`. The index of the first element is `1`. The values `a` and `b` must
+    both be integers.
+
+    !!! example
+        Selects the last three elements: `1 = 1*0+3`, `2 = -1*1+3`, `3 = -1*2+3`.
+
+        ```css
+        :nth-child(-n+3)
+        ```
+
+`:nth-last-child(an+b [of S]?)`</span><span class="lab badge"></span>
+: 
+    Counting from the end, selects from a sub-group of sibling elements that all match the selector list (`[of S]?`),
+    based on their position within that sub-group, using the pattern `an+b`, for every positive integer or zero value of
+    `n`. The index of the first element is `1`. The values `a` and `b` must both be integers.
+
+    Essentially, `#!css img:nth-last-of-type(2)` would be equivalent to `#!css :nth-last-child(2 of img)`. The advantage
+    of this of using `:nth-last-child(an+b [of S]?)` is that `:nth-last-of-type` is restricted to types, while
+    `:nth-last-child(an+b [of S]?)` can use compound selectors.
+
+    !!! example
+        Selects the second element (counting from the end) of a group of sibling elements that match all match `img`.
+
+        ```css
+        :nth-last-child(2 of img)
+        ```
+
+### `:nth-last-of-type()` {:#:nth-last-of-type}
+
+`:nth-last-of-type(keyword)`
+: 
+    `:nth-last-of-type` allows the keywords `even` and `odd`, and will respectively select elements, from a sub-group of
+    sibling elements that all match the given type, whose position is either even or odd amongst that sub-group of
+    siblings, counting from the end.
+
+    !!! example
+        Counting from the end, selects every even `#!html <p>` amongst sibling `#!html <p>` elements.
+
+        ```css
+        p:nth-last-of-type(even)
+        ```
+
+`:nth-last-of-child(an+b)`
+: 
+    Counting from the end, selects from a sub-group of sibling elements that all match the given type, based on their
+    position within that sub-group, using the pattern `an+b`, for every positive integer or zero value of `n`. The index
+    of the first element is `1`. The values `a` and `b` must both be integers.
+
+    !!! example
+        Counting from the end, selects every `#!html <p>` element that is the second `#!html <p>` element of its parent.
+
+        ```css
+        p:nth-last-of-type(2)
+        ```
+
+### `:nth-of-type()` {:#:nth-of-type}
+
+`:nth-of-type(keyword)`
+: 
+    `:nth-of-type` allows the keywords `even` and `odd`, and will respectively select elements, from a sub-group of
+    sibling elements that all match the given type, whose position is either even or odd amongst that sub-group of
+    siblings.
+
+    !!! example
+        Selects every even `#!html <p>` amongst sibling `#!html <p>` elements.
+
+        ```css
+        p:nth-last-of-type(even)
+        ```
+
+`:nth-of-type(an+b)`
+: 
+    Selects from a sub-group of sibling elements that all match the given type, based on their position within that
+    sub-group, using the pattern `an+b`, for every positive integer or zero value of `n`. The index of the first element
+    is `1`. The values `a` and `b` must both be integers.
+
+    !!! example
+        Selects every `#!html <p>` element that is the second `#!html <p>` element of its parent.
+
+        ```css
+        p:nth-of-type(2)
+        ```
+
+### `:only-child` {:#:only-child}
+
+Selects element without any siblings.
+
+!!! example
+    Selects any `#!html <p>` element that is the only child of its parent.
+
+    ```css
+    p:only-child
+    ```
+
+### `:only-of-type` {:#:only-of-type}
+
+Selects element without any siblings that matches a given type.
+
+!!! example
+    Selects every `#!html <p>` element that is the only `#!html <p>` element of its parent.
+
+    ```css
+    p:only-of-type
+    ```
+
+### `:optional`<span class="html5 badge"></span><span class="lab badge"></span> {:#:optional}
+
+Selects any `#!html <input>`, `#!html <select>`, or `#!html <textarea>` element that does not have the `required`
+attribute set on it.
+
+!!! example
+    Select every `#!html <input>` element without a `required` attribute.
+
+    ```css
+    input:optional
+    ```
+
+### `:out-of-range`<span class="html5 badge"></span><span class="lab badge"></span> {:#:out-of-range}
+
+Selects all `#!html <input>` elements whose values are out of range according to their `type`, `min`, and `max`
+attributes.
+
+!!! example
+    Matches all `#!html <input type="number"/>` elements whose values are out of range.
+
+    ```css
+    input[type="number"]:out-of-range
+    ```
+
+### `:past`<span class="html5 badge"></span><span class="lab badge"></span><span class="null badge"></span> {:#:past}
+
+Selects an element that is defined to occur entirely prior to a `:current` element.
+
+!!! example
+    Time-dimensional pseudo-classes require a user agent which is not present in Beautiful Soup, so this will match
+    nothing.
+
+    ```css
+    p:past
+    ```
+
+### `:paused`<span class="html5 badge"></span><span class="lab badge"></span><span class="null badge"></span> {:#:paused}
+
+Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and is
+currently "paused".
+
+!!! example
+    It is not possible to play or pause a media element in Beautiful Soup, so this will match nothing.
+
+    ```css
+    :paused
+    ```
+
+### `:placeholder-shown`<span class="html5 badge"></span><span class="lab badge"></span> {:#:placeholder-shown}
+
+Selects any `#!html <input>` or `#!html <textarea>` element that is currently displaying placeholder text via the
+`placeholder` attribute.
+
+!!! example
+    Matches all `#!html <input>` elements that have placeholder text that is shown.
+
+    ```css
+    input:placeholder-shown
+    ```
+
+### `:playing`<span class="html5 badge"></span><span class="lab badge"></span><span class="null badge"></span> {:#:playing}
+
+Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and is
+currently “playing”.
+
+!!! example
+    It is not possible to play or pause a media element in Beautiful Soup, so this will match nothing.
+
+    ```css
+    :playing
+    ```
+
+### `:read-only`<span class="html5 badge"></span><span class="lab badge"></span> {:#:read-only}
+
+Selects elements (such as `#!html <input>` or `#!html <textarea>`) that are *not* editable by the user. This does not
+just apply to form elements with `readonly` set, but it applies to **any** element that cannot be edited by the user.
+
+!!! example
+    Selects every `#!html <input>` element that is not editable by the user.
+
+    ```css
+    input:read-only
+    ```
+
+### `:read-write`<span class="html5 badge"></span><span class="lab badge"></span> {:#:read-write}
+
+Selects elements (such as `#!html <input>` or `#!html <textarea>`) that are editable by the user. This does not just
+apply to form elements as it applies to **any** element that can be edited by the user, such as a `#!html <p>` element
+with `contenteditable` set on it.
+
+!!! example
+    Selects every `#!html <input>` element that is editable by the user.
+
+    ```css
+    input:read-only
+    ```
+
+### `:required`<span class="html5 badge"></span><span class="lab badge"></span> {:#:required}
+
+Selects any `#!html <input>`, `#!html <select>`, or `#!html <textarea>` element that has the `required` attribute set on
+it.
+
+!!! example
+    Select every `#!html <input>` element with a `required` attribute.
+
+    ```css
+    input:required
+    ```
+
+### `:root` {:#:root}
+
+Selects the root element of a document tree.
+
+!!! example
+    For HTML, this would select the `#!html <html>` element.
+
+    ```css
+    :root
+    ```
+
+### `:scope`<span class="lab badge"></span> {:#:scope}
+
+`:scope` represents the the element a `match`, `select`, or `filter` is being called on. If we had were for instance
+using scope in on a div (`#!py3 sv.select(':scope > p', soup.div)`) soup would represent **that** div element, and no
+others. If called on the Beautiful Soup object which represents the entire document, it would simply select
+[`:root`](#:root).
+
+!!! example
+    Assuming that the following selector was called on a div element, it would select all `#!html <p>` elements that
+    are direct children of **that** associated `#!html <div>` element.
+
+    ```css
+    :scope > p
+    ```
+
+### `:target`<span class="html5 badge"></span><span class="null badge"></span> {:#:target}
+
+Selects a unique element (the target element) with an id matching the URL's fragment.
+
+!!! example
+    Since there is no concept of a "targeted" element outside a user agent/browser without simulation, this will match
+    nothing.
+
+    ```css
+    h1:target
+    ```
+
+### `:target-within`<span class="html5 badge"></span><span class="lab badge"></span><span class="null badge"></span> {:#:target-within}
+
+Selects a unique element with an id matching the URL's fragment or an element which contains the element.
+
+!!! example
+    Since there is no concept of a "targeted" element outside a user agent/browser without simulation, this will match
+    nothing.
+
+    ```css
+    div:target-within
+    ```
+
+### `:user-invalid`<span class="html5 badge"></span><span class="lab badge"></span><span class="null badge"></span> {:#:user-invalid}
+
+Selects an element with incorrect input, but only after the user has significantly interacted with it.
+
+!!! example
+    Since a user cannot interact with the HTML outside a user agent (or some simulated environment), this will match
+    nothing.
+
+    ```css
+    input:user-invalid
+    ```
+
+### `:visited`<span class="html5 badge"></span><span class="null badge"></span> {:#:visited}
+
+Selects links that have already been visited.
+
+!!! example
+    In the Beautiful Soup, there links cannot be "visited", that is a concept that only applies with a
+    user agent/browser. As all links in Beautiful Soup are considered to be unvisited, this will match nothing.
+
+    ```css
+    a:visited
+    ```
+
+### `:where()`<span class="lab badge"></span> {:#:where}
+
+Selects an element, but only if it matches at least one selector in the selector list. In browsers, this also has zero
+specificity, but this only has relevance in a browser environment where you have multiple CSS styles, and specificity is
+used to see which applies. Beautiful Soup and Soup Sieve don't care about specificity.
+
+!!! example
+    Matches `#!html <div>` elements and `#!html <p>` elements.
+
+    ```css
+    :where(div, p)
+    ```
 
 --8<--
 selector_styles.txt

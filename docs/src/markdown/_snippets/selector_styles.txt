@@ -1,19 +1,38 @@
 <style>
-table tr > td:first-child code,
-table tr > td:first-child + td code {
-    white-space: nowrap;
+span.lab::after,
+span.html5::after,
+span.null::after,
+span.star::after {
+  position: relative;
+  display: inline-block;
+  font: normal normal normal 16px/1 FontAwesome;
+  padding-right: .50rem;
+  -moz-osx-font-smoothing: initial;
+  -webkit-font-smoothing: initial;
+  font-weight: 400;
 }
 
-.lab::before {
-    position: relative;
-    padding-right: .25rem;
-    font-family: FontAwesome;
-    -moz-osx-font-smoothing: initial;
-    -webkit-font-smoothing: initial;
-    font-weight: 400;
+.badge {
+  float: right;
 }
 
-.lab::before {
-    content: '\f0c3';
+span.lab::after {
+  color: purple;
+  content: '\f0c3';
+}
+
+span.html5::after {
+  color: orange;
+  content: '\f13b';
+}
+
+span.null::after {
+  color: red;
+  content: '\f071'
+}
+
+span.star::after {
+   color: green;
+   content: '\f005'
 }
 </style>

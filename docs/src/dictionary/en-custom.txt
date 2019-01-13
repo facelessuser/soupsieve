@@ -6,6 +6,7 @@ CDATA
 CSS
 CSS's
 Changelog
+Combinators
 DOM
 GitHub
 Hashable
@@ -18,14 +19,17 @@ PyPI
 PySpelling
 SVG
 Tox
+URL's
 Unescape
 Virtualenv
 WIP
 XHTML
 accessor
+amongst
 boolean
 builtin
 combinator
+combinators
 deprecations
 directionality
 html
@@ -52,4 +56,5 @@ unmatchable
 unpickle
 unvisited
 whitespace
+wildcard
 wordlist
