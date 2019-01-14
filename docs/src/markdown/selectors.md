@@ -84,6 +84,17 @@ as they are part of a working draft, or even both.
 
     At-rules (`@page`, etc.) are also not supported.
 
+## Escapes
+
+Soup Sieve selectors support using CSS escapes. So if you need provide Unicode, or non-standard characters, you can use
+CSS style escapes.
+
+Escapes can be specified with a backslash followed by 1 - 6 hexadecimal digits: `#!css \20AC`, `#!css \0020AC`, etc. If
+you need to terminate an escape to avoid it accumulating unintended hexadecimal characters, you can use a space:
+`#!css \0020AC dont-escape-me`. You can also escape any non-hexadecimal character, and it will be treated as that
+character: `#!css \+` --> `+`. The one exception is that you cannot escape the form feed, newline, or carriage
+return.
+
 ## Basic Selectors
 
 ### Type Selectors

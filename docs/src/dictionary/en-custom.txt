@@ -42,6 +42,7 @@ matcher
 matchers
 namespace
 namespaces
+newline
 pre
 prerelease
 prereleases
