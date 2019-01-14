@@ -27,6 +27,8 @@ We currently fail on at-rules `@at-rule` as they are not applicable in the Soup 
 from __future__ import unicode_literals
 from . import util
 import soupsieve as sv
+import bs4
+import textwrap
 
 
 class TestLevel2(util.TestCase):
@@ -124,6 +126,60 @@ class TestLevel2(util.TestCase):
             ["0", "1", "2", "3", "4", "5", "6", "div", "pre"],
             flags=util.HTML5
         )
+
+    @util.skip_no_quirks
+    def test_attribute_quirks(self):
+        """Test attributes with quirks."""
+
+        markup = """
+        <div id="div">
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="{}?/">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            "[href={}?/]",
+            ["2"],
+            flags=util.HTML5
+        )
+
+    @util.skip_no_quirks
+    def test_leading_combinator_quirks(self):
+        """Test scope with quirks."""
+
+        markup = """
+        <html id="root">
+        <head>
+        </head>
+        <body>
+        <div id="div">
+        <p id="0" class="somewordshere">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3" class="herewords">Direct child</span>
+        <pre id="pre" class="wordshere">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        </body>
+        </html>
+        """
+
+        soup = bs4.BeautifulSoup(textwrap.dedent(markup.replace('\r\n', '\n')), 'html5lib')
+        el = soup.div
+        ids = []
+        for el in sv.select('> span, > #pre', el, flags=sv.DEBUG | sv._QUIRKS):
+            ids.append(el.attrs['id'])
+        self.assertEqual(sorted(ids), sorted(['3', 'pre']))
 
     def test_attribute(self):
         """Test attribute."""
@@ -487,17 +543,14 @@ class TestLevel2(util.TestCase):
     def test_pseudo_element(self):
         """Test pseudo element."""
 
-        with self.assertRaises(NotImplementedError):
-            sv.compile(':first-line')
+        self.assert_raises(':first-line', NotImplementedError)
 
-        with self.assertRaises(NotImplementedError):
-            sv.compile('::first-line')
+        self.assert_raises('::first-line', NotImplementedError)
 
     def test_at_rule(self):
         """Test at-rule (not supported)."""
 
-        with self.assertRaises(NotImplementedError):
-            sv.compile('@page :left')
+        self.assert_raises('@page :left', NotImplementedError)
 
     def test_comments(self):
         """Test comments."""
@@ -540,3 +593,13 @@ class TestLevel2(util.TestCase):
             ['1', '4', '5', '6'],
             flags=util.HTML5
         )
+
+
+class TestLevel2Quirks(TestLevel2):
+    """Test level 2 with quirks."""
+
+    def setUp(self):
+        """Setup."""
+
+        self.purge()
+        self.quirks = True

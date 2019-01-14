@@ -213,3 +213,13 @@ class TestExtra(util.TestCase):
             [],
             flags=util.XML
         )
+
+
+class TestExtraQuirks(TestExtra):
+    """Test extra with quirks."""
+
+    def setUp(self):
+        """Setup."""
+
+        self.purge()
+        self.quirks = True

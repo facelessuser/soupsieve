@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.7.2
+
+- **FIX**: Provide a way for Beautiful Soup to parse selectors in a quirks mode to mimic some of the quirks of the old
+  select method prior to Soup Sieve, but with warnings. This is to help old scripts to not break during the transitional
+  period with newest Beautiful Soup. In the future, these quirks will raise an exception as Soup Sieve requires
+  selectors to follow the CSS specification.
+
 ## 1.7.1
 
 - **FIX**: Fix issue with `:has()` selector where a leading combinator can only be provided in the first selector in a

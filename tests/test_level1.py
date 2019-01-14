@@ -233,3 +233,13 @@ class TestLevel1(util.TestCase):
             [],
             flags=util.HTML5
         )
+
+
+class TestLevel1Quirks(TestLevel1):
+    """Test level 1 with quirks."""
+
+    def setUp(self):
+        """Setup."""
+
+        self.purge()
+        self.quirks = True

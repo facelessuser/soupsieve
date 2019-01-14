@@ -1268,3 +1268,13 @@ class TestLevel3(util.TestCase):
             ["head-2"],
             flags=util.HTML5
         )
+
+
+class TestLevel3Quirks(TestLevel3):
+    """Test level 3 with quirks."""
+
+    def setUp(self):
+        """Setup."""
+
+        self.purge()
+        self.quirks = True
