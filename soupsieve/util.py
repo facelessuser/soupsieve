@@ -38,69 +38,6 @@ UC_A = ord('A')
 UC_Z = ord('Z')
 
 
-def is_doc(obj):
-    """Is `BeautifulSoup` object."""
-
-    import bs4
-    return isinstance(obj, bs4.BeautifulSoup)
-
-
-def is_tag(obj):
-    """Is tag."""
-
-    import bs4
-    return isinstance(obj, bs4.Tag)
-
-
-def is_comment(obj):
-    """Is comment."""
-
-    import bs4
-    return isinstance(obj, bs4.Comment)
-
-
-def is_declaration(obj):  # pragma: no cover
-    """Is declaration."""
-
-    import bs4
-    return isinstance(obj, bs4.Declaration)
-
-
-def is_cdata(obj):  # pragma: no cover
-    """Is CDATA."""
-
-    import bs4
-    return isinstance(obj, bs4.Declaration)
-
-
-def is_processing_instruction(obj):  # pragma: no cover
-    """Is processing instruction."""
-
-    import bs4
-    return isinstance(obj, bs4.ProcessingInstruction)
-
-
-def is_navigable_string(obj):
-    """Is navigable string."""
-
-    import bs4
-    return isinstance(obj, bs4.NavigableString)
-
-
-def is_special_string(obj):
-    """Is special string."""
-
-    import bs4
-    return isinstance(obj, (bs4.Comment, bs4.Declaration, bs4.CData, bs4.ProcessingInstruction))
-
-
-def get_navigable_string_type(obj):
-    """Get navigable string type."""
-
-    import bs4
-    return bs4.NavigableString
-
-
 def lower(string):
     """Lower."""
 

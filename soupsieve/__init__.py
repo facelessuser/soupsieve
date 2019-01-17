@@ -92,7 +92,7 @@ def comments(tag, limit=0, flags=0):
 def icomments(tag, limit=0, flags=0):
     """Iterate comments only."""
 
-    for comment in cm.get_comments(tag, limit):
+    for comment in cm.CommentsMatch(tag).get_comments(limit):
         yield comment
 
 
