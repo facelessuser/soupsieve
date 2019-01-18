@@ -12,6 +12,7 @@ HTML5 = 1
 HTML = 2
 XHTML = 4
 XML = 8
+PYHTML = 10
 
 
 def skip_quirks(func):
@@ -66,7 +67,9 @@ class TestCase(unittest.TestCase):
         """Assert selector."""
 
         mode = flags & 0x0F
-        if mode == HTML:
+        if mode == PYHTML:
+            bs_mode = 'html.parser'
+        elif mode == HTML:
             bs_mode = 'lxml'
         elif mode in (HTML5, 0):
             bs_mode = 'html5lib'

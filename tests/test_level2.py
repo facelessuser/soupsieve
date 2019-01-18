@@ -340,7 +340,50 @@ class TestLevel2(util.TestCase):
         self.assert_selector(
             markup,
             '[type="test"]',
+            ["0", '2'],
+            flags=util.HTML
+        )
+
+        self.assert_selector(
+            markup,
+            '[type="test"]',
+            ["0", '2'],
+            flags=util.PYHTML
+        )
+
+        self.assert_selector(
+            markup,
+            '[type="test"]',
             ['2'],
+            flags=util.XML
+        )
+
+        markup = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+            "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+        <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+        </head>
+        <body>
+        <div id="div">
+        <p type="TEST" id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a type="test" id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            '[type="test"]',
+            ["0", '2'],
             flags=util.XML
         )
 

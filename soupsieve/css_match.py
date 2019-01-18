@@ -547,7 +547,7 @@ class CSSMatch(Document, object):
         if attributes:
             for a in attributes:
                 value = self.match_attribute_name(el, a.attribute, a.prefix)
-                pattern = a.xml_type_pattern if not self.html_namespace and a.xml_type_pattern else a.pattern
+                pattern = a.xml_type_pattern if self.is_xml and a.xml_type_pattern else a.pattern
                 if isinstance(value, list):
                     value = ' '.join(value)
                 if value is None:
