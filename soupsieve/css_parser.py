@@ -706,15 +706,15 @@ class CSSParser(object):
         relations = []
         rel_type = ":" + WS_COMBINATOR
         split_last = False
-        is_open = flags & FLG_OPEN
-        is_pseudo = flags & FLG_PSEUDO
-        is_relative = flags & FLG_RELATIVE
-        is_not = flags & FLG_NOT
-        is_html = flags & FLG_HTML
-        is_default = flags & FLG_DEFAULT
-        is_indeterminate = flags & FLG_INDETERMINATE
-        is_in_range = flags & FLG_IN_RANGE
-        is_out_of_range = flags & FLG_OUT_OF_RANGE
+        is_open = bool(flags & FLG_OPEN)
+        is_pseudo = bool(flags & FLG_PSEUDO)
+        is_relative = bool(flags & FLG_RELATIVE)
+        is_not = bool(flags & FLG_NOT)
+        is_html = bool(flags & FLG_HTML)
+        is_default = bool(flags & FLG_DEFAULT)
+        is_indeterminate = bool(flags & FLG_INDETERMINATE)
+        is_in_range = bool(flags & FLG_IN_RANGE)
+        is_out_of_range = bool(flags & FLG_OUT_OF_RANGE)
 
         if self.debug:  # pragma: no cover
             if is_pseudo:
@@ -937,22 +937,16 @@ CSS_INDETERMINATE = CSSParser(
 # CSS pattern for `:disabled`
 CSS_DISABLED = CSSParser(
     '''
-    :is(input[type!=hidden], button, select, textarea, fieldset, optgroup, option)[disabled],
+    :is(input[type!=hidden], button, select, textarea, fieldset, optgroup, option, fieldset)[disabled],
     optgroup[disabled] > option,
-    fieldset[disabled] > :not(legend) :is(input[type!=hidden], button, select, textarea),
-    fieldset[disabled] > :is(input[type!=hidden], button, select, textarea)
+    fieldset[disabled] > :is(input[type!=hidden], button, select, textarea, fieldset),
+    fieldset[disabled] > :not(legend:nth-of-type(1)) :is(input[type!=hidden], button, select, textarea, fieldset)
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:enabled`
 CSS_ENABLED = CSSParser(
     '''
-    :is(a, area, link)[href],
-    :is(fieldset, optgroup):not([disabled]),
-    option:not(optgroup[disabled] *):not([disabled]),
-    :is(input[type!=hidden], button, select, textarea):not(
-        fieldset[disabled] > :not(legend) *,
-        fieldset[disabled] > *
-    ):not([disabled])
+    :is(input[type!=hidden], button, select, textarea, fieldset, optgroup, option, fieldset):not(:disabled)
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:required`

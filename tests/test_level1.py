@@ -31,7 +31,7 @@ class TestLevel1(util.TestCase):
             """,
             "span",
             ["1"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
@@ -40,7 +40,7 @@ class TestLevel1(util.TestCase):
             """,
             "prefix\\:p",
             ["0"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_tags(self):
@@ -56,7 +56,7 @@ class TestLevel1(util.TestCase):
             """,
             "span, a",
             ["1", "2"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_child(self):
@@ -72,7 +72,7 @@ class TestLevel1(util.TestCase):
             """,
             "div span",
             ["1"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_id(self):
@@ -90,14 +90,14 @@ class TestLevel1(util.TestCase):
             markup,
             "#\\31",
             ["1"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "a#\\32",
             ["2"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_class(self):
@@ -115,14 +115,14 @@ class TestLevel1(util.TestCase):
             markup,
             ".foo",
             ["1"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "a.bar",
             ["2"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
@@ -149,7 +149,7 @@ class TestLevel1(util.TestCase):
             markup,
             "a.foo.bar",
             ["4"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_escapes(self):
@@ -167,7 +167,7 @@ class TestLevel1(util.TestCase):
             markup,
             ".foo\\:bar\\3a foobar",
             ["1"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_link(self):
@@ -186,7 +186,7 @@ class TestLevel1(util.TestCase):
             markup,
             ":link",
             ["2"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
@@ -212,7 +212,7 @@ class TestLevel1(util.TestCase):
             markup,
             "a:active",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_visited(self):
@@ -231,7 +231,7 @@ class TestLevel1(util.TestCase):
             markup,
             "a:visited",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
 

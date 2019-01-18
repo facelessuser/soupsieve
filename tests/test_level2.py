@@ -55,7 +55,7 @@ class TestLevel2(util.TestCase):
             markup,
             "div > span",
             ["3"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # No spaces
@@ -63,7 +63,7 @@ class TestLevel2(util.TestCase):
             markup,
             "div>span",
             ["3"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_direct_sibling(self):
@@ -87,7 +87,7 @@ class TestLevel2(util.TestCase):
             markup,
             "span + span",
             ["5", "6"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # No spaces
@@ -95,7 +95,7 @@ class TestLevel2(util.TestCase):
             markup,
             "span+span",
             ["5", "6"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # Complex
@@ -103,7 +103,7 @@ class TestLevel2(util.TestCase):
             markup,
             "span#\\34 + span#\\35",
             ["5"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_wild_tag(self):
@@ -111,6 +111,7 @@ class TestLevel2(util.TestCase):
 
         self.assert_selector(
             """
+            <body>
             <div id="div">
             <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
             <a id="2" href="http://google.com">Link</a>
@@ -121,10 +122,11 @@ class TestLevel2(util.TestCase):
             <span id="6">Child 3</span>
             </pre>
             </div>
+            </body>
             """,
             "body *",
             ["0", "1", "2", "3", "4", "5", "6", "div", "pre"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     @util.skip_no_quirks
@@ -148,7 +150,7 @@ class TestLevel2(util.TestCase):
             markup,
             "[href={}?/]",
             ["2"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     @util.skip_no_quirks
@@ -201,7 +203,7 @@ class TestLevel2(util.TestCase):
             markup,
             "[href]",
             ["2"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # With spaces
@@ -209,7 +211,7 @@ class TestLevel2(util.TestCase):
             markup,
             "[   href   ]",
             ["2"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_multi_attribute(self):
@@ -231,7 +233,7 @@ class TestLevel2(util.TestCase):
             """,
             "span[id].test[data-test=test]",
             ["5"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_attribute_equal(self):
@@ -255,7 +257,7 @@ class TestLevel2(util.TestCase):
             markup,
             '[id=\\35]',
             ["5"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # Single quoted
@@ -263,7 +265,7 @@ class TestLevel2(util.TestCase):
             markup,
             "[id='5']",
             ["5"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # Double quoted
@@ -271,24 +273,10 @@ class TestLevel2(util.TestCase):
             markup,
             '[id="5"]',
             ["5"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # With spaces
-        self.assert_selector(
-            markup,
-            '[  id  =  "5"  ]',
-            ["5"],
-            flags=util.HTML5
-        )
-
-        self.assert_selector(
-            markup,
-            '[ID="5"]',
-            ["5"],
-            flags=util.HTML5
-        )
-
         self.assert_selector(
             markup,
             '[  id  =  "5"  ]',
@@ -334,21 +322,7 @@ class TestLevel2(util.TestCase):
             markup,
             '[type="test"]',
             ["0", '2'],
-            flags=util.HTML5
-        )
-
-        self.assert_selector(
-            markup,
-            '[type="test"]',
-            ["0", '2'],
             flags=util.HTML
-        )
-
-        self.assert_selector(
-            markup,
-            '[type="test"]',
-            ["0", '2'],
-            flags=util.PYHTML
         )
 
         self.assert_selector(
@@ -405,7 +379,7 @@ class TestLevel2(util.TestCase):
             """,
             "[lang|=en]",
             ["0"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_attribute_contains_space(self):
@@ -429,7 +403,7 @@ class TestLevel2(util.TestCase):
             markup,
             "[class~=test2]",
             ["0"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # Shouldn't match anything
@@ -437,19 +411,19 @@ class TestLevel2(util.TestCase):
             markup,
             '[class~="test1 test2"]',
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
         self.assert_selector(
             markup,
             '[class~=""]',
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
         self.assert_selector(
             markup,
             '[class~="test1\\ test2"]',
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # Start of list
@@ -457,7 +431,7 @@ class TestLevel2(util.TestCase):
             markup,
             "[class~=test-a]",
             ["pre"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # End of list
@@ -465,7 +439,7 @@ class TestLevel2(util.TestCase):
             markup,
             "[class~=test-b]",
             ["pre"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_first_child(self):
@@ -486,7 +460,7 @@ class TestLevel2(util.TestCase):
             """,
             "span:first-child",
             ["1", "4"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_hover(self):
@@ -505,7 +479,7 @@ class TestLevel2(util.TestCase):
             markup,
             "a:hover",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_focus(self):
@@ -544,14 +518,14 @@ class TestLevel2(util.TestCase):
             markup,
             "input:focus",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "input:not(:focus)",
             ["1", "2", "3", "4", "5", "6"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_lang(self):
@@ -580,7 +554,7 @@ class TestLevel2(util.TestCase):
             markup,
             "p:lang(de)",
             ['1', '2', '3', '4', '5', '6'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_pseudo_element(self):
@@ -622,7 +596,7 @@ class TestLevel2(util.TestCase):
             /* End comment */
             """,
             ['3'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
@@ -634,7 +608,7 @@ class TestLevel2(util.TestCase):
             )
             """,
             ['1', '4', '5', '6'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
 

@@ -3,6 +3,7 @@
 ## 1.7.2
 
 - **FIX**: Fix HTML detection `type` selector.
+- **FIX**: Fixes for `:enabled` and `:disabled`.
 - **FIX**: Provide a way for Beautiful Soup to parse selectors in a quirks mode to mimic some of the quirks of the old
   select method prior to Soup Sieve, but with warnings. This is to help old scripts to not break during the transitional
   period with newest Beautiful Soup. In the future, these quirks will raise an exception as Soup Sieve requires
