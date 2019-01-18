@@ -8,11 +8,12 @@ import sys
 
 PY3 = sys.version_info >= (3, 0)
 
-HTML5 = 1
-HTML = 2
-XHTML = 4
-XML = 8
-PYHTML = 10
+HTML5 = 0x1
+HTML = 0x2
+XHTML = 0x4
+XML = 0x8
+PYHTML = 0x10
+LXML_HTML = 0x20
 
 
 def skip_quirks(func):
@@ -66,23 +67,28 @@ class TestCase(unittest.TestCase):
     def assert_selector(self, markup, selectors, expected_ids, namespaces={}, flags=0):
         """Assert selector."""
 
-        mode = flags & 0x0F
-        if mode == PYHTML:
-            bs_mode = 'html.parser'
-        elif mode == HTML:
-            bs_mode = 'lxml'
+        mode = flags & 0x2F
+        if mode == HTML:
+            bs_mode = ('html5lib', 'lxml', 'html.parser')
+        elif mode == PYHTML:
+            bs_mode = ('html.parser',)
+        elif mode == LXML_HTML:
+            bs_mode = ('lxml',)
         elif mode in (HTML5, 0):
-            bs_mode = 'html5lib'
+            bs_mode = ('html5lib',)
         elif mode in (XHTML, XML):
-            bs_mode = 'xml'
-        soup = bs4.BeautifulSoup(textwrap.dedent(markup.replace('\r\n', '\n')), bs_mode)
+            bs_mode = ('xml',)
 
-        flags = sv.DEBUG
-        if self.quirks:
-            flags = sv._QUIRKS
+        for parser in bs_mode:
+            print('PARSER: ', parser)
+            soup = bs4.BeautifulSoup(textwrap.dedent(markup.replace('\r\n', '\n')), parser)
+            # print(soup)
+            flags |= sv.DEBUG
+            if self.quirks:
+                flags |= sv._QUIRKS
 
-        ids = []
-        for el in sv.select(selectors, soup, namespaces=namespaces, flags=flags):
-            print('TAG: ', el.name)
-            ids.append(el.attrs['id'])
-        self.assertEqual(sorted(ids), sorted(expected_ids))
+            ids = []
+            for el in sv.select(selectors, soup, namespaces=namespaces, flags=flags):
+                print('TAG: ', el.name)
+                ids.append(el.attrs['id'])
+            self.assertEqual(sorted(ids), sorted(expected_ids))

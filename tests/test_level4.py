@@ -78,14 +78,14 @@ class TestLevel4(util.TestCase):
             markup,
             "[class*=WORDS]",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "[class*=WORDS i]",
             ["0", "3", "pre"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_raises('[id i]', SyntaxError)
@@ -114,7 +114,7 @@ class TestLevel4(util.TestCase):
             markup,
             '[type="test" s]',
             ['2'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
@@ -139,21 +139,21 @@ class TestLevel4(util.TestCase):
             markup,
             ":is(span, a)",
             ["1", "2"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             ":is(span, a:matches(#\\32))",
             ["1", "2"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             ":where(span, a:matches(#\\32))",
             ["1", "2"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # Each pseudo class is evaluated separately
@@ -162,7 +162,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":is(span):not(span)",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # Each pseudo class is evaluated separately
@@ -171,7 +171,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":is(span):is(div)",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # Each pseudo class is evaluated separately
@@ -180,7 +180,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":is(a):is(#\\32)",
             ['2'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_multi_nested_not(self):
@@ -203,7 +203,7 @@ class TestLevel4(util.TestCase):
             markup,
             'div :not(p, :not([id=\\35]))',
             ['5'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_has(self):
@@ -252,56 +252,56 @@ class TestLevel4(util.TestCase):
             markup,
             'div:not(.aaaa):has(.kkkk > p.llll)',
             ['4', '5', '6'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             'div:NOT(.aaaa):HAS(.kkkk > p.llll)',
             ['4', '5', '6'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             'p:has(+ .dddd:has(+ div .jjjj))',
             ['2'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             'p:has(~ .jjjj)',
             ['7', '8'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup2,
             'div:has(> .bbbb, .ffff, .jjjj)',
             ['0', '4', '8'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup2,
             'div:has(.ffff, > .bbbb, .jjjj)',
             ['0', '4', '8'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup2,
             'div:has(> :not(.bbbb, .ffff, .jjjj))',
             ['2', '6', '8'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup2,
             'div:not(:has(> .bbbb, .ffff, .jjjj))',
             ['2', '6'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_nth_child_of_s(self):
@@ -326,14 +326,14 @@ class TestLevel4(util.TestCase):
             markup,
             ":nth-child(2n + 1 of :is(p, span).test)",
             ['2', '6', '10'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             ":nth-child(-n+3 of p)",
             ['0', '1', '7'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_anylink(self):
@@ -352,7 +352,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":any-link",
             ["2"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
@@ -382,14 +382,14 @@ class TestLevel4(util.TestCase):
             markup,
             "form:focus-within",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "form:not(:focus-within)",
             ["form"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_focus_visible(self):
@@ -405,14 +405,14 @@ class TestLevel4(util.TestCase):
             markup,
             "form:focus-visible",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "form:not(:focus-visible)",
             ["form"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_target_within(self):
@@ -432,82 +432,84 @@ class TestLevel4(util.TestCase):
             markup,
             "article:target-within",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "article:not(:target-within)",
             ["article"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_current_past_future(self):
         """Test current, past, future."""
 
         markup = """
+        <body>
         <div id="div">
         <p id="0">Some text <span id="1" class="foo:bar:foobar"> in a paragraph</span>.
         <a id="2" class="bar" href="http://google.com">Link</a>
         <a id="3">Placeholder text.</a>
         </p>
         </div>
+        </body>
         """
 
         self.assert_selector(
             markup,
             ":current(p, div, a)",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             ":current(p, :not(div), a)",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "body :not(:current(p, div, a))",
             ["div", "0", "1", "2", "3"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "body :not(:current(p, :not(div), a))",
             ["div", "0", "1", "2", "3"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:current",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:not(:current)",
             ["0"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:past",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:future",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_required(self):
@@ -518,8 +520,8 @@ class TestLevel4(util.TestCase):
         <input id="1" type="name" required>
         <input id="2" type="checkbox" required>
         <input id="3" type="email">
-        <textarea id="4" name="name" id="message" cols="30" rows="10" required></textarea>
-        <select id="5" name="nm" id="sel" required>
+        <textarea id="4" name="name" cols="30" rows="10" required></textarea>
+        <select id="5" name="nm" required>
             <!-- options -->
         </select>
         </form>
@@ -529,14 +531,14 @@ class TestLevel4(util.TestCase):
             markup,
             ":required",
             ['1', '2', '4', '5'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "input:required",
             ['1', '2'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_optional(self):
@@ -547,8 +549,8 @@ class TestLevel4(util.TestCase):
         <input id="1" type="name" required>
         <input id="2" type="checkbox" required>
         <input id="3" type="email">
-        <textarea id="4" name="name" id="message" cols="30" rows="10"></textarea>
-        <select id="5" name="nm" id="sel">
+        <textarea id="4" name="name" cols="30" rows="10"></textarea>
+        <select id="5" name="nm">
             <!-- options -->
         </select>
         </form>
@@ -558,14 +560,14 @@ class TestLevel4(util.TestCase):
             markup,
             ":optional",
             ['3', '4', '5'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "input:optional",
             ['3'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_default(self):
@@ -636,7 +638,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":default",
             ['summer', 'd1', 'd3', 'hamster', 'enable'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # This is technically invalid use of forms, but browsers will generally evaluated the nested form
@@ -659,7 +661,7 @@ class TestLevel4(util.TestCase):
             markup2,
             ":default",
             ['d1'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # For the sake of coverage, we will do this impractical select
@@ -668,7 +670,7 @@ class TestLevel4(util.TestCase):
             markup2,
             ":default:default",
             ['d1'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # You shouldn't nest forms, but if you do,
@@ -692,7 +694,7 @@ class TestLevel4(util.TestCase):
             markup3,
             ":default",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_indeterminate(self):
@@ -732,7 +734,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":indeterminate",
             ['checkbox', 'radio1', 'radio6', 'radio4', 'radio5', 'radio-no-name1'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_placeholder(self):
@@ -776,7 +778,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":placeholder-shown",
             ['0', '1', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_lang(self):
@@ -806,7 +808,7 @@ class TestLevel4(util.TestCase):
             markup,
             "p:lang(de-DE)",
             ['1', '2', '3', '4', '5', '6'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # Explicit wild
@@ -814,7 +816,7 @@ class TestLevel4(util.TestCase):
             markup,
             "p:lang(de-\\*-DE)",
             ['1', '2', '3', '4', '5', '6'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # First wild has meaning (escaped)
@@ -822,7 +824,7 @@ class TestLevel4(util.TestCase):
             markup,
             "p:lang(\\*-DE)",
             ['1', '2', '3', '4', '5', '6'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # First wild quoted
@@ -830,7 +832,7 @@ class TestLevel4(util.TestCase):
             markup,
             "p:lang('*-DE')",
             ['1', '2', '3', '4', '5', '6'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # Normal quoted
@@ -846,7 +848,7 @@ class TestLevel4(util.TestCase):
             markup,
             "p[lang]:lang(de-DE)",
             ['6'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # Undetermined language
@@ -860,7 +862,7 @@ class TestLevel4(util.TestCase):
             markup,
             "p:lang(en)",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # Find language in header
@@ -884,7 +886,7 @@ class TestLevel4(util.TestCase):
             markup,
             "p:lang('*-US')",
             ['1', '2'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # XML style language when out of HTML namespace
@@ -1033,7 +1035,7 @@ class TestLevel4(util.TestCase):
             markup,
             "p:lang(de-DE, '*-US')",
             ['1', '3', '4', '5', '6'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_scope(self):
@@ -1063,46 +1065,47 @@ class TestLevel4(util.TestCase):
             markup,
             ":scope",
             ["root"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             ":scope > body > div",
             ["div"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
-        soup = bs4.BeautifulSoup(textwrap.dedent(markup.replace('\r\n', '\n')), 'html5lib')
-        el = soup.html
+        for parser in ('html.parser', 'lxml', 'html5lib', 'xml'):
+            soup = bs4.BeautifulSoup(textwrap.dedent(markup.replace('\r\n', '\n')), parser)
+            el = soup.html
 
-        # Scope is the element we are applying the select to, and that element is never returned
-        self.assertTrue(len(sv.select(':scope', el, flags=sv.DEBUG)) == 0)
+            # Scope is the element we are applying the select to, and that element is never returned
+            self.assertTrue(len(sv.select(':scope', el, flags=sv.DEBUG)) == 0)
 
-        # Scope here means the current element under select
-        ids = []
-        for el in sv.select(':scope div', el, flags=sv.DEBUG):
-            ids.append(el.attrs['id'])
-        self.assertEqual(sorted(ids), sorted(['div']))
+            # Scope here means the current element under select
+            ids = []
+            for el in sv.select(':scope div', el, flags=sv.DEBUG):
+                ids.append(el.attrs['id'])
+            self.assertEqual(sorted(ids), sorted(['div']))
 
-        el = soup.body
-        ids = []
-        for el in sv.select(':scope div', el, flags=sv.DEBUG):
-            ids.append(el.attrs['id'])
-        self.assertEqual(sorted(ids), sorted(['div']))
+            el = soup.body
+            ids = []
+            for el in sv.select(':scope div', el, flags=sv.DEBUG):
+                ids.append(el.attrs['id'])
+            self.assertEqual(sorted(ids), sorted(['div']))
 
-        # `div` is the current element under select, and it has no `div` elements.
-        el = soup.div
-        ids = []
-        for el in sv.select(':scope div', el, flags=sv.DEBUG):
-            ids.append(el.attrs['id'])
-        self.assertEqual(sorted(ids), sorted([]))
+            # `div` is the current element under select, and it has no `div` elements.
+            el = soup.div
+            ids = []
+            for el in sv.select(':scope div', el, flags=sv.DEBUG):
+                ids.append(el.attrs['id'])
+            self.assertEqual(sorted(ids), sorted([]))
 
-        # `div` does have an element with the class `.wordshere`
-        ids = []
-        for el in sv.select(':scope .wordshere', el, flags=sv.DEBUG):
-            ids.append(el.attrs['id'])
-        self.assertEqual(sorted(ids), sorted(['pre']))
+            # `div` does have an element with the class `.wordshere`
+            ids = []
+            for el in sv.select(':scope .wordshere', el, flags=sv.DEBUG):
+                ids.append(el.attrs['id'])
+            self.assertEqual(sorted(ids), sorted(['pre']))
 
     def test_user_invalid(self):
         """Test user invalid (matches nothing)."""
@@ -1117,14 +1120,14 @@ class TestLevel4(util.TestCase):
             markup,
             "input:user-invalid",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "input:not(:user-invalid)",
             ["1"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_playing(self):
@@ -1150,14 +1153,14 @@ class TestLevel4(util.TestCase):
             markup,
             "video:playing",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "video:not(:playing)",
             ["vid"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_paused(self):
@@ -1183,14 +1186,14 @@ class TestLevel4(util.TestCase):
             markup,
             "video:paused",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "video:not(:paused)",
             ["vid"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_local_link(self):
@@ -1205,14 +1208,14 @@ class TestLevel4(util.TestCase):
             markup,
             "a:local-link",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "a:not(:local-link)",
             ["1", "2"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_read_write(self):
@@ -1267,13 +1270,14 @@ class TestLevel4(util.TestCase):
                 '0', '1', '2', '4', '5', '6', '7', '8', '9', '10', '11',
                 '12', '16', '17', '21', '26', '27', '28', '29', '30'
             ],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_read_only(self):
         """Test read only."""
 
         markup = """
+        <body>
         <input id="0">
         <textarea id="1"></textarea>
 
@@ -1313,6 +1317,7 @@ class TestLevel4(util.TestCase):
         <p id="32">Text</p>
 
         <input id="33" type="number" readonly>
+        </body>
         """
 
         self.assert_selector(
@@ -1322,7 +1327,7 @@ class TestLevel4(util.TestCase):
                 '3', '13', '14', '15', '18', '19', '20', '22',
                 '23', '24', '25', '31', '32', '33'
             ],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_host(self):
@@ -1334,14 +1339,14 @@ class TestLevel4(util.TestCase):
             markup,
             ":host",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             ":host(h1)",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_host_context(self):
@@ -1353,7 +1358,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":host-context(h1, h2)",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_dir(self):
@@ -1396,14 +1401,14 @@ class TestLevel4(util.TestCase):
             markup,
             "div:dir(ltr)",
             ["3"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "div:dir(ltr):dir(rtl)",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
@@ -1417,14 +1422,14 @@ class TestLevel4(util.TestCase):
             markup,
             "span:dir(rtl)",
             ['2', '5', '7'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "span:dir(ltr)",
             ['8'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
@@ -1438,7 +1443,7 @@ class TestLevel4(util.TestCase):
             markup,
             "html:dir(ltr)",
             ['0'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         markup = """
@@ -1453,14 +1458,15 @@ class TestLevel4(util.TestCase):
             markup,
             "html:dir(ltr)",
             ['0'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         # Input is root
-        markup = """<input id="1" type="text" dir="auto">"""
-        soup = bs4.BeautifulSoup(markup, 'html5lib')
-        fragment = soup.input.extract()
-        self.assertTrue(sv.match(":root:dir(ltr)", fragment, flags=sv.DEBUG))
+        for parser in ('html.parser', 'lxml', 'html5lib'):
+            markup = """<input id="1" type="text" dir="auto">"""
+            soup = bs4.BeautifulSoup(markup, parser)
+            fragment = soup.input.extract()
+            self.assertTrue(sv.match(":root:dir(ltr)", fragment, flags=sv.DEBUG))
 
     def test_in_range(self):
         """Test in range."""
@@ -1491,7 +1497,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":in-range",
             ['0', '1', '2', '3', '4', '5', '6', '7', '8'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         markup = """
@@ -1519,7 +1525,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":in-range",
             ['0', '1', '2', '3', '4', '5', '6', '7', '8'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         markup = """
@@ -1547,7 +1553,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":in-range",
             ['0', '1', '2', '3', '4', '5', '6'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         markup = """
@@ -1576,7 +1582,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":in-range",
             ['0', '1', '2', '3', '4', '5', '6', '7'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         markup = """
@@ -1606,7 +1612,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":in-range",
             ['0', '1', '2', '3', '4', '5', '6'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         markup = """
@@ -1640,7 +1646,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":in-range",
             ['0', '1', '2', '3', '4', '5', '6'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         markup = """
@@ -1672,7 +1678,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":in-range",
             ['0', '1', '2', '3', '4', '5', '6', '7'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_out_of_range(self):
@@ -1704,7 +1710,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":out-of-range",
             ['9', '10', '11'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         markup = """
@@ -1732,7 +1738,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":out-of-range",
             ['9', '10'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         markup = """
@@ -1760,7 +1766,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":out-of-range",
             ['7', '8', '9', '10'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         markup = """
@@ -1789,7 +1795,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":out-of-range",
             ['8', '9', '10', '11'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         markup = """
@@ -1819,7 +1825,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":out-of-range",
             ['7', '8', '9', '10', '11', '12'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         markup = """
@@ -1853,7 +1859,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":out-of-range",
             ['7', '8', '9', '10', '11', '12', '13', '14', '15', '16'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         markup = """
@@ -1885,7 +1891,7 @@ class TestLevel4(util.TestCase):
             markup,
             ":out-of-range",
             ['8', '9', '10', '11', '12', '13', '14'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
 

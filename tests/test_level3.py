@@ -52,7 +52,7 @@ class TestLevel3(util.TestCase):
             """,
             "p ~ span",
             ["3"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_not(self):
@@ -75,21 +75,21 @@ class TestLevel3(util.TestCase):
             markup,
             'div :not([id="1"])',
             ["0", "2", "3", "4", "5", "6", "pre"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             'div :NOT([id="1"])',
             ["0", "2", "3", "4", "5", "6", "pre"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             'span:not([id="1"])',
             ["3", "4", "5", "6"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_attribute_begins(self):
@@ -110,7 +110,7 @@ class TestLevel3(util.TestCase):
             """,
             "[class^=here]",
             ["0"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_attribute_end(self):
@@ -131,7 +131,7 @@ class TestLevel3(util.TestCase):
             """,
             "[class$=words]",
             ["0"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_attribute_contains(self):
@@ -154,7 +154,7 @@ class TestLevel3(util.TestCase):
             markup,
             "[class*=words]",
             ["0", "3", "pre"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_root(self):
@@ -184,20 +184,21 @@ class TestLevel3(util.TestCase):
             markup,
             ":root",
             ["root"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             ":root > body > div",
             ["div"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_empty(self):
         """Test empty."""
 
         markup = """
+        <body>
         <div id="div">
         <p id="0" class="somewordshere">Some text <span id="1"> in a paragraph</span>.</p>
         <a id="2" href="http://google.com">Link</a>
@@ -209,13 +210,14 @@ class TestLevel3(util.TestCase):
         <span id="7"><span id="8"></span></span>
         </pre>
         </div>
+        </body>
         """
 
         self.assert_selector(
             markup,
             "body :empty",
             ["4", "5", "6", "8"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_last_child(self):
@@ -238,14 +240,14 @@ class TestLevel3(util.TestCase):
             markup,
             "span:last-child",
             ["1", "6"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "span:LAST-CHILD",
             ["1", "6"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_only_child(self):
@@ -266,7 +268,7 @@ class TestLevel3(util.TestCase):
             """,
             "span:only-child",
             ["1"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_namespace(self):
@@ -675,6 +677,7 @@ class TestLevel3(util.TestCase):
         """Test first of type."""
 
         markup = """
+        <body>
         <p id="0"></p>
         <p id="1"></p>
         <span id="2"></span>
@@ -687,33 +690,35 @@ class TestLevel3(util.TestCase):
         <p id="9"></p>
         <p id="10"></p>
         <span id="11"></span>
+        </body>
         """
 
         self.assert_selector(
             markup,
             "p:first-of-type",
             ['0'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "span:first-of-type",
             ['2'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "body :first-of-type",
             ['0', '2'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_last_of_type(self):
         """Test last of type."""
 
         markup = """
+        <body>
         <p id="0"></p>
         <p id="1"></p>
         <span id="2"></span>
@@ -726,27 +731,28 @@ class TestLevel3(util.TestCase):
         <p id="9"></p>
         <p id="10"></p>
         <span id="11"></span>
+        </body>
         """
 
         self.assert_selector(
             markup,
             "p:last-of-type",
             ['10'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "span:last-of-type",
             ['11'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "body :last-of-type",
             ['10', '11'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_only_of_type(self):
@@ -771,13 +777,14 @@ class TestLevel3(util.TestCase):
             markup,
             "p:only-of-type",
             ['1', '4'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_nth_child(self):
         """Test `nth` child."""
 
         markup = """
+        <body>
         <p id="0"></p>
         <p id="1"></p>
         <span id="2"></span>
@@ -790,106 +797,113 @@ class TestLevel3(util.TestCase):
         <p id="9"></p>
         <p id="10"></p>
         <span id="11"></span>
+        </body>
         """
 
         self.assert_selector(
             markup,
             "p:nth-child(2n-5)",
-            ['0', '8', '10']
+            ['0', '8', '10'],
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:NTH-CHILD(2n-5)",
-            ['0', '8', '10']
+            ['0', '8', '10'],
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(-2n+20)",
-            ['1', '7', '9']
+            ['1', '7', '9'],
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(50n-20)",
-            []
+            [],
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(-2n-2)",
-            []
+            [],
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(-2)",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(2)",
             ['1'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(9n - 1)",
             ['7'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(2n + 1)",
             ['0', '8', '10'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(-n+3)",
             ['0', '1'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "span:nth-child(-n+3)",
             ['2'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "body *:nth-child(-n+3)",
             ['0', '1', '2'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(odd)",
             ['0', '8', '10'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(even)",
             ['1', '7', '9'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
-        # Paragraph is the root. There is no document.
-        markup = """<p id="1">text</p>"""
-        soup = bs4.BeautifulSoup(markup, 'html5lib')
-        fragment = soup.p.extract()
-        self.assertTrue(sv.match("p:nth-child(1)", fragment, flags=sv.DEBUG))
+        for parser in ('html.parser', 'lxml', 'html5lib'):
+            # Paragraph is the root. There is no document.
+            markup = """<p id="1">text</p>"""
+            soup = bs4.BeautifulSoup(markup, parser)
+            fragment = soup.p.extract()
+            self.assertTrue(sv.match("p:nth-child(1)", fragment, flags=sv.DEBUG))
 
     def test_nth_child_issue_78(self):
         """Test issue for https://github.com/facelessuser/soupsieve/issues/78."""
@@ -946,6 +960,7 @@ class TestLevel3(util.TestCase):
         """Test `nth` last child."""
 
         markup = """
+        <body>
         <p id="0"></p>
         <p id="1"></p>
         <span id="2"></span>
@@ -958,26 +973,28 @@ class TestLevel3(util.TestCase):
         <p id="9"></p>
         <p id="10"></p>
         <span id="11"></span>
+        </body>
         """
 
         self.assert_selector(
             markup,
             "p:nth-last-child(2)",
             ['10'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:nth-last-child(2n + 1)",
             ['1', '7', '9'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_nth_of_type(self):
         """Test `nth` of type."""
 
         markup = """
+        <body>
         <p id="0"></p>
         <p id="1"></p>
         <span id="2"></span>
@@ -990,34 +1007,35 @@ class TestLevel3(util.TestCase):
         <p id="9"></p>
         <p id="10"></p>
         <span id="11"></span>
+        </body>
         """
 
         self.assert_selector(
             markup,
             "p:nth-of-type(3)",
             ['7'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:nth-of-type(2n + 1)",
             ['0', '7', '9'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "span:nth-of-type(2n + 1)",
             ['2', '4', '6'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "body :nth-of-type(2n + 1)",
             ['0', '2', '4', '6', '7', '9'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_nth_last_of_type(self):
@@ -1042,20 +1060,21 @@ class TestLevel3(util.TestCase):
             markup,
             "p:nth-last-of-type(3)",
             ['8'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "p:nth-last-of-type(2n + 1)",
             ['1', '8', '10'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_checked(self):
         """Test checked."""
 
         markup = """
+        <body>
         <div>
           <input type="radio" name="my-input" id="yes" checked>
           <label for="yes">Yes</label>
@@ -1074,13 +1093,14 @@ class TestLevel3(util.TestCase):
           <option id="2" value="opt2" selected>Grapes</option>
           <option id="3" value="opt3">Pears</option>
         </select>
+        </body>
         """
 
         self.assert_selector(
             markup,
             ":checked",
             ['yes', 'opt-in', '2'],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
     def test_disabled(self):
@@ -1093,6 +1113,7 @@ class TestLevel3(util.TestCase):
         """
 
         markup = """
+        <body>
         <form action="#">
           <fieldset id='a' disabled>
             <legend>
@@ -1118,9 +1139,11 @@ class TestLevel3(util.TestCase):
             <option id="9">option</option>
           </optgroup>
         </form>
+        </body>
         """
 
         markup2 = """
+        <body>
         <form action="#">
           <fieldset id='a' disabled>
             <legend>
@@ -1146,6 +1169,7 @@ class TestLevel3(util.TestCase):
             <option id="9">option</option>
           </optgroup>
         </form>
+        </body>
         """
 
         self.assert_selector(
@@ -1156,10 +1180,38 @@ class TestLevel3(util.TestCase):
         )
 
         self.assert_selector(
+            markup,
+            ":disabled",
+            ['2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c'],
+            flags=util.LXML_HTML
+        )
+
+        self.assert_selector(
+            markup,
+            ":disabled",
+            ['3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c'],
+            flags=util.PYHTML
+        )
+
+        self.assert_selector(
             markup2,
             ":disabled",
             ['4', '5', '6', '7', '8', '9', 'a', 'c'],
             flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup2,
+            ":disabled",
+            ['2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c'],
+            flags=util.LXML_HTML
+        )
+
+        self.assert_selector(
+            markup2,
+            ":disabled",
+            ['4', '5', '6', '7', '8', '9', 'a', 'c'],
+            flags=util.PYHTML
         )
 
     def test_enable(self):
@@ -1172,6 +1224,7 @@ class TestLevel3(util.TestCase):
         """
 
         markup = """
+        <body>
         <form action="#">
           <fieldset id='a' disabled>
             <legend>
@@ -1198,9 +1251,11 @@ class TestLevel3(util.TestCase):
           </optgroup>
           <a href="" id="link">text</a>
         </form>
+        </body>
         """
 
         markup2 = """
+        <body>
         <form action="#">
           <fieldset id='a' disabled>
             <legend>
@@ -1227,20 +1282,49 @@ class TestLevel3(util.TestCase):
           </optgroup>
           <a href="" id="link">text</a>
         </form>
+        </body>
         """
 
         self.assert_selector(
             markup,
             ":enabled",
-            ['1', '2', 'opt-enable', 'link'],
+            ['1', '2', 'opt-enable'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            ":enabled",
+            ['1', 'opt-enable'],
+            flags=util.LXML_HTML
+        )
+
+        self.assert_selector(
+            markup,
+            ":enabled",
+            ['1', '2', 'opt-enable'],
+            flags=util.PYHTML
+        )
+
+        self.assert_selector(
+            markup2,
+            ":enabled",
+            ['1', '2', 'opt-enable', 'b', '3'],
             flags=util.HTML5
         )
 
         self.assert_selector(
             markup2,
             ":enabled",
-            ['1', '2', 'opt-enable', 'b', '3', 'link'],
-            flags=util.HTML5
+            ['1', 'opt-enable'],
+            flags=util.LXML_HTML
+        )
+
+        self.assert_selector(
+            markup2,
+            ":enabled",
+            ['1', '2', 'opt-enable', 'b', '3'],
+            flags=util.PYHTML
         )
 
     def test_target(self):
@@ -1259,14 +1343,14 @@ class TestLevel3(util.TestCase):
             markup,
             "#head-2:target",
             [],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
         self.assert_selector(
             markup,
             "#head-2:not(:target)",
             ["head-2"],
-            flags=util.HTML5
+            flags=util.HTML
         )
 
 
