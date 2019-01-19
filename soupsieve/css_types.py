@@ -10,7 +10,8 @@ __all__ = (
     'SelectorNth',
     'SelectorLang',
     'SelectorList',
-    'Namespaces'
+    'Namespaces',
+    'AliasSelectors'
 )
 
 
@@ -144,6 +145,22 @@ class Namespaces(ImmutableDict):
             raise TypeError('Namespace keys and values must be Unicode strings')
 
         super(Namespaces, self).__init__(*args, **kwargs)
+
+
+class AliasSelectors(ImmutableDict):
+    """Custom alias selectors."""
+
+    def __init__(self, *args, **kwargs):
+        """Initialize."""
+
+        arg = args[0] if args else kwargs
+        is_dict = isinstance(arg, dict)
+        if is_dict and not all([isinstance(k, util.string) and isinstance(v, SelectorList) for k, v in arg.items()]):
+            raise TypeError('CustomSelectors keys and values must be Unicode strings and SelectorLists respectively')
+        elif not is_dict and not all([isinstance(k, util.string) and isinstance(v, SelectorList) for k, v in arg]):
+            raise TypeError('CustomSelectors keys and values must be Unicode strings and SelectorLists respectively')
+
+        super(AliasSelectors, self).__init__(*args, **kwargs)
 
 
 class Selector(Immutable):
