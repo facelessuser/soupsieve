@@ -12,7 +12,7 @@ import pickle
 import warnings
 
 
-class TestSoupSieve(unittest.TestCase):
+class TestSoupSieve(util.TestCase):
     """Test Soup Sieve."""
 
     def test_comments(self):
@@ -35,18 +35,83 @@ class TestSoupSieve(unittest.TestCase):
         </html>
         """
 
-        soup = bs4.BeautifulSoup(markup, 'html5lib')
+        soup = self.soup(markup, 'html5lib')
         comments = [sv_util.ustr(c).strip() for c in sv.comments(soup)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment', "don't ignore"]))
 
+    def test_icomments(self):
+        """Test comments iterator."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html5lib')
         comments = [sv_util.ustr(c).strip() for c in sv.icomments(soup, limit=2)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
 
+    def test_compiled_comments(self):
+        """Test comments from compiled pattern."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html5lib')
+
         # Check that comments on compiled object work just like `sv.comments`
-        pattern = sv.compile('', None, 0)
+        pattern = sv.compile('div', None, 0)
         comments = [sv_util.ustr(c).strip() for c in pattern.comments(soup)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment', "don't ignore"]))
 
+    def test_compiled_icomments(self):
+        """Test comments iterator from compiled pattern."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html5lib')
+        pattern = sv.compile('div', None, 0)
         comments = [sv_util.ustr(c).strip() for c in pattern.icomments(soup, limit=2)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
 
@@ -70,12 +135,34 @@ class TestSoupSieve(unittest.TestCase):
         </html>
         """
 
-        soup = bs4.BeautifulSoup(markup, 'html5lib')
+        soup = self.soup(markup, 'html5lib')
         ids = []
         for el in sv.select('span[id]', soup):
             ids.append(el.attrs['id'])
 
         self.assertEqual(sorted(['5', 'some-id']), sorted(ids))
+
+    def test_select_limit(self):
+        """Test select limit."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html5lib')
 
         ids = []
         for el in sv.select('span[id]', soup, limit=1):
@@ -83,12 +170,76 @@ class TestSoupSieve(unittest.TestCase):
 
         self.assertEqual(sorted(['5']), sorted(ids))
 
+    def test_select_one(self):
+        """Test select one."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html5lib')
         self.assertEqual(
             sv.select('span[id]', soup, limit=1)[0].attrs['id'],
             sv.select_one('span[id]', soup).attrs['id']
         )
 
+    def test_select_one_none(self):
+        """Test select one returns none for no match."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html5lib')
         self.assertEqual(None, sv.select_one('h1', soup))
+
+    def test_iselect(self):
+        """Test select iterator."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html5lib')
 
         ids = []
         for el in sv.iselect('span[id]', soup):
@@ -96,6 +247,28 @@ class TestSoupSieve(unittest.TestCase):
 
         self.assertEqual(sorted(['5', 'some-id']), sorted(ids))
 
+    def test_select_order(self):
+        """Test select order."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        # ID `5` should come before ID `some-id`
+        soup = self.soup(markup, 'html5lib')
         span = sv.select('span[id]', soup)[0]
         ids = []
         for el in sv.select('span[id]:not(#some-id)', span.parent):
@@ -123,13 +296,13 @@ class TestSoupSieve(unittest.TestCase):
         </html>
         """
 
-        soup = bs4.BeautifulSoup(markup, 'html5lib')
+        soup = self.soup(markup, 'html5lib')
         nodes = sv.select('span[id]', soup)
         self.assertTrue(sv.match('span#\\35', nodes[0]))
         self.assertFalse(sv.match('span#\\35', nodes[1]))
 
-    def test_filter(self):
-        """Test filter."""
+    def test_filter_tag(self):
+        """Test filter tag."""
 
         markup = """
         <!-- before header -->
@@ -148,17 +321,44 @@ class TestSoupSieve(unittest.TestCase):
         </html>
         """
 
-        soup = bs4.BeautifulSoup(markup, 'html5lib')
+        soup = self.soup(markup, 'html5lib')
         nodes = sv.filter('pre#\\36', soup.html.body)
         self.assertEqual(len(nodes), 1)
         self.assertEqual(nodes[0].attrs['id'], '6')
 
-        nodes = sv.filter('pre#\\36', [el for el in soup.html.body.children if isinstance(el, bs4.Tag)])
+    def test_filter_list(self):
+        """
+        Test filter list.
+
+        Even if a list is created from the content of a tag, as long as the
+        content is document nodes, filter will still handle it.  It doesn't have
+        to be just tags.
+        """
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html5lib')
+        nodes = sv.filter('pre#\\36', [el for el in soup.html.body.children])
         self.assertEqual(len(nodes), 1)
         self.assertEqual(nodes[0].attrs['id'], '6')
 
-    def test_closest(self):
-        """Test closest."""
+    def test_closest_match_parent(self):
+        """Test match parent closest."""
 
         markup = """
         <article id="article">
@@ -172,13 +372,66 @@ class TestSoupSieve(unittest.TestCase):
         </article>
         """
 
-        soup = bs4.BeautifulSoup(markup, 'html5lib')
+        soup = self.soup(markup, 'html5lib')
         el = sv.select_one('#div-03', soup)
-
         self.assertTrue(sv.closest('#div-02', el).attrs['id'] == 'div-02')
-        self.assertTrue(sv.closest('div div', el).attrs['id'] == 'div-03')
+
+    def test_closest_match_complex_parent(self):
+        """Test closest match complex parent."""
+
+        markup = """
+        <article id="article">
+          <div id="div-01">Here is div-01
+            <div id="div-02">Here is div-02
+              <div id="div-04">Here is div-04</div>
+              <div id="div-03">Here is div-03</div>
+            </div>
+            <div id="div-05">Here is div-05</div>
+          </div>
+        </article>
+        """
+
+        soup = self.soup(markup, 'html5lib')
+        el = sv.select_one('#div-03', soup)
         self.assertTrue(sv.closest('article > div', el).attrs['id'] == 'div-01')
         self.assertTrue(sv.closest(':not(div)', el).attrs['id'] == 'article')
+
+    def test_closest_match_self(self):
+        """Test closest match self."""
+
+        markup = """
+        <article id="article">
+          <div id="div-01">Here is div-01
+            <div id="div-02">Here is div-02
+              <div id="div-04">Here is div-04</div>
+              <div id="div-03">Here is div-03</div>
+            </div>
+            <div id="div-05">Here is div-05</div>
+          </div>
+        </article>
+        """
+
+        soup = self.soup(markup, 'html5lib')
+        el = sv.select_one('#div-03', soup)
+        self.assertTrue(sv.closest('div div', el).attrs['id'] == 'div-03')
+
+    def test_closest_must_be_parent(self):
+        """Test that closest only matches parents or self."""
+
+        markup = """
+        <article id="article">
+          <div id="div-01">Here is div-01
+            <div id="div-02">Here is div-02
+              <div id="div-04">Here is div-04</div>
+              <div id="div-03">Here is div-03</div>
+            </div>
+            <div id="div-05">Here is div-05</div>
+          </div>
+        </article>
+        """
+
+        soup = self.soup(markup, 'html5lib')
+        el = sv.select_one('#div-03', soup)
         self.assertTrue(sv.closest('div #div-05', el) is None)
         self.assertTrue(sv.closest('a', el) is None)
 
@@ -234,14 +487,14 @@ class TestSoupSieve(unittest.TestCase):
         self.assertEqual(sv.cp._cached_css_compile.cache_info().currsize, 0)
 
     def test_recompile(self):
-        """If you feed through the same object, it should pass through unless you change flags."""
+        """If you feed through the same object, it should pass through unless you change parameters."""
 
         p1 = sv.compile('p[id]')
         p2 = sv.compile(p1)
         self.assertTrue(p1 is p2)
 
         with pytest.raises(ValueError):
-            sv.compile(p1, flags=0x10)
+            sv.compile(p1, flags=sv.DEBUG)
 
         with pytest.raises(ValueError):
             sv.compile(p1, namespaces={"": ""})
@@ -254,74 +507,64 @@ class TestSoupSieve(unittest.TestCase):
         with self.assertRaises(AttributeError):
             obj.member = 3
 
-    def test_immutable_dict(self):
+    def test_immutable_dict_size(self):
         """Test immutable dictionary."""
 
         idict = sv.ct.ImmutableDict({'a': 'b', 'c': 'd'})
         self.assertEqual(2, len(idict))
 
+    def test_immutable_dict_read_only(self):
+        """Test immutable dictionary is read only."""
+
+        idict = sv.ct.ImmutableDict({'a': 'b', 'c': 'd'})
         with self.assertRaises(TypeError):
             idict['a'] = 'f'
-
-        with self.assertRaises(TypeError):
-            sv.ct.ImmutableDict([[3, {}]])
-
-        with self.assertRaises(TypeError):
-            sv.ct.ImmutableDict([[{}, 3]])
-
-        with self.assertRaises(TypeError):
-            sv.ct.Namespaces({'a': {}})
 
 
 class TestInvalid(util.TestCase):
     """Test invalid."""
 
-    def test_invalid_combination(self):
-        """
-        Test invalid combination.
-
-        Selectors cannot start with relational symbols unless in `:has()`.
-        `:has()` cannot start with `,`.
-        """
-
-        self.assert_raises(', p', SyntaxError)
-
-        self.assert_raises(':has(, p)', SyntaxError)
+    def test_invalid_double_combinator(self):
+        """Test that selectors cannot have double combinators."""
 
         self.assert_raises('div >> p', SyntaxError)
+        self.assert_raises('>> div > p', SyntaxError)
+
+    def test_invalid_trailing_combinator(self):
+        """Test that selectors cannot have a trailing combinator."""
 
         self.assert_raises('div >', SyntaxError)
 
-        self.assert_raises('div,, a', SyntaxError)
+    def test_invalid_pseudo_class_start_combinator(self):
+        """Test invalid start combinator in pseudo-classes other than `:has()`."""
 
         self.assert_raises(':is(> div)', SyntaxError)
-
         self.assert_raises(':is(div, > div)', SyntaxError)
 
     @util.skip_quirks
     def test_invalid_non_quirk_combination(self):
-        """
-        Test invalid combination.
-
-        Selectors cannot start with relational symbols unless in `:has()`.
-        `:has()` cannot start with `,`.
-        """
+        """Non quirk mode should not allow selectors in selector lists to start with combinators."""
 
         self.assert_raises('> p', SyntaxError)
-
         self.assert_raises('div, > a', SyntaxError)
 
-    def test_invalid_pseudo(self):
-        """Test invalid pseudo class."""
+    def test_unrecognized_pseudo(self):
+        """Test unrecognized pseudo class."""
 
         self.assert_raises(':before', NotImplementedError)
 
+    def test_pseudo_class_with_bad_parameters(self):
+        """Test that pseudo class fails with bad parameters (basically it doesn't match)."""
+
         self.assert_raises(':nth-child(a)', SyntaxError)
 
-    def test_invalid_pseudo_close(self):
-        """Test invalid pseudo close."""
+    def test_invalid_pseudo_orphan_close(self):
+        """Test invalid, orphaned pseudo close."""
 
         self.assert_raises('div)', SyntaxError)
+
+    def test_invalid_pseudo_dangling_comma(self):
+        """Test pseudo class group with trailing comma."""
 
         self.assert_raises(':is(div,)', SyntaxError)
 
@@ -331,64 +574,73 @@ class TestInvalid(util.TestCase):
         self.assert_raises(':is(div', SyntaxError)
 
     def test_invalid_incomplete_has(self):
-        """Test invalid `:has()`."""
+        """Test `:has()` fails with just a combinator."""
 
         self.assert_raises(':has(>)', SyntaxError)
 
+    def test_invalid_has_empty(self):
+        """Test `:has()` fails with empty function parameters."""
+
         self.assert_raises(':has()', SyntaxError)
 
-        self.assert_raises(':has(> has,, a)', SyntaxError)
+    def test_invalid_has_double_comma(self):
+        """Test `:has()` fails with consecutive commas."""
 
         self.assert_raises(':has(> has,, a)', SyntaxError)
+
+    def test_invalid_has_double_combinator(self):
+        """Test `:has()` fails with consecutive combinators."""
+
+        self.assert_raises(':has(>> has a)', SyntaxError)
+        self.assert_raises(':has(> has >> a)', SyntaxError)
+
+    def test_invalid_has_trailing_combinator(self):
+        """Test `:has()` fails with trailing combinator."""
 
         self.assert_raises(':has(> has >)', SyntaxError)
 
+    def test_invalid_has_trailing_comma(self):
+        """Test `:has()` fails with trailing comma."""
+
         self.assert_raises(':has(> has,)', SyntaxError)
 
-    def test_invalid_tag(self):
-        """
-        Test invalid tag.
+    def test_invalid_has_start_comma(self):
+        """Test `:has()` fails with trailing comma."""
 
-        Tag must come first.
-        """
+        self.assert_raises(':has(, p)', SyntaxError)
 
-        self.assert_raises(':is(div)p', SyntaxError)
+    def test_immutable_dict_hashable_value(self):
+        """Test immutable dictionary has a hashable value."""
 
-    def test_invalid_syntax(self):
-        """Test invalid syntax."""
+        with self.assertRaises(TypeError):
+            sv.ct.ImmutableDict([[3, {}]])
 
-        self.assert_raises('div?', SyntaxError)
+    def test_immutable_dict_hashable_key(self):
+        """Test immutable dictionary has a hashable key."""
 
-    def test_malformed_selectors(self):
-        """Test malformed selectors."""
+        with self.assertRaises(TypeError):
+            sv.ct.ImmutableDict([[{}, 3]])
 
-        # Malformed class
-        self.assert_raises('td.+#some-id', SyntaxError)
-
-        # Malformed id
-        self.assert_raises('td#.some-class', SyntaxError)
-
-        # Malformed pseudo-class
-        self.assert_raises('td:[href]', SyntaxError)
-
-    @util.skip_quirks
-    def test_malformed_no_quirk(self):
-        """Test malformed with no quirk mode."""
-
-        # Malformed attribute
-        self.assert_raises('div[attr={}]', SyntaxError)
-
-    def test_invalid_namespace(self):
-        """Test invalid namespace."""
+    def test_invalid_namespace_type(self):
+        """Test invalid namespace type."""
 
         with self.assertRaises(TypeError):
             sv.ct.Namespaces(((3, 3),))
 
+    def test_invalid_namespace_hashable_value(self):
+        """Test namespace has hashable value."""
+
         with self.assertRaises(TypeError):
             sv.ct.Namespaces({'a': {}})
 
-    def test_invalid_type_input(self):
-        """Test bad input into the API."""
+    def test_invalid_namespace_hashable_key(self):
+        """Test namespace key is hashable."""
+
+        with self.assertRaises(TypeError):
+            sv.ct.Namespaces({{}: 'string'})
+
+    def test_invalid_type_input_match(self):
+        """Test bad input into the match API."""
 
         flags = sv.DEBUG
         if self.quirks:
@@ -397,18 +649,48 @@ class TestInvalid(util.TestCase):
         with self.assertRaises(TypeError):
             sv.match('div', "not a tag", flags=flags)
 
+    def test_invalid_type_input_select(self):
+        """Test bad input into the select API."""
+
+        flags = sv.DEBUG
+        if self.quirks:
+            flags = sv._QUIRKS
+
         with self.assertRaises(TypeError):
             sv.select('div', "not a tag", flags=flags)
+
+    def test_invalid_type_input_filter(self):
+        """Test bad input into the filter API."""
+
+        flags = sv.DEBUG
+        if self.quirks:
+            flags = sv._QUIRKS
 
         with self.assertRaises(TypeError):
             sv.filter('div', "not a tag", flags=flags)
 
+    def test_invalid_type_input_comments(self):
+        """Test bad input into the comments API."""
+
+        flags = sv.DEBUG
+        if self.quirks:
+            flags = sv._QUIRKS
+
         with self.assertRaises(TypeError):
             sv.comments('div', "not a tag", flags=flags)
 
-    @util.skip_no_quirks
-    def test_quirks_warn(self):
-        """Test that quirks mode raises a warning."""
+
+class TestInvalidQuirks(TestInvalid):
+    """Test invalid with QUIRKS."""
+
+    def setUp(self):
+        """Setup."""
+
+        sv.purge()
+        self.quirks = True
+
+    def test_quirks_warn_relative_combinator(self):
+        """Test that quirks mode raises a warning with relative combinator."""
 
         sv.purge()
 
@@ -421,6 +703,9 @@ class TestInvalid(util.TestCase):
             self.assertTrue(len(w) == 1)
             self.assertTrue(issubclass(w[-1].category, sv_util.QuirksWarning))
 
+    def test_quirks_warn_attribute_unquoted(self):
+        """Test that quirks mode raises a warning with attribute values that normally should be quoted."""
+
         with warnings.catch_warnings(record=True) as w:
             # Cause all warnings to always be triggered.
             warnings.simplefilter("always")
@@ -429,13 +714,3 @@ class TestInvalid(util.TestCase):
             # Verify some things
             self.assertTrue(len(w) == 1)
             self.assertTrue(issubclass(w[-1].category, sv_util.QuirksWarning))
-
-
-class TestInvalidQuirks(TestInvalid):
-    """Test invalid with QUIRKS."""
-
-    def setUp(self):
-        """Setup."""
-
-        sv.purge()
-        self.quirks = True

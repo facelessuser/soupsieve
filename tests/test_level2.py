@@ -58,6 +58,22 @@ class TestLevel2(util.TestCase):
             flags=util.HTML
         )
 
+    def test_direct_child_no_spaces(self):
+        """Test direct child with no spaces."""
+
+        markup = """
+        <div>
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre>
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
         # No spaces
         self.assert_selector(
             markup,
@@ -65,6 +81,24 @@ class TestLevel2(util.TestCase):
             ["3"],
             flags=util.HTML
         )
+
+    def test_invalid_double_combinator(self):
+        """Test that selectors cannot have double combinators."""
+
+        self.assert_raises('div >> p', SyntaxError)
+        self.assert_raises('>> div > p', SyntaxError)
+
+    def test_invalid_trailing_combinator(self):
+        """Test that selectors cannot have a trailing combinator."""
+
+        self.assert_raises('div >', SyntaxError)
+
+    @util.skip_quirks
+    def test_invalid_non_quirk_combination(self):
+        """Non quirk mode should not allow selectors in selector lists to start with combinators."""
+
+        self.assert_raises('> p', SyntaxError)
+        self.assert_raises('div, > a', SyntaxError)
 
     def test_direct_sibling(self):
         """Test direct sibling."""
@@ -90,6 +124,22 @@ class TestLevel2(util.TestCase):
             flags=util.HTML
         )
 
+    def test_direct_sibling_no_spaces(self):
+        """Test direct sibling with no spaces."""
+
+        markup = """
+        <div>
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre>
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
         # No spaces
         self.assert_selector(
             markup,
@@ -97,6 +147,22 @@ class TestLevel2(util.TestCase):
             ["5", "6"],
             flags=util.HTML
         )
+
+    def test_complex_direct_siblings(self):
+        """Test direct sibling with no spaces."""
+
+        markup = """
+        <div>
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre>
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div
+        """
 
         # Complex
         self.assert_selector(
@@ -129,59 +195,21 @@ class TestLevel2(util.TestCase):
             flags=util.HTML
         )
 
-    @util.skip_no_quirks
-    def test_attribute_quirks(self):
-        """Test attributes with quirks."""
+    def test_invalid_tag(self):
+        """
+        Test invalid tag.
 
-        markup = """
-        <div id="div">
-        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
-        <a id="2" href="{}?/">Link</a>
-        <span id="3">Direct child</span>
-        <pre id="pre">
-        <span id="4">Child 1</span>
-        <span id="5">Child 2</span>
-        <span id="6">Child 3</span>
-        </pre>
-        </div>
+        Tag must come first.
         """
 
-        self.assert_selector(
-            markup,
-            "[href={}?/]",
-            ["2"],
-            flags=util.HTML
-        )
+        self.assert_raises('[href]p', SyntaxError)
 
-    @util.skip_no_quirks
-    def test_leading_combinator_quirks(self):
-        """Test scope with quirks."""
+    @util.skip_quirks
+    def test_malformed_no_quirk(self):
+        """Test malformed with no quirk mode."""
 
-        markup = """
-        <html id="root">
-        <head>
-        </head>
-        <body>
-        <div id="div">
-        <p id="0" class="somewordshere">Some text <span id="1"> in a paragraph</span>.</p>
-        <a id="2" href="http://google.com">Link</a>
-        <span id="3" class="herewords">Direct child</span>
-        <pre id="pre" class="wordshere">
-        <span id="4">Child 1</span>
-        <span id="5">Child 2</span>
-        <span id="6">Child 3</span>
-        </pre>
-        </div>
-        </body>
-        </html>
-        """
-
-        soup = bs4.BeautifulSoup(textwrap.dedent(markup.replace('\r\n', '\n')), 'html5lib')
-        el = soup.div
-        ids = []
-        for el in sv.select('> span, > #pre', el, flags=sv.DEBUG | sv._QUIRKS):
-            ids.append(el.attrs['id'])
-        self.assertEqual(sorted(ids), sorted(['3', 'pre']))
+        # Malformed attribute
+        self.assert_raises('div[attr={}]', SyntaxError)
 
     def test_attribute(self):
         """Test attribute."""
@@ -205,6 +233,22 @@ class TestLevel2(util.TestCase):
             ["2"],
             flags=util.HTML
         )
+
+    def test_attribute_with_spaces(self):
+        """Test attribute with spaces."""
+
+        markup = """
+        <div id="div">
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
 
         # With spaces
         self.assert_selector(
@@ -236,8 +280,8 @@ class TestLevel2(util.TestCase):
             flags=util.HTML
         )
 
-    def test_attribute_equal(self):
-        """Test attribute with value that equals specified value."""
+    def test_attribute_equal_no_quotes(self):
+        """Test attribute with value that equals specified value (with no quotes)."""
 
         markup = """
         <div id="div">
@@ -260,6 +304,22 @@ class TestLevel2(util.TestCase):
             flags=util.HTML
         )
 
+    def test_attribute_equal_with_quotes(self):
+        """Test attribute with value that equals specified value (with quotes)."""
+
+        markup = """
+        <div id="div">
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
         # Single quoted
         self.assert_selector(
             markup,
@@ -267,6 +327,22 @@ class TestLevel2(util.TestCase):
             ["5"],
             flags=util.HTML
         )
+
+    def test_attribute_equal_with_double_quotes(self):
+        """Test attribute with value that equals specified value (with double quotes)."""
+
+        markup = """
+        <div id="div">
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
 
         # Double quoted
         self.assert_selector(
@@ -276,6 +352,22 @@ class TestLevel2(util.TestCase):
             flags=util.HTML
         )
 
+    def test_attribute_equal_quotes_and_spaces(self):
+        """Test attribute with value that equals specified value (quotes and spaces)."""
+
+        markup = """
+        <div id="div">
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
         # With spaces
         self.assert_selector(
             markup,
@@ -284,12 +376,44 @@ class TestLevel2(util.TestCase):
             flags=util.HTML
         )
 
+    def test_attribute_equal_case_insensitive_attribute(self):
+        """Test attribute with value that equals specified value (case insensitive attribute)."""
+
+        markup = """
+        <div id="div">
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
         self.assert_selector(
             markup,
             '[ID="5"]',
             ["5"],
             flags=util.HTML
         )
+
+    def test_attribute_bad(self):
+        """Test attribute with a bad attribute."""
+
+        markup = """
+        <div id="div">
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
 
         self.assert_selector(
             '<span bad="5"></span>',
@@ -298,7 +422,7 @@ class TestLevel2(util.TestCase):
             flags=util.HTML
         )
 
-    def test_attribute_type(self):
+    def test_attribute_type_html(self):
         """Type is treated as case insensitive in HTML."""
 
         markup = """
@@ -325,12 +449,35 @@ class TestLevel2(util.TestCase):
             flags=util.HTML
         )
 
+    def test_attribute_type_xml(self):
+        """Type is treated as case sensitive in XML."""
+
+        markup = """
+        <html>
+        <body>
+        <div id="div">
+        <p type="TEST" id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a type="test" id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        </body>
+        </html>
+        """
+
         self.assert_selector(
             markup,
             '[type="test"]',
             ['2'],
             flags=util.XML
         )
+
+    def test_attribute_type_xhtml(self):
+        """Type is treated as case insensitive in XHTML."""
 
         markup = """
         <?xml version="1.0" encoding="UTF-8"?>
@@ -358,7 +505,7 @@ class TestLevel2(util.TestCase):
             markup,
             '[type="test"]',
             ['2'],
-            flags=util.XML
+            flags=util.XHTML
         )
 
     def test_attribute_start_dash(self):
@@ -382,8 +529,8 @@ class TestLevel2(util.TestCase):
             flags=util.HTML
         )
 
-    def test_attribute_contains_space(self):
-        """Test attribute whose space separated list contains the specified value."""
+    def test_attribute_contains_space_middle(self):
+        """Test attribute whose space separated list contains the specified value in the middle of the list."""
 
         markup = """
         <div id="div">
@@ -406,25 +553,21 @@ class TestLevel2(util.TestCase):
             flags=util.HTML
         )
 
-        # Shouldn't match anything
-        self.assert_selector(
-            markup,
-            '[class~="test1 test2"]',
-            [],
-            flags=util.HTML
-        )
-        self.assert_selector(
-            markup,
-            '[class~=""]',
-            [],
-            flags=util.HTML
-        )
-        self.assert_selector(
-            markup,
-            '[class~="test1\\ test2"]',
-            [],
-            flags=util.HTML
-        )
+    def test_attribute_contains_space_start(self):
+        """Test attribute whose space separated list contains the specified value at the start of the list."""
+
+        markup = """
+        <div id="div">
+        <p id="0" class="test1 test2 test3">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre" class="test-a test-b">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
 
         # Start of list
         self.assert_selector(
@@ -434,11 +577,97 @@ class TestLevel2(util.TestCase):
             flags=util.HTML
         )
 
+    def test_attribute_contains_space_end(self):
+        """Test attribute whose space separated list contains the specified value at the end of the list."""
+
+        markup = """
+        <div id="div">
+        <p id="0" class="test1 test2 test3">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre" class="test-a test-b">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
         # End of list
         self.assert_selector(
             markup,
             "[class~=test-b]",
             ["pre"],
+            flags=util.HTML
+        )
+
+    def test_attribute_contains_cannot_have_spaces(self):
+        """Test attribute `~=` will match nothing when spaces are included."""
+
+        markup = """
+        <div id="div">
+        <p id="0" class="test1 test2 test3">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre" class="test-a test-b">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
+        # Shouldn't match anything
+        self.assert_selector(
+            markup,
+            '[class~="test1 test2"]',
+            [],
+            flags=util.HTML
+        )
+
+    def test_attribute_contains_cannot_have_empty(self):
+        """Test attribute `~=` will match nothing when value is empty."""
+
+        markup = """
+        <div id="div">
+        <p id="0" class="test1 test2 test3">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre" class="test-a test-b">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            '[class~=""]',
+            [],
+            flags=util.HTML
+        )
+
+    def test_attribute_contains_cannot_have_escaped_spaces(self):
+        """Test attribute `~=` will match nothing when escaped spaces are included."""
+
+        markup = """
+        <div id="div">
+        <p id="0" class="test1 test2 test3">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre" class="test-a test-b">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            '[class~="test1\\ test2"]',
+            [],
             flags=util.HTML
         )
 
@@ -521,6 +750,38 @@ class TestLevel2(util.TestCase):
             flags=util.HTML
         )
 
+    def test_not_focus(self):
+        """Test not focus."""
+
+        markup = """
+        <form action="#">
+          <fieldset id='a' disabled>
+            <legend>
+              Simple fieldset <input type="radio" id="1" checked>
+              <fieldset id='b' disabled>
+                <legend>Simple fieldset <input type="radio" id="2" checked></legend>
+                <input type="radio" id="3" checked>
+                <label for="radio">radio</label>
+              </fieldset>
+            </legend>
+            <fieldset id='c' disabled>
+              <legend>Simple fieldset <input type="radio" id="4" checked></legend>
+              <input type="radio" id="5" checked>
+              <label for="radio">radio</label>
+            </fieldset>
+            <input type="radio" id="6" checked>
+            <label for="radio">radio</label>
+          </fieldset>
+          <optgroup id="opt-enable">
+            <option id="7" disabled>option</option>
+          </optgroup>
+          <optgroup id="8" disabled>
+            <option id="9">option</option>
+          </optgroup>
+          <a href="" id="link">text</a>
+        </form>
+        """
+
         self.assert_selector(
             markup,
             "input:not(:focus)",
@@ -560,8 +821,6 @@ class TestLevel2(util.TestCase):
     def test_pseudo_element(self):
         """Test pseudo element."""
 
-        self.assert_raises(':first-line', NotImplementedError)
-
         self.assert_raises('::first-line', NotImplementedError)
 
     def test_at_rule(self):
@@ -599,6 +858,22 @@ class TestLevel2(util.TestCase):
             flags=util.HTML
         )
 
+    def test_comments_in_pseudo_classes(self):
+        """Test comments in pseudo-classes."""
+
+        markup = """
+        <div>
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre>
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
         self.assert_selector(
             markup,
             """
@@ -620,3 +895,55 @@ class TestLevel2Quirks(TestLevel2):
 
         self.purge()
         self.quirks = True
+
+    def test_attribute_quirks(self):
+        """Test attributes with quirks."""
+
+        markup = """
+        <div id="div">
+        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="{}?/">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            "[href={}?/]",
+            ["2"],
+            flags=util.HTML
+        )
+
+    def test_leading_combinator_quirks(self):
+        """Test scope with quirks."""
+
+        markup = """
+        <html id="root">
+        <head>
+        </head>
+        <body>
+        <div id="div">
+        <p id="0" class="somewordshere">Some text <span id="1"> in a paragraph</span>.</p>
+        <a id="2" href="http://google.com">Link</a>
+        <span id="3" class="herewords">Direct child</span>
+        <pre id="pre" class="wordshere">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html5lib')
+        el = soup.div
+        ids = []
+        for el in sv.select('> span, > #pre', el, flags=sv.DEBUG | sv._QUIRKS):
+            ids.append(el.attrs['id'])
+        self.assertEqual(sorted(ids), sorted(['3', 'pre']))

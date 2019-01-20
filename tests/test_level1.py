@@ -34,15 +34,6 @@ class TestLevel1(util.TestCase):
             flags=util.HTML
         )
 
-        self.assert_selector(
-            """
-            <prefix:p id="0"></prefix:p>
-            """,
-            "prefix\\:p",
-            ["0"],
-            flags=util.HTML
-        )
-
     def test_tag_html(self):
         """Test tag for HTML."""
 
@@ -145,7 +136,7 @@ class TestLevel1(util.TestCase):
             flags=util.XML
         )
 
-    def test_tags(self):
+    def test_multiple_tags(self):
         """Test multiple selectors."""
 
         self.assert_selector(
@@ -160,6 +151,21 @@ class TestLevel1(util.TestCase):
             ["1", "2"],
             flags=util.HTML
         )
+
+    def test_invalid_start_comma(self):
+        """Test that selectors cannot start with a comma."""
+
+        self.assert_raises(', p', SyntaxError)
+
+    def test_invalid_end_comma(self):
+        """Test that selectors cannot end with a comma."""
+
+        self.assert_raises('p,', SyntaxError)
+
+    def test_invalid_double_comma(self):
+        """Test that selectors cannot have double combinators."""
+
+        self.assert_raises('div,, a', SyntaxError)
 
     def test_child(self):
         """Test child."""
@@ -195,12 +201,29 @@ class TestLevel1(util.TestCase):
             flags=util.HTML
         )
 
+    def test_tag_and_id(self):
+        """Test tag and ID."""
+
+        markup = """
+        <div>
+        <p>Some text <span id="1"> in a paragraph</span>.
+        <a id="2" href="http://google.com">Link</a>
+        </p>
+        </div>
+        """
+
         self.assert_selector(
             markup,
             "a#\\32",
             ["2"],
             flags=util.HTML
         )
+
+    def test_malformed_id(self):
+        """Test malformed ID."""
+
+        # Malformed id
+        self.assert_raises('td#.some-class', SyntaxError)
 
     def test_class(self):
         """Test class."""
@@ -220,12 +243,49 @@ class TestLevel1(util.TestCase):
             flags=util.HTML
         )
 
+    def test_tag_and_class(self):
+        """Test tag and class."""
+
+        markup = """
+        <div>
+        <p>Some text <span id="1" class="foo"> in a paragraph</span>.
+        <a id="2" class="bar" href="http://google.com">Link</a>
+        </p>
+        </div>
+        """
+
         self.assert_selector(
             markup,
             "a.bar",
             ["2"],
             flags=util.HTML
         )
+
+    def test_malformed_class(self):
+        """Test malformed class."""
+
+        # Malformed class
+        self.assert_raises('td.+#some-id', SyntaxError)
+
+    def test_class_xhtml(self):
+        """Test tag and class with XHTML since internally classes are stored different for XML."""
+
+        markup = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+            "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+        <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+        </head>
+        <body>
+        <div>
+        <p>Some text <span id="1" class="foo"> in a paragraph</span>.
+        <a id="2" class="bar" href="http://google.com">Link</a>
+        </p>
+        </div>
+        </body>
+        </html>
+        """
 
         self.assert_selector(
             markup,
@@ -234,8 +294,8 @@ class TestLevel1(util.TestCase):
             flags=util.XHTML
         )
 
-    def test_classes(self):
-        """Test classes."""
+    def test_multiple_classes(self):
+        """Test multiple classes."""
 
         markup = """
         <div>
@@ -272,6 +332,11 @@ class TestLevel1(util.TestCase):
             flags=util.HTML
         )
 
+    def test_invalid_syntax(self):
+        """Test invalid syntax."""
+
+        self.assert_raises('div?', SyntaxError)
+
     def test_link(self):
         """Test link (all links are unvisited)."""
 
@@ -290,6 +355,18 @@ class TestLevel1(util.TestCase):
             ["2"],
             flags=util.HTML
         )
+
+    def test_tag_and_link(self):
+        """Test link and tag (all links are unvisited)."""
+
+        markup = """
+        <div>
+        <p>Some text <span id="1" class="foo:bar:foobar"> in a paragraph</span>.
+        <a id="2" class="bar" href="http://google.com">Link</a>
+        <a id="3">Placeholder text.</a>
+        </p>
+        </div>
+        """
 
         self.assert_selector(
             markup,
@@ -335,6 +412,17 @@ class TestLevel1(util.TestCase):
             [],
             flags=util.HTML
         )
+
+    def test_malformed_pseudo_class(self):
+        """Test malformed class."""
+
+        # Malformed pseudo-class
+        self.assert_raises('td:#id', SyntaxError)
+
+    def test_pseudo_class_not_implemented(self):
+        """Test pseudo-class that is not implemented."""
+
+        self.assert_raises(':not-implemented', NotImplementedError)
 
 
 class TestLevel1Quirks(TestLevel1):

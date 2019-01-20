@@ -54,41 +54,58 @@ class TestCase(unittest.TestCase):
 
         sv.purge()
 
+    def compile_pattern(self, selectors, namespaces=None, flags=0):
+        """Compile pattern."""
+
+        print('PATTERN: ', selectors)
+        flags |= sv.DEBUG
+        if self.quirks:
+            flags |= sv._QUIRKS
+        return sv.compile(selectors, namespaces=namespaces, flags=flags)
+
+    def soup(self, markup, parser):
+        """Get soup."""
+
+        print('PARSER: ', parser)
+        return bs4.BeautifulSoup(textwrap.dedent(markup.replace('\r\n', '\n')), parser)
+
+    def get_parsers(self, flags):
+        """Get parsers."""
+
+        mode = flags & 0x2F
+        if mode == HTML:
+            parsers = ('html5lib', 'lxml', 'html.parser')
+        elif mode == PYHTML:
+            parsers = ('html.parser',)
+        elif mode == LXML_HTML:
+            parsers = ('lxml',)
+        elif mode in (HTML5, 0):
+            parsers = ('html5lib',)
+        elif mode in (XHTML, XML):
+            parsers = ('xml',)
+        return parsers
+
     def assert_raises(self, pattern, exception, namespace=None):
         """Assert raises."""
 
+        print('----Running Assert Test----')
         with self.assertRaises(exception):
-            flags = sv.DEBUG
-            if self.quirks:
-                flags = sv._QUIRKS
-
-            sv.compile(pattern, flags=flags)
+            self.compile_pattern(pattern)
 
     def assert_selector(self, markup, selectors, expected_ids, namespaces={}, flags=0):
         """Assert selector."""
 
-        mode = flags & 0x2F
-        if mode == HTML:
-            bs_mode = ('html5lib', 'lxml', 'html.parser')
-        elif mode == PYHTML:
-            bs_mode = ('html.parser',)
-        elif mode == LXML_HTML:
-            bs_mode = ('lxml',)
-        elif mode in (HTML5, 0):
-            bs_mode = ('html5lib',)
-        elif mode in (XHTML, XML):
-            bs_mode = ('xml',)
+        parsers = self.get_parsers(flags)
 
-        for parser in bs_mode:
+        print('----Running Selector Test----')
+        selector = self.compile_pattern(selectors, namespaces)
+
+        for parser in parsers:
             print('PARSER: ', parser)
-            soup = bs4.BeautifulSoup(textwrap.dedent(markup.replace('\r\n', '\n')), parser)
-            # print(soup)
-            flags |= sv.DEBUG
-            if self.quirks:
-                flags |= sv._QUIRKS
+            soup = self.soup(markup, parser)
 
             ids = []
-            for el in sv.select(selectors, soup, namespaces=namespaces, flags=flags):
+            for el in selector.select(soup):
                 print('TAG: ', el.name)
                 ids.append(el.attrs['id'])
             self.assertEqual(sorted(ids), sorted(expected_ids))
