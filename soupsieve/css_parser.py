@@ -594,7 +594,7 @@ class CSSParser(object):
             selectors.append(_Selector())
         else:
             if has_selector:
-                # End the current selector and associate the leading combintor with this selector.
+                # End the current selector and associate the leading combinator with this selector.
                 sel.rel_type = rel_type
                 selectors[-1].relations.append(sel)
             elif rel_type[1:] != WS_COMBINATOR:

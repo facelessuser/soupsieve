@@ -1,7 +1,5 @@
 """Test Soup Sieve API."""
 from __future__ import unicode_literals
-import unittest
-import bs4
 import soupsieve as sv
 from soupsieve import util as sv_util
 from . import util
@@ -524,39 +522,16 @@ class TestSoupSieve(util.TestCase):
 class TestInvalid(util.TestCase):
     """Test invalid."""
 
-    def test_invalid_double_combinator(self):
-        """Test that selectors cannot have double combinators."""
-
-        self.assert_raises('div >> p', SyntaxError)
-        self.assert_raises('>> div > p', SyntaxError)
-
-    def test_invalid_trailing_combinator(self):
-        """Test that selectors cannot have a trailing combinator."""
-
-        self.assert_raises('div >', SyntaxError)
-
     def test_invalid_pseudo_class_start_combinator(self):
         """Test invalid start combinator in pseudo-classes other than `:has()`."""
 
         self.assert_raises(':is(> div)', SyntaxError)
         self.assert_raises(':is(div, > div)', SyntaxError)
 
-    @util.skip_quirks
-    def test_invalid_non_quirk_combination(self):
-        """Non quirk mode should not allow selectors in selector lists to start with combinators."""
-
-        self.assert_raises('> p', SyntaxError)
-        self.assert_raises('div, > a', SyntaxError)
-
     def test_unrecognized_pseudo(self):
         """Test unrecognized pseudo class."""
 
         self.assert_raises(':before', NotImplementedError)
-
-    def test_pseudo_class_with_bad_parameters(self):
-        """Test that pseudo class fails with bad parameters (basically it doesn't match)."""
-
-        self.assert_raises(':nth-child(a)', SyntaxError)
 
     def test_invalid_pseudo_orphan_close(self):
         """Test invalid, orphaned pseudo close."""
@@ -592,6 +567,7 @@ class TestInvalid(util.TestCase):
         """Test `:has()` fails with consecutive combinators."""
 
         self.assert_raises(':has(>> has a)', SyntaxError)
+        self.assert_raises(':has(> has, >> a)', SyntaxError)
         self.assert_raises(':has(> has >> a)', SyntaxError)
 
     def test_invalid_has_trailing_combinator(self):

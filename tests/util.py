@@ -28,6 +28,18 @@ def skip_quirks(func):
     return skip_if
 
 
+def skip_py3(func):
+    """Decorator that skips when running in Python 3."""
+
+    def skip_if(self, *args, **kwargs):
+        """Skip conditional wrapper."""
+        if PY3:
+            return
+        else:
+            return func(self, *args, **kwargs)
+    return skip_if
+
+
 def skip_no_quirks(func):
     """Decorator that skips when no quirks mode is enabled."""
 
@@ -66,7 +78,7 @@ class TestCase(unittest.TestCase):
     def soup(self, markup, parser):
         """Get soup."""
 
-        print('PARSER: ', parser)
+        print('\n====PARSER: ', parser)
         return bs4.BeautifulSoup(textwrap.dedent(markup.replace('\r\n', '\n')), parser)
 
     def get_parsers(self, flags):
@@ -101,8 +113,8 @@ class TestCase(unittest.TestCase):
         selector = self.compile_pattern(selectors, namespaces)
 
         for parser in parsers:
-            print('PARSER: ', parser)
             soup = self.soup(markup, parser)
+            # print(soup)
 
             ids = []
             for el in selector.select(soup):

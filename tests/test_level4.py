@@ -58,7 +58,7 @@ import bs4
 class TestLevel4(util.TestCase):
     """Test level 4 selectors."""
 
-    def test_attribute_case(self):
+    def test_attribute_forced_case_insensitive(self):
         """Test attribute value case insensitivity."""
 
         markup = """
@@ -88,10 +88,40 @@ class TestLevel4(util.TestCase):
             flags=util.HTML
         )
 
+    def test_attribute_forced_case_insensitive_xml(self):
+        """Test that attribute value case insensitivity can be forced in XML."""
+
+        markup = """
+        <html>
+        <body>
+        <div id="div">
+        <p type="TEST" id="0">Some text <span id="1"> in a paragraph</span>.</p>
+        <a type="test" id="2" href="http://google.com">Link</a>
+        <span id="3">Direct child</span>
+        <pre id="pre">
+        <span id="4">Child 1</span>
+        <span id="5">Child 2</span>
+        <span id="6">Child 3</span>
+        </pre>
+        </div>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            '[type="test" i]',
+            ['0', '2'],
+            flags=util.XML
+        )
+
+    def test_attribute_forced_case_needs_value(self):
+        """Test attribute value case insensitivity requires a value."""
+
         self.assert_raises('[id i]', SyntaxError)
 
-    def test_attribute_type_case(self):
-        """Type is treated as case insensitive in HTML."""
+    def test_attribute_type_case_sensitive(self):
+        """Type is treated as case insensitive in HTML, so test that we can force the opposite."""
 
         markup = """
         <html>
@@ -117,15 +147,8 @@ class TestLevel4(util.TestCase):
             flags=util.HTML
         )
 
-        self.assert_selector(
-            markup,
-            '[type="test" i]',
-            ['0', '2'],
-            flags=util.XML
-        )
-
-    def test_is_matches_where(self):
-        """Test multiple selectors with "is", "matches", and "where"."""
+    def test_is(self):
+        """Test multiple selectors with "is"."""
 
         markup = """
         <div>
@@ -142,6 +165,53 @@ class TestLevel4(util.TestCase):
             flags=util.HTML
         )
 
+    def test_matches(self):
+        """Test multiple selectors with "matches"."""
+
+        markup = """
+        <div>
+        <p>Some text <span id="1"> in a paragraph</span>.
+        <a id="2" href="http://google.com">Link</a>
+        </p>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            ":matches(span, a)",
+            ["1", "2"],
+            flags=util.HTML
+        )
+
+    def test_where(self):
+        """Test multiple selectors with "where"."""
+
+        markup = """
+        <div>
+        <p>Some text <span id="1"> in a paragraph</span>.
+        <a id="2" href="http://google.com">Link</a>
+        </p>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            ":where(span, a)",
+            ["1", "2"],
+            flags=util.HTML
+        )
+
+    def test_nested_is(self):
+        """Test multiple selectors with "where"."""
+
+        markup = """
+        <div>
+        <p>Some text <span id="1"> in a paragraph</span>.
+        <a id="2" href="http://google.com">Link</a>
+        </p>
+        </div>
+        """
+
         self.assert_selector(
             markup,
             ":is(span, a:matches(#\\32))",
@@ -156,6 +226,17 @@ class TestLevel4(util.TestCase):
             flags=util.HTML
         )
 
+    def test_is_with_other_pseudo(self):
+        """Test `:is()` behavior when paired with `:not()`."""
+
+        markup = """
+        <div>
+        <p>Some text <span id="1"> in a paragraph</span>.
+        <a id="2" href="http://google.com">Link</a>
+        </p>
+        </div>
+        """
+
         # Each pseudo class is evaluated separately
         # So this will not match
         self.assert_selector(
@@ -164,6 +245,17 @@ class TestLevel4(util.TestCase):
             [],
             flags=util.HTML
         )
+
+    def test_multiple_is(self):
+        """Test `:is()` behavior when paired with `:not()`."""
+
+        markup = """
+        <div>
+        <p>Some text <span id="1"> in a paragraph</span>.
+        <a id="2" href="http://google.com">Link</a>
+        </p>
+        </div>
+        """
 
         # Each pseudo class is evaluated separately
         # So this will not match
@@ -1468,8 +1560,8 @@ class TestLevel4(util.TestCase):
             fragment = soup.input.extract()
             self.assertTrue(sv.match(":root:dir(ltr)", fragment, flags=sv.DEBUG))
 
-    def test_in_range(self):
-        """Test in range."""
+    def test_in_range_number(self):
+        """Test in range number."""
 
         markup = """
         <!-- These should all match -->
@@ -1500,6 +1592,9 @@ class TestLevel4(util.TestCase):
             flags=util.HTML
         )
 
+    def test_in_range_range(self):
+        """Test in range range."""
+
         markup = """
         <!-- These should all match -->
         <input id="0" type="range" min="0" max="10" value="5">
@@ -1528,6 +1623,9 @@ class TestLevel4(util.TestCase):
             flags=util.HTML
         )
 
+    def test_in_range_month(self):
+        """Test in range month."""
+
         markup = """
         <!-- These should all match -->
         <input id="0" type="month" min="1980-02" max="2004-08" value="1999-05">
@@ -1555,6 +1653,9 @@ class TestLevel4(util.TestCase):
             ['0', '1', '2', '3', '4', '5', '6'],
             flags=util.HTML
         )
+
+    def test_in_range_week(self):
+        """Test in range week."""
 
         markup = """
         <!-- These should all match -->
@@ -1585,6 +1686,9 @@ class TestLevel4(util.TestCase):
             flags=util.HTML
         )
 
+    def test_in_range_date(self):
+        """Test in range date."""
+
         markup = """
         <!-- These should all match -->
         <input id="0" type="date" min="1980-02-20" max="2004-08-14" value="1999-05-16">
@@ -1614,6 +1718,9 @@ class TestLevel4(util.TestCase):
             ['0', '1', '2', '3', '4', '5', '6'],
             flags=util.HTML
         )
+
+    def test_in_range_date_time(self):
+        """Test in range date_time."""
 
         markup = """
         <!-- These should all match -->
@@ -1649,6 +1756,9 @@ class TestLevel4(util.TestCase):
             flags=util.HTML
         )
 
+    def test_in_range_time(self):
+        """Test in range time."""
+
         markup = """
         <!-- These should all match -->
         <input id="0" type="time" min="01:30" max="18:45" value="10:20">
@@ -1681,8 +1791,8 @@ class TestLevel4(util.TestCase):
             flags=util.HTML
         )
 
-    def test_out_of_range(self):
-        """Test in range."""
+    def test_out_of_range_number(self):
+        """Test in range number."""
 
         markup = """
         <!-- These should not match -->
@@ -1713,6 +1823,9 @@ class TestLevel4(util.TestCase):
             flags=util.HTML
         )
 
+    def test_out_of_range_range(self):
+        """Test in range range."""
+
         markup = """
         <!-- These should not match -->
         <input id="0" type="range" min="0" max="10" value="5">
@@ -1741,6 +1854,9 @@ class TestLevel4(util.TestCase):
             flags=util.HTML
         )
 
+    def test_out_of_range_month(self):
+        """Test in range month."""
+
         markup = """
         <!-- These should not match -->
         <input id="0" type="month" min="1980-02" max="2004-08" value="1999-05">
@@ -1768,6 +1884,9 @@ class TestLevel4(util.TestCase):
             ['7', '8', '9', '10'],
             flags=util.HTML
         )
+
+    def test_out_of_range_week(self):
+        """Test in range week."""
 
         markup = """
         <!-- These should not match -->
@@ -1798,6 +1917,9 @@ class TestLevel4(util.TestCase):
             flags=util.HTML
         )
 
+    def test_out_of_range_date(self):
+        """Test in range date."""
+
         markup = """
         <!-- These should not match -->
         <input id="0" type="date" min="1980-02-20" max="2004-08-14" value="1999-05-16">
@@ -1827,6 +1949,9 @@ class TestLevel4(util.TestCase):
             ['7', '8', '9', '10', '11', '12'],
             flags=util.HTML
         )
+
+    def test_out_of_range_date_time(self):
+        """Test in range date time."""
 
         markup = """
         <!-- These should not match -->
@@ -1861,6 +1986,9 @@ class TestLevel4(util.TestCase):
             ['7', '8', '9', '10', '11', '12', '13', '14', '15', '16'],
             flags=util.HTML
         )
+
+    def test_out_of_range_time(self):
+        """Test in range time."""
 
         markup = """
         <!-- These should not match -->

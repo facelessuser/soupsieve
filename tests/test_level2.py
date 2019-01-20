@@ -27,8 +27,6 @@ We currently fail on at-rules `@at-rule` as they are not applicable in the Soup 
 from __future__ import unicode_literals
 from . import util
 import soupsieve as sv
-import bs4
-import textwrap
 
 
 class TestLevel2(util.TestCase):
@@ -92,6 +90,7 @@ class TestLevel2(util.TestCase):
         """Test that selectors cannot have a trailing combinator."""
 
         self.assert_raises('div >', SyntaxError)
+        self.assert_raises('div >, div', SyntaxError)
 
     @util.skip_quirks
     def test_invalid_non_quirk_combination(self):
@@ -401,19 +400,6 @@ class TestLevel2(util.TestCase):
 
     def test_attribute_bad(self):
         """Test attribute with a bad attribute."""
-
-        markup = """
-        <div id="div">
-        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
-        <a id="2" href="http://google.com">Link</a>
-        <span id="3">Direct child</span>
-        <pre id="pre">
-        <span id="4">Child 1</span>
-        <span id="5">Child 2</span>
-        <span id="6">Child 3</span>
-        </pre>
-        </div>
-        """
 
         self.assert_selector(
             '<span bad="5"></span>',
