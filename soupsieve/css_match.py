@@ -24,6 +24,7 @@ REL_HAS_SIBLING = ':~'
 REL_HAS_CLOSE_SIBLING = ':+'
 
 NS_XHTML = 'http://www.w3.org/1999/xhtml'
+NS_XML = 'http://www.w3.org/XML/1998/namespace'
 
 DIR_FLAGS = ct.SEL_DIR_LTR | ct.SEL_DIR_RTL
 RANGES = ct.SEL_IN_RANGE | ct.SEL_OUT_OF_RANGE
@@ -244,11 +245,11 @@ class Document(object):
         return getattr(attr_name, 'namespace', None), getattr(attr_name, 'name', None)
 
     @staticmethod
-    def get_attribute_by_name(el, name, default=None, is_xml=False):
+    def get_attribute_by_name(el, name, default=None):
         """Get attribute by name."""
 
         value = default
-        if is_xml:
+        if el._is_xml:
             try:
                 value = el.attrs[name]
             except KeyError:
@@ -268,10 +269,10 @@ class Document(object):
             yield k, v
 
     @classmethod
-    def get_classes(cls, el, is_xml=False):
+    def get_classes(cls, el):
         """Get classes."""
 
-        classes = cls.get_attribute_by_name(el, 'class', [], is_xml)
+        classes = cls.get_attribute_by_name(el, 'class', [])
         if isinstance(classes, util.ustr):
             classes = RE_NOT_WS.findall(classes)
         return classes
@@ -413,7 +414,7 @@ class CSSMatch(Document, object):
         self.root = root
         self.scope = scope if scope is not doc else root
         self.html_namespace = self.is_html_ns(root)
-        self.is_xml = self.is_xml_tree(doc) and not self.html_namespace
+        self.is_xml = self.is_xml_tree(doc)
 
     def supports_namespaces(self):
         """Check if namespaces are supported in the HTML type."""
@@ -424,13 +425,13 @@ class CSSMatch(Document, object):
         """Get tag."""
 
         name = self.get_tag_name(el)
-        return util.lower(name) if name is not None and self.is_xml else name
+        return util.lower(name) if name is not None and not self.is_xml else name
 
     def get_prefix(self, el):
         """Get prefix."""
 
         prefix = self.get_prefix_name(el)
-        return util.lower(prefix) if prefix is not None and self.is_xml else prefix
+        return util.lower(prefix) if prefix is not None and not self.is_xml else prefix
 
     def find_bidi(self, el):
         """Get directionality from element text."""
@@ -501,14 +502,10 @@ class CSSMatch(Document, object):
                 if namespace is None or ns != namespace and prefix != '*':
                     continue
 
-                if self.is_xml:
-                    # The attribute doesn't match.
-                    if attr != name:
-                        continue
-                else:
-                    # The attribute doesn't match.
-                    if util.lower(attr) != util.lower(name):
-                        continue
+                # The attribute doesn't match.
+                if (util.lower(attr) != util.lower(name)) if not self.is_xml else (attr != name):
+                    continue
+
                 value = v
                 break
         else:
@@ -563,9 +560,10 @@ class CSSMatch(Document, object):
     def match_tagname(self, el, tag):
         """Match tag name."""
 
+        name = (util.lower(tag.name) if not self.is_xml and tag.name is not None else tag.name)
         return not (
-            tag.name and
-            tag.name not in (self.get_tag(el), '*')
+            name is not None and
+            name not in (self.get_tag(el), '*')
         )
 
     def match_tag(self, el, tag):
@@ -652,7 +650,7 @@ class CSSMatch(Document, object):
 
         found = True
         for i in ids:
-            if i != self.get_attribute_by_name(el, 'id', '', self.is_xml):
+            if i != self.get_attribute_by_name(el, 'id', ''):
                 found = False
                 break
         return found
@@ -660,7 +658,7 @@ class CSSMatch(Document, object):
     def match_classes(self, el, classes):
         """Match element's classes."""
 
-        current_classes = self.get_classes(el, self.is_xml)
+        current_classes = self.get_classes(el)
         found = True
         for c in classes:
             if c not in current_classes:
@@ -929,15 +927,14 @@ class CSSMatch(Document, object):
         parent = el
         found_lang = None
         while parent and self.get_parent(parent) and not found_lang:
-            ns = self.is_html_ns(parent)
+            is_html_ns = self.is_html_ns(parent)
             for k, v in self.iter_attributes(parent):
+                attr_ns, attr = self.split_namespace(parent, k)
                 if (
-                    (self.is_xml and k == 'xml:lang') or
+                    ((not has_ns or is_html_ns) and (util.lower(k) if not self.is_xml else k) == 'lang') or
                     (
-                        not self.is_xml and (
-                            ((not has_ns or ns) and util.lower(k) == 'lang') or
-                            (has_ns and not ns and util.lower(k) == 'xml:lang')
-                        )
+                        has_ns and not is_html_ns and attr_ns == NS_XML and
+                        (util.lower(attr) if not self.is_xml and attr is not None else attr) == 'lang'
                     )
                 ):
                     found_lang = v
@@ -949,7 +946,7 @@ class CSSMatch(Document, object):
             found_lang = self.cached_meta_lang
 
         # If we couldn't find a language, and the document is HTML, look to meta to determine language.
-        if found_lang is None and not self.is_xml:
+        if found_lang is None and (not self.is_xml or (self.html_namespace and self.root.name == 'html')):
             # Find head
             found = False
             for tag in ('html', 'head'):
@@ -1116,7 +1113,6 @@ class CSSMatch(Document, object):
 
         name = self.get_tag(el)
         return (
-            self.is_xml or
             name.find('-') == -1 or
             name.find(':') != -1 or
             self.get_prefix(el) is not None
@@ -1128,7 +1124,7 @@ class CSSMatch(Document, object):
         match = False
         is_not = selectors.is_not
         is_html = selectors.is_html
-        if not (is_html and self.is_xml):
+        if not (is_html and (self.is_xml and not self.html_namespace)):
             for selector in selectors:
                 match = is_not
                 # We have a un-matchable situation (like `:focus` as you can focus an element in this environment)
