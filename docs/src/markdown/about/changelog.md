@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.7.3
+
+- **FIX**: Fix regression with tag names in regards to case sensitivity, and ensure there are tests to prevent breakage
+  in the future.
+- **FIX**: XHTML should always be case sensitive like XML.
+
 ## 1.7.2
 
 - **FIX**: Fix HTML detection `type` selector.

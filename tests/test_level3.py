@@ -313,6 +313,28 @@ class TestLevel3(util.TestCase):
             flags=util.XML
         )
 
+        self.assert_selector(
+            markup,
+            "FOO|title",
+            [],
+            namespaces={
+                "foo": "http://me.com/namespaces/foofoo",
+                "bar": "http://me.com/namespaces/foobar"
+            },
+            flags=util.XML
+        )
+
+        self.assert_selector(
+            markup,
+            "foo|title",
+            [],
+            namespaces={
+                "FOO": "http://me.com/namespaces/foofoo",
+                "bar": "http://me.com/namespaces/foobar"
+            },
+            flags=util.XML
+        )
+
         if not util.PY3:
             self.assert_selector(
                 markup,

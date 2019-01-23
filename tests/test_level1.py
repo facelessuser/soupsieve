@@ -43,6 +43,108 @@ class TestLevel1(util.TestCase):
             flags=util.HTML
         )
 
+    def test_tag_html(self):
+        """Test tag for HTML."""
+
+        markup = """
+        <Tag id="1">
+        <tag id="2"></tag>
+        <TAG id="3"></TAG>
+        </Tag>
+        """
+
+        self.assert_selector(
+            markup,
+            "tag",
+            ["1", "2", "3"],
+            flags=util.HTML
+        )
+
+        self.assert_selector(
+            markup,
+            "Tag",
+            ["1", "2", "3"],
+            flags=util.HTML
+        )
+
+        self.assert_selector(
+            markup,
+            "TAG",
+            ["1", "2", "3"],
+            flags=util.HTML
+        )
+
+    def test_tag_xhtml(self):
+        """Test tag for XHTML."""
+
+        markup = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+            "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+        <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+        </head>
+        <body>
+        <Tag id="1">
+        <tag id="2"></tag>
+        <TAG id="3"></TAG>
+        </Tag>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            "tag",
+            ["2"],
+            flags=util.XHTML
+        )
+
+        self.assert_selector(
+            markup,
+            "Tag",
+            ["1"],
+            flags=util.XHTML
+        )
+
+        self.assert_selector(
+            markup,
+            "TAG",
+            ["3"],
+            flags=util.XHTML
+        )
+
+    def test_tag_xml(self):
+        """Test tag for XML."""
+
+        markup = """
+        <Tag id="1">
+        <tag id="2"></tag>
+        <TAG id="3"></TAG>
+        </Tag>
+        """
+
+        self.assert_selector(
+            markup,
+            "tag",
+            ["2"],
+            flags=util.XML
+        )
+
+        self.assert_selector(
+            markup,
+            "Tag",
+            ["1"],
+            flags=util.XML
+        )
+
+        self.assert_selector(
+            markup,
+            "TAG",
+            ["3"],
+            flags=util.XML
+        )
+
     def test_tags(self):
         """Test multiple selectors."""
 

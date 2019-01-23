@@ -89,3 +89,56 @@ class SelectorNthOfTypeBugTest(unittest.TestCase):
         els = sv.select('div:nth-of-type(1) > h1', self.soup)
         self.assertEqual(len(els), 1)
         self.assertEqual(els[0].string, 'An H1')
+
+
+SIMPLE_XML = """<Envelope><Header>...</Header></Envelope>"""
+NAMESPACE_XML = """
+<?xml version="1.0"?>
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://www.w3.org/2005/08/addressing"
+            xmlns:u="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+  <a:Action s:mustUnderstand="1">http://docs.oasis-open.org/ws-sx/ws-trust/200512/RST/Issue</a:Action>
+  <o:UsernameToken u:Id="uuid-00000043-0000-4000-0000-000000000000">
+</s:Envelope>
+""".strip()
+NAMESPACES = dict(x="http://www.w3.org/2003/05/soap-envelope",
+                  y="http://www.w3.org/2005/08/addressing",
+                  z="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd")
+
+
+def test_simple_xml():
+    """Test basic XML."""
+    xml = BeautifulSoup(SIMPLE_XML, "xml")
+
+    assert xml.select_one("Envelope")
+    assert xml.select_one("Envelope Header")
+    assert xml.select_one("Header")
+
+    assert not xml.select_one("envelope")
+    assert not xml.select_one("envelope header")
+    assert not xml.select_one("header")
+
+
+def test_namespace_xml():
+    """Test namespace XML."""
+    xml = BeautifulSoup(NAMESPACE_XML, "xml")
+
+    assert xml.select_one("Envelope")
+    assert xml.select_one("Envelope Action")
+    assert xml.select_one("Action")
+
+    assert not xml.select_one("envelope")
+    assert not xml.select_one("envelope action")
+    assert not xml.select_one("action")
+
+
+def test_namespace_xml_with_namespace():
+    """Test namespace selectors with XML."""
+    xml = BeautifulSoup(NAMESPACE_XML, "xml")
+
+    assert xml.select_one("x|Envelope", namespaces=NAMESPACES)
+    assert xml.select_one("x|Envelope y|Action", namespaces=NAMESPACES)
+    assert xml.select_one("y|Action", namespaces=NAMESPACES)
+
+    assert not xml.select_one("x|envelope", namespaces=NAMESPACES)
+    assert not xml.select_one("x|envelope y|action", namespaces=NAMESPACES)
+    assert not xml.select_one("y|action", namespaces=NAMESPACES)

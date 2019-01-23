@@ -10,11 +10,10 @@ When detecting XHTML, Soup Sieve simply looks to see if the root element of an X
 and does not currently look at the `doctype`. If in the future there is a need for stricter XHTML detection, this may
 change.
 
-- All HTML document types (HTML, HTML5, and XHTML) will have their tag names and attribute names treated without case
-sensitivity, like most browsers do. Though XHTML is XML, which traditionally is case sensitive, it will still be treated
-like HTML in this respect.
+- HTML document types (HTML, HTML5) will have their tag names and attribute names treated without case
+sensitivity, like most browsers do.
 
-- XML document types (not including XHTML) will have their tag names and attribute names treated with case sensitivity.
+- XML document types (including XHTML) will have their tag names and attribute names treated with case sensitivity.
 
 - HTML5, XHTML and XML documents will have namespaces evaluated per the document's support (provided via the
 parser). Some additional configuration is required when using namespaces, see [Namespace](#namespaces) for more
@@ -27,7 +26,7 @@ information.
         For XML, the `lxml-xml` parser (`xml` for short) will provide proper namespaces. It is generally suggested that
         `lxml-xml` is used to parse XHTML documents to take advantage of namespaces.
 
-- While attribute values are generally treated as case sensitive, HTML5, XHTML, and HTML treat the `type` attribute
+- While attribute values are generally treated as case sensitive, HTML5 and HTML treat the `type` attribute
 special. The `type` attribute's value is always case insensitive. This is generally how most browsers treat `type`. If
 you need `type` to be sensitive, you can use the `s` flag: `#!css [type="submit" s]`.
 

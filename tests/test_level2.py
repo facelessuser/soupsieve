@@ -357,7 +357,7 @@ class TestLevel2(util.TestCase):
         self.assert_selector(
             markup,
             '[type="test"]',
-            ["0", '2'],
+            ['2'],
             flags=util.XML
         )
 
