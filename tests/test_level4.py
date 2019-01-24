@@ -275,6 +275,27 @@ class TestLevel4(util.TestCase):
             flags=util.HTML
         )
 
+    def test_invalid_pseudo_class_start_combinator(self):
+        """Test invalid start combinator in pseudo-classes other than `:has()`."""
+
+        self.assert_raises(':is(> div)', SyntaxError)
+        self.assert_raises(':is(div, > div)', SyntaxError)
+
+    def test_invalid_pseudo_orphan_close(self):
+        """Test invalid, orphaned pseudo close."""
+
+        self.assert_raises('div)', SyntaxError)
+
+    def test_invalid_pseudo_dangling_comma(self):
+        """Test pseudo class group with trailing comma."""
+
+        self.assert_raises(':is(div,)', SyntaxError)
+
+    def test_invalid_pseudo_open(self):
+        """Test invalid pseudo close."""
+
+        self.assert_raises(':is(div', SyntaxError)
+
     def test_multi_nested_not(self):
         """Test nested not and multiple selectors."""
 
@@ -396,8 +417,70 @@ class TestLevel4(util.TestCase):
             flags=util.HTML
         )
 
-    def test_nth_child_of_s(self):
-        """Test `nth` child with selector."""
+    def test_invalid_incomplete_has(self):
+        """Test `:has()` fails with just a combinator."""
+
+        self.assert_raises(':has(>)', SyntaxError)
+
+    def test_invalid_has_empty(self):
+        """Test `:has()` fails with empty function parameters."""
+
+        self.assert_raises(':has()', SyntaxError)
+
+    def test_invalid_has_double_comma(self):
+        """Test `:has()` fails with consecutive commas."""
+
+        self.assert_raises(':has(> has,, a)', SyntaxError)
+
+    def test_invalid_has_double_combinator(self):
+        """Test `:has()` fails with consecutive combinators."""
+
+        self.assert_raises(':has(>> has a)', SyntaxError)
+        self.assert_raises(':has(> has, >> a)', SyntaxError)
+        self.assert_raises(':has(> has >> a)', SyntaxError)
+
+    def test_invalid_has_trailing_combinator(self):
+        """Test `:has()` fails with trailing combinator."""
+
+        self.assert_raises(':has(> has >)', SyntaxError)
+
+    def test_invalid_has_trailing_comma(self):
+        """Test `:has()` fails with trailing comma."""
+
+        self.assert_raises(':has(> has,)', SyntaxError)
+
+    def test_invalid_has_start_comma(self):
+        """Test `:has()` fails with trailing comma."""
+
+        self.assert_raises(':has(, p)', SyntaxError)
+
+    def test_nth_child_of_s_simple(self):
+        """Test `nth` child with selector (simple)."""
+
+        markup = """
+        <p id="0"></p>
+        <p id="1"></p>
+        <span id="2" class="test"></span>
+        <span id="3"></span>
+        <span id="4" class="test"></span>
+        <span id="5"></span>
+        <span id="6" class="test"></span>
+        <p id="7"></p>
+        <p id="8" class="test"></p>
+        <p id="9"></p>
+        <p id="10" class="test"></p>
+        <span id="11"></span>
+        """
+
+        self.assert_selector(
+            markup,
+            ":nth-child(-n+3 of p)",
+            ['0', '1', '7'],
+            flags=util.HTML
+        )
+
+    def test_nth_child_of_s_complex(self):
+        """Test `nth` child with selector (complex)."""
 
         markup = """
         <p id="0"></p>
@@ -421,13 +504,6 @@ class TestLevel4(util.TestCase):
             flags=util.HTML
         )
 
-        self.assert_selector(
-            markup,
-            ":nth-child(-n+3 of p)",
-            ['0', '1', '7'],
-            flags=util.HTML
-        )
-
     def test_anylink(self):
         """Test any link (all links are unvisited)."""
 
@@ -447,12 +523,36 @@ class TestLevel4(util.TestCase):
             flags=util.HTML
         )
 
+    def test_anylink_xml(self):
+        """Test that any link will not match in XML (all links are unvisited)."""
+
+        markup = """
+        <div id="div">
+        <p id="0">Some text <span id="1" class="foo:bar:foobar"> in a paragraph</span>.
+        <a id="2" class="bar" href="http://google.com">Link</a>
+        <a id="3">Placeholder text.</a>
+        </p>
+        </div>
+        """
+
         self.assert_selector(
             markup,
             "a:any-link",
             [],
             flags=util.XML
         )
+
+    def test_not_anylink(self):
+        """Test the inverse of any link (all links are unvisited)."""
+
+        markup = """
+        <div id="div">
+        <p id="0">Some text <span id="1" class="foo:bar:foobar"> in a paragraph</span>.
+        <a id="2" class="bar" href="http://google.com">Link</a>
+        <a id="3">Placeholder text.</a>
+        </p>
+        </div>
+        """
 
         self.assert_selector(
             markup,
@@ -477,6 +577,15 @@ class TestLevel4(util.TestCase):
             flags=util.HTML
         )
 
+    def test_not_focus_within(self):
+        """Test inverse of focus within."""
+
+        markup = """
+        <form id="form">
+          <input type="text">
+        </form>
+        """
+
         self.assert_selector(
             markup,
             "form:not(:focus-within)",
@@ -499,6 +608,15 @@ class TestLevel4(util.TestCase):
             [],
             flags=util.HTML
         )
+
+    def test_not_focus_visible(self):
+        """Test inverse of focus visible."""
+
+        markup = """
+        <form id="form">
+          <input type="text">
+        </form>
+        """
 
         self.assert_selector(
             markup,
@@ -526,6 +644,19 @@ class TestLevel4(util.TestCase):
             [],
             flags=util.HTML
         )
+
+    def test_not_target_within(self):
+        """Test inverse of target within."""
+
+        markup = """
+        <a href="#head-2">Jump</a>
+        <article id="article">
+        <h2 id="head-1">Header 1</h1>
+        <div><p>content</p></div>
+        <h2 id="head-2">Header 2</h1>
+        <div><p>content</p></div>
+        </article>
+        """
 
         self.assert_selector(
             markup,

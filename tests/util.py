@@ -55,6 +55,20 @@ def skip_no_quirks(func):
 class TestCase(unittest.TestCase):
     """Test case."""
 
+    def wrap_xhtml(self, html):
+        """Wrap HTML content with XHTML header and body."""
+
+        return """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+            "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+        <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+        {}
+        </head>
+        <body>
+        """.format(html)
+
     def setUp(self):
         """Setup."""
 
