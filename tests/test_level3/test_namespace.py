@@ -53,7 +53,7 @@ class TestNamespace(util.TestCase):
         <use id="4" :href="other/sprites.svg#icon-reply"></use>
       </svg>
       <svg viewBox="0 0 50 32" class="icon icon-4">
-        <use id="5" other:href="other/sprites.svg#icon-reply"></use>
+        <use id="5" other:href="other/sprites.svg#icon-reply" xlink:other="value doesn't match"></use>
       </svg>
     </div>
     """

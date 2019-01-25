@@ -40,18 +40,6 @@ def skip_py3(func):
     return skip_if
 
 
-def skip_no_quirks(func):
-    """Decorator that skips when no quirks mode is enabled."""
-
-    def skip_if(self, *args, **kwargs):
-        """Skip conditional wrapper."""
-        if self.quirks is False:
-            return
-        else:
-            return func(self, *args, **kwargs)
-    return skip_if
-
-
 class TestCase(unittest.TestCase):
     """Test case."""
 
@@ -64,9 +52,11 @@ class TestCase(unittest.TestCase):
             "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
         <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
         <head>
-        {}
         </head>
         <body>
+        {}
+        </body>
+        </html>
         """.format(html)
 
     def setUp(self):
