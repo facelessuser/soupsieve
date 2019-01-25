@@ -583,6 +583,8 @@ class CSSParser(object):
             combinator = WS_COMBINATOR
         if combinator == COMMA_COMBINATOR:
             if not has_selector:
+                # If we've not captured any selector parts, the comma is either at the beginning of the pattern
+                # or following another comma, both of which are unexpected. Commas must split selectors.
                 raise SyntaxError(
                     "The combinator '{}' at postion {}, must have a selector before it".format(combinator, index)
                 )
@@ -592,8 +594,17 @@ class CSSParser(object):
             selectors.append(_Selector())
         else:
             if has_selector:
+                # End the current selector and associate the leading combinator with this selector.
                 sel.rel_type = rel_type
                 selectors[-1].relations.append(sel)
+            elif rel_type[1:] != WS_COMBINATOR:
+                # It's impossible to have two whitespace combinators after each other as the patterns
+                # will gobble up trailing whitespace. It is also impossible to have a whitespace
+                # combinator after any other kind for the same reason. But we could have
+                # multiple non-whitespace combinators. So if the current combinator is not a whitespace,
+                # then we've hit the multiple combinator case, so we should fail.
+                raise SyntaxError('The multiple combinators at position {}'.format(index))
+            # Set the leading combinator for the next selector.
             rel_type = ':' + combinator
         sel = _Selector()
 
@@ -705,7 +716,6 @@ class CSSParser(object):
         closed = False
         relations = []
         rel_type = ":" + WS_COMBINATOR
-        split_last = False
         is_open = bool(flags & FLG_OPEN)
         is_pseudo = bool(flags & FLG_PSEUDO)
         is_relative = bool(flags & FLG_RELATIVE)
@@ -761,7 +771,7 @@ class CSSParser(object):
                     # Currently only supports HTML
                     is_html = True
                 elif key == 'pseudo_close':
-                    if split_last:
+                    if not has_selector:
                         raise SyntaxError("Expected a selector at postion {}".format(m.start(0)))
                     if is_open:
                         closed = True
@@ -777,9 +787,6 @@ class CSSParser(object):
                         has_selector, sel = self.parse_combinator(
                             sel, m, has_selector, selectors, relations, is_pseudo, index
                         )
-                    split_last = True
-                    index = m.end(0)
-                    continue
                 elif key in ('attribute', 'quirks_attribute'):
                     quirks = key == 'quirks_attribute'
                     if quirks:
@@ -797,7 +804,6 @@ class CSSParser(object):
                     has_selector = self.parse_tag_pattern(sel, m, has_selector)
                 elif key in ('class', 'id'):
                     has_selector = self.parse_class_id(sel, m, has_selector)
-                split_last = False
 
                 index = m.end(0)
         except StopIteration:
@@ -805,9 +811,6 @@ class CSSParser(object):
 
         if is_open and not closed:
             raise SyntaxError("Unclosed pseudo-class at position {}".format(index))
-
-        if split_last:
-            raise SyntaxError("Expected a selector at position {}".format(index))
 
         if has_selector:
             if not sel.tag and not is_pseudo:
@@ -820,7 +823,7 @@ class CSSParser(object):
                 sel.relations.extend(relations)
                 del relations[:]
                 selectors.append(sel)
-        elif is_relative:
+        else:
             # We will always need to finish a selector when `:has()` is used as it leads with combining.
             raise SyntaxError('Expected a selector at position {}'.format(index))
 
