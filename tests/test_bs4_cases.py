@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from bs4 import BeautifulSoup
 import unittest
 import soupsieve as sv
+from . import util
 
 
 class SelectorNthOfTypeBugTest(unittest.TestCase):
@@ -105,6 +106,7 @@ NAMESPACES = dict(x="http://www.w3.org/2003/05/soap-envelope",
                   z="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd")
 
 
+@util.requires_lxml
 def test_simple_xml():
     """Test basic XML."""
     xml = BeautifulSoup(SIMPLE_XML, "xml")
@@ -118,6 +120,7 @@ def test_simple_xml():
     assert not xml.select_one("header")
 
 
+@util.requires_lxml
 def test_namespace_xml():
     """Test namespace XML."""
     xml = BeautifulSoup(NAMESPACE_XML, "xml")
@@ -131,6 +134,7 @@ def test_namespace_xml():
     assert not xml.select_one("action")
 
 
+@util.requires_lxml
 def test_namespace_xml_with_namespace():
     """Test namespace selectors with XML."""
     xml = BeautifulSoup(NAMESPACE_XML, "xml")

@@ -30,6 +30,10 @@ matrix:
     env: TOXENV=lint
   - python: 3.6
     env: TOXENV=documents
+  - python: 3.6
+    env: TOXENV=nolxml
+  - python: 3.6
+    env: TOXENV=nohtml5lib
   allow_failures:
   - python: 3.8-dev
 

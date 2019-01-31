@@ -13,6 +13,7 @@ import warnings
 class TestSoupSieve(util.TestCase):
     """Test Soup Sieve."""
 
+    @util.requires_html5lib
     def test_comments(self):
         """Test comments."""
 
@@ -37,6 +38,7 @@ class TestSoupSieve(util.TestCase):
         comments = [sv_util.ustr(c).strip() for c in sv.comments(soup)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment', "don't ignore"]))
 
+    @util.requires_html5lib
     def test_icomments(self):
         """Test comments iterator."""
 
@@ -61,6 +63,7 @@ class TestSoupSieve(util.TestCase):
         comments = [sv_util.ustr(c).strip() for c in sv.icomments(soup, limit=2)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
 
+    @util.requires_html5lib
     def test_compiled_comments(self):
         """Test comments from compiled pattern."""
 
@@ -88,6 +91,7 @@ class TestSoupSieve(util.TestCase):
         comments = [sv_util.ustr(c).strip() for c in pattern.comments(soup)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment', "don't ignore"]))
 
+    @util.requires_html5lib
     def test_compiled_icomments(self):
         """Test comments iterator from compiled pattern."""
 
@@ -113,6 +117,7 @@ class TestSoupSieve(util.TestCase):
         comments = [sv_util.ustr(c).strip() for c in pattern.icomments(soup, limit=2)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
 
+    @util.requires_html5lib
     def test_select(self):
         """Test select."""
 
@@ -140,6 +145,7 @@ class TestSoupSieve(util.TestCase):
 
         self.assertEqual(sorted(['5', 'some-id']), sorted(ids))
 
+    @util.requires_html5lib
     def test_select_limit(self):
         """Test select limit."""
 
@@ -168,6 +174,7 @@ class TestSoupSieve(util.TestCase):
 
         self.assertEqual(sorted(['5']), sorted(ids))
 
+    @util.requires_html5lib
     def test_select_one(self):
         """Test select one."""
 
@@ -194,6 +201,7 @@ class TestSoupSieve(util.TestCase):
             sv.select_one('span[id]', soup).attrs['id']
         )
 
+    @util.requires_html5lib
     def test_select_one_none(self):
         """Test select one returns none for no match."""
 
@@ -217,6 +225,7 @@ class TestSoupSieve(util.TestCase):
         soup = self.soup(markup, 'html5lib')
         self.assertEqual(None, sv.select_one('h1', soup))
 
+    @util.requires_html5lib
     def test_iselect(self):
         """Test select iterator."""
 
@@ -245,6 +254,7 @@ class TestSoupSieve(util.TestCase):
 
         self.assertEqual(sorted(['5', 'some-id']), sorted(ids))
 
+    @util.requires_html5lib
     def test_select_order(self):
         """Test select order."""
 
@@ -274,6 +284,7 @@ class TestSoupSieve(util.TestCase):
 
         self.assertEqual(sorted(['5']), sorted(ids))
 
+    @util.requires_html5lib
     def test_match(self):
         """Test matching."""
 
@@ -299,6 +310,7 @@ class TestSoupSieve(util.TestCase):
         self.assertTrue(sv.match('span#\\35', nodes[0]))
         self.assertFalse(sv.match('span#\\35', nodes[1]))
 
+    @util.requires_html5lib
     def test_filter_tag(self):
         """Test filter tag."""
 
@@ -324,6 +336,7 @@ class TestSoupSieve(util.TestCase):
         self.assertEqual(len(nodes), 1)
         self.assertEqual(nodes[0].attrs['id'], '6')
 
+    @util.requires_html5lib
     def test_filter_list(self):
         """
         Test filter list.
@@ -355,6 +368,7 @@ class TestSoupSieve(util.TestCase):
         self.assertEqual(len(nodes), 1)
         self.assertEqual(nodes[0].attrs['id'], '6')
 
+    @util.requires_html5lib
     def test_closest_match_parent(self):
         """Test match parent closest."""
 
@@ -374,6 +388,7 @@ class TestSoupSieve(util.TestCase):
         el = sv.select_one('#div-03', soup)
         self.assertTrue(sv.closest('#div-02', el).attrs['id'] == 'div-02')
 
+    @util.requires_html5lib
     def test_closest_match_complex_parent(self):
         """Test closest match complex parent."""
 
@@ -394,6 +409,7 @@ class TestSoupSieve(util.TestCase):
         self.assertTrue(sv.closest('article > div', el).attrs['id'] == 'div-01')
         self.assertTrue(sv.closest(':not(div)', el).attrs['id'] == 'article')
 
+    @util.requires_html5lib
     def test_closest_match_self(self):
         """Test closest match self."""
 
@@ -413,6 +429,7 @@ class TestSoupSieve(util.TestCase):
         el = sv.select_one('#div-03', soup)
         self.assertTrue(sv.closest('div div', el).attrs['id'] == 'div-03')
 
+    @util.requires_html5lib
     def test_closest_must_be_parent(self):
         """Test that closest only matches parents or self."""
 

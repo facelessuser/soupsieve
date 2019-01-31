@@ -71,6 +71,7 @@ class TestChildQuirks(TestChild):
         self.purge()
         self.quirks = True
 
+    @util.requires_html5lib
     def test_leading_combinator_quirks(self):
         """Test scope with quirks."""
 

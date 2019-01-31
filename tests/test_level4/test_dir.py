@@ -134,7 +134,7 @@ class TestDir(util.TestCase):
 
         markup = """<input id="1" type="text" dir="auto">"""
         # Input is root
-        for parser in ('html.parser', 'lxml', 'html5lib'):
+        for parser in util.available_parsers('html.parser', 'lxml', 'html5lib'):
             soup = self.soup(markup, parser)
             fragment = soup.input.extract()
             self.assertTrue(sv.match(":root:dir(ltr)", fragment, flags=sv.DEBUG))
