@@ -198,7 +198,7 @@ class TestNthChild(util.TestCase):
         </body>
         """
 
-        for parser in ('html.parser', 'lxml', 'html5lib'):
+        for parser in util.available_parsers('html.parser', 'lxml', 'html5lib'):
             # Paragraph is the root. There is no document.
             markup = """<p id="1">text</p>"""
             soup = self.soup(markup, parser)

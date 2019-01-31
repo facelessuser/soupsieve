@@ -47,7 +47,8 @@ class TestScope(util.TestCase):
     def test_scope_cannot_select_target(self):
         """Test that scope, the element which scope is called on, cannot be selected."""
 
-        for parser in ('html.parser', 'lxml', 'html5lib', 'xml'):
+        for parser in util.available_parsers(
+                'html.parser', 'lxml', 'html5lib', 'xml'):
             soup = self.soup(self.MARKUP, parser)
             el = soup.html
 
@@ -57,7 +58,8 @@ class TestScope(util.TestCase):
     def test_scope_is_select_target(self):
         """Test that scope is the element which scope is called on."""
 
-        for parser in ('html.parser', 'lxml', 'html5lib', 'xml'):
+        for parser in util.available_parsers(
+                'html.parser', 'lxml', 'html5lib', 'xml'):
             soup = self.soup(self.MARKUP, parser)
             el = soup.html
 
