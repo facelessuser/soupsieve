@@ -8,13 +8,14 @@ import sys
 import pytest
 
 try:
-    from bs4.builder import HTML5TreeBuilder  # noqa
+    from bs4.builder import HTML5TreeBuilder  # noqa: F401
     HTML5LIB_PRESENT = True
 except ImportError:
     HTML5LIB_PRESENT = False
 
 try:
-    from bs4.builder import LXMLTreeBuilderForXML, LXMLTreeBuilder  # noqa
+    from bs4.builder import (  # noqa: F401
+        LXMLTreeBuilderForXML, LXMLTreeBuilder)
     LXML_PRESENT = True
 except ImportError:
     LXML_PRESENT = False
