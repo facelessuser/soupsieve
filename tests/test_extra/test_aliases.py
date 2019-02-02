@@ -98,7 +98,7 @@ class TestAliases(util.TestCase):
     def test_pseudo_class_collision(self):
         """Test that an alias cannot match an already existing pseudo-class name."""
 
-        self.assert_raises(':hover', KeyError, aliases={":hover": ":has(> *|*)"})
+        self.assert_raises(':hover', SyntaxError, aliases={":hover": ":has(> *|*)"})
 
     def test_alias_collision(self):
         """Test that an alias cannot match an already existing alias name."""
