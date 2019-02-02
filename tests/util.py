@@ -21,6 +21,13 @@ except ImportError:
     LXML_PRESENT = False
 
 PY3 = sys.version_info >= (3, 0)
+PY37 = sys.version_info >= (3, 7)
+
+if PY37:
+    odict = dict
+else:
+    from collections import OrderedDict
+    odict = OrderedDict
 
 HTML5 = 0x1
 HTML = 0x2
@@ -116,12 +123,12 @@ class TestCase(unittest.TestCase):
 
         return parsers
 
-    def assert_raises(self, pattern, exception, namespace=None):
+    def assert_raises(self, pattern, exception, namespace=None, aliases=None):
         """Assert raises."""
 
         print('----Running Assert Test----')
         with self.assertRaises(exception):
-            self.compile_pattern(pattern)
+            self.compile_pattern(pattern, namespaces=namespace, aliases=aliases)
 
     def assert_selector(self, markup, selectors, expected_ids, namespaces={}, aliases=None, flags=0):
         """Assert selector."""

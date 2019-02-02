@@ -93,7 +93,9 @@ WSC = r'(?:{ws}|{comments})'.format(ws=WS, comments=COMMENTS)
 # CSS escapes
 CSS_ESCAPES = r'(?:\\[a-f0-9]{{1,6}}{ws}?|\\[^\r\n\f])'.format(ws=WS)
 # CSS Identifier
-IDENTIFIER = r'(?:(?!-?[0-9])(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+)'.format(esc=CSS_ESCAPES)
+IDENTIFIER = r'(?:(?!-?[0-9]|--)(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+)'.format(esc=CSS_ESCAPES)
+# CSS Custom Identifier
+CUSTOM_INDENTIFIER = r'''(?:--(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})*)'''.format(esc=CSS_ESCAPES)
 # `nth` content
 NTH = r'(?:[-+])?(?:[0-9]+n?|n)(?:(?<=n){ws}*(?:[-+]){ws}*(?:[0-9]+))?'.format(ws=WSC)
 # Value: quoted string or identifier
@@ -124,7 +126,7 @@ PAT_QUIRKS_ATTR = r'''
 # Pseudo class (`:pseudo-class`, `:pseudo-class(`)
 PAT_PSEUDO_CLASS = r'(?P<name>:{ident})(?P<open>\({ws}*)?'.format(ws=WSC, ident=IDENTIFIER)
 # Custom pseudo class (`:--custom-pseudo`)
-PAT_PSEUDO_CLASS_CUSTOM = r'(?P<name>:(?=--){ident})(?P<open>\({ws}*)?'.format(ws=WSC, ident=IDENTIFIER)
+PAT_PSEUDO_CLASS_CUSTOM = r'(?P<name>:{ident})'.format(ws=WSC, ident=CUSTOM_INDENTIFIER)
 # Closing pseudo group (`)`)
 PAT_PSEUDO_CLOSE = r'{ws}*\)'.format(ws=WSC)
 # Pseudo element (`::pseudo-element`)
@@ -164,7 +166,7 @@ RE_LANG = re.compile(r'(?:(?P<value>{value})|(?P<split>{ws}*,{ws}*))'.format(ws=
 RE_WS = re.compile(WS)
 RE_WS_BEGIN = re.compile('^{}*'.format(WSC))
 RE_WS_END = re.compile('{}*$'.format(WSC))
-RE_ALIAS = re.compile(r':(?!-?[0-9])[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]+', re.X)
+RE_ALIAS = re.compile(r'^:(?!-?[0-9])[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]+$', re.X)
 
 # Constants
 # List split token
@@ -216,21 +218,30 @@ def css_unescape(string):
     return RE_CSS_ESC.sub(replace, string)
 
 
-def create_alias(name, selector, aliases=None, flags=0):
-    """Custom selector list."""
+def create_aliases(aliases, flags=0):
+    """Create a dictionary of compiled custom selectors from a dictionary of selector strings."""
 
-    if RE_ALIAS.match(name) is None:
-        raise SyntaxError(
-            "The name '{}' is not a valid pseudo-class name".format(name)
-        )
-    if name in PSEUDO_SUPPORTED:
-        raise KeyError("The pseudo-class name '{}' conflicts with an official pseudo-class name")
-    if aliases is not None and name in aliases:
-        raise KeyError("The pseudo-class name '{}' is already registered".format(name))
-    if isinstance(selector, ct.SelectorList):
-        return selector
-    else:
-        return CSSParser(selector, aliases=aliases, flags=flags).process_selectors(flags=FLG_PSEUDO)
+    alias_selectors = {}
+    for key, selector in aliases.items():
+
+        name = util.lower(key)
+
+        if RE_ALIAS.match(name) is None:
+            raise SyntaxError(
+                "The name '{}' is not a valid pseudo-class name".format(name)
+            )
+        if name in PSEUDO_SUPPORTED:
+            raise KeyError("The pseudo-class name '{}' conflicts with an official pseudo-class name")
+        if name in alias_selectors:
+            raise KeyError("The pseudo-class name '{}' is already registered".format(name))
+        if isinstance(selector, ct.SelectorList):
+            alias_selectors[name] = selector
+        else:
+            alias_selectors[name] = CSSParser(
+                selector, aliases=alias_selectors, flags=flags
+            ).process_selectors(flags=FLG_PSEUDO)
+
+    return ct.AliasSelectors(**alias_selectors)
 
 
 class SelectorPattern(object):
@@ -452,7 +463,7 @@ class CSSParser(object):
 
         pseudo = util.lower(m.group('name'))
         if pseudo not in self.aliases:
-            raise SyntaxError("Undefined custom selector '{}' found at postion {}".format(m.end(0)))
+            raise SyntaxError("Undefined custom selector '{}' found at postion {}".format(pseudo, m.end(0)))
         selector = self.aliases.get(pseudo)
         sel.selectors.append(selector)
         has_selector = True

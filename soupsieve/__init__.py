@@ -49,19 +49,18 @@ def compile(pattern, namespaces=None, flags=0, **kwargs):  # noqa: A001
     if ns_none:
         namespaces = ct.Namespaces()
     if not isinstance(namespaces, ct.Namespaces):
-        namespaces = ct.Namespaces(**(namespaces))
+        namespaces = ct.Namespaces(**namespaces)
 
     aliases = kwargs.get('aliases')
-    aliases_none = aliases is None
-    if aliases is not None and not isinstance(aliases, ct.AliasSelectors):
-        aliases = ct.AliasSelectors(**aliases._aliases)
+    if aliases is not None:
+        aliases = cp.create_aliases(aliases, flags)
 
     if isinstance(pattern, SoupSieve):
         if flags:
             raise ValueError("Cannot process 'flags' argument on a compiled selectors")
         elif not ns_none:
             raise ValueError("Cannot process 'namespaces' argument on a compiled selectors")
-        elif not aliases_none:
+        elif aliases is not None:
             raise ValueError("Cannot process 'aliases' argument on a compiled selectors")
         return pattern
 
@@ -122,46 +121,3 @@ def iselect(select, tag, namespaces=None, limit=0, flags=0, **kwargs):
 
     for el in compile(select, namespaces, flags, **kwargs).iselect(tag, limit):
         yield el
-
-
-class Aliases(object):
-    """Selector aliases."""
-
-    def __init__(self):
-        """Initialize."""
-
-        self._aliases = {}
-
-    def register(self, name, selector, flags=0):
-        """Register aliases."""
-
-        name = util.lower(name)
-        self._aliases[name] = cp.create_alias(name, selector, self._aliases, flags)
-
-    def deregister(self, name):
-        """Delete alias."""
-
-        name = util.lower(name)
-        if name in self._aliases:
-            del self._aliases[name]
-
-    def __iter__(self):
-        """Iterator."""
-
-        return iter(self._aliases)
-
-    def get(self, name):
-        """Get aliases."""
-
-        name = util.lower(name)
-        return self._aliases.get(name, None)
-
-    def __len__(self):
-        """Length."""
-
-        return len(self._aliases)
-
-    def __repr__(self):  # pragma: no cover
-        """Representation."""
-
-        return "{!r}".format(self._aliases)

@@ -156,9 +156,9 @@ class AliasSelectors(ImmutableDict):
         arg = args[0] if args else kwargs
         is_dict = isinstance(arg, dict)
         if is_dict and not all([isinstance(k, util.string) and isinstance(v, SelectorList) for k, v in arg.items()]):
-            raise TypeError('CustomSelectors keys and values must be Unicode strings and SelectorLists respectively')
+            raise TypeError('AliasSelectors keys and values must be Unicode strings and SelectorLists respectively')
         elif not is_dict and not all([isinstance(k, util.string) and isinstance(v, SelectorList) for k, v in arg]):
-            raise TypeError('CustomSelectors keys and values must be Unicode strings and SelectorLists respectively')
+            raise TypeError('AliasSelectors keys and values must be Unicode strings and SelectorLists respectively')
 
         super(AliasSelectors, self).__init__(*args, **kwargs)
 

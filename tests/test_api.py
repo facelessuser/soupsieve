@@ -514,6 +514,9 @@ class TestSoupSieve(util.TestCase):
         with pytest.raises(ValueError):
             sv.compile(p1, namespaces={"": ""})
 
+        with pytest.raises(ValueError):
+            sv.compile(p1, aliases={":--header": 'h1, h2, h3, h4, h5, h6'})
+
     def test_immutable_object(self):
         """Test immutable object."""
 
@@ -568,6 +571,24 @@ class TestInvalid(util.TestCase):
 
         with self.assertRaises(TypeError):
             sv.ct.Namespaces({{}: 'string'})
+
+    def test_invalid_alias_type(self):
+        """Test invalid alias type."""
+
+        with self.assertRaises(TypeError):
+            sv.ct.AliasSelectors(((3, 3),))
+
+    def test_invalid_alias_hashable_value(self):
+        """Test alias has hashable value."""
+
+        with self.assertRaises(TypeError):
+            sv.ct.AliasSelectors({'a': {}})
+
+    def test_invalid_alias_hashable_key(self):
+        """Test alias key is hashable."""
+
+        with self.assertRaises(TypeError):
+            sv.ct.AliasSelectors({{}: 'string'})
 
     def test_invalid_type_input_match(self):
         """Test bad input into the match API."""
