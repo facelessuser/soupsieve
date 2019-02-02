@@ -516,10 +516,12 @@ class CSSParser(object):
         postfix = '_child' if mdict.get('pseudo_nth_child') else '_type'
         content = mdict.get('nth' + postfix)
         if content == 'even':
+            # 2n
             s1 = 2
-            s2 = 2
+            s2 = 0
             var = True
         elif content == 'odd':
+            # 2n+1
             s1 = 2
             s2 = 1
             var = True
