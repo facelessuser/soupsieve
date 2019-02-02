@@ -66,7 +66,24 @@ To use Soup Sieve, you must create a `BeautifulSoup` object:
 >>> soup = bs4.BeautifulSoup(text, 'html5lib')
 ```
 
-Then you can begin to use Soup Sieve to select a single tag:
+For most people, using the Beautiful Soup 4.7.0+ API may be more than sufficient. Beautiful Soup offers two methods that employ
+Soup Sieve: `select` and `select_one`. Beautiful Soup's select API is identical to Soup Sieve's, except that you don't
+have to hand it the tag object, the calling object passes itself to Soup Sieve:
+
+```pycon3
+>>> soup = bs4.BeautifulSoup(text, 'html5lib')
+>>> soup.select_one('p:is(.a, .b, .c)')
+<p class="a">Cat</p>
+```
+
+```pycon3
+>>> soup = bs4.BeautifulSoup(text, 'html5lib')
+>>> soup.select('p:is(.a, .b, .c)')
+[<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
+```
+
+You can also use the Soup Sieve API directly to get access to the full range of possibilities that Soup Sieve offers.
+You can select a single tag:
 
 ```pycon3
 >>> import soupsieve as sv
@@ -74,7 +91,7 @@ Then you can begin to use Soup Sieve to select a single tag:
 <p class="a">Cat</p>
 ```
 
-To select all tags:
+You can select all tags:
 
 ```pycon3
 >>> import soupsieve as sv
@@ -82,7 +99,7 @@ To select all tags:
 [<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
 ```
 
-To select closest, direct ancestor:
+You can select the closest ancestor:
 
 ```pycon3
 >>> import soupsieve as sv
@@ -96,14 +113,14 @@ To select closest, direct ancestor:
 </div>
 ```
 
-To filter:
+You can filter a tag's Children (or an iterable of tags):
 
 ```pycon3
 >>> sv.filter('p:not(.b)', soup.div)
 [<p class="a">Cat</p>, <p class="c">Mouse</p>]
 ```
 
-To match:
+You can match a single tag:
 
 ```pycon3
 >>> els = sv.select('p:is(.a, .b, .c)', soup)
@@ -113,7 +130,7 @@ True
 False
 ```
 
-Or even just extracting comments:
+Or even just extract comments:
 
 ```pycon3
 >>> sv.comments(soup)
@@ -168,6 +185,62 @@ Compiled patterns are cached, so if for any reason you need to clear the cache, 
 ```pycon3
 >>> sv.purge()
 ```
+
+## Beautiful Soup Differences
+
+Soup Sieve is the official CSS "select" implementation of Beautiful Soup 4.7.0+. While the inclusion of Soup Sieve fixes
+many issues and greatly expands CSS support in Beautiful Soup, it does introduce some differences which may surprise
+some who've become accustom to the old "select" implementation.
+
+Beautiful Soup's old select method had numerous limitations and quirks that do not align with the actual CSS
+specification. Most are insignificant, but there are a couple differences that people over the years had come to rely
+on. Soup Sieve, which aims to follow the CSS specification closely, does not support these differences.
+
+1. Beautiful Soup was very relaxed when it came to attribute values in selectors: `#!css [attribute=value]`. Beautiful
+Soup would allow almost anything for a valid unquoted value. Soup Sieve, on the other hand, follows the CSS
+specification and requires that a value be a valid identifier, or it must be quoted. If you get an error complaining
+about an invalid attribute, you may need to quote the value.
+
+    For instance, if you previously used a selector like this:
+
+    ```py3
+    soup.select('[div={}]')
+    ```
+
+    You would need to quote the value as `{}` is not a valid CSS identifier, so it must be quoted:
+
+    ```py3
+    soup.select('[div="{}"]')
+    ```
+
+2. Whether on purpose or on accident, Beautiful Soup used to allow relative selectors:
+
+    ```py3
+    soup.select('> div')
+    ```
+
+    The above is not a valid CSS selector according the CSS specifications. Relative selector lists have only recently
+    been added to the CSS specifications, and they are only allowed in a `#!css :has()` pseudo-class:
+
+    ```css
+    article:has(> div)
+    ```
+
+    But, in the level 4 CSS specifications, the `:scope` pseudo-class has been added which allows for the same feel as
+    using `#!css > div`. Since Soup Sieve supports the `:scope` pseudo-class, it can be used to produce the same
+    behavior as the legacy select method.
+
+    So, if you used to to have selectors such as:
+
+    ```py3
+    soup.select('> div')
+    ```
+
+    You can simply add `:scope`, and it should work the same:
+
+    ```py3
+    soup.select(':scope > div')
+    ```
 
 --8<--
 refs.txt

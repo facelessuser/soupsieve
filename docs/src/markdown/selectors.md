@@ -59,12 +59,12 @@ as they are part of a working draft, or even both.
     If usage of a selector is not clear in this documentation, you can find more information by reading these specification
     documents:
 
-    [CSS Level 3 Working Draft](https://drafts.csswg.org/selectors-3/)
+    [CSS Level 3 Specification](https://www.w3.org/TR/selectors-3/)
     : Contains the latest official document outlying official behaviors of CSS selectors.
 
-    [CSS Level 4 Working Draft](https://drafts.csswg.org/selectors-4/)
-    : Contains the latest working draft of the CSS level 4 selectors which outlines the experimental new selectors and
-    experimental behavioral changes.
+    [CSS Level 4 Working Draft](https://www.w3.org/TR/selectors-4/)
+    : Contains the latest published working draft of the CSS level 4 selectors which outlines the experimental new
+    selectors and experimental behavioral changes.
 
     [HTML5](https://www.w3.org/TR/html50/)
     : The HTML 5.0 specification document. Defines the semantics regarding HTML.
@@ -1130,7 +1130,7 @@ Selects an element with incorrect input, but only after the user has significant
 Selects links that have already been visited.
 
 !!! example
-    In the Beautiful Soup, there links cannot be "visited", that is a concept that only applies with a
+    In the Beautiful Soup, links cannot be "visited", that is a concept that only applies with a
     user agent/browser. As all links in Beautiful Soup are considered to be unvisited, this will match nothing.
 
     ```css
