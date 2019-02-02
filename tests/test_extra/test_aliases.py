@@ -74,7 +74,7 @@ class TestAliases(util.TestCase):
             self.MARKUP,
             ':--parent-paragraph',
             ['4'],
-            aliases=sv.cp.create_aliases(custom_selectors),
+            aliases=sv.create_aliases(custom_selectors),
             flags=util.HTML
         )
 
