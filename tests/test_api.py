@@ -501,6 +501,16 @@ class TestSoupSieve(util.TestCase):
         sv.purge()
         self.assertEqual(sv.cp._cached_css_compile.cache_info().currsize, 0)
 
+    def test_aliases_interface(self):
+        """Test Aliases interface."""
+
+        aliases = sv.Aliases()
+        self.assertTrue(len(aliases._aliases) == 0)
+        aliases.register(':--header', 'h1, h2, h3, h4, h5, h6')
+        self.assertTrue(len(aliases._aliases) == 1)
+        aliases.deregister(':--header')
+        self.assertTrue(len(aliases._aliases) == 0)
+
     def test_recompile(self):
         """If you feed through the same object, it should pass through unless you change parameters."""
 
@@ -514,8 +524,34 @@ class TestSoupSieve(util.TestCase):
         with pytest.raises(ValueError):
             sv.compile(p1, namespaces={"": ""})
 
+        custom_selectors = sv.Aliases()
+        custom_selectors.register(":--header", 'h1, h2, h3, h4, h5, h6')
+
         with pytest.raises(ValueError):
-            sv.compile(p1, aliases={":--header": 'h1, h2, h3, h4, h5, h6'})
+            sv.compile(p1, aliases=custom_selectors)
+
+    def test_immutable_dict_size(self):
+        """Test immutable dictionary."""
+
+        idict = sv.ct.ImmutableDict({'a': 'b', 'c': 'd'})
+        self.assertEqual(2, len(idict))
+
+
+class TestInvalid(util.TestCase):
+    """Test invalid."""
+
+    def test_bad_aliases_value(self):
+        """Test bad aliases value."""
+
+        with self.assertRaises(TypeError):
+            sv.compile('div', aliases={':--header', 'h1, h2, h3, h4, h5, h6'})
+
+    def test_aliases_bad_deregister(self):
+        """Test invalid aliases deregister."""
+
+        aliases = sv.Aliases()
+        with self.assertRaises(KeyError):
+            aliases.deregister(':--header')
 
     def test_immutable_object(self):
         """Test immutable object."""
@@ -525,22 +561,12 @@ class TestSoupSieve(util.TestCase):
         with self.assertRaises(AttributeError):
             obj.member = 3
 
-    def test_immutable_dict_size(self):
-        """Test immutable dictionary."""
-
-        idict = sv.ct.ImmutableDict({'a': 'b', 'c': 'd'})
-        self.assertEqual(2, len(idict))
-
     def test_immutable_dict_read_only(self):
         """Test immutable dictionary is read only."""
 
         idict = sv.ct.ImmutableDict({'a': 'b', 'c': 'd'})
         with self.assertRaises(TypeError):
             idict['a'] = 'f'
-
-
-class TestInvalid(util.TestCase):
-    """Test invalid."""
 
     def test_immutable_dict_hashable_value(self):
         """Test immutable dictionary has a hashable value."""

@@ -213,6 +213,26 @@ def _purge_cache():
     _cached_css_compile.cache_clear()
 
 
+def _valid_alias_name(name):
+    """Check if alias name is valid."""
+
+    return RE_ALIAS.match(name) is not None
+
+
+def _create_aliases(aliases, flags=0):
+    """Create a dictionary of compiled custom selectors from a dictionary of selector strings."""
+
+    alias_selectors = {}
+    for key, selector in aliases._aliases.items():
+
+        name = util.lower(key)
+        alias_selectors[name] = CSSParser(
+            selector, aliases=alias_selectors, flags=flags
+        ).process_selectors(flags=FLG_PSEUDO)
+
+    return ct.AliasSelectors(**alias_selectors)
+
+
 def css_unescape(string):
     """Unescape CSS value."""
 
@@ -222,30 +242,6 @@ def css_unescape(string):
         return util.uchr(int(m.group(1)[1:], 16)) if m.group(1) else m.group(2)[1:]
 
     return RE_CSS_ESC.sub(replace, string)
-
-
-def create_aliases(aliases, flags=0):
-    """Create a dictionary of compiled custom selectors from a dictionary of selector strings."""
-
-    alias_selectors = {}
-    for key, selector in aliases.items():
-
-        name = util.lower(key)
-
-        if RE_ALIAS.match(name) is None:
-            raise SyntaxError(
-                "The name '{}' is not a valid custom pseudo-class name".format(name)
-            )
-        if name in alias_selectors:
-            raise KeyError("The pseudo-class name '{}' is already registered".format(name))
-        if isinstance(selector, ct.SelectorList):
-            alias_selectors[name] = selector
-        else:
-            alias_selectors[name] = CSSParser(
-                selector, aliases=alias_selectors, flags=flags
-            ).process_selectors(flags=FLG_PSEUDO)
-
-    return ct.AliasSelectors(**alias_selectors)
 
 
 class SelectorPattern(object):

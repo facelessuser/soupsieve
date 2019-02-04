@@ -19,10 +19,9 @@ class TestAliases(util.TestCase):
     def test_aliases(self):
         """Test custom selectors."""
 
-        custom_selectors = {
-            ":--headers": "h1, h2, h3, h4, h5, h6",
-            ":--parent": ":has(> *|*)"
-        }
+        custom_selectors = sv.Aliases()
+        custom_selectors.register(":--headers", "h1, h2, h3, h4, h5, h6")
+        custom_selectors.register(":--parent", ":has(> *|*)")
 
         self.assert_selector(
             self.MARKUP,
@@ -51,9 +50,9 @@ class TestAliases(util.TestCase):
     def test_alias_dependency(self):
         """Test alias selector dependency on other aliases."""
 
-        custom_selectors = util.odict()
-        custom_selectors[":--parent"] = ":has(> *|*)"
-        custom_selectors[":--parent-paragraph"] = "p:--parent"
+        custom_selectors = sv.Aliases()
+        custom_selectors.register(":--parent", ":has(> *|*)")
+        custom_selectors.register(":--parent-paragraph", "p:--parent")
 
         self.assert_selector(
             self.MARKUP,
@@ -63,48 +62,45 @@ class TestAliases(util.TestCase):
             flags=util.HTML
         )
 
-    def test_alias_object(self):
-        """Test alias selector object passes through just like a dictionary."""
-
-        custom_selectors = util.odict()
-        custom_selectors[":--parent"] = ":has(> *|*)"
-        custom_selectors[":--parent-paragraph"] = "p:--parent"
-
-        self.assert_selector(
-            self.MARKUP,
-            ':--parent-paragraph',
-            ['4'],
-            aliases=sv.create_aliases(custom_selectors),
-            flags=util.HTML
-        )
-
     def test_bad_alias(self):
         """Test that a bad alias raises a syntax error."""
 
-        custom_selectors = util.odict()
-        custom_selectors[":--parent"] = ":has(> *|*)"
-        custom_selectors[":--parent-paragraph"] = "p:--parent"
+        custom_selectors = sv.Aliases()
+        custom_selectors.register(":--parent", ":has(> *|*)")
+        custom_selectors.register(":--parent-paragraph", "p:--parent")
 
         self.assert_raises(':--wrong', SyntaxError, aliases=custom_selectors)
 
     def test_bad_alias_syntax(self):
         """Test that an alias with bad syntax in its name fails."""
 
-        custom_selectors = util.odict()
-        custom_selectors[":--parent."] = ":has(> *|*)"
-
-        self.assert_raises(':--parent', SyntaxError, aliases=custom_selectors)
+        custom_selectors = sv.Aliases()
+        with self.assertRaises(SyntaxError):
+            custom_selectors.register(":--parent.", ":has(> *|*)")
 
     def test_pseudo_class_collision(self):
         """Test that an alias cannot match an already existing pseudo-class name."""
 
-        self.assert_raises(':hover', SyntaxError, aliases={":hover": ":has(> *|*)"})
+        custom_selectors = sv.Aliases()
+
+        with self.assertRaises(SyntaxError):
+            custom_selectors.register(":hover", ":has(> *|*)")
 
     def test_alias_collision(self):
         """Test that an alias cannot match an already existing alias name."""
 
-        custom_selectors = util.odict()
-        custom_selectors[":--parent"] = ":has(> *|*)"
-        custom_selectors[":--PARENT"] = "p:--parent"
+        custom_selectors = sv.Aliases()
+        custom_selectors.register(":--parent", ":has(> *|*)")
 
-        self.assert_raises(':--parent', KeyError, aliases=custom_selectors)
+        with self.assertRaises(KeyError):
+            custom_selectors.register(":--PARENT", "p:--parent")
+
+
+class TestAliasesQuirks(TestAliases):
+    """Test alias selectors with quirks."""
+
+    def setUp(self):
+        """Setup."""
+
+        self.purge()
+        self.quirks = True

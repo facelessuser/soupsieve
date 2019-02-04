@@ -18,6 +18,7 @@ Precompile
 PyPI
 PySpelling
 SVG
+TODO
 Tox
 URL's
 Unescape
@@ -31,6 +32,7 @@ builtin
 combinator
 combinators
 deprecations
+deregister
 directionality
 formatter
 hashable
