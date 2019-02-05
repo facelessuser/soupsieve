@@ -44,7 +44,7 @@ but the parameter is provided for potential future use.
 ## `soupsieve.select_one()`
 
 ```py3
-def select(select, tag, namespaces=None, flags=0):
+def select(select, tag, namespaces=None, flags=0, **kwargs):
     """Select the specified tags."""
 ```
 
@@ -63,7 +63,7 @@ dictionary, and `flags`.
 ## `soupsieve.select()`
 
 ```py3
-def select(select, tag, namespaces=None, limit=0, flags=0):
+def select(select, tag, namespaces=None, limit=0, flags=0, **kwargs):
     """Select the specified tags."""
 ```
 
@@ -82,7 +82,7 @@ a `limit`, and `flags`.
 ## `soupsieve.iselect()`
 
 ```py3
-def iselect(select, node, namespaces=None, limit=0, flags=0):
+def iselect(select, node, namespaces=None, limit=0, flags=0, **kwargs):
     """Select the specified tags."""
 ```
 
@@ -91,7 +91,7 @@ def iselect(select, node, namespaces=None, limit=0, flags=0):
 ## `soupsieve.closest()`
 
 ```py3
-def closest(select, tag, namespaces=None, flags=0):
+def closest(select, tag, namespaces=None, flags=0, **kwargs):
     """Match closest ancestor to the provided tag."""
 ```
 
@@ -104,7 +104,7 @@ dictionary, and `flags`.
 ## `soupsieve.match()`
 
 ```py3
-def match(select, tag, namespaces=None, flags=0):
+def match(select, tag, namespaces=None, flags=0, **kwargs):
     """Match node."""
 ```
 
@@ -124,7 +124,7 @@ False
 ## `soupsieve.filter()`
 
 ```py3
-def filter(select, nodes, namespaces=None, flags=0):
+def filter(select, nodes, namespaces=None, flags=0, **kwargs):
     """Filter list of nodes."""
 ```
 
@@ -142,7 +142,7 @@ and flags.
 ## `soupsieve.comments()`
 
 ```
-def comments(tag, limit=0, flags=0):
+def comments(tag, limit=0, flags=0, **kwargs):
     """Get comments only."""
 ```
 
@@ -154,7 +154,7 @@ from the given tag down through all of its children.  You can limit how many com
 ## `soupsieve.icomments()`
 
 ```
-def icomments(node, limit=0, flags=0):
+def icomments(node, limit=0, flags=0, **kwargs):
     """Get comments only."""
 ```
 
@@ -163,7 +163,7 @@ def icomments(node, limit=0, flags=0):
 ## `soupsieve.compile()`
 
 ```py3
-def compile(pattern, namespaces=None, flags=0):
+def compile(pattern, namespaces=None, flags=0, **kwargs):
     """Compile CSS pattern."""
 ```
 
@@ -204,6 +204,67 @@ class SoupSieve:
 Soup Sieve caches compiled patterns for performance. If for whatever reason, you need to purge the cache, simply call
 `purge`.
 
+
+## Custom Selectors
+
+The custom selector feature is loosely inspired by the `css-extensions` [proposal][custom-extensions-1]. In its current
+form, Soup Sieve allows assigning a complex selector to a custom pseudo-class name. The pseudo-class name must start
+with `:--` to avoid conflict with any future selectors.
+
+To create custom selectors, you must first instantiate a `Custom` class. Afterwards, custom selectors are added by
+calling the `register` method. Though not usually needed, an already added custom selector can be removed with the
+`deregister` method.
+
+In the following example, will define our own custom selector called `#!css :--header` that will be an alias for
+`#!css h1, h2, h3, h4, h5, h6`.
+
+```py3
+import soupsieve as sv
+import bs4
+
+markup = """
+<html>
+<body>
+<h1 id="1">Header 1</h1>
+<h2 id="2">Header 2</h2>
+<p id="3"></p>
+<p id="4"><span>child</span></p>
+</body>
+</html
+"""
+
+custom = sv.Custom()
+custom.register(':--header', 'h1, h2, h3, h4, h5, h6')
+
+soup = bs4.BeautifulSoup(markup, 'lxml')
+print(sv.select(':--header', soup, custom=custom))
+```
+
+The above code, when run, should yield the following output:
+
+```
+[<h1 id="1">Header 1</h1>, <h2 id="2">Header 2</h2>]
+```
+
+When adding custom selectors, order is important. If a custom selector needs to rely on a previous custom selector, the
+selector that is a dependency must be added first.
+
+Assuming the same markup in the first example, we will now create a custom selector that should find any element that
+has child elements, we will call the selector `:--parent`. Then we will create another selector called
+`:--parent-paragraph` that will use the `:--parent` selector to find `#!html <p>` elements that are also parents:
+
+```py3
+custom = sv.Custom()
+custom.register(":--parent", ":has(> *|*)")
+custom.register(":--parent-paragraph", "p:--parent")
+print(sv.select(':--parent-paragraph', soup, custom=custom))
+```
+
+The above code will yield the only paragraph that is a parent:
+
+```
+[<p id="4"><span>child</span></p>]
+```
 
 ## Namespaces
 

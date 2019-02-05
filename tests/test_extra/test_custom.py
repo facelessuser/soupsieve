@@ -4,7 +4,7 @@ from .. import util
 import soupsieve as sv
 
 
-class TestAliases(util.TestCase):
+class TestCustomSelectors(util.TestCase):
     """Test custom selector aliases."""
 
     MARKUP = """
@@ -16,10 +16,10 @@ class TestAliases(util.TestCase):
     </body>
     """
 
-    def test_aliases(self):
+    def test_custom_selectors(self):
         """Test custom selectors."""
 
-        custom_selectors = sv.Aliases()
+        custom_selectors = sv.Custom()
         custom_selectors.register(":--headers", "h1, h2, h3, h4, h5, h6")
         custom_selectors.register(":--parent", ":has(> *|*)")
 
@@ -27,7 +27,7 @@ class TestAliases(util.TestCase):
             self.MARKUP,
             ':--headers',
             ['1', '2'],
-            aliases=custom_selectors,
+            custom=custom_selectors,
             flags=util.HTML
         )
 
@@ -35,7 +35,7 @@ class TestAliases(util.TestCase):
             self.MARKUP,
             ':--headers:nth-child(2)',
             ['2'],
-            aliases=custom_selectors,
+            custom=custom_selectors,
             flags=util.HTML
         )
 
@@ -43,14 +43,14 @@ class TestAliases(util.TestCase):
             self.MARKUP,
             'p:--parent',
             ['4'],
-            aliases=custom_selectors,
+            custom=custom_selectors,
             flags=util.HTML
         )
 
-    def test_alias_dependency(self):
-        """Test alias selector dependency on other aliases."""
+    def test_custom_dependency(self):
+        """Test custom selector dependency on other custom selectors."""
 
-        custom_selectors = sv.Aliases()
+        custom_selectors = sv.Custom()
         custom_selectors.register(":--parent", ":has(> *|*)")
         custom_selectors.register(":--parent-paragraph", "p:--parent")
 
@@ -58,46 +58,46 @@ class TestAliases(util.TestCase):
             self.MARKUP,
             ':--parent-paragraph',
             ['4'],
-            aliases=custom_selectors,
+            custom=custom_selectors,
             flags=util.HTML
         )
 
-    def test_bad_alias(self):
-        """Test that a bad alias raises a syntax error."""
+    def test_bad_custom(self):
+        """Test that a bad custom raises a syntax error."""
 
-        custom_selectors = sv.Aliases()
+        custom_selectors = sv.Custom()
         custom_selectors.register(":--parent", ":has(> *|*)")
         custom_selectors.register(":--parent-paragraph", "p:--parent")
 
-        self.assert_raises(':--wrong', SyntaxError, aliases=custom_selectors)
+        self.assert_raises(':--wrong', SyntaxError, custom=custom_selectors)
 
-    def test_bad_alias_syntax(self):
-        """Test that an alias with bad syntax in its name fails."""
+    def test_bad_custom_syntax(self):
+        """Test that a custom selector with bad syntax in its name fails."""
 
-        custom_selectors = sv.Aliases()
+        custom_selectors = sv.Custom()
         with self.assertRaises(SyntaxError):
             custom_selectors.register(":--parent.", ":has(> *|*)")
 
     def test_pseudo_class_collision(self):
-        """Test that an alias cannot match an already existing pseudo-class name."""
+        """Test that a custom selector cannot match an already existing pseudo-class name."""
 
-        custom_selectors = sv.Aliases()
+        custom_selectors = sv.Custom()
 
         with self.assertRaises(SyntaxError):
             custom_selectors.register(":hover", ":has(> *|*)")
 
-    def test_alias_collision(self):
-        """Test that an alias cannot match an already existing alias name."""
+    def test_custom_collision(self):
+        """Test that a custom selector cannot match an already existing custom name."""
 
-        custom_selectors = sv.Aliases()
+        custom_selectors = sv.Custom()
         custom_selectors.register(":--parent", ":has(> *|*)")
 
         with self.assertRaises(KeyError):
             custom_selectors.register(":--PARENT", "p:--parent")
 
 
-class TestAliasesQuirks(TestAliases):
-    """Test alias selectors with quirks."""
+class TestCustomSelectorsQuirks(TestCustomSelectors):
+    """Test custom selectors with quirks."""
 
     def setUp(self):
         """Setup."""

@@ -36,7 +36,7 @@ from .util import DEBUG, _QUIRKS, SelectorSyntaxError  # noqa: F401
 __all__ = (
     'DEBUG', "_QUIRKS", 'SoupSieve', 'compile', 'purge',
     'comments', 'icomments', 'closest', 'select', 'select_one',
-    'iselect', 'match', 'filter', 'SelectorSyntaxError', 'Aliases'
+    'iselect', 'match', 'filter', 'SelectorSyntaxError', 'Custom'
 )
 
 SoupSieve = cm.SoupSieve
@@ -51,22 +51,22 @@ def compile(pattern, namespaces=None, flags=0, **kwargs):  # noqa: A001
     if not isinstance(namespaces, ct.Namespaces):
         namespaces = ct.Namespaces(**namespaces)
 
-    aliases = kwargs.get('aliases')
-    if aliases is not None:
-        if not isinstance(aliases, Aliases):
-            raise TypeError("Aliases must be of type 'Aliases'")
-        aliases = cp._create_aliases(aliases, flags)
+    custom = kwargs.get('custom')
+    if custom is not None:
+        if not isinstance(custom, Custom):
+            raise TypeError("Custom selectors must be of type 'Custom'")
+        custom = cp._create_custom_selectors(custom, flags)
 
     if isinstance(pattern, SoupSieve):
         if flags:
             raise ValueError("Cannot process 'flags' argument on a compiled selector list")
         elif not ns_none:
             raise ValueError("Cannot process 'namespaces' argument on a compiled selector list")
-        elif aliases is not None:
-            raise ValueError("Cannot process 'aliases' argument on a compiled selector list")
+        elif custom is not None:
+            raise ValueError("Cannot process 'custom' argument on a compiled selector list")
         return pattern
 
-    return cp._cached_css_compile(pattern, namespaces, aliases, flags)
+    return cp._cached_css_compile(pattern, namespaces, custom, flags)
 
 
 def purge():
@@ -125,9 +125,9 @@ def iselect(select, tag, namespaces=None, limit=0, flags=0, **kwargs):
         yield el
 
 
-class Aliases(object):
+class Custom(object):
     """
-    Custom alias Selectors.
+    Custom Selectors.
 
     This object allows us to control order, and possibly extend the complexity of aliases in the future.
 
@@ -139,20 +139,20 @@ class Aliases(object):
     def __init__(self):
         """Initialize."""
 
-        self._aliases = util.odict()
+        self._custom = util.odict()
 
     def register(self, alias, selector):
-        """Register alias."""
+        """Register custom selector."""
 
         name = util.lower(alias)
 
-        if not cp._valid_alias_name(name):
+        if not cp._valid_custom_name(name):
             raise SyntaxError("The name '{}' is not a valid custom pseudo-class name".format(name))
-        if name in self._aliases:
-            raise KeyError("The alias '{}' has already been registered".format(name))
-        self._aliases[name] = selector
+        if name in self._custom:
+            raise KeyError("The custom selector '{}' has already been registered".format(name))
+        self._custom[name] = selector
 
     def deregister(self, alias):
-        """Remove the alias."""
+        """Deregister the custom selector."""
 
-        del self._aliases[alias]
+        del self._custom[alias]

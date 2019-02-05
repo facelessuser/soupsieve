@@ -501,15 +501,15 @@ class TestSoupSieve(util.TestCase):
         sv.purge()
         self.assertEqual(sv.cp._cached_css_compile.cache_info().currsize, 0)
 
-    def test_aliases_interface(self):
-        """Test Aliases interface."""
+    def test_custom_interface(self):
+        """Test Custom interface."""
 
-        aliases = sv.Aliases()
-        self.assertTrue(len(aliases._aliases) == 0)
-        aliases.register(':--header', 'h1, h2, h3, h4, h5, h6')
-        self.assertTrue(len(aliases._aliases) == 1)
-        aliases.deregister(':--header')
-        self.assertTrue(len(aliases._aliases) == 0)
+        custom = sv.Custom()
+        self.assertTrue(len(custom._custom) == 0)
+        custom.register(':--header', 'h1, h2, h3, h4, h5, h6')
+        self.assertTrue(len(custom._custom) == 1)
+        custom.deregister(':--header')
+        self.assertTrue(len(custom._custom) == 0)
 
     def test_recompile(self):
         """If you feed through the same object, it should pass through unless you change parameters."""
@@ -524,11 +524,11 @@ class TestSoupSieve(util.TestCase):
         with pytest.raises(ValueError):
             sv.compile(p1, namespaces={"": ""})
 
-        custom_selectors = sv.Aliases()
+        custom_selectors = sv.Custom()
         custom_selectors.register(":--header", 'h1, h2, h3, h4, h5, h6')
 
         with pytest.raises(ValueError):
-            sv.compile(p1, aliases=custom_selectors)
+            sv.compile(p1, custom=custom_selectors)
 
     def test_immutable_dict_size(self):
         """Test immutable dictionary."""
@@ -540,18 +540,18 @@ class TestSoupSieve(util.TestCase):
 class TestInvalid(util.TestCase):
     """Test invalid."""
 
-    def test_bad_aliases_value(self):
-        """Test bad aliases value."""
+    def test_bad_custom_value(self):
+        """Test bad custom selector value."""
 
         with self.assertRaises(TypeError):
-            sv.compile('div', aliases={':--header', 'h1, h2, h3, h4, h5, h6'})
+            sv.compile('div', custom={':--header', 'h1, h2, h3, h4, h5, h6'})
 
-    def test_aliases_bad_deregister(self):
-        """Test invalid aliases deregister."""
+    def test_custom_bad_deregister(self):
+        """Test invalid custom selector deregister."""
 
-        aliases = sv.Aliases()
+        custom = sv.Custom()
         with self.assertRaises(KeyError):
-            aliases.deregister(':--header')
+            custom.deregister(':--header')
 
     def test_immutable_object(self):
         """Test immutable object."""
@@ -598,23 +598,23 @@ class TestInvalid(util.TestCase):
         with self.assertRaises(TypeError):
             sv.ct.Namespaces({{}: 'string'})
 
-    def test_invalid_alias_type(self):
-        """Test invalid alias type."""
+    def test_invalid_custom_type(self):
+        """Test invalid custom selector type."""
 
         with self.assertRaises(TypeError):
-            sv.ct.AliasSelectors(((3, 3),))
+            sv.ct.CustomSelectors(((3, 3),))
 
-    def test_invalid_alias_hashable_value(self):
-        """Test alias has hashable value."""
-
-        with self.assertRaises(TypeError):
-            sv.ct.AliasSelectors({'a': {}})
-
-    def test_invalid_alias_hashable_key(self):
-        """Test alias key is hashable."""
+    def test_invalid_custom_hashable_value(self):
+        """Test custom selector has hashable value."""
 
         with self.assertRaises(TypeError):
-            sv.ct.AliasSelectors({{}: 'string'})
+            sv.ct.CustomSelectors({'a': {}})
+
+    def test_invalid_custom_hashable_key(self):
+        """Test custom selector key is hashable."""
+
+        with self.assertRaises(TypeError):
+            sv.ct.CustomSelectors({{}: 'string'})
 
     def test_invalid_type_input_match(self):
         """Test bad input into the match API."""

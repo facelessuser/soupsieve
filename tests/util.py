@@ -84,14 +84,14 @@ class TestCase(unittest.TestCase):
 
         sv.purge()
 
-    def compile_pattern(self, selectors, namespaces=None, aliases=None, flags=0):
+    def compile_pattern(self, selectors, namespaces=None, custom=None, flags=0):
         """Compile pattern."""
 
         print('PATTERN: ', selectors)
         flags |= sv.DEBUG
         if self.quirks:
             flags |= sv._QUIRKS
-        return sv.compile(selectors, namespaces=namespaces, aliases=aliases, flags=flags)
+        return sv.compile(selectors, namespaces=namespaces, custom=custom, flags=flags)
 
     def soup(self, markup, parser):
         """Get soup."""
@@ -116,20 +116,20 @@ class TestCase(unittest.TestCase):
 
         return parsers
 
-    def assert_raises(self, pattern, exception, namespace=None, aliases=None):
+    def assert_raises(self, pattern, exception, namespace=None, custom=None):
         """Assert raises."""
 
         print('----Running Assert Test----')
         with self.assertRaises(exception):
-            self.compile_pattern(pattern, namespaces=namespace, aliases=aliases)
+            self.compile_pattern(pattern, namespaces=namespace, custom=custom)
 
-    def assert_selector(self, markup, selectors, expected_ids, namespaces={}, aliases=None, flags=0):
+    def assert_selector(self, markup, selectors, expected_ids, namespaces={}, custom=None, flags=0):
         """Assert selector."""
 
         parsers = self.get_parsers(flags)
 
         print('----Running Selector Test----')
-        selector = self.compile_pattern(selectors, namespaces, aliases)
+        selector = self.compile_pattern(selectors, namespaces, custom)
 
         for parser in available_parsers(*parsers):
             soup = self.soup(markup, parser)

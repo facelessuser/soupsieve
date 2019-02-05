@@ -172,7 +172,7 @@ RE_LANG = re.compile(r'(?:(?P<value>{value})|(?P<split>{ws}*,{ws}*))'.format(ws=
 RE_WS = re.compile(WS)
 RE_WS_BEGIN = re.compile('^{}*'.format(WSC))
 RE_WS_END = re.compile('{}*$'.format(WSC))
-RE_ALIAS = re.compile(r'^{}$'.format(PAT_PSEUDO_CLASS_CUSTOM), re.X)
+RE_CUSTOM = re.compile(r'^{}$'.format(PAT_PSEUDO_CLASS_CUSTOM), re.X)
 
 # Constants
 # List split token
@@ -196,12 +196,12 @@ _MAXCACHE = 500
 
 
 @util.lru_cache(maxsize=_MAXCACHE)
-def _cached_css_compile(pattern, namespaces, aliases, flags):
+def _cached_css_compile(pattern, namespaces, custom, flags):
     """Cached CSS compile."""
 
     return cm.SoupSieve(
         pattern,
-        CSSParser(pattern, aliases=aliases, flags=flags).process_selectors(),
+        CSSParser(pattern, custom=custom, flags=flags).process_selectors(),
         namespaces,
         flags
     )
@@ -213,24 +213,24 @@ def _purge_cache():
     _cached_css_compile.cache_clear()
 
 
-def _valid_alias_name(name):
-    """Check if alias name is valid."""
+def _valid_custom_name(name):
+    """Check if custom name is valid."""
 
-    return RE_ALIAS.match(name) is not None
+    return RE_CUSTOM.match(name) is not None
 
 
-def _create_aliases(aliases, flags=0):
+def _create_custom_selectors(custom, flags=0):
     """Create a dictionary of compiled custom selectors from a dictionary of selector strings."""
 
-    alias_selectors = {}
-    for key, selector in aliases._aliases.items():
+    custom_selectors = {}
+    for key, selector in custom._custom.items():
 
         name = util.lower(key)
-        alias_selectors[name] = CSSParser(
-            selector, aliases=alias_selectors, flags=flags
+        custom_selectors[name] = CSSParser(
+            selector, custom=custom_selectors, flags=flags
         ).process_selectors(flags=FLG_PSEUDO)
 
-    return ct.AliasSelectors(**alias_selectors)
+    return ct.CustomSelectors(**custom_selectors)
 
 
 def css_unescape(string):
@@ -306,7 +306,7 @@ class _Selector(object):
         """Freeze self."""
 
         if self.no_match:
-            return ct.NullSelector()
+            return ct.SelectorNull()
         else:
             return ct.Selector(
                 self.tag,
@@ -360,14 +360,14 @@ class CSSParser(object):
         ]
     )
 
-    def __init__(self, selector, aliases=None, flags=0):
+    def __init__(self, selector, custom=None, flags=0):
         """Initialize."""
 
         self.pattern = selector
         self.flags = flags
         self.debug = self.flags & util.DEBUG
         self.quirks = self.flags & util._QUIRKS
-        self.aliases = {} if aliases is None else aliases
+        self.custom = {} if custom is None else custom
 
     def parse_attribute_selector(self, sel, m, has_selector, quirks):
         """Create attribute selector from the returned regex match."""
@@ -462,9 +462,9 @@ class CSSParser(object):
         """Parse custom pseudo class alias."""
 
         pseudo = util.lower(m.group('name'))
-        if pseudo not in self.aliases:
+        if pseudo not in self.custom:
             raise SyntaxError("Undefined custom selector '{}' found at postion {}".format(pseudo, m.end(0)))
-        selector = self.aliases.get(pseudo)
+        selector = self.custom.get(pseudo)
         sel.selectors.append(selector)
         has_selector = True
         return has_selector

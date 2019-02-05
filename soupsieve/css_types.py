@@ -4,14 +4,14 @@ from . import util
 
 __all__ = (
     'Selector',
-    'NullSelector',
+    'SelectorNull',
     'SelectorTag',
     'SelectorAttribute',
     'SelectorNth',
     'SelectorLang',
     'SelectorList',
     'Namespaces',
-    'AliasSelectors'
+    'CustomSelectors'
 )
 
 
@@ -147,8 +147,8 @@ class Namespaces(ImmutableDict):
         super(Namespaces, self).__init__(*args, **kwargs)
 
 
-class AliasSelectors(ImmutableDict):
-    """Custom alias selectors."""
+class CustomSelectors(ImmutableDict):
+    """Custom selectors."""
 
     def __init__(self, *args, **kwargs):
         """Initialize."""
@@ -156,11 +156,11 @@ class AliasSelectors(ImmutableDict):
         arg = args[0] if args else kwargs
         is_dict = isinstance(arg, dict)
         if is_dict and not all([isinstance(k, util.string) and isinstance(v, SelectorList) for k, v in arg.items()]):
-            raise TypeError('AliasSelectors keys and values must be Unicode strings and SelectorLists respectively')
+            raise TypeError('CustomSelectors keys and values must be Unicode strings and SelectorLists respectively')
         elif not is_dict and not all([isinstance(k, util.string) and isinstance(v, SelectorList) for k, v in arg]):
-            raise TypeError('AliasSelectors keys and values must be Unicode strings and SelectorLists respectively')
+            raise TypeError('CustomSelectors keys and values must be Unicode strings and SelectorLists respectively')
 
-        super(AliasSelectors, self).__init__(*args, **kwargs)
+        super(CustomSelectors, self).__init__(*args, **kwargs)
 
 
 class Selector(Immutable):
@@ -192,13 +192,13 @@ class Selector(Immutable):
         )
 
 
-class NullSelector(Immutable):
+class SelectorNull(Immutable):
     """Null Selector."""
 
     def __init__(self):
         """Initialize."""
 
-        super(NullSelector, self).__init__()
+        super(SelectorNull, self).__init__()
 
 
 class SelectorTag(Immutable):
@@ -318,7 +318,7 @@ def pickle_register(obj):
 
 
 pickle_register(Selector)
-pickle_register(NullSelector)
+pickle_register(SelectorNull)
 pickle_register(SelectorTag)
 pickle_register(SelectorAttribute)
 pickle_register(SelectorNth)
