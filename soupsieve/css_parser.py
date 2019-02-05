@@ -338,77 +338,76 @@ class CSSParser(object):
     def parse_attribute_selector(self, sel, m, has_selector, quirks):
         """Create attribute selector from the returned regex match."""
 
+        inverse = False
         op = m.group('cmp')
-        if op and op.startswith('!'):
-            # Equivalent to `:not([attr=value])`
-            attr = m.group('ns_attr')
-            value = m.group('value')
-            case = m.group('case')
-            if not case:
-                case = ''
-            sel.selectors.append(
-                self.parse_selectors(
-                    # Simulate the content of `:not`, but make the attribute as `=` instead of `!=`.
-                    self.selector_iter('[{}={} {}]'.format(attr, value, case)),
-                    m.end(0),
-                    FLG_PSEUDO | FLG_NOT
-                )
-            )
-            has_selector = True
+        case = util.lower(m.group('case')) if m.group('case') else None
+        parts = [css_unescape(a) for a in m.group('ns_attr').split('|')]
+        ns = ''
+        is_type = False
+        pattern2 = None
+        if len(parts) > 1:
+            ns = parts[0]
+            attr = parts[1]
         else:
-            case = util.lower(m.group('case')) if m.group('case') else None
-            parts = [css_unescape(a) for a in m.group('ns_attr').split('|')]
-            ns = ''
-            is_type = False
-            pattern2 = None
-            if len(parts) > 1:
-                ns = parts[0]
-                attr = parts[1]
-            else:
-                attr = parts[0]
-            if case:
-                flags = re.I if case == 'i' else 0
-            elif util.lower(attr) == 'type':
-                flags = re.I
-                is_type = True
-            else:
-                flags = 0
+            attr = parts[0]
+        if case:
+            flags = re.I if case == 'i' else 0
+        elif util.lower(attr) == 'type':
+            flags = re.I
+            is_type = True
+        else:
+            flags = 0
 
-            if op:
-                is_quoted = m.group('value').startswith(('"', "'")) and not quirks
-                value = css_unescape(
-                    m.group('value')[1:-1] if is_quoted else m.group('value')
-                )
-            else:
-                value = None
-            if not op:
-                # Attribute name
-                pattern = None
-            elif op.startswith('^'):
-                # Value start with
-                pattern = re.compile(r'^%s.*' % re.escape(value), flags)
-            elif op.startswith('$'):
-                # Value ends with
-                pattern = re.compile(r'.*?%s$' % re.escape(value), flags)
-            elif op.startswith('*'):
-                # Value contains
-                pattern = re.compile(r'.*?%s.*' % re.escape(value), flags)
-            elif op.startswith('~'):
-                # Value contains word within space separated list
-                # `~=` should match nothing if it is empty or contains whitespace,
-                # so if either of these cases is present, use `[^\s\S]` which cannot be matched.
-                value = r'[^\s\S]' if not value or RE_WS.search(value) else re.escape(value)
-                pattern = re.compile(r'.*?(?:(?<=^)|(?<=[ \t\r\n\f]))%s(?=(?:[ \t\r\n\f]|$)).*' % value, flags)
-            elif op.startswith('|'):
-                # Value starts with word in dash separated list
-                pattern = re.compile(r'^%s(?:-.*)?$' % re.escape(value), flags)
-            else:
-                # Value matches
-                pattern = re.compile(r'^%s$' % re.escape(value), flags)
-            if is_type and pattern:
-                pattern2 = re.compile(pattern.pattern)
-            has_selector = True
-            sel.attributes.append(ct.SelectorAttribute(attr, ns, pattern, pattern2))
+        if op:
+            is_quoted = m.group('value').startswith(('"', "'")) and not quirks
+            value = css_unescape(
+                m.group('value')[1:-1] if is_quoted else m.group('value')
+            )
+        else:
+            value = None
+        if not op:
+            # Attribute name
+            pattern = None
+        elif op.startswith('^'):
+            # Value start with
+            pattern = re.compile(r'^%s.*' % re.escape(value), flags)
+        elif op.startswith('$'):
+            # Value ends with
+            pattern = re.compile(r'.*?%s$' % re.escape(value), flags)
+        elif op.startswith('*'):
+            # Value contains
+            pattern = re.compile(r'.*?%s.*' % re.escape(value), flags)
+        elif op.startswith('~'):
+            # Value contains word within space separated list
+            # `~=` should match nothing if it is empty or contains whitespace,
+            # so if either of these cases is present, use `[^\s\S]` which cannot be matched.
+            value = r'[^\s\S]' if not value or RE_WS.search(value) else re.escape(value)
+            pattern = re.compile(r'.*?(?:(?<=^)|(?<=[ \t\r\n\f]))%s(?=(?:[ \t\r\n\f]|$)).*' % value, flags)
+        elif op.startswith('|'):
+            # Value starts with word in dash separated list
+            pattern = re.compile(r'^%s(?:-.*)?$' % re.escape(value), flags)
+        elif op.startswith('!'):
+            # Equivalent to `:not([attr=value])`
+            pattern = re.compile(r'^%s(?:-.*)?$' % re.escape(value), flags)
+            inverse = True
+        else:
+            # Value matches
+            pattern = re.compile(r'^%s$' % re.escape(value), flags)
+        if is_type and pattern:
+            pattern2 = re.compile(pattern.pattern)
+
+        # Append the attribute selector
+        sel_attr = ct.SelectorAttribute(attr, ns, pattern, pattern2)
+        if inverse:
+            # If we are using `!=`, we need to nest the pattern under a `:not()`.
+            sub_sel = _Selector()
+            sub_sel.attributes.append(sel_attr)
+            not_list = ct.SelectorList([sub_sel.freeze()], True, False)
+            sel.selectors.append(not_list)
+        else:
+            sel.attributes.append(sel_attr)
+
+        has_selector = True
         return has_selector
 
     def parse_tag_pattern(self, sel, m, has_selector):
