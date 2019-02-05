@@ -506,9 +506,9 @@ class TestSoupSieve(util.TestCase):
 
         custom = sv.Custom()
         self.assertTrue(len(custom._custom) == 0)
-        custom.register(':--header', 'h1, h2, h3, h4, h5, h6')
+        custom.append(':--header', 'h1, h2, h3, h4, h5, h6')
         self.assertTrue(len(custom._custom) == 1)
-        custom.deregister(':--header')
+        custom.remove(':--header')
         self.assertTrue(len(custom._custom) == 0)
 
     def test_recompile(self):
@@ -525,7 +525,7 @@ class TestSoupSieve(util.TestCase):
             sv.compile(p1, namespaces={"": ""})
 
         custom_selectors = sv.Custom()
-        custom_selectors.register(":--header", 'h1, h2, h3, h4, h5, h6')
+        custom_selectors.append(":--header", 'h1, h2, h3, h4, h5, h6')
 
         with pytest.raises(ValueError):
             sv.compile(p1, custom=custom_selectors)
@@ -546,12 +546,12 @@ class TestInvalid(util.TestCase):
         with self.assertRaises(TypeError):
             sv.compile('div', custom={':--header', 'h1, h2, h3, h4, h5, h6'})
 
-    def test_custom_bad_deregister(self):
-        """Test invalid custom selector deregister."""
+    def test_custom_bad_remove(self):
+        """Test invalid custom selector remove."""
 
         custom = sv.Custom()
         with self.assertRaises(KeyError):
-            custom.deregister(':--header')
+            custom.remove(':--header')
 
     def test_immutable_object(self):
         """Test immutable object."""

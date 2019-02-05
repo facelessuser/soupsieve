@@ -20,8 +20,8 @@ class TestCustomSelectors(util.TestCase):
         """Test custom selectors."""
 
         custom_selectors = sv.Custom()
-        custom_selectors.register(":--headers", "h1, h2, h3, h4, h5, h6")
-        custom_selectors.register(":--parent", ":has(> *|*)")
+        custom_selectors.append(":--headers", "h1, h2, h3, h4, h5, h6")
+        custom_selectors.append(":--parent", ":has(> *|*)")
 
         self.assert_selector(
             self.MARKUP,
@@ -51,8 +51,8 @@ class TestCustomSelectors(util.TestCase):
         """Test custom selector dependency on other custom selectors."""
 
         custom_selectors = sv.Custom()
-        custom_selectors.register(":--parent", ":has(> *|*)")
-        custom_selectors.register(":--parent-paragraph", "p:--parent")
+        custom_selectors.append(":--parent", ":has(> *|*)")
+        custom_selectors.append(":--parent-paragraph", "p:--parent")
 
         self.assert_selector(
             self.MARKUP,
@@ -66,8 +66,8 @@ class TestCustomSelectors(util.TestCase):
         """Test that a bad custom raises a syntax error."""
 
         custom_selectors = sv.Custom()
-        custom_selectors.register(":--parent", ":has(> *|*)")
-        custom_selectors.register(":--parent-paragraph", "p:--parent")
+        custom_selectors.append(":--parent", ":has(> *|*)")
+        custom_selectors.append(":--parent-paragraph", "p:--parent")
 
         self.assert_raises(':--wrong', SyntaxError, custom=custom_selectors)
 
@@ -76,7 +76,7 @@ class TestCustomSelectors(util.TestCase):
 
         custom_selectors = sv.Custom()
         with self.assertRaises(SyntaxError):
-            custom_selectors.register(":--parent.", ":has(> *|*)")
+            custom_selectors.append(":--parent.", ":has(> *|*)")
 
     def test_pseudo_class_collision(self):
         """Test that a custom selector cannot match an already existing pseudo-class name."""
@@ -84,16 +84,16 @@ class TestCustomSelectors(util.TestCase):
         custom_selectors = sv.Custom()
 
         with self.assertRaises(SyntaxError):
-            custom_selectors.register(":hover", ":has(> *|*)")
+            custom_selectors.append(":hover", ":has(> *|*)")
 
     def test_custom_collision(self):
         """Test that a custom selector cannot match an already existing custom name."""
 
         custom_selectors = sv.Custom()
-        custom_selectors.register(":--parent", ":has(> *|*)")
+        custom_selectors.append(":--parent", ":has(> *|*)")
 
         with self.assertRaises(KeyError):
-            custom_selectors.register(":--PARENT", "p:--parent")
+            custom_selectors.append(":--PARENT", "p:--parent")
 
 
 class TestCustomSelectorsQuirks(TestCustomSelectors):

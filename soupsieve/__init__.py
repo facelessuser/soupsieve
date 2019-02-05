@@ -141,8 +141,8 @@ class Custom(object):
 
         self._custom = util.odict()
 
-    def register(self, alias, selector):
-        """Register custom selector."""
+    def append(self, alias, selector):
+        """Append a new custom selector."""
 
         name = util.lower(alias)
 
@@ -152,7 +152,7 @@ class Custom(object):
             raise KeyError("The custom selector '{}' has already been registered".format(name))
         self._custom[name] = selector
 
-    def deregister(self, alias):
-        """Deregister the custom selector."""
+    def remove(self, alias):
+        """Remove a custom selector by name."""
 
         del self._custom[alias]

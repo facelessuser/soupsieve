@@ -209,13 +209,13 @@ Soup Sieve caches compiled patterns for performance. If for whatever reason, you
 
 The custom selector feature is loosely inspired by the `css-extensions` [proposal][custom-extensions-1]. In its current
 form, Soup Sieve allows assigning a complex selector to a custom pseudo-class name. The pseudo-class name must start
-with `:--` to avoid conflict with any future selectors.
+with `:--` to avoid conflicts with any future pseudo-classes.
 
 To create custom selectors, you must first instantiate a `Custom` class. Afterwards, custom selectors are added by
-calling the `register` method. Though not usually needed, an already added custom selector can be removed with the
-`deregister` method.
+calling the `append` method. Though not usually needed, an already added custom selector can be removed with the
+`remove` method.
 
-In the following example, will define our own custom selector called `#!css :--header` that will be an alias for
+In the following example, we will define our own custom selector called `#!css :--header` that will be an alias for
 `#!css h1, h2, h3, h4, h5, h6`.
 
 ```py3
@@ -234,7 +234,7 @@ markup = """
 """
 
 custom = sv.Custom()
-custom.register(':--header', 'h1, h2, h3, h4, h5, h6')
+custom.append(':--header', 'h1, h2, h3, h4, h5, h6')
 
 soup = bs4.BeautifulSoup(markup, 'lxml')
 print(sv.select(':--header', soup, custom=custom))
@@ -249,14 +249,14 @@ The above code, when run, should yield the following output:
 When adding custom selectors, order is important. If a custom selector needs to rely on a previous custom selector, the
 selector that is a dependency must be added first.
 
-Assuming the same markup in the first example, we will now create a custom selector that should find any element that
+Assuming the same markup as in the first example, we will now create a custom selector that should find any element that
 has child elements, we will call the selector `:--parent`. Then we will create another selector called
 `:--parent-paragraph` that will use the `:--parent` selector to find `#!html <p>` elements that are also parents:
 
 ```py3
 custom = sv.Custom()
-custom.register(":--parent", ":has(> *|*)")
-custom.register(":--parent-paragraph", "p:--parent")
+custom.append(":--parent", ":has(> *|*)")
+custom.append(":--parent-paragraph", "p:--parent")
 print(sv.select(':--parent-paragraph', soup, custom=custom))
 ```
 

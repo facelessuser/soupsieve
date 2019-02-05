@@ -2,7 +2,7 @@
 
 ## 1.8.0
 
-- **NEW**: Add the custom selector support. (#92)
+- **NEW**: Add custom selector support. (#92)
 - **FIX**: Small tweak to CSS identifier pattern to ensure it matches the CSS specification exactly.
 
 ## 1.7.3
