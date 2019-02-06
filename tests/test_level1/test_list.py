@@ -1,6 +1,7 @@
 """Test selector lists."""
 from __future__ import unicode_literals
 from .. import util
+from soupsieve import SelectorSyntaxError
 
 
 class TestSelectorLists(util.TestCase):
@@ -25,17 +26,17 @@ class TestSelectorLists(util.TestCase):
     def test_invalid_start_comma(self):
         """Test that selectors cannot start with a comma."""
 
-        self.assert_raises(', p', SyntaxError)
+        self.assert_raises(', p', SelectorSyntaxError)
 
     def test_invalid_end_comma(self):
         """Test that selectors cannot end with a comma."""
 
-        self.assert_raises('p,', SyntaxError)
+        self.assert_raises('p,', SelectorSyntaxError)
 
     def test_invalid_double_comma(self):
         """Test that selectors cannot have double combinators."""
 
-        self.assert_raises('div,, a', SyntaxError)
+        self.assert_raises('div,, a', SelectorSyntaxError)
 
 
 class TestSelectorListsQuirks(TestSelectorLists):

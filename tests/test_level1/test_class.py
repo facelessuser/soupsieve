@@ -1,6 +1,7 @@
 """Test class selectors."""
 from __future__ import unicode_literals
 from .. import util
+from soupsieve import SelectorSyntaxError
 
 
 class TestClass(util.TestCase):
@@ -38,7 +39,7 @@ class TestClass(util.TestCase):
         """Test malformed class."""
 
         # Malformed class
-        self.assert_raises('td.+#some-id', SyntaxError)
+        self.assert_raises('td.+#some-id', SelectorSyntaxError)
 
     def test_class_xhtml(self):
         """Test tag and class with XHTML since internally classes are stored different for XML."""
@@ -74,7 +75,7 @@ class TestClass(util.TestCase):
         """Test malformed class."""
 
         # Malformed pseudo-class
-        self.assert_raises('td:#id', SyntaxError)
+        self.assert_raises('td:#id', SelectorSyntaxError)
 
 
 class TestClassQuirks(TestClass):

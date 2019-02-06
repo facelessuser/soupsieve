@@ -1,6 +1,7 @@
 """Test has selectors."""
 from __future__ import unicode_literals
 from .. import util
+from soupsieve import SelectorSyntaxError
 
 
 class TestHas(util.TestCase):
@@ -132,39 +133,39 @@ class TestHas(util.TestCase):
     def test_invalid_incomplete_has(self):
         """Test `:has()` fails with just a combinator."""
 
-        self.assert_raises(':has(>)', SyntaxError)
+        self.assert_raises(':has(>)', SelectorSyntaxError)
 
     def test_invalid_has_empty(self):
         """Test `:has()` fails with empty function parameters."""
 
-        self.assert_raises(':has()', SyntaxError)
+        self.assert_raises(':has()', SelectorSyntaxError)
 
     def test_invalid_has_double_comma(self):
         """Test `:has()` fails with consecutive commas."""
 
-        self.assert_raises(':has(> has,, a)', SyntaxError)
+        self.assert_raises(':has(> has,, a)', SelectorSyntaxError)
 
     def test_invalid_has_double_combinator(self):
         """Test `:has()` fails with consecutive combinators."""
 
-        self.assert_raises(':has(>> has a)', SyntaxError)
-        self.assert_raises(':has(> has, >> a)', SyntaxError)
-        self.assert_raises(':has(> has >> a)', SyntaxError)
+        self.assert_raises(':has(>> has a)', SelectorSyntaxError)
+        self.assert_raises(':has(> has, >> a)', SelectorSyntaxError)
+        self.assert_raises(':has(> has >> a)', SelectorSyntaxError)
 
     def test_invalid_has_trailing_combinator(self):
         """Test `:has()` fails with trailing combinator."""
 
-        self.assert_raises(':has(> has >)', SyntaxError)
+        self.assert_raises(':has(> has >)', SelectorSyntaxError)
 
     def test_invalid_has_trailing_comma(self):
         """Test `:has()` fails with trailing comma."""
 
-        self.assert_raises(':has(> has,)', SyntaxError)
+        self.assert_raises(':has(> has,)', SelectorSyntaxError)
 
     def test_invalid_has_start_comma(self):
         """Test `:has()` fails with trailing comma."""
 
-        self.assert_raises(':has(, p)', SyntaxError)
+        self.assert_raises(':has(, p)', SelectorSyntaxError)
 
 
 class TestHasQuirks(TestHas):

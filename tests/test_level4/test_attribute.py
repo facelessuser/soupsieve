@@ -1,6 +1,7 @@
 """Test attribute selectors."""
 from __future__ import unicode_literals
 from .. import util
+from soupsieve import SelectorSyntaxError
 
 
 class TestAttribute(util.TestCase):
@@ -59,7 +60,7 @@ class TestAttribute(util.TestCase):
     def test_attribute_forced_case_needs_value(self):
         """Test attribute value case insensitivity requires a value."""
 
-        self.assert_raises('[id i]', SyntaxError)
+        self.assert_raises('[id i]', SelectorSyntaxError)
 
     def test_attribute_type_case_sensitive(self):
         """Type is treated as case insensitive in HTML, so test that we can force the opposite."""

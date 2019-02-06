@@ -655,9 +655,9 @@ class TestSyntaxErrorReporting(util.TestCase):
         with self.assertRaises(sv.cp.SelectorSyntaxError) as cm:
             sv.compile('input.field[type=42]')
         e = cm.exception
-        self.assertEqual(e.text, 'input.field[type=42]')
-        self.assertEqual(e.lineno, 1)
-        self.assertEqual(e.offset, 12)
+        self.assertEqual(e.context, '--> input.field[type=42]\n               ^')
+        self.assertEqual(e.line, 1)
+        self.assertEqual(e.col, 12)
 
     def test_syntax_error_with_multiple_lines(self):
         """Test that multiline selector errors have the right position."""
@@ -667,9 +667,9 @@ class TestSyntaxErrorReporting(util.TestCase):
                 'input\n'
                 '.field[type=42]')
         e = cm.exception
-        self.assertEqual(e.text, 'input\n    .field[type=42]')
-        self.assertEqual(e.lineno, 2)
-        self.assertEqual(e.offset, 7)
+        self.assertEqual(e.context, '    input\n--> .field[type=42]\n          ^')
+        self.assertEqual(e.line, 2)
+        self.assertEqual(e.col, 7)
 
     def test_syntax_error_on_third_line(self):
         """Test that multiline selector errors have the right position."""
@@ -682,5 +682,5 @@ class TestSyntaxErrorReporting(util.TestCase):
                 ')\n'
             )
         e = cm.exception
-        self.assertEqual(e.lineno, 3)
-        self.assertEqual(e.offset, 3)
+        self.assertEqual(e.line, 3)
+        self.assertEqual(e.col, 3)

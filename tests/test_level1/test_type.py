@@ -1,6 +1,7 @@
 """Test type selectors."""
 from __future__ import unicode_literals
 from .. import util
+from soupsieve import SelectorSyntaxError
 
 
 class TestType(util.TestCase):
@@ -103,7 +104,7 @@ class TestType(util.TestCase):
     def test_invalid_syntax(self):
         """Test invalid syntax."""
 
-        self.assert_raises('div?', SyntaxError)
+        self.assert_raises('div?', SelectorSyntaxError)
 
 
 class TestTypeQuirks(TestType):

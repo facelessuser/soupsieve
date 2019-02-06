@@ -1,6 +1,7 @@
 """Test ID selectors."""
 from __future__ import unicode_literals
 from .. import util
+from soupsieve import SelectorSyntaxError
 
 
 class TestId(util.TestCase):
@@ -38,7 +39,7 @@ class TestId(util.TestCase):
         """Test malformed ID."""
 
         # Malformed id
-        self.assert_raises('td#.some-class', SyntaxError)
+        self.assert_raises('td#.some-class', SelectorSyntaxError)
 
 
 class TestIdQuirks(TestId):
