@@ -667,7 +667,7 @@ class TestSyntaxErrorReporting(util.TestCase):
                 'input\n'
                 '.field[type=42]')
         e = cm.exception
-        self.assertEqual(e.text, 'input\n.field[type=42]')
+        self.assertEqual(e.text, 'input\n    .field[type=42]')
         self.assertEqual(e.lineno, 2)
         self.assertEqual(e.offset, 7)
 

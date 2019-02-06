@@ -221,6 +221,10 @@ class SelectorSyntaxError(SyntaxError):
         super(SelectorSyntaxError, self).__init__(msg)
         self.text = pattern
         if pattern is not None and index is not None:
+            # The traceback formatter puts a ^ at the offset, but it assumes
+            # the text will be indented with four spaces.  It will indent the
+            # first line, but we have to adjust the other lines ourselves.
+            self.text = self.text.replace('\n', '\n    ')
             self.lineno = pattern.count('\n', 0, index) + 1
             self.offset = index - pattern.rfind('\n', 0, index)
 
