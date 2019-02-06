@@ -644,3 +644,43 @@ class TestInvalidQuirks(TestInvalid):
             # Verify some things
             self.assertTrue(len(w) == 1)
             self.assertTrue(issubclass(w[-1].category, sv_util.QuirksWarning))
+
+
+class TestSyntaxErrorReporting(util.TestCase):
+    """Test reporting of syntax errors."""
+
+    def test_syntax_error_has_text_and_position(self):
+        """Test that selector syntax errors contain the position."""
+
+        with self.assertRaises(sv.cp.SelectorSyntaxError) as cm:
+            sv.compile('input.field[type=42]')
+        e = cm.exception
+        self.assertEqual(e.text, 'input.field[type=42]')
+        self.assertEqual(e.lineno, 1)
+        self.assertEqual(e.offset, 12)
+
+    def test_syntax_error_with_multiple_lines(self):
+        """Test that multiline selector errors have the right position."""
+
+        with self.assertRaises(sv.cp.SelectorSyntaxError) as cm:
+            sv.compile(
+                'input\n'
+                '.field[type=42]')
+        e = cm.exception
+        self.assertEqual(e.text, 'input\n    .field[type=42]')
+        self.assertEqual(e.lineno, 2)
+        self.assertEqual(e.offset, 7)
+
+    def test_syntax_error_on_third_line(self):
+        """Test that multiline selector errors have the right position."""
+
+        with self.assertRaises(sv.cp.SelectorSyntaxError) as cm:
+            sv.compile(
+                'input:is(\n'
+                '  [name=foo]\n'
+                '  [type=42]\n'
+                ')\n'
+            )
+        e = cm.exception
+        self.assertEqual(e.lineno, 3)
+        self.assertEqual(e.offset, 3)
