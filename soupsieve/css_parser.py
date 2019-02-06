@@ -220,8 +220,9 @@ class SelectorSyntaxError(SyntaxError):
 
         super(SelectorSyntaxError, self).__init__(msg)
         self.text = pattern
-        self.lineno = 1
-        self.offset = index + 1 if index is not None else None
+        if pattern is not None and index is not None:
+            self.lineno = pattern.count('\n', 0, index) + 1
+            self.offset = index - pattern.rfind('\n', 0, index)
 
 
 class SelectorPattern(object):
