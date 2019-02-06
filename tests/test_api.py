@@ -652,17 +652,17 @@ class TestSyntaxErrorReporting(util.TestCase):
     def test_syntax_error_has_text_and_position(self):
         """Test that selector syntax errors contain the position."""
 
-        with self.assertRaises(sv.cp.SelectorSyntaxError) as cm:
+        with self.assertRaises(sv.SelectorSyntaxError) as cm:
             sv.compile('input.field[type=42]')
         e = cm.exception
-        self.assertEqual(e.context, '--> input.field[type=42]\n               ^')
+        self.assertEqual(e.context, 'input.field[type=42]\n           ^')
         self.assertEqual(e.line, 1)
         self.assertEqual(e.col, 12)
 
     def test_syntax_error_with_multiple_lines(self):
         """Test that multiline selector errors have the right position."""
 
-        with self.assertRaises(sv.cp.SelectorSyntaxError) as cm:
+        with self.assertRaises(sv.SelectorSyntaxError) as cm:
             sv.compile(
                 'input\n'
                 '.field[type=42]')
@@ -674,7 +674,7 @@ class TestSyntaxErrorReporting(util.TestCase):
     def test_syntax_error_on_third_line(self):
         """Test that multiline selector errors have the right position."""
 
-        with self.assertRaises(sv.cp.SelectorSyntaxError) as cm:
+        with self.assertRaises(sv.SelectorSyntaxError) as cm:
             sv.compile(
                 'input:is(\n'
                 '  [name=foo]\n'
@@ -684,3 +684,15 @@ class TestSyntaxErrorReporting(util.TestCase):
         e = cm.exception
         self.assertEqual(e.line, 3)
         self.assertEqual(e.col, 3)
+
+    def test_simple_syntax_error(self):
+        """Test a simple syntax error (no context)."""
+
+        with self.assertRaises(sv.SelectorSyntaxError) as cm:
+            raise sv.SelectorSyntaxError('Syntax Message')
+
+        e = cm.exception
+        self.assertEqual(e.context, None)
+        self.assertEqual(e.line, None)
+        self.assertEqual(e.col, None)
+        self.assertEqual(str(e), 'Syntax Message')
