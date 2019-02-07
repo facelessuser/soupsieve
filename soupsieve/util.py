@@ -67,6 +67,37 @@ def uchr(i):
         return struct.pack('i', i).decode('utf-32')
 
 
+class SelectorSyntaxError(SyntaxError):
+    """Syntax error in a CSS selector."""
+
+    def __init__(self, msg, pattern=None, index=None):
+        """Initialize."""
+
+        self.line = None
+        self.col = None
+        self.context = None
+
+        if pattern is not None and index is not None:
+            self.line = pattern.count('\n', 0, index) + 1
+            self.col = index - pattern.rfind('\n', 0, index)
+            temp = pattern.split('\n')
+            multi = len(temp) > 1
+            offset = 3 if multi else -1
+            text = []
+            for n, line in enumerate(temp, start=1):
+                if multi:
+                    text.append(('--> {}' if n == self.line else '    {}').format(line))
+                else:
+                    text.append(line)
+                if self.line == n:
+                    text.append((' ' * (self.col + offset)) + '^')
+            self.context = '\n'.join(text)
+
+            msg = '{}\n  line {}:\n{}'.format(msg, self.line, self.context)
+
+        super(SelectorSyntaxError, self).__init__(msg)
+
+
 def deprecated(message, stacklevel=2):  # pragma: no cover
     """
     Raise a `DeprecationWarning` when wrapped function/method is called.

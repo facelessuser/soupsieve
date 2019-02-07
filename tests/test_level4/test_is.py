@@ -1,6 +1,7 @@
 """Test is selectors."""
 from __future__ import unicode_literals
 from .. import util
+from soupsieve import SelectorSyntaxError
 
 
 class TestIs(util.TestCase):
@@ -87,23 +88,23 @@ class TestIs(util.TestCase):
     def test_invalid_pseudo_class_start_combinator(self):
         """Test invalid start combinator in pseudo-classes other than `:has()`."""
 
-        self.assert_raises(':is(> div)', SyntaxError)
-        self.assert_raises(':is(div, > div)', SyntaxError)
+        self.assert_raises(':is(> div)', SelectorSyntaxError)
+        self.assert_raises(':is(div, > div)', SelectorSyntaxError)
 
     def test_invalid_pseudo_orphan_close(self):
         """Test invalid, orphaned pseudo close."""
 
-        self.assert_raises('div)', SyntaxError)
+        self.assert_raises('div)', SelectorSyntaxError)
 
     def test_invalid_pseudo_dangling_comma(self):
         """Test pseudo class group with trailing comma."""
 
-        self.assert_raises(':is(div,)', SyntaxError)
+        self.assert_raises(':is(div,)', SelectorSyntaxError)
 
     def test_invalid_pseudo_open(self):
         """Test invalid pseudo close."""
 
-        self.assert_raises(':is(div', SyntaxError)
+        self.assert_raises(':is(div', SelectorSyntaxError)
 
 
 class TestIsQuirks(TestIs):

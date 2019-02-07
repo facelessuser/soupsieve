@@ -5,6 +5,7 @@ from . import util
 from . import css_match as cm
 from . import css_types as ct
 from collections import OrderedDict
+from .util import SelectorSyntaxError
 
 # Simple pseudo classes that take no parameters
 PSEUDO_SIMPLE = {
@@ -500,7 +501,11 @@ class CSSParser(object):
             sel.no_match = True
             has_selector = True
         elif pseudo in PSEUDO_SUPPORTED:
-            raise SyntaxError("Invalid syntax for pseudo class '{}'".format(pseudo))
+            raise SelectorSyntaxError(
+                "Invalid syntax for pseudo class '{}'".format(pseudo),
+                self.pattern,
+                m.start(0)
+            )
         else:
             raise NotImplementedError(
                 "'{}' pseudo-class is not implemented at this time".format(pseudo)
@@ -586,8 +591,10 @@ class CSSParser(object):
             if not has_selector:
                 # If we've not captured any selector parts, the comma is either at the beginning of the pattern
                 # or following another comma, both of which are unexpected. Commas must split selectors.
-                raise SyntaxError(
-                    "The combinator '{}' at postion {}, must have a selector before it".format(combinator, index)
+                raise SelectorSyntaxError(
+                    "The combinator '{}' at postion {}, must have a selector before it".format(combinator, index),
+                    self.pattern,
+                    index
                 )
             sel.rel_type = rel_type
             selectors[-1].relations.append(sel)
@@ -604,7 +611,11 @@ class CSSParser(object):
                 # combinator after any other kind for the same reason. But we could have
                 # multiple non-whitespace combinators. So if the current combinator is not a whitespace,
                 # then we've hit the multiple combinator case, so we should fail.
-                raise SyntaxError('The multiple combinators at position {}'.format(index))
+                raise SelectorSyntaxError(
+                    'The multiple combinators at position {}'.format(index),
+                    self.pattern,
+                    index
+                )
             # Set the leading combinator for the next selector.
             rel_type = ':' + combinator
         sel = _Selector()
@@ -622,8 +633,10 @@ class CSSParser(object):
             # The only way we don't fail is if we are at the root level and quirks mode is enabled,
             # and we've found no other selectors yet in this compound selector.
             if (not self.quirks or is_pseudo or combinator == COMMA_COMBINATOR or relations):
-                raise SyntaxError(
-                    "The combinator '{}' at postion {}, must have a selector before it".format(combinator, index)
+                raise SelectorSyntaxError(
+                    "The combinator '{}' at postion {}, must have a selector before it".format(combinator, index),
+                    self.pattern,
+                    index
                 )
             util.warn_quirks(
                 'You have attempted to use a combinator without a selector before it at position {}.'.format(index),
@@ -773,12 +786,20 @@ class CSSParser(object):
                     is_html = True
                 elif key == 'pseudo_close':
                     if not has_selector:
-                        raise SyntaxError("Expected a selector at postion {}".format(m.start(0)))
+                        raise SelectorSyntaxError(
+                            "Expected a selector at postion {}".format(m.start(0)),
+                            self.pattern,
+                            m.start(0)
+                        )
                     if is_open:
                         closed = True
                         break
                     else:
-                        raise SyntaxError("Unmatched pseudo-class close at postion {}".format(m.start(0)))
+                        raise SelectorSyntaxError(
+                            "Unmatched pseudo-class close at postion {}".format(m.start(0)),
+                            self.pattern,
+                            m.start(0)
+                        )
                 elif key == 'combine':
                     if is_relative:
                         has_selector, sel, rel_type = self.parse_has_combinator(
@@ -801,7 +822,11 @@ class CSSParser(object):
                     has_selector = self.parse_attribute_selector(sel, m, has_selector, quirks)
                 elif key == 'tag':
                     if has_selector:
-                        raise SyntaxError("Tag name found at position {} instead of at the start".format(m.start(0)))
+                        raise SelectorSyntaxError(
+                            "Tag name found at position {} instead of at the start".format(m.start(0)),
+                            self.pattern,
+                            m.start(0)
+                        )
                     has_selector = self.parse_tag_pattern(sel, m, has_selector)
                 elif key in ('class', 'id'):
                     has_selector = self.parse_class_id(sel, m, has_selector)
@@ -811,7 +836,11 @@ class CSSParser(object):
             pass
 
         if is_open and not closed:
-            raise SyntaxError("Unclosed pseudo-class at position {}".format(index))
+            raise SelectorSyntaxError(
+                "Unclosed pseudo-class at position {}".format(index),
+                self.pattern,
+                index
+            )
 
         if has_selector:
             if not sel.tag and not is_pseudo:
@@ -826,7 +855,11 @@ class CSSParser(object):
                 selectors.append(sel)
         else:
             # We will always need to finish a selector when `:has()` is used as it leads with combining.
-            raise SyntaxError('Expected a selector at position {}'.format(index))
+            raise SelectorSyntaxError(
+                'Expected a selector at position {}'.format(index),
+                self.pattern,
+                index
+            )
 
         # Some patterns require additional logic, such as default. We try to make these the
         # last pattern, and append the appropriate flag to that selector which communicates
@@ -882,7 +915,7 @@ class CSSParser(object):
                     msg = "Malformed pseudo-class selector at position {}".format(index)
                 else:
                     msg = "Invalid character {!r} position {}".format(c, index)
-                raise SyntaxError(msg)
+                raise SelectorSyntaxError(msg, self.pattern, index)
         if self.debug:  # pragma: no cover
             print('## END PARSING')
 

@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from .. import util
 import soupsieve as sv
+from soupsieve import SelectorSyntaxError
 
 
 class TestChild(util.TestCase):
@@ -45,21 +46,21 @@ class TestChild(util.TestCase):
     def test_invalid_double_combinator(self):
         """Test that selectors cannot have double combinators."""
 
-        self.assert_raises('div >> p', SyntaxError)
-        self.assert_raises('>> div > p', SyntaxError)
+        self.assert_raises('div >> p', SelectorSyntaxError)
+        self.assert_raises('>> div > p', SelectorSyntaxError)
 
     def test_invalid_trailing_combinator(self):
         """Test that selectors cannot have a trailing combinator."""
 
-        self.assert_raises('div >', SyntaxError)
-        self.assert_raises('div >, div', SyntaxError)
+        self.assert_raises('div >', SelectorSyntaxError)
+        self.assert_raises('div >, div', SelectorSyntaxError)
 
     @util.skip_quirks
     def test_invalid_non_quirk_combination(self):
         """Non quirk mode should not allow selectors in selector lists to start with combinators."""
 
-        self.assert_raises('> p', SyntaxError)
-        self.assert_raises('div, > a', SyntaxError)
+        self.assert_raises('> p', SelectorSyntaxError)
+        self.assert_raises('div, > a', SelectorSyntaxError)
 
 
 class TestChildQuirks(TestChild):

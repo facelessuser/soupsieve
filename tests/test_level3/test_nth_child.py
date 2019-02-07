@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from .. import util
 import soupsieve as sv
+from soupsieve import SelectorSyntaxError
 
 
 class TestNthChild(util.TestCase):
@@ -208,7 +209,7 @@ class TestNthChild(util.TestCase):
     def test_nth_child_with_bad_parameters(self):
         """Test that pseudo class fails with bad parameters (basically it doesn't match)."""
 
-        self.assert_raises(':nth-child(a)', SyntaxError)
+        self.assert_raises(':nth-child(a)', SelectorSyntaxError)
 
 
 class TestNthChildQuirks(TestNthChild):

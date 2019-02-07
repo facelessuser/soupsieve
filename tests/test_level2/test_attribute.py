@@ -1,6 +1,7 @@
 """Test attribute selector."""
 from __future__ import unicode_literals
 from .. import util
+from soupsieve import SelectorSyntaxError
 
 
 class TestAttribute(util.TestCase):
@@ -146,14 +147,14 @@ class TestAttribute(util.TestCase):
         Tag must come first.
         """
 
-        self.assert_raises('[href]p', SyntaxError)
+        self.assert_raises('[href]p', SelectorSyntaxError)
 
     @util.skip_quirks
     def test_malformed_no_quirk(self):
         """Test malformed with no quirk mode."""
 
         # Malformed attribute
-        self.assert_raises('div[attr={}]', SyntaxError)
+        self.assert_raises('div[attr={}]', SelectorSyntaxError)
 
     def test_attribute_type_html(self):
         """Type is treated as case insensitive in HTML."""
