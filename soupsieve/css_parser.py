@@ -463,7 +463,11 @@ class CSSParser(object):
 
         pseudo = util.lower(m.group('name'))
         if pseudo not in self.custom:
-            raise SyntaxError("Undefined custom selector '{}' found at postion {}".format(pseudo, m.end(0)))
+            raise SelectorSyntaxError(
+                "Undefined custom selector '{}' found at postion {}".format(pseudo, m.end(0)),
+                self.pattern,
+                m.end(0)
+            )
         selector = self.custom.get(pseudo)
         sel.selectors.append(selector)
         has_selector = True

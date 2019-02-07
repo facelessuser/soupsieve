@@ -147,7 +147,7 @@ class Custom(object):
         name = util.lower(alias)
 
         if not cp._valid_custom_name(name):
-            raise SyntaxError("The name '{}' is not a valid custom pseudo-class name".format(name))
+            raise SelectorSyntaxError("The name '{}' is not a valid custom pseudo-class name".format(name))
         if name in self._custom:
             raise KeyError("The custom selector '{}' has already been registered".format(name))
         self._custom[name] = selector
