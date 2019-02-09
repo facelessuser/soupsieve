@@ -14,13 +14,13 @@ except ImportError:
     HTML5LIB_PRESENT = False
 
 try:
-    from bs4.builder import (  # noqa: F401
-        LXMLTreeBuilderForXML, LXMLTreeBuilder)
+    from bs4.builder import LXMLTreeBuilderForXML, LXMLTreeBuilder  # noqa: F401
     LXML_PRESENT = True
 except ImportError:
     LXML_PRESENT = False
 
 PY3 = sys.version_info >= (3, 0)
+PY37 = sys.version_info >= (3, 7)
 
 HTML5 = 0x1
 HTML = 0x2
@@ -36,7 +36,7 @@ def skip_quirks(func):
     def skip_if(self, *args, **kwargs):
         """Skip conditional wrapper."""
         if self.quirks is True:
-            return
+            raise pytest.skip('not applicable to quirks mode')
         else:
             return func(self, *args, **kwargs)
     return skip_if
@@ -48,7 +48,7 @@ def skip_py3(func):
     def skip_if(self, *args, **kwargs):
         """Skip conditional wrapper."""
         if PY3:
-            return
+            raise pytest.skip('not Python 3+')
         else:
             return func(self, *args, **kwargs)
     return skip_if
@@ -84,14 +84,14 @@ class TestCase(unittest.TestCase):
 
         sv.purge()
 
-    def compile_pattern(self, selectors, namespaces=None, flags=0):
+    def compile_pattern(self, selectors, namespaces=None, custom=None, flags=0):
         """Compile pattern."""
 
         print('PATTERN: ', selectors)
         flags |= sv.DEBUG
         if self.quirks:
             flags |= sv._QUIRKS
-        return sv.compile(selectors, namespaces=namespaces, flags=flags)
+        return sv.compile(selectors, namespaces=namespaces, custom=custom, flags=flags)
 
     def soup(self, markup, parser):
         """Get soup."""
@@ -116,20 +116,20 @@ class TestCase(unittest.TestCase):
 
         return parsers
 
-    def assert_raises(self, pattern, exception, namespace=None):
+    def assert_raises(self, pattern, exception, namespace=None, custom=None):
         """Assert raises."""
 
         print('----Running Assert Test----')
         with self.assertRaises(exception):
-            self.compile_pattern(pattern)
+            self.compile_pattern(pattern, namespaces=namespace, custom=custom)
 
-    def assert_selector(self, markup, selectors, expected_ids, namespaces={}, flags=0):
+    def assert_selector(self, markup, selectors, expected_ids, namespaces={}, custom=None, flags=0):
         """Assert selector."""
 
         parsers = self.get_parsers(flags)
 
         print('----Running Selector Test----')
-        selector = self.compile_pattern(selectors, namespaces)
+        selector = self.compile_pattern(selectors, namespaces, custom)
 
         for parser in available_parsers(*parsers):
             soup = self.soup(markup, parser)
@@ -147,10 +147,13 @@ def available_parsers(*parsers):
 
     If there are none, report the test as skipped to pytest.
     """
+
     ran_test = False
     for parser in parsers:
-        if (parser in ('xml', 'lxml') and not LXML_PRESENT) or (
-                parser == 'html5lib' and not HTML5LIB_PRESENT):
+        if (
+            (parser in ('xml', 'lxml') and not LXML_PRESENT) or
+            (parser == 'html5lib' and not HTML5LIB_PRESENT)
+        ):
             print('SKIPPED {}, not installed'.format(parser))
         else:
             ran_test = True
@@ -161,11 +164,13 @@ def available_parsers(*parsers):
 
 def requires_lxml(test):
     """Decorator that marks a test as requiring LXML."""
+
     return pytest.mark.skipif(
         not LXML_PRESENT, reason='test requires lxml')(test)
 
 
 def requires_html5lib(test):
     """Decorator that marks a test as requiring html5lib."""
+
     return pytest.mark.skipif(
         not HTML5LIB_PRESENT, reason='test requires html5lib')(test)

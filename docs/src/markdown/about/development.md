@@ -243,10 +243,10 @@ Attribute       | Description
 `lang`          | Contains a tuple of [`SelectorLang`](#selectorlang) objects.
 `flags`         | Selector flags that used to signal a type of selector is present.
 
-### `NullSelector`
+### `SelectorNull`
 
 ```py3
-class NullSelector:
+class SelectorNull:
     """Null Selector."""
 
     def __init__(self):

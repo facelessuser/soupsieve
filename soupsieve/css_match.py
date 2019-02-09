@@ -1128,7 +1128,7 @@ class CSSMatch(Document, object):
             for selector in selectors:
                 match = is_not
                 # We have a un-matchable situation (like `:focus` as you can focus an element in this environment)
-                if isinstance(selector, ct.NullSelector):
+                if isinstance(selector, ct.SelectorNull):
                     continue
                 # Verify tag matches
                 if not self.match_tag(el, selector.tag):

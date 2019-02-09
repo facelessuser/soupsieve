@@ -9,25 +9,35 @@ MODULE = os.path.dirname(__file__)
 
 PY3 = sys.version_info >= (3, 0)
 PY35 = sys.version_info >= (3, 5)
+PY37 = sys.version_info >= (3, 7)
 
 if PY3:
     from functools import lru_cache  # noqa F401
     import copyreg  # noqa F401
     from collections.abc import Hashable, Mapping  # noqa F401
 
-    ustr = str  # noqa
-    bstr = bytes  # noqa
-    unichar = chr  # noqa
-    string = str  # noqa
+    if PY37:
+        odict = dict
+    else:
+        from collections import OrderedDict
+        odict = OrderedDict
+
+    ustr = str
+    bstr = bytes
+    unichar = chr
+    string = str
+    odict = OrderedDict if not PY37 else dict
 else:
     from backports.functools_lru_cache import lru_cache  # noqa F401
     import copy_reg as copyreg  # noqa F401
     from collections import Hashable, Mapping  # noqa F401
+    from collections import OrderedDict
 
-    ustr = unicode  # noqa
-    bstr = str  # noqa
-    unichar = unichr  # noqa
-    string = basestring  # noqa
+    ustr = unicode  # noqa: F821
+    bstr = str
+    unichar = unichr  # noqa: F821
+    string = basestring  # noqa: F821
+    odict = OrderedDict
 
 _QUIRKS = 0x20000
 DEBUG = 0x10000

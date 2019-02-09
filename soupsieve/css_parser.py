@@ -93,7 +93,15 @@ WSC = r'(?:{ws}|{comments})'.format(ws=WS, comments=COMMENTS)
 # CSS escapes
 CSS_ESCAPES = r'(?:\\[a-f0-9]{{1,6}}{ws}?|\\[^\r\n\f])'.format(ws=WS)
 # CSS Identifier
-IDENTIFIER = r'(?:(?!-?[0-9]|--)(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+)'.format(esc=CSS_ESCAPES)
+IDENTIFIER = r'''
+(?:-?(?:[^\x00-\x2f\x30-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+
+(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})*)
+'''.format(esc=CSS_ESCAPES)
+# CSS Identifier expanded to allow for custom start: `--`
+EXPANDED_IDENTIFIER = r'''
+(?:(?:-?(?:[^\x00-\x2f\x30-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+|--)
+(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})*)
+'''.format(esc=CSS_ESCAPES)
 # `nth` content
 NTH = r'(?:[-+])?(?:[0-9]+n?|n)(?:(?<=n){ws}*(?:[-+]){ws}*(?:[0-9]+))?'.format(ws=WSC)
 # Value: quoted string or identifier
@@ -123,6 +131,8 @@ PAT_QUIRKS_ATTR = r'''
 '''.format(ws=WSC, ident=IDENTIFIER, attr=QUIRKS_ATTR)
 # Pseudo class (`:pseudo-class`, `:pseudo-class(`)
 PAT_PSEUDO_CLASS = r'(?P<name>:{ident})(?P<open>\({ws}*)?'.format(ws=WSC, ident=IDENTIFIER)
+# Custom pseudo class (`:--custom-pseudo`)
+PAT_PSEUDO_CLASS_CUSTOM = r'(?P<name>:(?=--){ident})'.format(ident=EXPANDED_IDENTIFIER)
 # Closing pseudo group (`)`)
 PAT_PSEUDO_CLOSE = r'{ws}*\)'.format(ws=WSC)
 # Pseudo element (`::pseudo-element`)
@@ -162,6 +172,7 @@ RE_LANG = re.compile(r'(?:(?P<value>{value})|(?P<split>{ws}*,{ws}*))'.format(ws=
 RE_WS = re.compile(WS)
 RE_WS_BEGIN = re.compile('^{}*'.format(WSC))
 RE_WS_END = re.compile('{}*$'.format(WSC))
+RE_CUSTOM = re.compile(r'^{}$'.format(PAT_PSEUDO_CLASS_CUSTOM), re.X)
 
 # Constants
 # List split token
@@ -185,12 +196,12 @@ _MAXCACHE = 500
 
 
 @util.lru_cache(maxsize=_MAXCACHE)
-def _cached_css_compile(pattern, namespaces, flags):
+def _cached_css_compile(pattern, namespaces, custom, flags):
     """Cached CSS compile."""
 
     return cm.SoupSieve(
         pattern,
-        CSSParser(pattern, flags).process_selectors(),
+        CSSParser(pattern, custom=custom, flags=flags).process_selectors(),
         namespaces,
         flags
     )
@@ -200,6 +211,26 @@ def _purge_cache():
     """Purge the cache."""
 
     _cached_css_compile.cache_clear()
+
+
+def _valid_custom_name(name):
+    """Check if custom name is valid."""
+
+    return RE_CUSTOM.match(name) is not None
+
+
+def _create_custom_selectors(custom, flags=0):
+    """Create a dictionary of compiled custom selectors from a dictionary of selector strings."""
+
+    custom_selectors = {}
+    for key, selector in custom._custom.items():
+
+        name = util.lower(key)
+        custom_selectors[name] = CSSParser(
+            selector, custom=custom_selectors, flags=flags
+        ).process_selectors(flags=FLG_PSEUDO)
+
+    return ct.CustomSelectors(**custom_selectors)
 
 
 def css_unescape(string):
@@ -275,7 +306,7 @@ class _Selector(object):
         """Freeze self."""
 
         if self.no_match:
-            return ct.NullSelector()
+            return ct.SelectorNull()
         else:
             return ct.Selector(
                 self.tag,
@@ -316,6 +347,7 @@ class CSSParser(object):
             ("pseudo_nth_type", SelectorPattern(PAT_PSEUDO_NTH_TYPE)),
             ("pseudo_lang", SelectorPattern(PAT_PSEUDO_LANG)),
             ("pseudo_dir", SelectorPattern(PAT_PSEUDO_DIR)),
+            ("pseudo_class_custom", SelectorPattern(PAT_PSEUDO_CLASS_CUSTOM)),
             ("pseudo_class", SelectorPattern(PAT_PSEUDO_CLASS)),
             ("pseudo_element", SelectorPattern(PAT_PSEUDO_ELEMENT)),
             ("at_rule", SelectorPattern(PAT_AT_RULE)),
@@ -328,13 +360,14 @@ class CSSParser(object):
         ]
     )
 
-    def __init__(self, selector, flags=0):
+    def __init__(self, selector, custom=None, flags=0):
         """Initialize."""
 
         self.pattern = selector
         self.flags = flags
         self.debug = self.flags & util.DEBUG
         self.quirks = self.flags & util._QUIRKS
+        self.custom = {} if custom is None else custom
 
     def parse_attribute_selector(self, sel, m, has_selector, quirks):
         """Create attribute selector from the returned regex match."""
@@ -422,6 +455,21 @@ class CSSParser(object):
             tag = parts[0]
             prefix = None
         sel.tag = ct.SelectorTag(tag, prefix)
+        has_selector = True
+        return has_selector
+
+    def parse_pseudo_class_custom(self, sel, m, has_selector):
+        """Parse custom pseudo class alias."""
+
+        pseudo = util.lower(m.group('name'))
+        if pseudo not in self.custom:
+            raise SelectorSyntaxError(
+                "Undefined custom selector '{}' found at postion {}".format(pseudo, m.end(0)),
+                self.pattern,
+                m.end(0)
+            )
+        selector = self.custom.get(pseudo)
+        sel.selectors.append(selector)
         has_selector = True
         return has_selector
 
@@ -770,6 +818,8 @@ class CSSParser(object):
                 # Handle parts
                 if key == "at_rule":
                     raise NotImplementedError("At-rules found at position {}".format(m.start(0)))
+                elif key == 'pseudo_class_custom':
+                    has_selector = self.parse_pseudo_class_custom(sel, m, has_selector)
                 elif key == 'pseudo_class':
                     has_selector, is_html = self.parse_pseudo_class(sel, m, has_selector, iselector, is_html)
                 elif key == 'pseudo_element':

@@ -501,6 +501,16 @@ class TestSoupSieve(util.TestCase):
         sv.purge()
         self.assertEqual(sv.cp._cached_css_compile.cache_info().currsize, 0)
 
+    def test_custom_interface(self):
+        """Test Custom interface."""
+
+        custom = sv.Custom()
+        self.assertTrue(len(custom._custom) == 0)
+        custom.append(':--header', 'h1, h2, h3, h4, h5, h6')
+        self.assertTrue(len(custom._custom) == 1)
+        custom.remove(':--header')
+        self.assertTrue(len(custom._custom) == 0)
+
     def test_recompile(self):
         """If you feed through the same object, it should pass through unless you change parameters."""
 
@@ -514,6 +524,35 @@ class TestSoupSieve(util.TestCase):
         with pytest.raises(ValueError):
             sv.compile(p1, namespaces={"": ""})
 
+        custom_selectors = sv.Custom()
+        custom_selectors.append(":--header", 'h1, h2, h3, h4, h5, h6')
+
+        with pytest.raises(ValueError):
+            sv.compile(p1, custom=custom_selectors)
+
+    def test_immutable_dict_size(self):
+        """Test immutable dictionary."""
+
+        idict = sv.ct.ImmutableDict({'a': 'b', 'c': 'd'})
+        self.assertEqual(2, len(idict))
+
+
+class TestInvalid(util.TestCase):
+    """Test invalid."""
+
+    def test_bad_custom_value(self):
+        """Test bad custom selector value."""
+
+        with self.assertRaises(TypeError):
+            sv.compile('div', custom={':--header', 'h1, h2, h3, h4, h5, h6'})
+
+    def test_custom_bad_remove(self):
+        """Test invalid custom selector remove."""
+
+        custom = sv.Custom()
+        with self.assertRaises(KeyError):
+            custom.remove(':--header')
+
     def test_immutable_object(self):
         """Test immutable object."""
 
@@ -522,22 +561,12 @@ class TestSoupSieve(util.TestCase):
         with self.assertRaises(AttributeError):
             obj.member = 3
 
-    def test_immutable_dict_size(self):
-        """Test immutable dictionary."""
-
-        idict = sv.ct.ImmutableDict({'a': 'b', 'c': 'd'})
-        self.assertEqual(2, len(idict))
-
     def test_immutable_dict_read_only(self):
         """Test immutable dictionary is read only."""
 
         idict = sv.ct.ImmutableDict({'a': 'b', 'c': 'd'})
         with self.assertRaises(TypeError):
             idict['a'] = 'f'
-
-
-class TestInvalid(util.TestCase):
-    """Test invalid."""
 
     def test_immutable_dict_hashable_value(self):
         """Test immutable dictionary has a hashable value."""
@@ -568,6 +597,24 @@ class TestInvalid(util.TestCase):
 
         with self.assertRaises(TypeError):
             sv.ct.Namespaces({{}: 'string'})
+
+    def test_invalid_custom_type(self):
+        """Test invalid custom selector type."""
+
+        with self.assertRaises(TypeError):
+            sv.ct.CustomSelectors(((3, 3),))
+
+    def test_invalid_custom_hashable_value(self):
+        """Test custom selector has hashable value."""
+
+        with self.assertRaises(TypeError):
+            sv.ct.CustomSelectors({'a': {}})
+
+    def test_invalid_custom_hashable_key(self):
+        """Test custom selector key is hashable."""
+
+        with self.assertRaises(TypeError):
+            sv.ct.CustomSelectors({{}: 'string'})
 
     def test_invalid_type_input_match(self):
         """Test bad input into the match API."""
