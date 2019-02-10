@@ -85,7 +85,8 @@ PSEUDO_SUPPORTED = PSEUDO_SIMPLE | PSEUDO_SIMPLE_NO_MATCH | PSEUDO_COMPLEX | PSE
 
 # Sub-patterns parts
 # Whitespace
-WS = r'[ \t\r\n\f]'
+NEWLINE = r'(?:\r\n|(?!\r\n)[\n\f\r])'
+WS = r'(?:[ \t]|{})'.format(NEWLINE)
 # Comments
 COMMENTS = r'(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)'
 # Whitespace with comments included
@@ -94,18 +95,15 @@ WSC = r'(?:{ws}|{comments})'.format(ws=WS, comments=COMMENTS)
 CSS_ESCAPES = r'(?:\\[a-f0-9]{{1,6}}{ws}?|\\[^\r\n\f])'.format(ws=WS)
 # CSS Identifier
 IDENTIFIER = r'''
-(?:-?(?:[^\x00-\x2f\x30-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+
-(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})*)
-'''.format(esc=CSS_ESCAPES)
-# CSS Identifier expanded to allow for custom start: `--`
-EXPANDED_IDENTIFIER = r'''
 (?:(?:-?(?:[^\x00-\x2f\x30-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+|--)
 (?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})*)
 '''.format(esc=CSS_ESCAPES)
 # `nth` content
 NTH = r'(?:[-+])?(?:[0-9]+n?|n)(?:(?<=n){ws}*(?:[-+]){ws}*(?:[0-9]+))?'.format(ws=WSC)
 # Value: quoted string or identifier
-VALUE = r'''(?:"(?:\\.|[^\\"]+)*?"|'(?:\\.|[^\\']+)*?'|{ident}+)'''.format(ident=IDENTIFIER)
+VALUE = r'''
+(?:"(?:\\(?:.|{nl})|[^\\"\r\n\f]+)*?"|'(?:\\(?:.|{nl})|[^\\'\r\n\f]+)*?'|{ident}+)
+'''.format(nl=NEWLINE, ident=IDENTIFIER)
 # Attribute value comparison. `!=` is handled special as it is non-standard.
 ATTR = r'''
 (?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*(?P<value>{value})(?:{ws}+(?P<case>[is]))?)?{ws}*\]
@@ -132,7 +130,7 @@ PAT_QUIRKS_ATTR = r'''
 # Pseudo class (`:pseudo-class`, `:pseudo-class(`)
 PAT_PSEUDO_CLASS = r'(?P<name>:{ident})(?P<open>\({ws}*)?'.format(ws=WSC, ident=IDENTIFIER)
 # Custom pseudo class (`:--custom-pseudo`)
-PAT_PSEUDO_CLASS_CUSTOM = r'(?P<name>:(?=--){ident})'.format(ident=EXPANDED_IDENTIFIER)
+PAT_PSEUDO_CLASS_CUSTOM = r'(?P<name>:(?=--){ident})'.format(ident=IDENTIFIER)
 # Closing pseudo group (`)`)
 PAT_PSEUDO_CLOSE = r'{ws}*\)'.format(ws=WSC)
 # Pseudo element (`::pseudo-element`)
@@ -154,7 +152,7 @@ PAT_PSEUDO_LANG = r':lang\({ws}*(?P<lang>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'
 # Pseudo class direction (`:dir(ltr)`)
 PAT_PSEUDO_DIR = r':dir\({ws}*(?P<dir>ltr|rtl){ws}*\)'.format(ws=WSC)
 # Combining characters (`>`, `~`, ` `, `+`, `,`)
-PAT_COMBINE = r'{ws}*?(?P<relation>[,+>~]|[ \t\r\n\f](?![,+>~])){ws}*'.format(ws=WSC)
+PAT_COMBINE = r'{wsc}*?(?P<relation>[,+>~]|{ws}(?![,+>~])){wsc}*'.format(ws=WS, wsc=WSC)
 # Extra: Contains (`:contains(text)`)
 PAT_PSEUDO_CONTAINS = r':contains\({ws}*(?P<value>{value}){ws}*\)'.format(ws=WSC, value=VALUE)
 

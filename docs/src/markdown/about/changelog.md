@@ -3,7 +3,12 @@
 ## 1.8.0
 
 - **NEW**: Add custom selector support. (#92)
-- **FIX**: Small tweak to CSS identifier pattern to ensure it matches the CSS specification exactly.
+- **FIX**: Small tweak to CSS identifier pattern to ensure it matches the CSS specification exactly. Specifically, you
+can't have an identifier of only `-`.
+- **FIX**: CSS string patterns should allow escaping newlines.
+- **FIX**: Newline regular expression for CSS newlines should treat `\r\n` as a single character, especially in cases
+such as string escapes: `\\\r\n`.
+- **FIX**: Allow `--` as a valid identifier or identifier start.
 
 ## 1.7.3
 
