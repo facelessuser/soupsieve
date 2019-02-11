@@ -46,6 +46,26 @@ class TestContains(util.TestCase):
             flags=util.HTML
         )
 
+    def test_contains_quoted_with_escaped_newline(self):
+        """Test contains quoted with escaped newline."""
+
+        self.assert_selector(
+            self.MARKUP,
+            'body :contains("Test\\\ning")',
+            ['1'],
+            flags=util.HTML
+        )
+
+    def test_contains_quoted_with_escaped_newline_with_carriage_return(self):
+        """Test contains quoted with escaped newline with carriage return."""
+
+        self.assert_selector(
+            self.MARKUP,
+            'body :contains("Test\\\r\ning")',
+            ['1'],
+            flags=util.HTML
+        )
+
     def test_contains_with_descendants(self):
         """Test that contains returns descendants as well as the top level that contain."""
 
