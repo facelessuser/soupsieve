@@ -105,6 +105,7 @@ class TestType(util.TestCase):
         """Test invalid syntax."""
 
         self.assert_raises('div?', SelectorSyntaxError)
+        self.assert_raises('-', SelectorSyntaxError)
 
 
 class TestTypeQuirks(TestType):
