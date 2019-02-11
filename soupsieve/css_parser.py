@@ -85,27 +85,26 @@ PSEUDO_SUPPORTED = PSEUDO_SIMPLE | PSEUDO_SIMPLE_NO_MATCH | PSEUDO_COMPLEX | PSE
 
 # Sub-patterns parts
 # Whitespace
-WS = r'[ \t\r\n\f]'
+NEWLINE = r'(?:\r\n|(?!\r\n)[\n\f\r])'
+WS = r'(?:[ \t]|{})'.format(NEWLINE)
 # Comments
 COMMENTS = r'(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)'
 # Whitespace with comments included
 WSC = r'(?:{ws}|{comments})'.format(ws=WS, comments=COMMENTS)
 # CSS escapes
 CSS_ESCAPES = r'(?:\\[a-f0-9]{{1,6}}{ws}?|\\[^\r\n\f])'.format(ws=WS)
+CSS_STRING_ESCAPES = r'(?:\\[a-f0-9]{{1,6}}{ws}?|\\[^\r\n\f]|\\{nl})'.format(ws=WS, nl=NEWLINE)
 # CSS Identifier
 IDENTIFIER = r'''
-(?:-?(?:[^\x00-\x2f\x30-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+
-(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})*)
-'''.format(esc=CSS_ESCAPES)
-# CSS Identifier expanded to allow for custom start: `--`
-EXPANDED_IDENTIFIER = r'''
 (?:(?:-?(?:[^\x00-\x2f\x30-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+|--)
 (?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})*)
 '''.format(esc=CSS_ESCAPES)
 # `nth` content
 NTH = r'(?:[-+])?(?:[0-9]+n?|n)(?:(?<=n){ws}*(?:[-+]){ws}*(?:[0-9]+))?'.format(ws=WSC)
 # Value: quoted string or identifier
-VALUE = r'''(?:"(?:\\.|[^\\"]+)*?"|'(?:\\.|[^\\']+)*?'|{ident}+)'''.format(ident=IDENTIFIER)
+VALUE = r'''
+(?:"(?:\\(?:.|{nl})|[^\\"\r\n\f]+)*?"|'(?:\\(?:.|{nl})|[^\\'\r\n\f]+)*?'|{ident}+)
+'''.format(nl=NEWLINE, ident=IDENTIFIER)
 # Attribute value comparison. `!=` is handled special as it is non-standard.
 ATTR = r'''
 (?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*(?P<value>{value})(?:{ws}+(?P<case>[is]))?)?{ws}*\]
@@ -132,7 +131,7 @@ PAT_QUIRKS_ATTR = r'''
 # Pseudo class (`:pseudo-class`, `:pseudo-class(`)
 PAT_PSEUDO_CLASS = r'(?P<name>:{ident})(?P<open>\({ws}*)?'.format(ws=WSC, ident=IDENTIFIER)
 # Custom pseudo class (`:--custom-pseudo`)
-PAT_PSEUDO_CLASS_CUSTOM = r'(?P<name>:(?=--){ident})'.format(ident=EXPANDED_IDENTIFIER)
+PAT_PSEUDO_CLASS_CUSTOM = r'(?P<name>:(?=--){ident})'.format(ident=IDENTIFIER)
 # Closing pseudo group (`)`)
 PAT_PSEUDO_CLOSE = r'{ws}*\)'.format(ws=WSC)
 # Pseudo element (`::pseudo-element`)
@@ -154,13 +153,14 @@ PAT_PSEUDO_LANG = r':lang\({ws}*(?P<lang>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'
 # Pseudo class direction (`:dir(ltr)`)
 PAT_PSEUDO_DIR = r':dir\({ws}*(?P<dir>ltr|rtl){ws}*\)'.format(ws=WSC)
 # Combining characters (`>`, `~`, ` `, `+`, `,`)
-PAT_COMBINE = r'{ws}*?(?P<relation>[,+>~]|[ \t\r\n\f](?![,+>~])){ws}*'.format(ws=WSC)
+PAT_COMBINE = r'{wsc}*?(?P<relation>[,+>~]|{ws}(?![,+>~])){wsc}*'.format(ws=WS, wsc=WSC)
 # Extra: Contains (`:contains(text)`)
 PAT_PSEUDO_CONTAINS = r':contains\({ws}*(?P<value>{value}){ws}*\)'.format(ws=WSC, value=VALUE)
 
 # Regular expressions
 # CSS escape pattern
 RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{{1,6}}{ws}?)|(\\[^\r\n\f]))'.format(ws=WSC), re.I)
+RE_CSS_STR_ESC = re.compile(r'(?:(\\[a-f0-9]{{1,6}}{ws}?)|(\\[^\r\n\f])|(\\{nl}))'.format(ws=WS, nl=NEWLINE), re.I)
 # Pattern to break up `nth` specifiers
 RE_NTH = re.compile(
     r'(?P<s1>[-+])?(?P<a>[0-9]+n?|n)(?:(?<=n){ws}*(?P<s2>[-+]){ws}*(?P<b>[0-9]+))?'.format(ws=WSC),
@@ -233,15 +233,31 @@ def _create_custom_selectors(custom, flags=0):
     return ct.CustomSelectors(**custom_selectors)
 
 
-def css_unescape(string):
-    """Unescape CSS value."""
+def css_unescape(content, string=False):
+    """
+    Unescape CSS value.
+
+    Strings allow for spanning the value on multiple strings by escaping a new line.
+    """
 
     def replace(m):
         """Replace with the appropriate substitute."""
 
         return util.uchr(int(m.group(1)[1:], 16)) if m.group(1) else m.group(2)[1:]
 
-    return RE_CSS_ESC.sub(replace, string)
+    def replace_string(m):
+        """Replace with the appropriate substitute for a string."""
+
+        if m.group(1):
+            value = util.uchr(int(m.group(1)[1:], 16))
+        elif m.group(2):
+            value = m.group(2)[1:]
+        else:
+            value = ''
+
+        return value
+
+    return RE_CSS_ESC.sub(replace, content) if not string else RE_CSS_STR_ESC.sub(replace_string, content)
 
 
 class SelectorPattern(object):
@@ -393,10 +409,10 @@ class CSSParser(object):
             flags = 0
 
         if op:
-            is_quoted = m.group('value').startswith(('"', "'")) and not quirks
-            value = css_unescape(
-                m.group('value')[1:-1] if is_quoted else m.group('value')
-            )
+            if m.group('value').startswith(('"', "'")) and not quirks:
+                value = css_unescape(m.group('value')[1:-1], True)
+            else:
+                value = css_unescape(m.group('value'))
         else:
             value = None
         if not op:
@@ -716,10 +732,9 @@ class CSSParser(object):
         selector = m.group(0)
         if selector.startswith('.'):
             sel.classes.append(css_unescape(selector[1:]))
-            has_selector = True
         else:
             sel.ids.append(css_unescape(selector[1:]))
-            has_selector = True
+        has_selector = True
         return has_selector
 
     def parse_pseudo_contains(self, sel, m, has_selector):
@@ -727,8 +742,9 @@ class CSSParser(object):
 
         content = m.group('value')
         if content.startswith(("'", '"')):
-            content = content[1:-1]
-        content = css_unescape(content)
+            content = css_unescape(content[1:-1], True)
+        else:
+            content = css_unescape(content)
         sel.contains.append(content)
         has_selector = True
         return has_selector
@@ -743,8 +759,9 @@ class CSSParser(object):
                 continue
             value = token.group('value')
             if value.startswith(('"', "'")):
-                value = value[1:-1]
-            parts = css_unescape(value).split('-')
+                parts = css_unescape(value[1:-1], True).split('-')
+            else:
+                parts = css_unescape(value).split('-')
 
             new_parts = []
             first = True

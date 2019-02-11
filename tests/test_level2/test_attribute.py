@@ -140,6 +140,16 @@ class TestAttribute(util.TestCase):
             flags=util.HTML
         )
 
+    def test_attribute_escaped_newline(self):
+        """Test attribute with escaped new line in quoted string."""
+
+        self.assert_selector(
+            self.MARKUP,
+            '[id="pr\\\ne"]',
+            ["pre"],
+            flags=util.HTML
+        )
+
     def test_invalid_tag(self):
         """
         Test invalid tag.

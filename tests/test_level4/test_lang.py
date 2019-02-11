@@ -72,6 +72,17 @@ class TestLang(util.TestCase):
             flags=util.HTML
         )
 
+    def test_language_quoted_with_escaped_newline(self):
+        """Test language (quoted) with escaped new line."""
+
+        # Normal quoted
+        self.assert_selector(
+            self.MARKUP,
+            "p:lang('de-\\\nDE')",
+            ['1', '2', '3', '4', '5', '6'],
+            flags=util.HTML
+        )
+
     def test_wildcard_at_start_quoted(self):
         """Test language with wildcard at start (quoted)."""
 
