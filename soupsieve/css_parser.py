@@ -199,10 +199,12 @@ _MAXCACHE = 500
 def _cached_css_compile(pattern, namespaces, custom, flags):
     """Cached CSS compile."""
 
+    custom_selectors = process_custom(custom)
     return cm.SoupSieve(
         pattern,
-        CSSParser(pattern, custom=custom, flags=flags).process_selectors(),
+        CSSParser(pattern, custom=custom_selectors, flags=flags).process_selectors(),
         namespaces,
+        custom,
         flags
     )
 
@@ -213,24 +215,19 @@ def _purge_cache():
     _cached_css_compile.cache_clear()
 
 
-def _valid_custom_name(name):
-    """Check if custom name is valid."""
-
-    return RE_CUSTOM.match(name) is not None
-
-
-def _create_custom_selectors(custom, flags=0):
-    """Create a dictionary of compiled custom selectors from a dictionary of selector strings."""
+def process_custom(custom):
+    """Process custom."""
 
     custom_selectors = {}
-    for key, selector in custom._custom.items():
-
-        name = util.lower(key)
-        custom_selectors[name] = CSSParser(
-            selector, custom=custom_selectors, flags=flags
-        ).process_selectors(flags=FLG_PSEUDO)
-
-    return ct.CustomSelectors(**custom_selectors)
+    if custom is not None:
+        for key, value in custom.items():
+            name = util.lower(key)
+            if RE_CUSTOM.match(name) is None:
+                raise SelectorSyntaxError("The name '{}' is not a valid custom pseudo-class name".format(name))
+            if name in custom_selectors:
+                raise KeyError("The custom selector '{}' has already been registered".format(name))
+            custom_selectors[name] = value
+    return custom_selectors
 
 
 def css_unescape(content, string=False):
@@ -475,16 +472,29 @@ class CSSParser(object):
         return has_selector
 
     def parse_pseudo_class_custom(self, sel, m, has_selector):
-        """Parse custom pseudo class alias."""
+        """
+        Parse custom pseudo class alias.
+
+        Compile custom selectors as we need them. When compiling a custom selector,
+        set it to `None` in the dictionary so we can avoid an infinite loop.
+        """
 
         pseudo = util.lower(m.group('name'))
-        if pseudo not in self.custom:
+        selector = self.custom.get(pseudo)
+        if selector is None:
             raise SelectorSyntaxError(
                 "Undefined custom selector '{}' found at postion {}".format(pseudo, m.end(0)),
                 self.pattern,
                 m.end(0)
             )
-        selector = self.custom.get(pseudo)
+
+        if not isinstance(selector, ct.SelectorList):
+            self.custom[pseudo] = None
+            selector = CSSParser(
+                selector, custom=self.custom, flags=self.flags
+            ).process_selectors(flags=FLG_PSEUDO)
+            self.custom[pseudo] = selector
+
         sel.selectors.append(selector)
         has_selector = True
         return has_selector

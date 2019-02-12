@@ -16,28 +16,19 @@ if PY3:
     import copyreg  # noqa F401
     from collections.abc import Hashable, Mapping  # noqa F401
 
-    if PY37:
-        odict = dict
-    else:
-        from collections import OrderedDict
-        odict = OrderedDict
-
     ustr = str
     bstr = bytes
     unichar = chr
     string = str
-    odict = OrderedDict if not PY37 else dict
 else:
     from backports.functools_lru_cache import lru_cache  # noqa F401
     import copy_reg as copyreg  # noqa F401
     from collections import Hashable, Mapping  # noqa F401
-    from collections import OrderedDict
 
     ustr = unicode  # noqa: F821
     bstr = str
     unichar = unichr  # noqa: F821
     string = basestring  # noqa: F821
-    odict = OrderedDict
 
 _QUIRKS = 0x20000
 DEBUG = 0x10000

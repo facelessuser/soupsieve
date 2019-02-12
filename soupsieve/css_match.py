@@ -397,7 +397,7 @@ class CSSMatch(Document, object):
         self.cached_default_forms = []
         self.cached_indeterminate_forms = []
         self.selectors = selectors
-        self.namespaces = namespaces
+        self.namespaces = {} if namespaces is None else namespaces
         self.flags = flags
         doc = scope
         parent = self.get_parent(doc)
@@ -1250,15 +1250,16 @@ class CommentsMatch(Document, object):
 class SoupSieve(ct.Immutable):
     """Compiled Soup Sieve selector matching object."""
 
-    __slots__ = ("pattern", "selectors", "namespaces", "flags", "_hash")
+    __slots__ = ("pattern", "selectors", "namespaces", "custom", "flags", "_hash")
 
-    def __init__(self, pattern, selectors, namespaces, flags):
+    def __init__(self, pattern, selectors, namespaces, custom, flags):
         """Initialize."""
 
         super(SoupSieve, self).__init__(
             pattern=pattern,
             selectors=selectors,
             namespaces=namespaces,
+            custom=custom,
             flags=flags
         )
 
@@ -1320,7 +1321,12 @@ class SoupSieve(ct.Immutable):
     def __repr__(self):  # pragma: no cover
         """Representation."""
 
-        return "SoupSieve(pattern={!r}, namespaces={!r}, flags={!r})".format(self.pattern, self.namespaces, self.flags)
+        return "SoupSieve(pattern={!r}, namespaces={!r}, custom={!r}, flags={!r})".format(
+            self.pattern,
+            self.namespaces,
+            self.custom,
+            self.flags
+        )
 
     __str__ = __repr__
 

@@ -2,7 +2,7 @@
 
 ## 1.8.0
 
-- **NEW**: Add custom selector support. (#92)
+- **NEW**: Add custom selector support. (#92)(#108)
 - **FIX**: Small tweak to CSS identifier pattern to ensure it matches the CSS specification exactly. Specifically, you
 can't have an identifier of only `-`.
 - **FIX**: CSS string patterns should allow escaping newlines to span strings across multiple lines.

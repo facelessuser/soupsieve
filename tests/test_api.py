@@ -456,9 +456,12 @@ class TestSoupSieve(util.TestCase):
         # Test that we can pickle and unpickle
         # We force a pattern that contains all custom types:
         # `Selector`, `NullSelector`, `SelectorTag`, `SelectorAttribute`,
-        # `SelectorNth`, `SelectorLang`, `SelectorList`, and `Namespaces`
+        # `SelectorNth`, `SelectorLang`, `SelectorList`, `Namespaces`,
+        # and `CustomSelectors`.
         p1 = sv.compile(
-            'p.class#id[id]:nth-child(2):lang(en):focus', {'html': 'http://www.w3.org/TR/html4/'}
+            'p.class#id[id]:nth-child(2):lang(en):focus',
+            {'html': 'http://www.w3.org/TR/html4/'},
+            custom={':--header': 'h1, h2, h3, h4, h5, h6'}
         )
         sp1 = pickle.dumps(p1)
         pp1 = pickle.loads(sp1)
@@ -466,13 +469,18 @@ class TestSoupSieve(util.TestCase):
 
         # Test that we pull the same one from cache
         p2 = sv.compile(
-            'p.class#id[id]:nth-child(2):lang(en):focus', {'html': 'http://www.w3.org/TR/html4/'}
+            'p.class#id[id]:nth-child(2):lang(en):focus',
+            {'html': 'http://www.w3.org/TR/html4/'},
+            custom={':--header': 'h1, h2, h3, h4, h5, h6'}
         )
         self.assertTrue(p1 is p2)
 
         # Test that we compile a new one when providing a different flags
         p3 = sv.compile(
-            'p.class#id[id]:nth-child(2):lang(en):focus', {'html': 'http://www.w3.org/TR/html4/'}, flags=0x10
+            'p.class#id[id]:nth-child(2):lang(en):focus',
+            {'html': 'http://www.w3.org/TR/html4/'},
+            custom={':--header': 'h1, h2, h3, h4, h5, h6'},
+            flags=0x10
         )
         self.assertTrue(p1 is not p3)
         self.assertTrue(p1 != p3)
@@ -501,16 +509,6 @@ class TestSoupSieve(util.TestCase):
         sv.purge()
         self.assertEqual(sv.cp._cached_css_compile.cache_info().currsize, 0)
 
-    def test_custom_interface(self):
-        """Test Custom interface."""
-
-        custom = sv.Custom()
-        self.assertTrue(len(custom._custom) == 0)
-        custom.append(':--header', 'h1, h2, h3, h4, h5, h6')
-        self.assertTrue(len(custom._custom) == 1)
-        custom.remove(':--header')
-        self.assertTrue(len(custom._custom) == 0)
-
     def test_recompile(self):
         """If you feed through the same object, it should pass through unless you change parameters."""
 
@@ -524,11 +522,8 @@ class TestSoupSieve(util.TestCase):
         with pytest.raises(ValueError):
             sv.compile(p1, namespaces={"": ""})
 
-        custom_selectors = sv.Custom()
-        custom_selectors.append(":--header", 'h1, h2, h3, h4, h5, h6')
-
         with pytest.raises(ValueError):
-            sv.compile(p1, custom=custom_selectors)
+            sv.compile(p1, custom={":--header": 'h1, h2, h3, h4, h5, h6'})
 
     def test_immutable_dict_size(self):
         """Test immutable dictionary."""
@@ -539,19 +534,6 @@ class TestSoupSieve(util.TestCase):
 
 class TestInvalid(util.TestCase):
     """Test invalid."""
-
-    def test_bad_custom_value(self):
-        """Test bad custom selector value."""
-
-        with self.assertRaises(TypeError):
-            sv.compile('div', custom={':--header', 'h1, h2, h3, h4, h5, h6'})
-
-    def test_custom_bad_remove(self):
-        """Test invalid custom selector remove."""
-
-        custom = sv.Custom()
-        with self.assertRaises(KeyError):
-            custom.remove(':--header')
 
     def test_immutable_object(self):
         """Test immutable object."""
