@@ -4,11 +4,13 @@
 
 - **NEW**: Add custom selector support. (#92)(#108)
 - **FIX**: Small tweak to CSS identifier pattern to ensure it matches the CSS specification exactly. Specifically, you
-can't have an identifier of only `-`.
-- **FIX**: CSS string patterns should allow escaping newlines to span strings across multiple lines.
+can't have an identifier of only `-`. (#107)
+- **FIX**: CSS string patterns should allow escaping newlines to span strings across multiple lines. (#107)
 - **FIX**: Newline regular expression for CSS newlines should treat `\r\n` as a single character, especially in cases
-such as string escapes: `\\\r\n`.
-- **FIX**: Allow `--` as a valid identifier or identifier start.
+such as string escapes: `\\\r\n`. (#107)
+- **FIX**: Allow `--` as a valid identifier or identifier start. (#107)
+- **FIX**: Bad CSS syntax now raises a `SelectorSyntaxError`, which is still currently derived from `SyntaxError`, but
+will most likely be derived from `Exception` in the future.
 
 ## 1.7.3
 
