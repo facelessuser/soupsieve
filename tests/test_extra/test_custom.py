@@ -19,9 +19,10 @@ class TestCustomSelectors(util.TestCase):
     def test_custom_selectors(self):
         """Test custom selectors."""
 
-        custom_selectors = sv.Custom()
-        custom_selectors.append(":--headers", "h1, h2, h3, h4, h5, h6")
-        custom_selectors.append(":--parent", ":has(> *|*)")
+        custom_selectors = {
+            ":--headers": "h1, h2, h3, h4, h5, h6",
+            ":--parent": ":has(> *|*)"
+        }
 
         self.assert_selector(
             self.MARKUP,
@@ -50,8 +51,7 @@ class TestCustomSelectors(util.TestCase):
     def test_custom_selectors_exotic(self):
         """Test custom selectors."""
 
-        custom_selectors = sv.Custom()
-        custom_selectors.append(":--", "h1, h2, h3, h4, h5, h6")
+        custom_selectors = {":--": "h1, h2, h3, h4, h5, h6"}
 
         self.assert_selector(
             self.MARKUP,
@@ -64,9 +64,10 @@ class TestCustomSelectors(util.TestCase):
     def test_custom_dependency(self):
         """Test custom selector dependency on other custom selectors."""
 
-        custom_selectors = sv.Custom()
-        custom_selectors.append(":--parent", ":has(> *|*)")
-        custom_selectors.append(":--parent-paragraph", "p:--parent")
+        custom_selectors = {
+            ":--parent": ":has(> *|*)",
+            ":--parent-paragraph": "p:--parent"
+        }
 
         self.assert_selector(
             self.MARKUP,
@@ -76,38 +77,56 @@ class TestCustomSelectors(util.TestCase):
             flags=util.HTML
         )
 
+    def test_custom_dependency_out_of_order(self):
+        """Test custom selector out of order dependency."""
+
+        custom_selectors = {
+            ":--parent-paragraph": "p:--parent",
+            ":--parent": ":has(> *|*)"
+        }
+
+        self.assert_selector(
+            self.MARKUP,
+            ':--parent-paragraph',
+            ['4'],
+            custom=custom_selectors,
+            flags=util.HTML
+        )
+
+    def test_custom_dependency_recursion(self):
+        """Test that we fail on dependency recursion."""
+
+        custom_selectors = {
+            ":--parent-paragraph": "p:--parent",
+            ":--parent": "p:--parent-paragraph"
+        }
+
+        self.assert_raises(':--parent', sv.SelectorSyntaxError, custom=custom_selectors)
+
     def test_bad_custom(self):
         """Test that a bad custom raises a syntax error."""
 
-        custom_selectors = sv.Custom()
-        custom_selectors.append(":--parent", ":has(> *|*)")
-        custom_selectors.append(":--parent-paragraph", "p:--parent")
+        custom_selectors = {
+            ":--parent": ":has(> *|*)",
+            ":--parent-paragraph": "p:--parent"
+        }
 
-        self.assert_raises(':--wrong', SyntaxError, custom=custom_selectors)
+        self.assert_raises(':--wrong', sv.SelectorSyntaxError, custom=custom_selectors)
 
     def test_bad_custom_syntax(self):
         """Test that a custom selector with bad syntax in its name fails."""
 
-        custom_selectors = sv.Custom()
-        with self.assertRaises(SyntaxError):
-            custom_selectors.append(":--parent.", ":has(> *|*)")
+        self.assert_raises('div', sv.SelectorSyntaxError, custom={":--parent.": ":has(> *|*)"})
 
     def test_pseudo_class_collision(self):
         """Test that a custom selector cannot match an already existing pseudo-class name."""
 
-        custom_selectors = sv.Custom()
-
-        with self.assertRaises(SyntaxError):
-            custom_selectors.append(":hover", ":has(> *|*)")
+        self.assert_raises('div', sv.SelectorSyntaxError, custom={":hover": ":has(> *|*)"})
 
     def test_custom_collision(self):
         """Test that a custom selector cannot match an already existing custom name."""
 
-        custom_selectors = sv.Custom()
-        custom_selectors.append(":--parent", ":has(> *|*)")
-
-        with self.assertRaises(KeyError):
-            custom_selectors.append(":--PARENT", "p:--parent")
+        self.assert_raises('div', KeyError, custom={":--parent": ":has(> *|*)", ":--PARENT": ":has(> *|*)"})
 
 
 class TestCustomSelectorsQuirks(TestCustomSelectors):

@@ -30,13 +30,12 @@ from .__meta__ import __version__, __version_info__  # noqa: F401
 from . import css_parser as cp
 from . import css_match as cm
 from . import css_types as ct
-from . import util
 from .util import DEBUG, _QUIRKS, SelectorSyntaxError  # noqa: F401
 
 __all__ = (
-    'DEBUG', "_QUIRKS", 'SoupSieve', 'compile', 'purge',
-    'comments', 'icomments', 'closest', 'select', 'select_one',
-    'iselect', 'match', 'filter', 'SelectorSyntaxError', 'Custom'
+    'DEBUG', "_QUIRKS", 'SelectorSyntaxError', 'SoupSieve',
+    'closest', 'comments', 'compile', 'filter', 'icomments',
+    'iselect', 'match', 'select', 'select_one'
 )
 
 SoupSieve = cm.SoupSieve
@@ -45,22 +44,17 @@ SoupSieve = cm.SoupSieve
 def compile(pattern, namespaces=None, flags=0, **kwargs):  # noqa: A001
     """Compile CSS pattern."""
 
-    ns_none = namespaces is None
-    if ns_none:
-        namespaces = ct.Namespaces()
-    if not isinstance(namespaces, ct.Namespaces):
+    if namespaces is not None:
         namespaces = ct.Namespaces(**namespaces)
 
     custom = kwargs.get('custom')
     if custom is not None:
-        if not isinstance(custom, Custom):
-            raise TypeError("Custom selectors must be of type 'Custom'")
-        custom = cp._create_custom_selectors(custom, flags)
+        custom = ct.CustomSelectors(**custom)
 
     if isinstance(pattern, SoupSieve):
         if flags:
             raise ValueError("Cannot process 'flags' argument on a compiled selector list")
-        elif not ns_none:
+        elif namespaces is not None:
             raise ValueError("Cannot process 'namespaces' argument on a compiled selector list")
         elif custom is not None:
             raise ValueError("Cannot process 'custom' argument on a compiled selector list")
@@ -123,36 +117,3 @@ def iselect(select, tag, namespaces=None, limit=0, flags=0, **kwargs):
 
     for el in compile(select, namespaces, flags, **kwargs).iselect(tag, limit):
         yield el
-
-
-class Custom(object):
-    """
-    Custom Selectors.
-
-    This object allows us to control order, and possibly extend the complexity of aliases in the future.
-
-    TODO: If desired, we could allow for function custom selectors `:--custom(arg1, arg2)`,
-          or even custom logic, though none of these possibilities have been fully evaluated
-          for practicality or if they can even be implemented.
-    """
-
-    def __init__(self):
-        """Initialize."""
-
-        self._custom = util.odict()
-
-    def append(self, alias, selector):
-        """Append a new custom selector."""
-
-        name = util.lower(alias)
-
-        if not cp._valid_custom_name(name):
-            raise SelectorSyntaxError("The name '{}' is not a valid custom pseudo-class name".format(name))
-        if name in self._custom:
-            raise KeyError("The custom selector '{}' has already been registered".format(name))
-        self._custom[name] = selector
-
-    def remove(self, alias):
-        """Remove a custom selector by name."""
-
-        del self._custom[alias]

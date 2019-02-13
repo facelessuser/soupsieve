@@ -204,16 +204,17 @@ class SoupSieve:
 Soup Sieve caches compiled patterns for performance. If for whatever reason, you need to purge the cache, simply call
 `purge`.
 
-
 ## Custom Selectors
 
 The custom selector feature is loosely inspired by the `css-extensions` [proposal][custom-extensions-1]. In its current
 form, Soup Sieve allows assigning a complex selector to a custom pseudo-class name. The pseudo-class name must start
 with `:--` to avoid conflicts with any future pseudo-classes.
 
-To create custom selectors, you must first instantiate a `Custom` class. Afterwards, custom selectors are added by
-calling the `append` method. Though not usually needed, an already added custom selector can be removed with the
-`remove` method.
+To create custom selectors, you simply need to pass a dictionary containing the custom pseudo-class names (keys) with
+the associated CSS selectors that the pseudo-classes are meant to represent (values). It is important to remember that
+pseudo-class names are not case sensitive, so even though a dictionary will allow you to specify multiple keys with the
+same name (as long as the character cases are different), Soup Sieve will not and will throw an exception if you attempt
+to do so.
 
 In the following example, we will define our own custom selector called `#!css :--header` that will be an alias for
 `#!css h1, h2, h3, h4, h5, h6`.
@@ -233,11 +234,8 @@ markup = """
 </html
 """
 
-custom = sv.Custom()
-custom.append(':--header', 'h1, h2, h3, h4, h5, h6')
-
 soup = bs4.BeautifulSoup(markup, 'lxml')
-print(sv.select(':--header', soup, custom=custom))
+print(sv.select(':--header', soup, custom={':--header', 'h1, h2, h3, h4, h5, h6'}))
 ```
 
 The above code, when run, should yield the following output:
@@ -246,17 +244,19 @@ The above code, when run, should yield the following output:
 [<h1 id="1">Header 1</h1>, <h2 id="2">Header 2</h2>]
 ```
 
-When adding custom selectors, order is important. If a custom selector needs to rely on a previous custom selector, the
-selector that is a dependency must be added first.
+Custom selectors can also be dependent upon other custom selectors. You don't have to worry about the order in the
+dictionary as custom selectors will be compiled "just in time" when they are needed. Be careful though, if you create
+a circular dependency, you will get a `SelectorSyntaxError`.
 
 Assuming the same markup as in the first example, we will now create a custom selector that should find any element that
 has child elements, we will call the selector `:--parent`. Then we will create another selector called
 `:--parent-paragraph` that will use the `:--parent` selector to find `#!html <p>` elements that are also parents:
 
 ```py3
-custom = sv.Custom()
-custom.append(":--parent", ":has(> *|*)")
-custom.append(":--parent-paragraph", "p:--parent")
+custom = {
+    ":--parent": ":has(> *|*)",
+    ":--parent-paragraph": "p:--parent"
+}
 print(sv.select(':--parent-paragraph', soup, custom=custom))
 ```
 
