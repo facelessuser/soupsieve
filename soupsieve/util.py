@@ -5,6 +5,7 @@ import warnings
 import sys
 import struct
 import os
+import re
 MODULE = os.path.dirname(__file__)
 
 PY3 = sys.version_info >= (3, 0)
@@ -32,6 +33,8 @@ else:
 
 _QUIRKS = 0x20000
 DEBUG = 0x10000
+
+RE_PATTERN_LINE_SPLIT = re.compile(r'(?:\r\n|(?!\r\n)[\n\r])|$')
 
 LC_A = ord('a')
 LC_Z = ord('z')
@@ -79,21 +82,8 @@ class SelectorSyntaxError(SyntaxError):
         self.context = None
 
         if pattern is not None and index is not None:
-            self.line = pattern.count('\n', 0, index) + 1
-            self.col = index - pattern.rfind('\n', 0, index)
-            temp = pattern.split('\n')
-            multi = len(temp) > 1
-            offset = 3 if multi else -1
-            text = []
-            for n, line in enumerate(temp, start=1):
-                if multi:
-                    text.append(('--> {}' if n == self.line else '    {}').format(line))
-                else:
-                    text.append(line)
-                if self.line == n:
-                    text.append((' ' * (self.col + offset)) + '^')
-            self.context = '\n'.join(text)
-
+            # Format pattern to show line and column position
+            self.context, self.line, self.col = get_pattern_context(pattern, index)
             msg = '{}\n  line {}:\n{}'.format(msg, self.line, self.context)
 
         super(SelectorSyntaxError, self).__init__(msg)
@@ -129,16 +119,57 @@ def warn_deprecated(message, stacklevel=2):  # pragma: no cover
     )
 
 
+def get_pattern_context(pattern, index):
+    """Get the pattern context."""
+
+    last = 0
+    current_line = 1
+    col = 1
+    text = []
+    line = 1
+
+    # Split pattern by newline and handle the text before the newline
+    for m in RE_PATTERN_LINE_SPLIT.finditer(pattern):
+        linetext = pattern[last:m.start(0)]
+        if not len(m.group(0)) and not len(text):
+            indent = ''
+            offset = -1
+            col = index - last + 1
+        elif last <= index < m.end(0):
+            indent = '--> '
+            offset = (-1 if index > m.start(0) else 0) + 3
+            col = index - last + 1
+        else:
+            indent = '    '
+            offset = None
+        if len(text):
+            # Regardless of whether we are presented with `\r\n`, `\r`, or `\n`,
+            # we will render the output with just `\n`. We will still log the column
+            # correctly though.
+            text.append('\n')
+        text.append('{}{}'.format(indent, linetext))
+        if offset is not None:
+            text.append('\n')
+            text.append(' ' * (col + offset) + '^')
+            line = current_line
+
+        current_line += 1
+        last = m.end(0)
+
+    return ''.join(text), line, col
+
+
 class QuirksWarning(UserWarning):  # pragma: no cover
     """Warning for quirks mode."""
 
 
-def warn_quirks(message, recommend, pattern):
+def warn_quirks(message, recommend, pattern, index):
     """Warn quirks."""
 
     import traceback
     import bs4  # noqa: F401
 
+    # Acquire source code line context
     paths = (MODULE, sys.modules['bs4'].__path__[0])
     tb = traceback.extract_stack()
     previous = None
@@ -152,13 +183,18 @@ def warn_quirks(message, recommend, pattern):
         filename = previous.filename if PY35 else previous[0]
         lineno = previous.lineno if PY35 else previous[1]
 
+    # Format pattern to show line and column position
+    context, line = get_pattern_context(pattern, index)[0:2]
+
+    # Display warning
     warnings.warn_explicit(
-        "\nCSS selector pattern: {!r}\n".format(pattern) +
+        "\nCSS selector pattern:\n" +
         "    {}\n".format(message) +
         "    This behavior is only allowed temporarily for Beautiful Soup's transition to Soup Sieve.\n" +
         "    In order to confrom to the CSS spec, {}\n".format(recommend) +
         "    It is strongly recommended the selector be altered to conform to the CSS spec " +
-        "as an exception will be raised for this case in the future.\n",
+        "as an exception will be raised for this case in the future.\n" +
+        "pattern line {}:\n{}".format(line, context),
         QuirksWarning,
         filename,
         lineno
