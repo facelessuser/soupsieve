@@ -235,7 +235,7 @@ markup = """
 """
 
 soup = bs4.BeautifulSoup(markup, 'lxml')
-print(sv.select(':--header', soup, custom={':--header', 'h1, h2, h3, h4, h5, h6'}))
+print(sv.select(':--header', soup, custom={':--header': 'h1, h2, h3, h4, h5, h6'}))
 ```
 
 The above code, when run, should yield the following output:
