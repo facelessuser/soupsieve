@@ -1,5 +1,9 @@
 # Changelog
 
+## Latest
+
+- **FIX**: Don't install test files when installing the `soupsieve` package.
+
 ## 1.8.0
 
 - **NEW**: Add custom selector support. (#92)(#108)
