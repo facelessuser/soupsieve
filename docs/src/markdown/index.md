@@ -242,6 +242,22 @@ about an invalid attribute, you may need to quote the value.
     soup.select(':scope > div')
     ```
 
+3. Another quirk of Beautiful Soup's old `select` implementation was that it returned the HTML nodes in the order of how
+the selectors were defined. For instance, Beautiful Soup, if given the pattern `article, body` would first return
+`#!html <article>` and then `#!html <body>`.
+
+    Soup Sieve does not, and frankly cannot, honor Beautiful Soup's old ordering convention due to the way it is
+    designed. Soup Sieve returns the nodes in the order they are defined in the document. The Soup Sieve project views
+    this change in behavior as for the best as it is more efficient and is more inline with how browsers implement
+    `querySelectorAll`, which our `select` is analogous to. There are no plans to mimic the old behavior.
+
+    For those that are curious, Soup Sieve, when given a selector, begins crawling the HTML tree from the node that is
+    specified. It crawls the tree in an orderly fashion and matches each element against the provided selector pattern.
+    It does not sort them or build up a list, it simply yields each element as it finds a match. Since the elements are,
+    crawled in the order they appear in the document, they are also yielded in this order as well. So, given the earlier
+    selector pattern of `article, body`, Soup Sieve would return the element `#!html <body>` and then `#!html <article>`
+    as that is how it is ordered in the HTML document.
+
 --8<--
 refs.txt
 --8<--
