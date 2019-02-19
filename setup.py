@@ -51,7 +51,7 @@ setup(
     author='Isaac Muse',
     author_email='Isaac.Muse@gmail.com',
     url='https://github.com/facelessuser/soupsieve',
-    packages=find_packages(exclude=['tests', 'tools']),
+    packages=find_packages(exclude=['test*', 'tools']),
     install_requires=get_requirements(),
     license='MIT License',
     classifiers=[
