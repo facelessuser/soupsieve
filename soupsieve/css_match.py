@@ -811,10 +811,17 @@ class CSSMatch(Document, object):
         """Match element if it contains text."""
 
         match = True
-        for c in contains:
-            if c not in self.get_text(el):
+        content = None
+        for contain_list in contains:
+            if content is None:
+                content = self.get_text(el)
+            found = False
+            for text in contain_list.text:
+                if text in content:
+                    found = True
+                    break
+            if not found:
                 match = False
-                break
         return match
 
     def match_default(self, el):

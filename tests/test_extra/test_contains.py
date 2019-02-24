@@ -66,6 +66,46 @@ class TestContains(util.TestCase):
             flags=util.HTML
         )
 
+    def test_contains_list(self):
+        """Test contains list."""
+
+        self.assert_selector(
+            self.MARKUP,
+            'body span:contains("does not exist", "that")',
+            ['2'],
+            flags=util.HTML
+        )
+
+    def test_contains_multiple(self):
+        """Test contains multiple."""
+
+        self.assert_selector(
+            self.MARKUP,
+            'body span:contains("th"):contains("at")',
+            ['2'],
+            flags=util.HTML
+        )
+
+    def test_contains_multiple_not_match(self):
+        """Test contains multiple with "not" and with a match."""
+
+        self.assert_selector(
+            self.MARKUP,
+            'body span:not(:contains("does not exist")):contains("that")',
+            ['2'],
+            flags=util.HTML
+        )
+
+    def test_contains_multiple_not_no_match(self):
+        """Test contains multiple with "not" and no match."""
+
+        self.assert_selector(
+            self.MARKUP,
+            'body span:not(:contains("that")):contains("that")',
+            [],
+            flags=util.HTML
+        )
+
     def test_contains_with_descendants(self):
         """Test that contains returns descendants as well as the top level that contain."""
 

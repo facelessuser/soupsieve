@@ -239,7 +239,7 @@ Attribute       | Description
 `selectors`     | Contains a tuple of `SelectorList` objects for each pseudo-class selector  part of the compound selector: `#!css :is()`, `#!css :not()`, `#!css :has()`, etc.
 `relation`      | This will contain a `SelectorList` object with one `Selector` object, which could in turn chain an additional relation depending on the complexity of the compound selector.  For instance, `div > p + a` would be a `Selector` for `a` that contains a `relation` for `p` (another `SelectorList` object) which also contains a relation of `div`.  When matching, we would match that the tag is `a`, and then walk its relation chain verifying that they all match. In this case, the relation chain would be a direct, previous sibling of `p`, which has a direct parent of `div`. A `:has()` pseudo-class would walk this in the opposite order. `div:has(> p + a)` would verify `div`, and then check for a child of `p` with a sibling of `a`.
 `rel_type`      | `rel_type` is attached to relational selectors. In the case of `#!css div > p + a`, the relational selectors of `div` and `p` would get a relational type of `>` and `+` respectively. `:has()` relational `rel_type` are preceded with `:` to signify a forward looking relation.
-`contains`      | Contains a tuple of strings of content to match in an element.
+`contains`      | Contains a tuple of [`SelectorContains`](#selectorcontains) objects. Each object contains the list of text to match an element's content against.
 `lang`          | Contains a tuple of [`SelectorLang`](#selectorlang) objects.
 `flags`         | Selector flags that used to signal a type of selector is present.
 
@@ -287,6 +287,20 @@ Attribute           | Description
 `prefix`            | Contains the attribute namespace prefix to match if any.
 `pattern`           | Contains a `re` regular expression object that matches the desired attribute value.
 `xml_type_pattern`  | As the default `type` pattern is case insensitive, when the attribute value is `type` and a case sensitivity has not been explicitly defined, a secondary case sensitive `type` pattern is compiled for use with XML documents when detected.
+
+### `SelectorContains`
+
+```py3
+class SelectorContains:
+    """Selector contains rule."""
+
+    def __init__(self, text):
+        """Initialize."""
+```
+
+Attribute           | Description
+------------------- | -----------
+`text`              | A tuple of acceptable text that that an element should match. An element only needs to match at least one.
 
 ### `SelectorNth`
 

@@ -7,6 +7,7 @@ __all__ = (
     'SelectorNull',
     'SelectorTag',
     'SelectorAttribute',
+    'SelectorContains',
     'SelectorNth',
     'SelectorLang',
     'SelectorList',
@@ -234,6 +235,19 @@ class SelectorAttribute(Immutable):
         )
 
 
+class SelectorContains(Immutable):
+    """Selector contains rule."""
+
+    __slots__ = ("text", "_hash")
+
+    def __init__(self, text):
+        """Initialize."""
+
+        super(SelectorContains, self).__init__(
+            text=text
+        )
+
+
 class SelectorNth(Immutable):
     """Selector nth type."""
 
@@ -324,6 +338,7 @@ pickle_register(Selector)
 pickle_register(SelectorNull)
 pickle_register(SelectorTag)
 pickle_register(SelectorAttribute)
+pickle_register(SelectorContains)
 pickle_register(SelectorNth)
 pickle_register(SelectorLang)
 pickle_register(SelectorList)
