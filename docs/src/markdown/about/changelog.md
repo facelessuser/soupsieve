@@ -1,8 +1,10 @@
 # Changelog
 
-## Latest
+## 1.9.0
 
+- **NEW**: Allow `:contans()` to accept a list of text to search for.
 - **FIX**: Don't install test files when installing the `soupsieve` package.
+- **FIX**: Improve efficiency of `:contains()` comparison.
 
 ## 1.8.0
 

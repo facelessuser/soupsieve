@@ -149,13 +149,13 @@ PAT_PSEUDO_NTH_TYPE = r'''
 \({ws}*(?P<nth_type>{nth}|even|odd)){ws}*\)
 '''.format(ws=WSC, nth=NTH)
 # Pseudo class language (`:lang("*-de", en)`)
-PAT_PSEUDO_LANG = r':lang\({ws}*(?P<lang>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'.format(ws=WSC, value=VALUE)
+PAT_PSEUDO_LANG = r':lang\({ws}*(?P<values>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'.format(ws=WSC, value=VALUE)
 # Pseudo class direction (`:dir(ltr)`)
 PAT_PSEUDO_DIR = r':dir\({ws}*(?P<dir>ltr|rtl){ws}*\)'.format(ws=WSC)
 # Combining characters (`>`, `~`, ` `, `+`, `,`)
 PAT_COMBINE = r'{wsc}*?(?P<relation>[,+>~]|{ws}(?![,+>~])){wsc}*'.format(ws=WS, wsc=WSC)
 # Extra: Contains (`:contains(text)`)
-PAT_PSEUDO_CONTAINS = r':contains\({ws}*(?P<value>{value}){ws}*\)'.format(ws=WSC, value=VALUE)
+PAT_PSEUDO_CONTAINS = r':contains\({ws}*(?P<values>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'.format(ws=WSC, value=VALUE)
 
 # Regular expressions
 # CSS escape pattern
@@ -166,8 +166,8 @@ RE_NTH = re.compile(
     r'(?P<s1>[-+])?(?P<a>[0-9]+n?|n)(?:(?<=n){ws}*(?P<s2>[-+]){ws}*(?P<b>[0-9]+))?'.format(ws=WSC),
     re.I
 )
-# Pattern to iterate multiple languages.
-RE_LANG = re.compile(r'(?:(?P<value>{value})|(?P<split>{ws}*,{ws}*))'.format(ws=WSC, value=VALUE), re.X)
+# Pattern to iterate multiple values.
+RE_VALUES = re.compile(r'(?:(?P<value>{value})|(?P<split>{ws}*,{ws}*))'.format(ws=WSC, value=VALUE), re.X)
 # Whitespace checks
 RE_WS = re.compile(WS)
 RE_WS_BEGIN = re.compile('^{}*'.format(WSC))
@@ -751,21 +751,27 @@ class CSSParser(object):
     def parse_pseudo_contains(self, sel, m, has_selector):
         """Parse contains."""
 
-        content = m.group('value')
-        if content.startswith(("'", '"')):
-            content = css_unescape(content[1:-1], True)
-        else:
-            content = css_unescape(content)
-        sel.contains.append(content)
+        values = m.group('values')
+        patterns = []
+        for token in RE_VALUES.finditer(values):
+            if token.group('split'):
+                continue
+            value = token.group('value')
+            if value.startswith(("'", '"')):
+                value = css_unescape(value[1:-1], True)
+            else:
+                value = css_unescape(value)
+            patterns.append(value)
+        sel.contains.append(ct.SelectorContains(tuple(patterns)))
         has_selector = True
         return has_selector
 
     def parse_pseudo_lang(self, sel, m, has_selector):
         """Parse pseudo language."""
 
-        lang = m.group('lang')
+        values = m.group('values')
         patterns = []
-        for token in RE_LANG.finditer(lang):
+        for token in RE_VALUES.finditer(values):
             if token.group('split'):
                 continue
             value = token.group('value')
