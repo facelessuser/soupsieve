@@ -414,7 +414,7 @@ Selects any `#!html <input type="radio"/>`, `#!html <input type="checkbox"/>`, o
 
 ### `:contains()`<span class="star badge"></span> {:#:contains}
 
-Selects elements that contain the text provided text. Text can be found in either itself, or its descendants.
+Selects elements that contain the provided text. Text can be found in either itself, or its descendants.
 
 Contains was originally included in a [CSS early draft][contains-draft], but was in the end dropped from the draft.
 Soup Sieve implements it how it was originally proposed in the draft with the addition that `:contains()` can accept
