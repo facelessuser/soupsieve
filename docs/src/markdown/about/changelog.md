@@ -5,6 +5,8 @@
 - **NEW**: Allow `:contans()` to accept a list of text to search for.
 - **FIX**: Don't install test files when installing the `soupsieve` package.
 - **FIX**: Improve efficiency of `:contains()` comparison.
+- **FIX**: Null characters should translate to the Unicode REPLACEMENT CHARACTER (`U+FFFD`) according to the spec. This
+applies to CSS escaped NULL characters as well.
 
 ## 1.8.0
 

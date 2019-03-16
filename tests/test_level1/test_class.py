@@ -15,6 +15,17 @@ class TestClass(util.TestCase):
     </div>
     """
 
+    # Browsers normally replace NULL with `\uFFFD`, but some of the parsers
+    # we test just strip out NULL, so we will simulate and just insert `\uFFFD` directly
+    # to ensure consistent behavior in our tests across parsers.
+    MARKUP_NULL = """
+    <div>
+    <p>Some text <span id="1" class="\ufffdfoo"> in a paragraph</span>.
+    <a id="2" class="\ufffdbar" href="http://google.com">Link</a>
+    </p>
+    </div>
+    """
+
     def test_class(self):
         """Test class."""
 
@@ -31,6 +42,16 @@ class TestClass(util.TestCase):
         self.assert_selector(
             self.MARKUP,
             "a.bar",
+            ["2"],
+            flags=util.HTML
+        )
+
+    def test_type_and_class_escaped_null(self):
+        """Test type and class with an escaped null character."""
+
+        self.assert_selector(
+            self.MARKUP_NULL,
+            r"a.\0 bar",
             ["2"],
             flags=util.HTML
         )

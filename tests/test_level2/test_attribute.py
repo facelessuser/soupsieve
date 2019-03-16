@@ -33,6 +33,22 @@ class TestAttribute(util.TestCase):
     </div>
     """
 
+    # Browsers normally replace NULL with `\uFFFD`, but some of the parsers
+    # we test just strip out NULL, so we will simulate and just insert `\uFFFD` directly
+    # to ensure consistent behavior in our tests across parsers.
+    MARKUP_NULL = """
+    <div id="div">
+    <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
+    <a id="2" href="http://google.com">Link</a>
+    <span id="3">Direct child</span>
+    <pre id="\ufffdpre">
+    <span id="4">Child 1</span>
+    <span id="5">Child 2</span>
+    <span id="6">Child 3</span>
+    </pre>
+    </div>
+    """
+
     def test_attribute(self):
         """Test attribute."""
 
@@ -147,6 +163,26 @@ class TestAttribute(util.TestCase):
             self.MARKUP,
             '[id="pr\\\ne"]',
             ["pre"],
+            flags=util.HTML
+        )
+
+    def test_attribute_equal_literal_null(self):
+        """Test attribute with value that equals specified value with a literal null character."""
+
+        self.assert_selector(
+            self.MARKUP_NULL,
+            '[id="\x00pre"]',
+            ["\ufffdpre"],
+            flags=util.HTML
+        )
+
+    def test_attribute_equal_escaped_null(self):
+        """Test attribute with value that equals specified value with an escaped null character."""
+
+        self.assert_selector(
+            self.MARKUP_NULL,
+            r'[id="\0 pre"]',
+            ["\ufffdpre"],
             flags=util.HTML
         )
 

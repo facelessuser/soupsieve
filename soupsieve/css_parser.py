@@ -7,6 +7,8 @@ from . import css_types as ct
 from collections import OrderedDict
 from .util import SelectorSyntaxError
 
+UNICODE_REPLACEMENT_CHAR = 0xFFFD
+
 # Simple pseudo classes that take no parameters
 PSEUDO_SIMPLE = {
     ":any-link",
@@ -240,13 +242,11 @@ def css_unescape(content, string=False):
     def replace(m):
         """Replace with the appropriate substitute."""
 
-        return util.uchr(int(m.group(1)[1:], 16)) if m.group(1) else m.group(2)[1:]
-
-    def replace_string(m):
-        """Replace with the appropriate substitute for a string."""
-
         if m.group(1):
-            value = util.uchr(int(m.group(1)[1:], 16))
+            codepoint = int(m.group(1)[1:], 16)
+            if codepoint == 0:
+                codepoint = UNICODE_REPLACEMENT_CHAR
+            value = util.uchr(codepoint)
         elif m.group(2):
             value = m.group(2)[1:]
         else:
@@ -254,7 +254,7 @@ def css_unescape(content, string=False):
 
         return value
 
-    return RE_CSS_ESC.sub(replace, content) if not string else RE_CSS_STR_ESC.sub(replace_string, content)
+    return (RE_CSS_ESC if not string else RE_CSS_STR_ESC).sub(replace, content)
 
 
 class SelectorPattern(object):
@@ -376,7 +376,7 @@ class CSSParser(object):
     def __init__(self, selector, custom=None, flags=0):
         """Initialize."""
 
-        self.pattern = selector
+        self.pattern = selector.replace('\x00', '\ufffd')
         self.flags = flags
         self.debug = self.flags & util.DEBUG
         self.quirks = self.flags & util._QUIRKS
