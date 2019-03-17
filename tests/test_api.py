@@ -450,6 +450,39 @@ class TestSoupSieve(util.TestCase):
         self.assertTrue(sv.closest('div #div-05', el) is None)
         self.assertTrue(sv.closest('a', el) is None)
 
+    def test_escape_hyphen(self):
+        """Test escape hyphen cases."""
+
+        self.assertEqual(r'\-', sv.escape('-'))
+        self.assertEqual(r'--', sv.escape('--'))
+
+    def test_escape_numbers(self):
+        """Test escape hyphen cases."""
+
+        self.assertEqual(r'\33 ', sv.escape('3'))
+        self.assertEqual(r'-\33 ', sv.escape('-3'))
+        self.assertEqual(r'--3', sv.escape('--3'))
+
+    def test_escape_null(self):
+        """Test escape null character."""
+
+        self.assertEqual('\ufffdtest', sv.escape('\x00test'))
+
+    def test_escape_ctrl(self):
+        """Test escape control character."""
+
+        self.assertEqual(r'\1 test', sv.escape('\x01test'))
+
+    def test_escape_special(self):
+        """Test escape special character."""
+
+        self.assertEqual(r'\{\}\[\]\ \(\)', sv.escape('{}[] ()'))
+
+    def test_escape_wide_unicode(self):
+        """Test handling of wide Unicode."""
+
+        self.assertEqual('Emoji\\ \U0001F60D', sv.escape('Emoji \U0001F60D'))
+
     def test_copy_pickle(self):
         """Test copy and pickle."""
 
