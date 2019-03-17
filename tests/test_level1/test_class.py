@@ -20,7 +20,7 @@ class TestClass(util.TestCase):
     # to ensure consistent behavior in our tests across parsers.
     MARKUP_NULL = """
     <div>
-    <p>Some text <span id="1" class="\ufffdfoo"> in a paragraph</span>.
+    <p>Some text <span id="1" class="foo\ufffd"> in a paragraph</span>.
     <a id="2" class="\ufffdbar" href="http://google.com">Link</a>
     </p>
     </div>
@@ -53,6 +53,16 @@ class TestClass(util.TestCase):
             self.MARKUP_NULL,
             r"a.\0 bar",
             ["2"],
+            flags=util.HTML
+        )
+
+    def test_type_and_class_escaped_eof(self):
+        """Test type and class with an escaped EOF."""
+
+        self.assert_selector(
+            self.MARKUP_NULL,
+            "span.foo\\",
+            ["1"],
             flags=util.HTML
         )
 

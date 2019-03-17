@@ -94,8 +94,8 @@ COMMENTS = r'(?:/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)'
 # Whitespace with comments included
 WSC = r'(?:{ws}|{comments})'.format(ws=WS, comments=COMMENTS)
 # CSS escapes
-CSS_ESCAPES = r'(?:\\[a-f0-9]{{1,6}}{ws}?|\\[^\r\n\f])'.format(ws=WS)
-CSS_STRING_ESCAPES = r'(?:\\[a-f0-9]{{1,6}}{ws}?|\\[^\r\n\f]|\\{nl})'.format(ws=WS, nl=NEWLINE)
+CSS_ESCAPES = r'(?:\\(?:[a-f0-9]{{1,6}}{ws}?|[^\r\n\f]|$))'.format(ws=WS)
+CSS_STRING_ESCAPES = r'(?:\\(?:[a-f0-9]{{1,6}}{ws}?|[^\r\n\f]|$|{nl}))'.format(ws=WS, nl=NEWLINE)
 # CSS Identifier
 IDENTIFIER = r'''
 (?:(?:-?(?:[^\x00-\x2f\x30-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+|--)
@@ -161,8 +161,10 @@ PAT_PSEUDO_CONTAINS = r':contains\({ws}*(?P<values>{value}(?:{ws}*,{ws}*{value})
 
 # Regular expressions
 # CSS escape pattern
-RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{{1,6}}{ws}?)|(\\[^\r\n\f]))'.format(ws=WSC), re.I)
-RE_CSS_STR_ESC = re.compile(r'(?:(\\[a-f0-9]{{1,6}}{ws}?)|(\\[^\r\n\f])|(\\{nl}))'.format(ws=WS, nl=NEWLINE), re.I)
+RE_CSS_ESC = re.compile(r'(?:(\\[a-f0-9]{{1,6}}{ws}?)|(\\[^\r\n\f])|(\\$))'.format(ws=WSC), re.I)
+RE_CSS_STR_ESC = re.compile(
+    r'(?:(\\[a-f0-9]{{1,6}}{ws}?)|(\\[^\r\n\f])|(\\$)|(\\{nl}))'.format(ws=WS, nl=NEWLINE), re.I
+)
 # Pattern to break up `nth` specifiers
 RE_NTH = re.compile(
     r'(?P<s1>[-+])?(?P<a>[0-9]+n?|n)(?:(?<=n){ws}*(?P<s2>[-+]){ws}*(?P<b>[0-9]+))?'.format(ws=WSC),
@@ -249,6 +251,8 @@ def css_unescape(content, string=False):
             value = util.uchr(codepoint)
         elif m.group(2):
             value = m.group(2)[1:]
+        elif m.group(3):
+            value = '\ufffd'
         else:
             value = ''
 
