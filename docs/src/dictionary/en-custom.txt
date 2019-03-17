@@ -8,6 +8,7 @@ CSS's
 Changelog
 Combinators
 DOM
+EOF
 GitHub
 Hashable
 JQuery
