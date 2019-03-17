@@ -2,11 +2,12 @@
 
 ## 1.9.0
 
-- **NEW**: Allow `:contans()` to accept a list of text to search for.
-- **FIX**: Don't install test files when installing the `soupsieve` package.
+- **NEW**: Allow `:contans()` to accept a list of text to search for. (#115)
+- **NEW**: Add new `escape` function for escaping CSS identifiers. (#125)
+- **FIX**: Don't install test files when installing the `soupsieve` package. (#111)
 - **FIX**: Improve efficiency of `:contains()` comparison.
 - **FIX**: Null characters should translate to the Unicode REPLACEMENT CHARACTER (`U+FFFD`) according to the
-specification. This applies to CSS escaped NULL characters as well.
+specification. This applies to CSS escaped NULL characters as well. (#124)
 - **FIX**: Escaped EOF should translate to `U+FFFD` outside of CSS strings. In a string, they should just be ignored,
 but as there is no case where we could resolve such a string and still have a valid selector, string handling remains
 the same. (#128)

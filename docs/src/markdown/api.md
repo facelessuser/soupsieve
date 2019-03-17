@@ -141,7 +141,7 @@ and flags.
 
 ## `soupsieve.comments()`
 
-```
+```py3
 def comments(tag, limit=0, flags=0, **kwargs):
     """Get comments only."""
 ```
@@ -153,12 +153,34 @@ from the given tag down through all of its children.  You can limit how many com
 
 ## `soupsieve.icomments()`
 
-```
+```py3
 def icomments(node, limit=0, flags=0, **kwargs):
     """Get comments only."""
 ```
 
 `icomments` is exactly like `comments` except that it returns a generator instead of a list.
+
+## `soupsieve.escape()`
+
+```py3
+def escape(ident):
+    """Escape CSS identifier."""
+```
+
+`escape` is used to escape CSS identifiers. It follows the [CSS specification][cssom] and escapes any character that
+would normally cause an identifier to be invalid.
+
+```pycon3
+'\\.foo\\#bar'
+>>> sv.escape("()[]{}")
+'\\(\\)\\[\\]\\{\\}'
+>>> sv.escape('--a')
+'--a'
+>>> sv.escape('0')
+'\\30 '
+>>> sv.escape('\0')
+'�'
+```
 
 ## `soupsieve.compile()`
 
