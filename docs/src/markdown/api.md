@@ -151,6 +151,9 @@ from the given tag down through all of its children.  You can limit how many com
 
 `comments` accepts a `Tag`/`BeautifulSoup` object, a `limit`, and flags.
 
+!!! warning "Deprecated in 1.9.0"
+    `comments` is deprecated so Soup Sieve can focus on only CSS selectors. `comments` will be removed in version 2.0.
+
 ## `soupsieve.icomments()`
 
 ```py3
@@ -159,6 +162,9 @@ def icomments(node, limit=0, flags=0, **kwargs):
 ```
 
 `icomments` is exactly like `comments` except that it returns a generator instead of a list.
+
+!!! warning "Deprecated in 1.9.0"
+    `icomments` is deprecated so Soup Sieve can focus on only CSS selectors. `comments` will be removed in version 2.0.
 
 ## `soupsieve.escape()`
 
@@ -181,6 +187,9 @@ would normally cause an identifier to be invalid.
 >>> sv.escape('\0')
 '�'
 ```
+
+!!! new "New in 1.9.0"
+    `escape` is a new API function added in 1.9.0.
 
 ## `soupsieve.compile()`
 

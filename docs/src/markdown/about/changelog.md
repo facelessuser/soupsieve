@@ -4,6 +4,8 @@
 
 - **NEW**: Allow `:contans()` to accept a list of text to search for. (#115)
 - **NEW**: Add new `escape` function for escaping CSS identifiers. (#125)
+- **NEW**: Deprecate `comments` and `icomments` in the API to ensure Soup Sieve focuses only on CSS selectors.
+`comments` and `icomments` will most likely be removed in 2.0. (#130)
 - **FIX**: Don't install test files when installing the `soupsieve` package. (#111)
 - **FIX**: Improve efficiency of `:contains()` comparison.
 - **FIX**: Null characters should translate to the Unicode REPLACEMENT CHARACTER (`U+FFFD`) according to the

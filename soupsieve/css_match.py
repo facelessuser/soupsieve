@@ -1297,11 +1297,13 @@ class SoupSieve(ct.Immutable):
         else:
             return [node for node in iterable if not CSSMatch.is_navigable_string(node) and self.match(node)]
 
+    @util.deprecated("'comments' is not related to CSS selectors and will be removed in the future.")
     def comments(self, tag, limit=0):
         """Get comments only."""
 
-        return list(self.icomments(tag, limit))
+        return [comment for comment in CommentsMatch(tag).get_comments(limit)]
 
+    @util.deprecated("'icomments' is not related to CSS selectors and will be removed in the future.")
     def icomments(self, tag, limit=0):
         """Iterate comments only."""
 
