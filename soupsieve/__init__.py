@@ -117,3 +117,9 @@ def iselect(select, tag, namespaces=None, limit=0, flags=0, **kwargs):
 
     for el in compile(select, namespaces, flags, **kwargs).iselect(tag, limit):
         yield el
+
+
+def escape(ident):
+    """Escape identifier."""
+
+    return cp.escape(ident)

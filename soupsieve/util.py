@@ -71,6 +71,18 @@ def uchr(i):
         return struct.pack('i', i).decode('utf-32')
 
 
+def uord(c):
+    """Get Unicode ordinal."""
+
+    if len(c) == 2:  # pragma: no cover
+        high, low = [ord(p) for p in c]
+        ordinal = (high - 0xD800) * 0x400 + low - 0xDC00 + 0x10000
+    else:
+        ordinal = ord(c)
+
+    return ordinal
+
+
 class SelectorSyntaxError(SyntaxError):
     """Syntax error in a CSS selector."""
 

@@ -261,6 +261,34 @@ def css_unescape(content, string=False):
     return (RE_CSS_ESC if not string else RE_CSS_STR_ESC).sub(replace, content)
 
 
+def escape(ident):
+    """Escape identifier."""
+
+    string = []
+    length = len(ident)
+    start_dash = length > 0 and ident[0] == '-'
+    if length == 1 and start_dash:
+        # Need to escape identifier that is a single `-` with no other characters
+        string.append('\\{}'.format(ident))
+    else:
+        for index, c in enumerate(ident):
+            codepoint = util.uord(c)
+            if codepoint == 0x00:
+                string.append('\ufffd')
+            elif (0x01 <= codepoint <= 0x1F) or codepoint == 0x7F:
+                string.append('\\{:x} '.format(codepoint))
+            elif (index == 0 or (start_dash and index == 1)) and (0x30 <= codepoint <= 0x39):
+                string.append('\\{:x} '.format(codepoint))
+            elif (
+                codepoint in (0x2D, 0x5F) or codepoint >= 0x80 or (0x30 <= codepoint <= 0x39) or
+                (0x30 <= codepoint <= 0x39) or (0x41 <= codepoint <= 0x5A) or (0x61 <= codepoint <= 0x7A)
+            ):
+                string.append(c)
+            else:
+                string.append('\\{}'.format(c))
+    return ''.join(string)
+
+
 class SelectorPattern(object):
     """Selector pattern."""
 
