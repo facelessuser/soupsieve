@@ -708,6 +708,68 @@ class TestInvalidQuirks(TestInvalid):
             self.assertTrue(issubclass(w[-1].category, sv_util.QuirksWarning))
 
 
+class TestDeprecated(util.TestCase):
+    """Test deprecated."""
+
+    def test_comment(self):
+        """Test comment."""
+
+        html = '<div><!-- comments -->text</div>'
+        soup = self.soup(html, 'html.parser')
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+
+            sv.comments(soup)
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+
+    def test_comment_compilied(self):
+        """Test compiled comment."""
+
+        html = '<div><!-- comments -->text</div>'
+        soup = self.soup(html, 'html.parser')
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+
+            pattern = sv.compile('div')
+            pattern.comments(soup)
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+
+    def test_icomment(self):
+        """Test `icomment`."""
+
+        html = '<div><!-- comments -->text</div>'
+        soup = self.soup(html, 'html.parser')
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+
+            sv.icomments(soup)
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+
+    def test_icomment_compilied(self):
+        """Test compiled `icomment`."""
+
+        html = '<div><!-- comments -->text</div>'
+        soup = self.soup(html, 'html.parser')
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+
+            pattern = sv.compile('div')
+            pattern.icomments(soup)
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+
+
 class TestSyntaxErrorReporting(util.TestCase):
     """Test reporting of syntax errors."""
 
