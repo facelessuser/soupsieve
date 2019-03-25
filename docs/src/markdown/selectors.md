@@ -470,7 +470,7 @@ Selects any form element that is the default among a group of related elements, 
     input:default
     ```
 
-### `:defined`<span class="html5 badge"></span> {:#:defined}
+### `:defined`<span class="html5 badge"></span></span><span class="lab badge"></span> {:#:defined}
 
 Normally, this represents normal elements (names without hyphens) and custom elements (names with hyphens) that have
 been properly added to the custom element registry. Since elements cannot be added to a custom element registry in
