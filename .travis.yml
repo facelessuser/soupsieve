@@ -26,16 +26,14 @@ matrix:
   - python: 3.8-dev
     env:
     - TOXENV=py38
-  - python: 3.6
-    env: TOXENV=lint
-  - python: 3.6
-    env: TOXENV=documents
-  - python: 3.6
+  - python: 3.7
     env: TOXENV=nolxml
-  - python: 3.6
+  - python: 3.7
     env: TOXENV=nohtml5lib
-  allow_failures:
-  - python: 3.8-dev
+  - python: 3.7
+    env: TOXENV=lint
+  - python: 3.7
+    env: TOXENV=documents
 
 addons:
   apt:
