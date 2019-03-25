@@ -27,6 +27,7 @@ nav:
     - Soup Sieve: index.md
     - API: api.md
     - CSS Selectors: selectors.md
+    - Beautiful Soup Differences: differences.md
   - About:
     - Contributing &amp; Support: about/contributing.md
     - Development: about/development.md
