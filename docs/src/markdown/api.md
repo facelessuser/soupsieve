@@ -177,6 +177,7 @@ def escape(ident):
 would normally cause an identifier to be invalid.
 
 ```pycon3
+>>> sv.escape(".foo#bar")
 '\\.foo\\#bar'
 >>> sv.escape("()[]{}")
 '\\(\\)\\[\\]\\{\\}'
