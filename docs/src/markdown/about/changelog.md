@@ -4,7 +4,7 @@
 
 - **NEW**: Allow `:contains()` to accept a list of text to search for. (#115)
 - **NEW**: Add new `escape` function for escaping CSS identifiers. (#125)
-- **NEW**: Deprecate `comments` and `icomments` functions the API to ensure Soup Sieve focuses only on CSS selectors.
+- **NEW**: Deprecate `comments` and `icomments` functions in the API to ensure Soup Sieve focuses only on CSS selectors.
 `comments` and `icomments` will most likely be removed in 2.0. (#130)
 - **NEW**: Add Python 3.8 support. (#133)
 - **FIX**: Don't install test files when installing the `soupsieve` package. (#111)
