@@ -1,7 +1,8 @@
 # CSS Selectors
 
-The CSS selectors are based off of the CSS level 4 specification. Primarily support has been added for selectors that
-were feasible to implement and most likely to get practical use.
+The CSS selectors are based off of the CSS specification and includes not only stable selectors, but also selectors
+currently under development from the draft specifications. Primarily support has been added for selectors that were
+feasible to implement and most likely to get practical use.
 
 When speaking about namespaces, they only apply to XML, XHTML, or when dealing with recognized foreign tags in HTML5.
 Currently, Beautiful Soup's `html5lib` parser is the only parser that will return the appropriate namespaces for a HTML5
@@ -1081,9 +1082,9 @@ Selects the root element of a document tree.
 
 ### `:scope`<span class="lab badge"></span> {:#:scope}
 
-`:scope` represents the the element a `match`, `select`, or `filter` is being called on. If we had were for instance
-using scope in on a div (`#!py3 sv.select(':scope > p', soup.div)`) soup would represent **that** div element, and no
-others. If called on the Beautiful Soup object which represents the entire document, it would simply select
+`:scope` represents the the element a `match`, `select`, or `filter` is being called on. If we were, for instance,
+using `:scope` on a div (`#!py3 sv.select(':scope > p', soup.div)`) `:scope` would represent **that** div element, and
+no others. If called on the Beautiful Soup object which represents the entire document, it would simply select
 [`:root`](#:root).
 
 !!! example

@@ -1,7 +1,8 @@
 # API
 
-Soup Sieve uses a subset of the CSS4 selector specification to detect and filter elements. To learn more about which
-specific selectors are implemented, see [CSS Selectors](./selectors.md).
+Soup Sieve implements most of the selectors from the stable specification and even many from the latest draft
+specification. Selectors can be used to detect and filter elements. To learn more about which specific selectors are
+implemented, see [CSS Selectors](./selectors.md).
 
 Soup Sieve will detect the document type being used from the Beautiful Soup object that is given to it, and depending on
 the document type, its behavior may be slightly different.
