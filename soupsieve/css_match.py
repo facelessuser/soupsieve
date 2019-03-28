@@ -159,6 +159,17 @@ class Document(object):
         return el._is_xml
 
     @classmethod
+    def get_contents(cls, el, reverse=False):
+        """Get contents or contents in reverse."""
+
+        if reverse:
+            for content in reversed(el.contents):
+                yield content
+        else:
+            for content in el.contents:
+                yield content
+
+    @classmethod
     def get_children(cls, el, start=None, reverse=False, tags=True):
         """Get children."""
 
@@ -178,12 +189,23 @@ class Document(object):
                     yield node
 
     @classmethod
-    def get_descendants(cls, el, tags=True):
+    def get_descendants(cls, el, tags=True, reverse=False):
         """Get descendants."""
 
-        for child in el.descendants:
-            if not tags or cls.is_tag(child):
-                yield child
+        if reverse:
+            last_child = el
+            while cls.is_tag(last_child) and last_child.contents:
+                last_child = last_child.contents[-1]
+            while last_child:
+                if last_child is el:
+                    break
+                if cls.is_tag(last_child):
+                    yield last_child
+                last_child = last_child.previous_element
+        else:
+            for child in el.descendants:
+                if not tags or cls.is_tag(child):
+                    yield child
 
     @staticmethod
     def get_parent(el):
@@ -1028,7 +1050,7 @@ class CSSMatch(Document, object):
         if ((is_input and itype in ('text', 'search', 'tel', 'url', 'email')) or is_textarea) and direction == 0:
             if is_textarea:
                 value = []
-                for node in el.contents:
+                for node in self.get_contents(el):
                     if self.is_content_string(node):
                         value.append(node)
                 value = ''.join(value)
@@ -1199,7 +1221,8 @@ class CSSMatch(Document, object):
         if limit < 1:
             limit = None
 
-        for child in self.get_descendants(self.tag):
+        reverse = self.flags & util.REVERSE
+        for child in self.get_descendants(self.tag, reverse=reverse):
             if self.match(child):
                 yield child
                 if limit is not None:
@@ -1222,7 +1245,10 @@ class CSSMatch(Document, object):
     def filter(self):  # noqa A001
         """Filter tag's children."""
 
-        return [node for node in self.tag if not self.is_navigable_string(node) and self.match(node)]
+        reverse = self.flags & util.REVERSE
+        return [
+            tag for tag in self.get_contents(self.tag, reverse) if not self.is_navigable_string(tag) and self.match(tag)
+        ]
 
     def match(self, el):
         """Match."""
