@@ -31,9 +31,9 @@ else:
     unichar = unichr  # noqa: F821
     string = basestring  # noqa: F821
 
-REVERSE = 0x00001
-DEBUG = 0x10000
-_QUIRKS = 0x20000
+DEBUG = 0x00001
+REVERSE = 0x00002
+_QUIRKS = 0x10000
 
 RE_PATTERN_LINE_SPLIT = re.compile(r'(?:\r\n|(?!\r\n)[\n\r])|$')
 

@@ -13,7 +13,6 @@ import warnings
 class TestSoupSieve(util.TestCase):
     """Test Soup Sieve."""
 
-    @util.requires_html5lib
     def test_comments(self):
         """Test comments."""
 
@@ -34,11 +33,10 @@ class TestSoupSieve(util.TestCase):
         </html>
         """
 
-        soup = self.soup(markup, 'html5lib')
+        soup = self.soup(markup, 'html.parser')
         comments = [sv_util.ustr(c).strip() for c in sv.comments(soup)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment', "don't ignore"]))
 
-    @util.requires_html5lib
     def test_icomments(self):
         """Test comments iterator."""
 
@@ -59,11 +57,10 @@ class TestSoupSieve(util.TestCase):
         </html>
         """
 
-        soup = self.soup(markup, 'html5lib')
+        soup = self.soup(markup, 'html.parser')
         comments = [sv_util.ustr(c).strip() for c in sv.icomments(soup, limit=2)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
 
-    @util.requires_html5lib
     def test_compiled_comments(self):
         """Test comments from compiled pattern."""
 
@@ -84,14 +81,13 @@ class TestSoupSieve(util.TestCase):
         </html>
         """
 
-        soup = self.soup(markup, 'html5lib')
+        soup = self.soup(markup, 'html.parser')
 
         # Check that comments on compiled object work just like `sv.comments`
         pattern = sv.compile('div', None, 0)
         comments = [sv_util.ustr(c).strip() for c in pattern.comments(soup)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment', "don't ignore"]))
 
-    @util.requires_html5lib
     def test_compiled_icomments(self):
         """Test comments iterator from compiled pattern."""
 
@@ -112,12 +108,11 @@ class TestSoupSieve(util.TestCase):
         </html>
         """
 
-        soup = self.soup(markup, 'html5lib')
+        soup = self.soup(markup, 'html.parser')
         pattern = sv.compile('div', None, 0)
         comments = [sv_util.ustr(c).strip() for c in pattern.icomments(soup, limit=2)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
 
-    @util.requires_html5lib
     def test_select(self):
         """Test select."""
 
@@ -138,123 +133,13 @@ class TestSoupSieve(util.TestCase):
         </html>
         """
 
-        soup = self.soup(markup, 'html5lib')
+        soup = self.soup(markup, 'html.parser')
         ids = []
         for el in sv.select('span[id]', soup):
             ids.append(el.attrs['id'])
 
         self.assertEqual(sorted(['5', 'some-id']), sorted(ids))
 
-    @util.requires_html5lib
-    def test_select_limit(self):
-        """Test select limit."""
-
-        markup = """
-        <!-- before header -->
-        <html>
-        <head>
-        </head>
-        <body>
-        <!-- comment -->
-        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
-        <pre id="4"></pre>
-        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
-        <pre id="6" class='ignore'>
-            <!-- don't ignore -->
-        </pre>
-        </body>
-        </html>
-        """
-
-        soup = self.soup(markup, 'html5lib')
-
-        ids = []
-        for el in sv.select('span[id]', soup, limit=1):
-            ids.append(el.attrs['id'])
-
-        self.assertEqual(sorted(['5']), sorted(ids))
-
-    @util.requires_html5lib
-    def test_select_one(self):
-        """Test select one."""
-
-        markup = """
-        <!-- before header -->
-        <html>
-        <head>
-        </head>
-        <body>
-        <!-- comment -->
-        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
-        <pre id="4"></pre>
-        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
-        <pre id="6" class='ignore'>
-            <!-- don't ignore -->
-        </pre>
-        </body>
-        </html>
-        """
-
-        soup = self.soup(markup, 'html5lib')
-        self.assertEqual(
-            sv.select('span[id]', soup, limit=1)[0].attrs['id'],
-            sv.select_one('span[id]', soup).attrs['id']
-        )
-
-    @util.requires_html5lib
-    def test_select_one_none(self):
-        """Test select one returns none for no match."""
-
-        markup = """
-        <!-- before header -->
-        <html>
-        <head>
-        </head>
-        <body>
-        <!-- comment -->
-        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
-        <pre id="4"></pre>
-        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
-        <pre id="6" class='ignore'>
-            <!-- don't ignore -->
-        </pre>
-        </body>
-        </html>
-        """
-
-        soup = self.soup(markup, 'html5lib')
-        self.assertEqual(None, sv.select_one('h1', soup))
-
-    @util.requires_html5lib
-    def test_iselect(self):
-        """Test select iterator."""
-
-        markup = """
-        <!-- before header -->
-        <html>
-        <head>
-        </head>
-        <body>
-        <!-- comment -->
-        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
-        <pre id="4"></pre>
-        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
-        <pre id="6" class='ignore'>
-            <!-- don't ignore -->
-        </pre>
-        </body>
-        </html>
-        """
-
-        soup = self.soup(markup, 'html5lib')
-
-        ids = []
-        for el in sv.iselect('span[id]', soup):
-            ids.append(el.attrs['id'])
-
-        self.assertEqual(sorted(['5', 'some-id']), sorted(ids))
-
-    @util.requires_html5lib
     def test_select_order(self):
         """Test select order."""
 
@@ -275,16 +160,225 @@ class TestSoupSieve(util.TestCase):
         </html>
         """
 
-        # ID `5` should come before ID `some-id`
-        soup = self.soup(markup, 'html5lib')
-        span = sv.select('span[id]', soup)[0]
+        soup = self.soup(markup, 'html.parser')
         ids = []
-        for el in sv.select('span[id]:not(#some-id)', span.parent):
+        for el in sv.select('[id]', soup.body):
+            ids.append(el.attrs['id'])
+
+        self.assertEqual(['1', '2', '3', '4', '5', 'some-id', '6'], ids)
+
+    def test_select_order_reverse(self):
+        """Test select order reversed."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html.parser')
+        ids = []
+        for el in sv.select('[id]', soup.body, flags=sv.REVERSE):
+            ids.append(el.attrs['id'])
+
+        self.assertEqual(['6', 'some-id', '5', '4', '3', '2', '1'], ids)
+
+    def test_select_limit(self):
+        """Test select limit."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html.parser')
+
+        ids = []
+        for el in sv.select('span[id]', soup, limit=1):
             ids.append(el.attrs['id'])
 
         self.assertEqual(sorted(['5']), sorted(ids))
 
-    @util.requires_html5lib
+    def test_select_one(self):
+        """Test select one."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html.parser')
+        self.assertEqual(
+            sv.select('span[id]', soup, limit=1)[0].attrs['id'],
+            sv.select_one('span[id]', soup).attrs['id']
+        )
+
+    def test_select_one_reverse(self):
+        """Test select one reverse."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html.parser')
+        self.assertEqual(
+            sv.select('span[id]', soup)[1].attrs['id'],
+            sv.select_one('span[id]', soup, flags=sv.REVERSE).attrs['id']
+        )
+
+    def test_select_one_none(self):
+        """Test select one returns none for no match."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html.parser')
+        self.assertEqual(None, sv.select_one('h1', soup))
+
+    def test_iselect(self):
+        """Test select iterator."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html.parser')
+
+        ids = []
+        for el in sv.iselect('span[id]', soup):
+            ids.append(el.attrs['id'])
+
+        self.assertEqual(sorted(['5', 'some-id']), sorted(ids))
+
+    def test_iselect_order(self):
+        """Test select iterator order."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html.parser')
+        ids = []
+        for el in sv.iselect('[id]', soup):
+            ids.append(el.attrs['id'])
+
+        self.assertEqual(['1', '2', '3', '4', '5', 'some-id', '6'], ids)
+
+    def test_iselect_order_reverse(self):
+        """Test select iterator order reversed."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html.parser')
+        ids = []
+        for el in sv.iselect('[id]', soup, flags=sv.REVERSE):
+            ids.append(el.attrs['id'])
+
+        self.assertEqual(['6', 'some-id', '5', '4', '3', '2', '1'], ids)
+
     def test_match(self):
         """Test matching."""
 
@@ -305,12 +399,11 @@ class TestSoupSieve(util.TestCase):
         </html>
         """
 
-        soup = self.soup(markup, 'html5lib')
+        soup = self.soup(markup, 'html.parser')
         nodes = sv.select('span[id]', soup)
         self.assertTrue(sv.match('span#\\35', nodes[0]))
         self.assertFalse(sv.match('span#\\35', nodes[1]))
 
-    @util.requires_html5lib
     def test_filter_tag(self):
         """Test filter tag."""
 
@@ -331,12 +424,59 @@ class TestSoupSieve(util.TestCase):
         </html>
         """
 
-        soup = self.soup(markup, 'html5lib')
+        soup = self.soup(markup, 'html.parser')
         nodes = sv.filter('pre#\\36', soup.html.body)
         self.assertEqual(len(nodes), 1)
         self.assertEqual(nodes[0].attrs['id'], '6')
 
-    @util.requires_html5lib
+    def test_filter_tag_order(self):
+        """Test filter tag order."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html.parser')
+        ids = [tag['id'] for tag in sv.filter('[id]', soup.html.body.p)]
+        self.assertEqual(['2', '3'], ids)
+
+    def test_filter_tag_reverse_order(self):
+        """Test filter tag reverse order."""
+
+        markup = """
+        <!-- before header -->
+        <html>
+        <head>
+        </head>
+        <body>
+        <!-- comment -->
+        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
+        <pre id="4"></pre>
+        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
+        <pre id="6" class='ignore'>
+            <!-- don't ignore -->
+        </pre>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html.parser')
+        ids = [tag['id'] for tag in sv.filter('[id]', soup.html.body.p, flags=sv.REVERSE)]
+        self.assertEqual(['3', '2'], ids)
+
     def test_filter_list(self):
         """
         Test filter list.
@@ -363,12 +503,11 @@ class TestSoupSieve(util.TestCase):
         </html>
         """
 
-        soup = self.soup(markup, 'html5lib')
+        soup = self.soup(markup, 'html.parser')
         nodes = sv.filter('pre#\\36', [el for el in soup.html.body.children])
         self.assertEqual(len(nodes), 1)
         self.assertEqual(nodes[0].attrs['id'], '6')
 
-    @util.requires_html5lib
     def test_closest_match_parent(self):
         """Test match parent closest."""
 
@@ -384,11 +523,10 @@ class TestSoupSieve(util.TestCase):
         </article>
         """
 
-        soup = self.soup(markup, 'html5lib')
+        soup = self.soup(markup, 'html.parser')
         el = sv.select_one('#div-03', soup)
         self.assertTrue(sv.closest('#div-02', el).attrs['id'] == 'div-02')
 
-    @util.requires_html5lib
     def test_closest_match_complex_parent(self):
         """Test closest match complex parent."""
 
@@ -404,12 +542,11 @@ class TestSoupSieve(util.TestCase):
         </article>
         """
 
-        soup = self.soup(markup, 'html5lib')
+        soup = self.soup(markup, 'html.parser')
         el = sv.select_one('#div-03', soup)
         self.assertTrue(sv.closest('article > div', el).attrs['id'] == 'div-01')
         self.assertTrue(sv.closest(':not(div)', el).attrs['id'] == 'article')
 
-    @util.requires_html5lib
     def test_closest_match_self(self):
         """Test closest match self."""
 
@@ -425,11 +562,10 @@ class TestSoupSieve(util.TestCase):
         </article>
         """
 
-        soup = self.soup(markup, 'html5lib')
+        soup = self.soup(markup, 'html.parser')
         el = sv.select_one('#div-03', soup)
         self.assertTrue(sv.closest('div div', el).attrs['id'] == 'div-03')
 
-    @util.requires_html5lib
     def test_closest_must_be_parent(self):
         """Test that closest only matches parents or self."""
 
@@ -445,7 +581,7 @@ class TestSoupSieve(util.TestCase):
         </article>
         """
 
-        soup = self.soup(markup, 'html5lib')
+        soup = self.soup(markup, 'html.parser')
         el = sv.select_one('#div-03', soup)
         self.assertTrue(sv.closest('div #div-05', el) is None)
         self.assertTrue(sv.closest('a', el) is None)
