@@ -39,8 +39,41 @@ Soup Sieve will always be available as an external API as well for more controll
 
 ## Flags
 
-Early in development, flags were used to specify document type, but as of 1.0.0, there are no flags used at this time,
-but the parameter is provided for potential future use.
+### `soupseive.DEBUG`
+
+Print debug output when parsing a selector.
+
+```pycon3
+>>> import soupsieve as sv
+>>> sv.compile('p:has(#id) > span.some-class:contains(text)', flags=sv.DEBUG)
+## PARSING: 'p:has(#id) > span.some-class:contains(text)'
+TOKEN: 'tag' --> 'p' at position 0
+TOKEN: 'pseudo_class' --> ':has(' at position 1
+    is_pseudo: True
+    is_open: True
+    is_relative: True
+TOKEN: 'id' --> '#id' at position 6
+TOKEN: 'pseudo_close' --> ')' at position 9
+TOKEN: 'combine' --> ' > ' at position 10
+TOKEN: 'tag' --> 'span' at position 13
+TOKEN: 'class' --> '.some-class' at position 17
+TOKEN: 'pseudo_contains' --> ':contains(text)' at position 28
+## END PARSING
+SoupSieve(pattern='p:has(#id) > span.some-class:contains(text)', namespaces=None, custom=None, flags=1)
+```
+
+### `soupsieve.REVERSE`
+
+When calling `filter`, `select`, `iselect`, or `select_one`, searches will be preformed in reverse order, causing the
+elements to be returned/yielded in reverse order.
+
+```pycon3
+>>> import soupsieve as sv
+>>> sv.select('p', soup)
+[<p class="a">Cat</p>, <p class="b">Dog</p>, <p class='c"'>Mouse</p>]
+>>> sv.select('p', soup, flags=sv.REVERSE)
+[<p class='c"'>Mouse</p>, <p class="b">Dog</p>, <p class="a">Cat</p>]
+```
 
 ## `soupsieve.select_one()`
 

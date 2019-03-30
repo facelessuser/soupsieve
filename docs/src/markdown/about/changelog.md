@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.10.0
+
+- **NEW**: Add `REVERSE` flag to yield/return elements in reverse order in `iselect`, `select`, `select_one`, and
+`filter`.
+
 ## 1.9.0
 
 - **NEW**: Allow `:contains()` to accept a list of text to search for. (#115)
