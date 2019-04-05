@@ -1053,13 +1053,13 @@ class CSSParser(object):
 
 # CSS pattern for `:link` and `:any-link`
 CSS_LINK = CSSParser(
-    ':is(a, area, link)[href]'
+    'html|*:is(a, area, link)[href]'
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:checked`
 CSS_CHECKED = CSSParser(
     '''
-    :is(input[type=checkbox], input[type=radio])[checked],
-    select > option[selected]
+    html|*:is(input[type=checkbox], input[type=radio])[checked],
+    html|select > html|option[selected]
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:default` (must compile CSS_CHECKED first)
@@ -1071,50 +1071,51 @@ CSS_DEFAULT = CSSParser(
     This pattern must be at the end.
     Special logic is applied to the last selector.
     */
-    form :is(button, input)[type="submit"]
+    html|form html|*:is(button, input)[type="submit"]
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML | FLG_DEFAULT)
 # CSS pattern for `:indeterminate`
 CSS_INDETERMINATE = CSSParser(
     '''
-    input[type="checkbox"][indeterminate],
-    input[type="radio"]:is(:not([name]), [name=""]):not([checked]),
-    progress:not([value]),
+    html|input[type="checkbox"][indeterminate],
+    html|input[type="radio"]:is(:not([name]), [name=""]):not([checked]),
+    html|progress:not([value]),
 
     /*
     This pattern must be at the end.
     Special logic is applied to the last selector.
     */
-    input[type="radio"][name][name!='']:not([checked])
+    html|input[type="radio"][name][name!='']:not([checked])
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML | FLG_INDETERMINATE)
 # CSS pattern for `:disabled`
 CSS_DISABLED = CSSParser(
     '''
-    :is(input[type!=hidden], button, select, textarea, fieldset, optgroup, option, fieldset)[disabled],
-    optgroup[disabled] > option,
-    fieldset[disabled] > :is(input[type!=hidden], button, select, textarea, fieldset),
-    fieldset[disabled] > :not(legend:nth-of-type(1)) :is(input[type!=hidden], button, select, textarea, fieldset)
+    html|*:is(input[type!=hidden], button, select, textarea, fieldset, optgroup, option, fieldset)[disabled],
+    html|optgroup[disabled] > html|option,
+    html|fieldset[disabled] > html|*:is(input[type!=hidden], button, select, textarea, fieldset),
+    html|fieldset[disabled] >
+        html|*:not(legend:nth-of-type(1)) html|*:is(input[type!=hidden], button, select, textarea, fieldset)
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:enabled`
 CSS_ENABLED = CSSParser(
     '''
-    :is(input[type!=hidden], button, select, textarea, fieldset, optgroup, option, fieldset):not(:disabled)
+    html|*:is(input[type!=hidden], button, select, textarea, fieldset, optgroup, option, fieldset):not(:disabled)
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:required`
 CSS_REQUIRED = CSSParser(
-    ':is(input, textarea, select)[required]'
+    'html|*:is(input, textarea, select)[required]'
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:optional`
 CSS_OPTIONAL = CSSParser(
-    ':is(input, textarea, select):not([required])'
+    'html|*:is(input, textarea, select):not([required])'
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:placeholder-shown`
 CSS_PLACEHOLDER_SHOWN = CSSParser(
     '''
-    :is(
+    html|*:is(
         input:is(
             :not([type]),
             [type=""],
@@ -1137,7 +1138,7 @@ CSS_NTH_OF_S_DEFAULT = CSSParser(
 # CSS pattern for `:read-write` (CSS_DISABLED must be compiled first)
 CSS_READ_WRITE = CSSParser(
     '''
-    :is(
+    html|*:is(
         textarea,
         input:is(
             :not([type]),
@@ -1156,19 +1157,19 @@ CSS_READ_WRITE = CSSParser(
             [type=week]
         )
     ):not([readonly], :disabled),
-    :is([contenteditable=""], [contenteditable="true" i])
+    html|*:is([contenteditable=""], [contenteditable="true" i])
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:read-only`
 CSS_READ_ONLY = CSSParser(
     '''
-    :not(:read-write)
+    html|*:not(:read-write)
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:in-range`
 CSS_IN_RANGE = CSSParser(
     '''
-    input:is(
+    html|input:is(
         [type="date"],
         [type="month"],
         [type="week"],
@@ -1185,7 +1186,7 @@ CSS_IN_RANGE = CSSParser(
 # CSS pattern for `:out-of-range`
 CSS_OUT_OF_RANGE = CSSParser(
     '''
-    input:is(
+    html|input:is(
         [type="date"],
         [type="month"],
         [type="week"],
