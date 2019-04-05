@@ -167,33 +167,6 @@ class TestSoupSieve(util.TestCase):
 
         self.assertEqual(['1', '2', '3', '4', '5', 'some-id', '6'], ids)
 
-    def test_select_order_reverse(self):
-        """Test select order reversed."""
-
-        markup = """
-        <!-- before header -->
-        <html>
-        <head>
-        </head>
-        <body>
-        <!-- comment -->
-        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
-        <pre id="4"></pre>
-        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
-        <pre id="6" class='ignore'>
-            <!-- don't ignore -->
-        </pre>
-        </body>
-        </html>
-        """
-
-        soup = self.soup(markup, 'html.parser')
-        ids = []
-        for el in sv.select('[id]', soup.body, flags=sv.REVERSE):
-            ids.append(el.attrs['id'])
-
-        self.assertEqual(['6', 'some-id', '5', '4', '3', '2', '1'], ids)
-
     def test_select_limit(self):
         """Test select limit."""
 
@@ -246,32 +219,6 @@ class TestSoupSieve(util.TestCase):
         self.assertEqual(
             sv.select('span[id]', soup, limit=1)[0].attrs['id'],
             sv.select_one('span[id]', soup).attrs['id']
-        )
-
-    def test_select_one_reverse(self):
-        """Test select one reverse."""
-
-        markup = """
-        <!-- before header -->
-        <html>
-        <head>
-        </head>
-        <body>
-        <!-- comment -->
-        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
-        <pre id="4"></pre>
-        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
-        <pre id="6" class='ignore'>
-            <!-- don't ignore -->
-        </pre>
-        </body>
-        </html>
-        """
-
-        soup = self.soup(markup, 'html.parser')
-        self.assertEqual(
-            sv.select('span[id]', soup)[1].attrs['id'],
-            sv.select_one('span[id]', soup, flags=sv.REVERSE).attrs['id']
         )
 
     def test_select_one_none(self):
@@ -352,33 +299,6 @@ class TestSoupSieve(util.TestCase):
 
         self.assertEqual(['1', '2', '3', '4', '5', 'some-id', '6'], ids)
 
-    def test_iselect_order_reverse(self):
-        """Test select iterator order reversed."""
-
-        markup = """
-        <!-- before header -->
-        <html>
-        <head>
-        </head>
-        <body>
-        <!-- comment -->
-        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
-        <pre id="4"></pre>
-        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
-        <pre id="6" class='ignore'>
-            <!-- don't ignore -->
-        </pre>
-        </body>
-        </html>
-        """
-
-        soup = self.soup(markup, 'html.parser')
-        ids = []
-        for el in sv.iselect('[id]', soup, flags=sv.REVERSE):
-            ids.append(el.attrs['id'])
-
-        self.assertEqual(['6', 'some-id', '5', '4', '3', '2', '1'], ids)
-
     def test_match(self):
         """Test matching."""
 
@@ -452,30 +372,6 @@ class TestSoupSieve(util.TestCase):
         soup = self.soup(markup, 'html.parser')
         ids = [tag['id'] for tag in sv.filter('[id]', soup.html.body.p)]
         self.assertEqual(['2', '3'], ids)
-
-    def test_filter_tag_reverse_order(self):
-        """Test filter tag reverse order."""
-
-        markup = """
-        <!-- before header -->
-        <html>
-        <head>
-        </head>
-        <body>
-        <!-- comment -->
-        <p id="1"><code id="2"></code><img id="3" src="./image.png"/></p>
-        <pre id="4"></pre>
-        <p><span id="5" class="some-class"></span><span id="some-id"></span></p>
-        <pre id="6" class='ignore'>
-            <!-- don't ignore -->
-        </pre>
-        </body>
-        </html>
-        """
-
-        soup = self.soup(markup, 'html.parser')
-        ids = [tag['id'] for tag in sv.filter('[id]', soup.html.body.p, flags=sv.REVERSE)]
-        self.assertEqual(['3', '2'], ids)
 
     def test_filter_list(self):
         """

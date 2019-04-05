@@ -162,7 +162,7 @@ class Document(object):
     def get_contents(cls, el, reverse=False):
         """Get contents or contents in reverse."""
 
-        if reverse:
+        if reverse:  # pragma: no cover
             for content in reversed(el.contents):
                 yield content
         else:
@@ -192,7 +192,7 @@ class Document(object):
     def get_descendants(cls, el, tags=True, reverse=False):
         """Get descendants."""
 
-        if reverse:
+        if reverse:  # pragma: no cover
             last_child = el
             while cls.is_tag(last_child) and last_child.contents:
                 last_child = last_child.contents[-1]
@@ -1221,8 +1221,7 @@ class CSSMatch(Document, object):
         if limit < 1:
             limit = None
 
-        reverse = self.flags & util.REVERSE
-        for child in self.get_descendants(self.tag, reverse=reverse):
+        for child in self.get_descendants(self.tag):
             if self.match(child):
                 yield child
                 if limit is not None:
@@ -1245,10 +1244,7 @@ class CSSMatch(Document, object):
     def filter(self):  # noqa A001
         """Filter tag's children."""
 
-        reverse = self.flags & util.REVERSE
-        return [
-            tag for tag in self.get_contents(self.tag, reverse) if not self.is_navigable_string(tag) and self.match(tag)
-        ]
+        return [tag for tag in self.get_contents(self.tag) if not self.is_navigable_string(tag) and self.match(tag)]
 
     def match(self, el):
         """Match."""
