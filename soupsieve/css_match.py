@@ -198,7 +198,7 @@ class Document(object):
                 if next_good is not None:
                     if child is not next_good:
                         continue
-                    next_good is None
+                    next_good = None
 
                 is_tag = self.is_tag(child)
 
@@ -432,11 +432,12 @@ class CSSMatch(Document, object):
         iframes = []
         doc = scope
         parent = self.get_parent(doc)
+        last = doc
         while parent:
             # Store `iframe` elements we find, just in case this is an HTML document
             # and we need resolve the root relative to the scoped element (`iframe` document root).
             if util.lower(self.get_tag_name(parent)) == 'iframe':
-                iframes.append(parent)
+                iframes.append((parent, last))
             doc = parent
             parent = self.get_parent(doc)
         root = None
@@ -457,9 +458,9 @@ class CSSMatch(Document, object):
 
         # Root should be the root of the scoped element
         if self.is_html:
-            for iframe in iframes:
+            for iframe, iframe_root in iframes:
                 if self.get_tag(iframe) == 'iframe' and self.is_html_tag(iframe):
-                    self.root = iframe
+                    self.root = iframe_root
                     break
 
     def supports_namespaces(self):

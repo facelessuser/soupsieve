@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.9.1
+
+- **FIX**: HTML pseudo-classes are now aware of `iframe` elements and will not cross the `iframe` boundary. For
+instance, the `:default` pseudo-class looks for `form button` (overly simplified), but now it will not select  `form
+iframe button`. `iframe form button` is still okay as an `iframe` element's content is still accessible with
+combinators, just not within logic of an HTML pseudo-class. Notably affects `:default`, `:intermediate`, `:lang()`, and
+`:dir()`.
+- **FIX**: When using `:root`, it will apply to the root of the scoped element's document. For instance, if
+`scoped` in `#!py3 sv.select(':root div', scoped)` is an element under an `iframe`, `:root` would be the root element of
+the `iframe`.
+- **FIX**: HTML pseudo-classes will check that all key elements checked are in the XHTML namespace (HTML parsers that do
+not provide namespaces will assume the XHTML namespace).
+
 ## 1.9.0
 
 - **NEW**: Allow `:contains()` to accept a list of text to search for. (#115)
