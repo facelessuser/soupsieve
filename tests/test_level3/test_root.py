@@ -59,6 +59,17 @@ class TestRoot(util.TestCase):
             flags=util.HTML
         )
 
+    def test_root_iframe(self):
+        """Test root."""
+
+        # Root in HTML is `<html>`
+        self.assert_selector(
+            self.MARKUP_IFRAME,
+            ":root",
+            ["root", "root2"],
+            flags=util.PYHTML
+        )
+
     def test_root_complex(self):
         """Test root within a complex selector."""
 
@@ -75,14 +86,14 @@ class TestRoot(util.TestCase):
         self.assert_selector(
             self.MARKUP_IFRAME,
             ":root div",
-            ["div", "other-div"],
+            ["div", "div2", "other-div"],
             flags=util.PYHTML
         )
 
         self.assert_selector(
             self.MARKUP_IFRAME,
             ":root > body > div",
-            ["div", "other-div"],
+            ["div", "div2", "other-div"],
             flags=util.PYHTML
         )
 

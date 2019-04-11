@@ -163,6 +163,20 @@ class Document(object):
 
         return ((el.name if self.is_xml_tree(el) else util.lower(el.name)) == 'iframe') and self.is_html_tag(el)
 
+    def is_root(self, el):
+        """
+        Return whether element is a root element.
+
+        We check that the element is the root of the tree (which we have already pre-calculated),
+        and we check if it is the root element under an `iframe`.
+        """
+
+        root = self.root and self.root is el
+        if not root:
+            parent = self.get_parent(el)
+            root = parent is not None and self.is_html and self.is_iframe(parent)
+        return root
+
     def get_contents(self, el, no_iframe=False):
         """Get contents or contents in reverse."""
         if not no_iframe or not self.is_iframe(el):
@@ -429,15 +443,9 @@ class CSSMatch(Document, object):
         self.iframe_restrict = False
 
         # Find the root element for the whole tree
-        iframes = []
         doc = scope
         parent = self.get_parent(doc)
-        last = doc
         while parent:
-            # Store `iframe` elements we find, just in case this is an HTML document
-            # and we need resolve the root relative to the scoped element (`iframe` document root).
-            if util.lower(self.get_tag_name(parent)) == 'iframe':
-                iframes.append((parent, last))
             doc = parent
             parent = self.get_parent(doc)
         root = None
@@ -455,13 +463,6 @@ class CSSMatch(Document, object):
         # A document can be both XML and HTML (XHTML)
         self.is_xml = self.is_xml_tree(doc)
         self.is_html = not self.is_xml or self.has_html_namespace
-
-        # Root should be the root of the scoped element
-        if self.is_html:
-            for iframe, iframe_root in iframes:
-                if self.get_tag(iframe) == 'iframe' and self.is_html_tag(iframe):
-                    self.root = iframe_root
-                    break
 
     def supports_namespaces(self):
         """Check if namespaces are supported in the HTML type."""
@@ -733,7 +734,7 @@ class CSSMatch(Document, object):
     def match_root(self, el):
         """Match element as root."""
 
-        return self.root and self.root is el
+        return self.is_root(el)
 
     def match_scope(self, el):
         """Match element as scope."""
@@ -1088,8 +1089,7 @@ class CSSMatch(Document, object):
             return direction == directionality
 
         # Element is the document element (the root) and no direction assigned, assume left to right.
-        parent = self.get_parent(el, no_iframe=True)
-        is_root = parent is None or self.is_doc(parent)
+        is_root = self.is_root(el)
         if is_root and direction is None:
             return ct.SEL_DIR_LTR == directionality
 
@@ -1213,6 +1213,7 @@ class CSSMatch(Document, object):
         # Internal selector lists that use the HTML flag, will automatically get the `html` namespace.
         if is_html:
             namespaces = self.namespaces
+            iframe_restrict = self.iframe_restrict
             self.namespaces = {'html': NS_XHTML}
             self.iframe_restrict = True
 
@@ -1279,7 +1280,7 @@ class CSSMatch(Document, object):
         # Restore actual namespaces being used for external selector lists
         if is_html:
             self.namespaces = namespaces
-            self.iframe_restrict = False
+            self.iframe_restrict = iframe_restrict
 
         return match
 
