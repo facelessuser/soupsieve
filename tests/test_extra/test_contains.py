@@ -185,6 +185,76 @@ class TestContains(util.TestCase):
             flags=util.XML
         )
 
+    def test_contains_iframe(self):
+        """Test contains with `iframe`."""
+
+        markup = """
+        <div id="1">
+        <p>Testing text</p>
+        <iframe>
+        <html><body>
+        <span id="2">iframe</span>
+        </body></html>
+        </iframe>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            'div:contains("iframe")',
+            [],
+            flags=util.PYHTML
+        )
+
+        self.assert_selector(
+            markup,
+            'div:contains("text")',
+            ['1'],
+            flags=util.PYHTML
+        )
+
+        self.assert_selector(
+            markup,
+            'span:contains("iframe")',
+            ['2'],
+            flags=util.PYHTML
+        )
+
+    def test_contains_iframe_xml(self):
+        """Test contains with `iframe` which shouldn't matter in XML."""
+
+        markup = """
+        <div id="1">
+        <p>Testing text</p>
+        <iframe>
+        <html><body>
+        <span id="2">iframe</span>
+        </body></html>
+        </iframe>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            'div:contains("iframe")',
+            ['1'],
+            flags=util.XML
+        )
+
+        self.assert_selector(
+            markup,
+            'div:contains("text")',
+            ['1'],
+            flags=util.XML
+        )
+
+        self.assert_selector(
+            markup,
+            'span:contains("iframe")',
+            ['2'],
+            flags=util.XML
+        )
+
 
 class TestContainsQuirks(TestContains):
     """Test contains selectors with quirks."""

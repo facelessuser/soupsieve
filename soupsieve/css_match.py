@@ -319,11 +319,12 @@ class Document(object):
             classes = RE_NOT_WS.findall(classes)
         return classes
 
-    @classmethod
-    def get_text(cls, el):
+    def get_text(self, el, no_iframe=False):
         """Get text."""
 
-        return ''.join([node for node in el.descendants if cls.is_content_string(node)])
+        return ''.join(
+            [node for node in self.get_descendants(el, tags=False, no_iframe=no_iframe) if self.is_content_string(node)]
+        )
 
 
 class Inputs(object):
@@ -880,7 +881,7 @@ class CSSMatch(Document, object):
         content = None
         for contain_list in contains:
             if content is None:
-                content = self.get_text(el)
+                content = self.get_text(el, no_iframe=self.is_html)
             found = False
             for text in contain_list.text:
                 if text in content:
