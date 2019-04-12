@@ -224,7 +224,8 @@ class Document(object):
                     yield child
                     if next_good is None:
                         break
-                    continue
+                    # Coverage isn't seeing this even though it's executed
+                    continue  # pragma: no cover
 
                 if not tags or is_tag:
                     yield child
