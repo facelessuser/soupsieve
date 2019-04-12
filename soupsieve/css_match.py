@@ -1003,7 +1003,7 @@ class CSSMatch(Document, object):
         parent = el
         found_lang = None
         last = None
-        while parent is not None and self.get_parent(parent, no_iframe=self.is_html) and not found_lang:
+        while not found_lang:
             has_html_ns = self.has_html_ns(parent)
             for k, v in self.iter_attributes(parent):
                 attr_ns, attr = self.split_namespace(parent, k)
@@ -1022,6 +1022,8 @@ class CSSMatch(Document, object):
             if parent is None:
                 root = last
                 has_html_namespace = self.has_html_ns(root)
+                parent = last
+                break
 
         # Use cached meta language.
         if not found_lang and self.cached_meta_lang:
