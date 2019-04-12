@@ -158,60 +158,85 @@ class Document(object):
 
         return el._is_xml
 
-    @classmethod
-    def get_contents(cls, el, reverse=False):
-        """Get contents or contents in reverse."""
+    def is_iframe(self, el):
+        """Check if element is an `iframe`."""
 
-        if reverse:  # pragma: no cover
-            for content in reversed(el.contents):
-                yield content
-        else:
+        return ((el.name if self.is_xml_tree(el) else util.lower(el.name)) == 'iframe') and self.is_html_tag(el)
+
+    def is_root(self, el):
+        """
+        Return whether element is a root element.
+
+        We check that the element is the root of the tree (which we have already pre-calculated),
+        and we check if it is the root element under an `iframe`.
+        """
+
+        root = self.root and self.root is el
+        if not root:
+            parent = self.get_parent(el)
+            root = parent is not None and self.is_html and self.is_iframe(parent)
+        return root
+
+    def get_contents(self, el, no_iframe=False):
+        """Get contents or contents in reverse."""
+        if not no_iframe or not self.is_iframe(el):
             for content in el.contents:
                 yield content
 
-    @classmethod
-    def get_children(cls, el, start=None, reverse=False, tags=True):
+    def get_children(self, el, start=None, reverse=False, tags=True, no_iframe=False):
         """Get children."""
 
-        last = len(el.contents) - 1
-        if start is None:
-            index = last if reverse else 0
-        else:
-            index = start
-        end = -1 if reverse else last + 1
-        incr = -1 if reverse else 1
+        if not no_iframe or not self.is_iframe(el):
+            last = len(el.contents) - 1
+            if start is None:
+                index = last if reverse else 0
+            else:
+                index = start
+            end = -1 if reverse else last + 1
+            incr = -1 if reverse else 1
 
-        if 0 <= index <= last:
-            while index != end:
-                node = el.contents[index]
-                index += incr
-                if not tags or cls.is_tag(node):
-                    yield node
+            if 0 <= index <= last:
+                while index != end:
+                    node = el.contents[index]
+                    index += incr
+                    if not tags or self.is_tag(node):
+                        yield node
 
-    @classmethod
-    def get_descendants(cls, el, tags=True, reverse=False):
+    def get_descendants(self, el, tags=True, no_iframe=False):
         """Get descendants."""
 
-        if reverse:  # pragma: no cover
-            last_child = el
-            while cls.is_tag(last_child) and last_child.contents:
-                last_child = last_child.contents[-1]
-            while last_child:
-                if last_child is el:
-                    break
-                if cls.is_tag(last_child):
-                    yield last_child
-                last_child = last_child.previous_element
-        else:
+        if not no_iframe or not self.is_iframe(el):
+            next_good = None
             for child in el.descendants:
-                if not tags or cls.is_tag(child):
+
+                if next_good is not None:
+                    if child is not next_good:
+                        continue
+                    next_good = None
+
+                is_tag = self.is_tag(child)
+
+                if no_iframe and is_tag and self.is_iframe(child):
+                    last_child = child
+                    while self.is_tag(last_child) and last_child.contents:
+                        last_child = last_child.contents[-1]
+                    next_good = last_child.next_element
+                    yield child
+                    if next_good is None:
+                        break
+                    # Coverage isn't seeing this even though it's executed
+                    continue  # pragma: no cover
+
+                if not tags or is_tag:
                     yield child
 
-    @staticmethod
-    def get_parent(el):
+    def get_parent(self, el, no_iframe=False):
         """Get parent."""
 
-        return el.parent
+        parent = el.parent
+        if no_iframe and parent is not None and self.is_iframe(parent):
+            parent = None
+        return parent
 
     @staticmethod
     def get_tag_name(el):
@@ -244,21 +269,16 @@ class Document(object):
         return sibling
 
     @staticmethod
-    def is_html_ns(el):
-        """Check if in HTML namespace."""
+    def has_html_ns(el):
+        """
+        Check if element has an HTML namespace.
+
+        This is a bit different than whether a element is treated as having an HTML namespace,
+        like we do in the case of `is_html_tag`.
+        """
 
         ns = getattr(el, 'namespace') if el else None
         return ns and ns == NS_XHTML
-
-    @staticmethod
-    def get_namespace(el):
-        """Get the namespace for the element."""
-
-        namespace = ''
-        ns = el.namespace
-        if ns:
-            namespace = ns
-        return namespace
 
     @staticmethod
     def split_namespace(el, attr_name):
@@ -299,11 +319,12 @@ class Document(object):
             classes = RE_NOT_WS.findall(classes)
         return classes
 
-    @classmethod
-    def get_text(cls, el):
+    def get_text(self, el, no_iframe=False):
         """Get text."""
 
-        return ''.join([node for node in el.descendants if cls.is_content_string(node)])
+        return ''.join(
+            [node for node in self.get_descendants(el, tags=False, no_iframe=no_iframe) if self.is_content_string(node)]
+        )
 
 
 class Inputs(object):
@@ -415,12 +436,15 @@ class CSSMatch(Document, object):
 
         self.assert_valid_input(scope)
         self.tag = scope
-        self.cached_meta_lang = None
+        self.cached_meta_lang = []
         self.cached_default_forms = []
         self.cached_indeterminate_forms = []
         self.selectors = selectors
         self.namespaces = {} if namespaces is None else namespaces
         self.flags = flags
+        self.iframe_restrict = False
+
+        # Find the root element for the whole tree
         doc = scope
         parent = self.get_parent(doc)
         while parent:
@@ -433,15 +457,36 @@ class CSSMatch(Document, object):
             for child in self.get_children(doc):
                 root = child
                 break
+
         self.root = root
         self.scope = scope if scope is not doc else root
-        self.html_namespace = self.is_html_ns(root)
+        self.has_html_namespace = self.has_html_ns(root)
+
+        # A document can be both XML and HTML (XHTML)
         self.is_xml = self.is_xml_tree(doc)
+        self.is_html = not self.is_xml or self.has_html_namespace
 
     def supports_namespaces(self):
         """Check if namespaces are supported in the HTML type."""
 
-        return self.is_xml or self.html_namespace
+        return self.is_xml or self.has_html_namespace
+
+    def get_tag_ns(self, el):
+        """Get tag namespace."""
+
+        if self.supports_namespaces():
+            namespace = ''
+            ns = el.namespace
+            if ns:
+                namespace = ns
+        else:
+            namespace = NS_XHTML
+        return namespace
+
+    def is_html_tag(self, el):
+        """Check if tag is in HTML namespace."""
+
+        return self.get_tag_ns(el) == NS_XHTML
 
     def get_tag(self, el):
         """Get tag."""
@@ -466,7 +511,8 @@ class CSSMatch(Document, object):
                 # Avoid analyzing certain elements specified in the specification.
                 direction = DIR_MAP.get(util.lower(self.get_attribute_by_name(node, 'dir', '')), None)
                 if (
-                    self.get_tag(node) in ('bdi', 'script', 'style', 'textarea') or
+                    self.get_tag(node) in ('bdi', 'script', 'style', 'textarea', 'iframe') or
+                    not self.is_html_tag(node) or
                     direction is not None
                 ):
                     continue  # pragma: no cover
@@ -542,7 +588,7 @@ class CSSMatch(Document, object):
         """Match the namespace of the element."""
 
         match = True
-        namespace = self.get_namespace(el)
+        namespace = self.get_tag_ns(el)
         default_namespace = self.namespaces.get('')
         tag_ns = '' if tag.prefix is None else self.namespaces.get(tag.prefix, None)
         # We must match the default namespace if one is not provided
@@ -591,11 +637,10 @@ class CSSMatch(Document, object):
     def match_tag(self, el, tag):
         """Match the tag."""
 
-        has_ns = self.supports_namespaces()
         match = True
         if tag is not None:
             # Verify namespace
-            if has_ns and not self.match_namespace(el, tag):
+            if not self.match_namespace(el, tag):
                 match = False
             if not self.match_tagname(el, tag):
                 match = False
@@ -606,12 +651,12 @@ class CSSMatch(Document, object):
 
         found = False
         if relation[0].rel_type == REL_PARENT:
-            parent = self.get_parent(el)
+            parent = self.get_parent(el, no_iframe=self.iframe_restrict)
             while not found and parent:
                 found = self.match_selectors(parent, relation)
-                parent = self.get_parent(parent)
+                parent = self.get_parent(parent, no_iframe=self.iframe_restrict)
         elif relation[0].rel_type == REL_CLOSE_PARENT:
-            parent = self.get_parent(el)
+            parent = self.get_parent(el, no_iframe=self.iframe_restrict)
             if parent:
                 found = self.match_selectors(parent, relation)
         elif relation[0].rel_type == REL_SIBLING:
@@ -630,7 +675,7 @@ class CSSMatch(Document, object):
 
         match = False
         children = self.get_descendants if recursive else self.get_children
-        for child in children(parent):
+        for child in children(parent, no_iframe=self.iframe_restrict):
             match = self.match_selectors(child, relation)
             if match:
                 break
@@ -691,7 +736,7 @@ class CSSMatch(Document, object):
     def match_root(self, el):
         """Match element as root."""
 
-        return self.root and self.root is el
+        return self.is_root(el)
 
     def match_scope(self, el):
         """Match element as scope."""
@@ -703,7 +748,7 @@ class CSSMatch(Document, object):
 
         return(
             (self.get_tag(child) == self.get_tag(el)) and
-            (not self.supports_namespaces() or self.get_namespace(child) == self.get_namespace(el))
+            (self.get_tag_ns(child) == self.get_tag_ns(el))
         )
 
     def match_nth(self, el, nth):
@@ -836,7 +881,7 @@ class CSSMatch(Document, object):
         content = None
         for contain_list in contains:
             if content is None:
-                content = self.get_text(el)
+                content = self.get_text(el, no_iframe=self.is_html)
             found = False
             for text in contain_list.text:
                 if text in content:
@@ -853,12 +898,12 @@ class CSSMatch(Document, object):
 
         # Find this input's form
         form = None
-        parent = self.get_parent(el)
+        parent = self.get_parent(el, no_iframe=True)
         while parent and form is None:
-            if self.get_tag(parent) == 'form':
+            if self.get_tag(parent) == 'form' and self.is_html_tag(parent):
                 form = parent
             else:
-                parent = self.get_parent(parent)
+                parent = self.get_parent(parent, no_iframe=True)
 
         # Look in form cache to see if we've already located its default button
         found_form = False
@@ -871,7 +916,7 @@ class CSSMatch(Document, object):
 
         # We didn't have the form cached, so look for its default button
         if not found_form:
-            for child in self.get_descendants(form):
+            for child in self.get_descendants(form, no_iframe=True):
                 name = self.get_tag(child)
                 # Can't do nested forms (haven't figured out why we never hit this)
                 if name == 'form':  # pragma: no cover
@@ -894,13 +939,13 @@ class CSSMatch(Document, object):
         def get_parent_form(el):
             """Find this input's form."""
             form = None
-            parent = self.get_parent(el)
+            parent = self.get_parent(el, no_iframe=True)
             while form is None:
-                if self.get_tag(parent) == 'form':
+                if self.get_tag(parent) == 'form' and self.is_html_tag(parent):
                     form = parent
                     break
                 last_parent = parent
-                parent = self.get_parent(parent)
+                parent = self.get_parent(parent, no_iframe=True)
                 if parent is None:
                     form = last_parent
                     break
@@ -920,7 +965,7 @@ class CSSMatch(Document, object):
         # We didn't have the form cached, so validate that the radio button is indeterminate
         if not found_form:
             checked = False
-            for child in self.get_descendants(form):
+            for child in self.get_descendants(form, no_iframe=True):
                 if child is el:
                     continue
                 tag_name = self.get_tag(child)
@@ -951,37 +996,49 @@ class CSSMatch(Document, object):
 
         match = False
         has_ns = self.supports_namespaces()
+        root = self.root
+        has_html_namespace = self.has_html_namespace
 
         # Walk parents looking for `lang` (HTML) or `xml:lang` XML property.
         parent = el
         found_lang = None
-        while parent and self.get_parent(parent) and not found_lang:
-            is_html_ns = self.is_html_ns(parent)
+        last = None
+        while not found_lang:
+            has_html_ns = self.has_html_ns(parent)
             for k, v in self.iter_attributes(parent):
                 attr_ns, attr = self.split_namespace(parent, k)
                 if (
-                    ((not has_ns or is_html_ns) and (util.lower(k) if not self.is_xml else k) == 'lang') or
+                    ((not has_ns or has_html_ns) and (util.lower(k) if not self.is_xml else k) == 'lang') or
                     (
-                        has_ns and not is_html_ns and attr_ns == NS_XML and
+                        has_ns and not has_html_ns and attr_ns == NS_XML and
                         (util.lower(attr) if not self.is_xml and attr is not None else attr) == 'lang'
                     )
                 ):
                     found_lang = v
                     break
-            parent = self.get_parent(parent)
+            last = parent
+            parent = self.get_parent(parent, no_iframe=self.is_html)
+
+            if parent is None:
+                root = last
+                has_html_namespace = self.has_html_ns(root)
+                parent = last
+                break
 
         # Use cached meta language.
-        if not found_lang and self.cached_meta_lang is not None:
-            found_lang = self.cached_meta_lang
+        if not found_lang and self.cached_meta_lang:
+            for cache in self.cached_meta_lang:
+                if root is cache[0]:
+                    found_lang = cache[1]
 
         # If we couldn't find a language, and the document is HTML, look to meta to determine language.
-        if found_lang is None and (not self.is_xml or (self.html_namespace and self.root.name == 'html')):
+        if found_lang is None and (not self.is_xml or (has_html_namespace and root.name == 'html')):
             # Find head
             found = False
             for tag in ('html', 'head'):
                 found = False
-                for child in self.get_children(parent):
-                    if self.get_tag(child) == tag:
+                for child in self.get_children(parent, no_iframe=self.is_html):
+                    if self.get_tag(child) == tag and self.is_html_tag(child):
                         found = True
                         parent = child
                         break
@@ -991,7 +1048,7 @@ class CSSMatch(Document, object):
             # Search meta tags
             if found:
                 for child in parent:
-                    if self.is_tag(child) and self.get_tag(child) == 'meta':
+                    if self.is_tag(child) and self.get_tag(child) == 'meta' and self.is_html_tag(parent):
                         c_lang = False
                         content = None
                         for k, v in self.iter_attributes(child):
@@ -1001,12 +1058,12 @@ class CSSMatch(Document, object):
                                 content = v
                             if c_lang and content:
                                 found_lang = content
-                                self.cached_meta_lang = found_lang
+                                self.cached_meta_lang.append((root, found_lang))
                                 break
                     if found_lang:
                         break
                 if not found_lang:
-                    self.cached_meta_lang = False
+                    self.cached_meta_lang.append((root, False))
 
         # If we determined a language, compare.
         if found_lang:
@@ -1027,13 +1084,16 @@ class CSSMatch(Document, object):
         if directionality & ct.SEL_DIR_LTR and directionality & ct.SEL_DIR_RTL:
             return False
 
+        if el is None or not self.is_html_tag(el):
+            return False
+
         # Element has defined direction of left to right or right to left
         direction = DIR_MAP.get(util.lower(self.get_attribute_by_name(el, 'dir', '')), None)
         if direction not in (None, 0):
             return direction == directionality
 
         # Element is the document element (the root) and no direction assigned, assume left to right.
-        is_root = self.match_root(el)
+        is_root = self.is_root(el)
         if is_root and direction is None:
             return ct.SEL_DIR_LTR == directionality
 
@@ -1050,7 +1110,7 @@ class CSSMatch(Document, object):
         if ((is_input and itype in ('text', 'search', 'tel', 'url', 'email')) or is_textarea) and direction == 0:
             if is_textarea:
                 value = []
-                for node in self.get_contents(el):
+                for node in self.get_contents(el, no_iframe=True):
                     if self.is_content_string(node):
                         value.append(node)
                 value = ''.join(value)
@@ -1066,7 +1126,7 @@ class CSSMatch(Document, object):
                 return ct.SEL_DIR_LTR == directionality
             elif is_root:
                 return ct.SEL_DIR_LTR == directionality
-            return self.match_dir(self.get_parent(el), directionality)
+            return self.match_dir(self.get_parent(el, no_iframe=True), directionality)
 
         # Auto handling for `bdi` and other non text inputs.
         if (is_bdi and direction is None) or direction == 0:
@@ -1075,10 +1135,10 @@ class CSSMatch(Document, object):
                 return direction == directionality
             elif is_root:
                 return ct.SEL_DIR_LTR == directionality
-            return self.match_dir(self.get_parent(el), directionality)
+            return self.match_dir(self.get_parent(el, no_iframe=True), directionality)
 
         # Match parents direction
-        return self.match_dir(self.get_parent(el), directionality)
+        return self.match_dir(self.get_parent(el, no_iframe=True), directionality)
 
     def match_range(self, el, condition):
         """
@@ -1153,7 +1213,15 @@ class CSSMatch(Document, object):
         match = False
         is_not = selectors.is_not
         is_html = selectors.is_html
-        if not (is_html and (self.is_xml and not self.html_namespace)):
+
+        # Internal selector lists that use the HTML flag, will automatically get the `html` namespace.
+        if is_html:
+            namespaces = self.namespaces
+            iframe_restrict = self.iframe_restrict
+            self.namespaces = {'html': NS_XHTML}
+            self.iframe_restrict = True
+
+        if not is_html or self.is_html:
             for selector in selectors:
                 match = is_not
                 # We have a un-matchable situation (like `:focus` as you can focus an element in this environment)
@@ -1212,6 +1280,11 @@ class CSSMatch(Document, object):
                     continue
                 match = not is_not
                 break
+
+        # Restore actual namespaces being used for external selector lists
+        if is_html:
+            self.namespaces = namespaces
+            self.iframe_restrict = iframe_restrict
 
         return match
 

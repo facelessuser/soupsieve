@@ -77,6 +77,47 @@ class TestDefault(util.TestCase):
             flags=util.HTML
         )
 
+    def test_iframe(self):
+        """Test with `iframe`."""
+
+        markup = """
+        <html>
+        <body>
+        <form>
+        <button id="d1" type="submit">default1</button>
+        </form>
+
+        <form>
+        <iframe>
+        <html>
+        <body>
+        <button id="d2" type="submit">default2</button>
+        </body>
+        </html>
+        </iframe>
+        <button id="d3" type="submit">default3</button>
+        </form>
+
+        <iframe>
+        <html>
+        <body>
+        <form>
+        <button id="d4" type="submit">default4</button>
+        </form>
+        </body>
+        </html>
+        </iframe>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            ":default",
+            ['d1', 'd3', 'd4'],
+            flags=util.PYHTML
+        )
+
     def test_nested_form(self):
         """
         Test nested form.

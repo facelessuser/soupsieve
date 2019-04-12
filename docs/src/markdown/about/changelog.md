@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.9.1
+
+- **FIX**: `:root`, `:contains()`, `:default`, `:indeterminate`, `:lang()`, and `:dir()` will properly account for HTML
+`iframe` elements in their logic when selecting or matching an element. Their logic will be restricted to the document
+for which the element under consideration applies.
+- **FIX**: HTML pseudo-classes will check that all key elements checked are in the XHTML namespace (HTML parsers that do
+not provide namespaces will assume the XHTML namespace).
+
 ## 1.9.0
 
 - **NEW**: Allow `:contains()` to accept a list of text to search for. (#115)

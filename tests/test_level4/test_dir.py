@@ -139,6 +139,80 @@ class TestDir(util.TestCase):
             fragment = soup.input.extract()
             self.assertTrue(sv.match(":root:dir(ltr)", fragment, flags=sv.DEBUG))
 
+    def test_iframe(self):
+        """Test direction in `iframe`."""
+
+        markup = """
+        <html>
+        <head></head>
+        <body>
+        <div id="1" dir="auto">
+        <iframe>
+        <html>
+        <body>
+        <div id="2" dir="auto">
+        <!-- comment -->עִבְרִית
+        <span id="5" dir="auto">()</span></div>
+        </div>
+        </body>
+        </html>
+        </iframe>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            "div:dir(ltr)",
+            ['1'],
+            flags=util.PYHTML
+        )
+
+        self.assert_selector(
+            markup,
+            "div:dir(rtl)",
+            ['2'],
+            flags=util.PYHTML
+        )
+
+    def test_xml_in_html(self):
+        """Test cases for when we have XML in HTML."""
+
+        markup = """
+        <html>
+        <head></head>
+        <body>
+        <div id="1" dir="auto">
+        <math>
+        <!-- comment -->עִבְרִית
+        </math>
+        other text
+        </div>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            "div:dir(ltr)",
+            ['1'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "div:dir(rtl)",
+            [],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "math:dir(rtl)",
+            [],
+            flags=util.HTML5
+        )
+
 
 class TestDirQuirks(TestDir):
     """Test direction selectors with quirks."""

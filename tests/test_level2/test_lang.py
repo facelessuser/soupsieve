@@ -35,6 +35,41 @@ class TestLang(util.TestCase):
             flags=util.HTML
         )
 
+    def test_iframe(self):
+        """Test language in `iframe`."""
+
+        markup = """
+        <html>
+        <body>
+        <div lang="de-DE">
+            <p id="1"></p>
+            <iframe>
+                <html>
+                <body>
+                <p id="2"></p>
+                <p id="3" lang="en-US"></p>
+                </body>
+                </html>
+            </iframe>
+        </div>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            "p:lang(en)",
+            ['3'],
+            flags=util.PYHTML
+        )
+
+        self.assert_selector(
+            markup,
+            "p:lang(de)",
+            ['1'],
+            flags=util.PYHTML
+        )
+
 
 class TestLangQuirks(TestLang):
     """Test language selector with quirks."""

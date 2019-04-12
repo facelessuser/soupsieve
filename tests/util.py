@@ -102,7 +102,7 @@ class TestCase(unittest.TestCase):
     def get_parsers(self, flags):
         """Get parsers."""
 
-        mode = flags & 0x2F
+        mode = flags & 0x3F
         if mode == HTML:
             parsers = ('html5lib', 'lxml', 'html.parser')
         elif mode == PYHTML:
