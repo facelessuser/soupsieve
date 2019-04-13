@@ -49,6 +49,7 @@ multiline
 namespace
 namespaces
 newline
+parser's
 parsers
 pre
 prerelease
