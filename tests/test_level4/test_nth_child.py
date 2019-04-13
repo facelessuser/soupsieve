@@ -41,6 +41,13 @@ class TestNthChild(util.TestCase):
             flags=util.HTML
         )
 
+        self.assert_selector(
+            self.MARKUP,
+            ":nth-child(2n + 1 OF :is(p, span).test)",
+            ['2', '6', '10'],
+            flags=util.HTML
+        )
+
 
 class TestNthChildQuirks(TestNthChild):
     """Test `nth` child selectors with quirks."""
