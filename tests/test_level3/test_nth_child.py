@@ -42,6 +42,20 @@ class TestNthChild(util.TestCase):
             flags=util.HTML
         )
 
+        self.assert_selector(
+            markup,
+            "p:NTH-CHILD(2)",
+            ['1'],
+            flags=util.HTML
+        )
+
+        self.assert_selector(
+            markup,
+            r"p:NT\H-CH\ILD(2)",
+            ['1'],
+            flags=util.HTML
+        )
+
     def test_nth_child_odd(self):
         """Test `nth` child odd."""
 
@@ -65,6 +79,13 @@ class TestNthChild(util.TestCase):
         self.assert_selector(
             markup,
             "p:nth-child(odd)",
+            ['0', '8', '10'],
+            flags=util.HTML
+        )
+
+        self.assert_selector(
+            markup,
+            "p:nth-child(ODD)",
             ['0', '8', '10'],
             flags=util.HTML
         )
@@ -96,6 +117,13 @@ class TestNthChild(util.TestCase):
             flags=util.HTML
         )
 
+        self.assert_selector(
+            markup,
+            "p:nth-child(EVEN)",
+            ['1', '7', '9'],
+            flags=util.HTML
+        )
+
     def test_nth_child_complex(self):
         """Test `nth` child complex."""
 
@@ -119,6 +147,13 @@ class TestNthChild(util.TestCase):
         self.assert_selector(
             markup,
             "p:nth-child(2n-5)",
+            ['0', '8', '10'],
+            flags=util.HTML
+        )
+
+        self.assert_selector(
+            markup,
+            "p:nth-child(2N-5)",
             ['0', '8', '10'],
             flags=util.HTML
         )
