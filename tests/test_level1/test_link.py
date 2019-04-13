@@ -25,6 +25,13 @@ class TestLink(util.TestCase):
             flags=util.HTML
         )
 
+        self.assert_selector(
+            self.MARKUP,
+            r":\liNk",
+            ["2"],
+            flags=util.HTML
+        )
+
     def test_tag_and_link(self):
         """Test link and tag (all links are unvisited)."""
 

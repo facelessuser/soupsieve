@@ -4,7 +4,6 @@ import re
 from . import util
 from . import css_match as cm
 from . import css_types as ct
-from collections import OrderedDict
 from .util import SelectorSyntaxError
 
 UNICODE_REPLACEMENT_CHAR = 0xFFFD
@@ -132,6 +131,8 @@ PAT_QUIRKS_ATTR = r'''
 '''.format(ws=WSC, ident=IDENTIFIER, attr=QUIRKS_ATTR)
 # Pseudo class (`:pseudo-class`, `:pseudo-class(`)
 PAT_PSEUDO_CLASS = r'(?P<name>:{ident})(?P<open>\({ws}*)?'.format(ws=WSC, ident=IDENTIFIER)
+# Pseudo class special patterns. Matches `:pseudo-class(` for special case pseudo classes.
+PAT_PSEUDO_CLASS_SPECIAL = r'(?P<name>:{ident})(?P<open>\({ws}*)'.format(ws=WSC, ident=IDENTIFIER)
 # Custom pseudo class (`:--custom-pseudo`)
 PAT_PSEUDO_CLASS_CUSTOM = r'(?P<name>:(?=--){ident})'.format(ident=IDENTIFIER)
 # Closing pseudo group (`)`)
@@ -142,22 +143,26 @@ PAT_PSEUDO_ELEMENT = r':{}'.format(PAT_PSEUDO_CLASS)
 PAT_AT_RULE = r'@P{ident}'.format(ident=IDENTIFIER)
 # Pseudo class `nth-child` (`:nth-child(an+b [of S]?)`, `:first-child`, etc.)
 PAT_PSEUDO_NTH_CHILD = r'''
-(?P<pseudo_nth_child>:nth-(?:last-)?child
-\({ws}*(?P<nth_child>{nth}|even|odd))(?:{wsc}*\)|(?P<of>{comments}*{ws}{wsc}*of{comments}*{ws}{wsc}*))
-'''.format(wsc=WSC, comments=COMMENTS, ws=WS, nth=NTH)
+(?P<pseudo_nth_child>{name}
+(?P<nth_child>{nth}|even|odd))(?:{wsc}*\)|(?P<of>{comments}*{ws}{wsc}*of{comments}*{ws}{wsc}*))
+'''.format(name=PAT_PSEUDO_CLASS_SPECIAL, wsc=WSC, comments=COMMENTS, ws=WS, nth=NTH)
 # Pseudo class `nth-of-type` (`:nth-of-type(an+b)`, `:first-of-type`, etc.)
 PAT_PSEUDO_NTH_TYPE = r'''
-(?P<pseudo_nth_type>:nth-(?:last-)?of-type
-\({ws}*(?P<nth_type>{nth}|even|odd)){ws}*\)
-'''.format(ws=WSC, nth=NTH)
+(?P<pseudo_nth_type>{name}
+(?P<nth_type>{nth}|even|odd)){ws}*\)
+'''.format(name=PAT_PSEUDO_CLASS_SPECIAL, ws=WSC, nth=NTH)
 # Pseudo class language (`:lang("*-de", en)`)
-PAT_PSEUDO_LANG = r':lang\({ws}*(?P<values>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'.format(ws=WSC, value=VALUE)
+PAT_PSEUDO_LANG = r'{name}(?P<values>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'.format(
+    name=PAT_PSEUDO_CLASS_SPECIAL, ws=WSC, value=VALUE
+)
 # Pseudo class direction (`:dir(ltr)`)
-PAT_PSEUDO_DIR = r':dir\({ws}*(?P<dir>ltr|rtl){ws}*\)'.format(ws=WSC)
+PAT_PSEUDO_DIR = r'{name}(?P<dir>ltr|rtl){ws}*\)'.format(name=PAT_PSEUDO_CLASS_SPECIAL, ws=WSC)
 # Combining characters (`>`, `~`, ` `, `+`, `,`)
 PAT_COMBINE = r'{wsc}*?(?P<relation>[,+>~]|{ws}(?![,+>~])){wsc}*'.format(ws=WS, wsc=WSC)
 # Extra: Contains (`:contains(text)`)
-PAT_PSEUDO_CONTAINS = r':contains\({ws}*(?P<values>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'.format(ws=WSC, value=VALUE)
+PAT_PSEUDO_CONTAINS = r'{name}(?P<values>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'.format(
+    name=PAT_PSEUDO_CLASS_SPECIAL, ws=WSC, value=VALUE
+)
 
 # Regular expressions
 # CSS escape pattern
@@ -230,7 +235,7 @@ def process_custom(custom):
                 raise SelectorSyntaxError("The name '{}' is not a valid custom pseudo-class name".format(name))
             if name in custom_selectors:
                 raise KeyError("The custom selector '{}' has already been registered".format(name))
-            custom_selectors[name] = value
+            custom_selectors[css_unescape(name)] = value
     return custom_selectors
 
 
@@ -292,15 +297,68 @@ def escape(ident):
 class SelectorPattern(object):
     """Selector pattern."""
 
-    def __init__(self, pattern):
+    def __init__(self, name, pattern):
         """Initialize."""
 
-        self.pattern = re.compile(pattern, re.I | re.X | re.U)
+        self.name = name
+        self.re_pattern = re.compile(pattern, re.I | re.X | re.U)
+
+    def get_name(self):
+        """Get name."""
+
+        return self.name
 
     def enabled(self, flags):
         """Enabled."""
 
         return True
+
+    def match(self, selector, index):
+        """Match the selector."""
+
+        return self.re_pattern.match(selector, index)
+
+
+class SpecialPseudoPattern(SelectorPattern):
+    """Selector pattern."""
+
+    def __init__(self, patterns):
+        """Initialize."""
+
+        self.patterns = {}
+        for p in patterns:
+            name = p[0]
+            pattern = SelectorPattern(name, p[2])
+            for pseudo in p[1]:
+                self.patterns[pseudo] = pattern
+
+        self.matched_name = None
+        self.re_pseudo_name = re.compile(PAT_PSEUDO_CLASS_SPECIAL, re.I | re.X | re.U)
+
+    def get_name(self):
+        """Get name."""
+
+        return self.matched_name.get_name()
+
+    def enabled(self, flags):
+        """Enabled."""
+
+        return True
+
+    def match(self, selector, index):
+        """Match the selector."""
+
+        pseudo = None
+        m = self.re_pseudo_name.match(selector, index)
+        if m:
+            name = util.lower(css_unescape(m.group('name')))
+            pattern = self.patterns.get(name)
+            if pattern:
+                pseudo = pattern.match(selector, index)
+                if pseudo:
+                    self.matched_name = pattern
+
+        return pseudo
 
 
 class QuirkPattern(SelectorPattern):
@@ -384,25 +442,27 @@ class _Selector(object):
 class CSSParser(object):
     """Parse CSS selectors."""
 
-    css_tokens = OrderedDict(
-        [
-            ("pseudo_close", SelectorPattern(PAT_PSEUDO_CLOSE)),
-            ("pseudo_contains", SelectorPattern(PAT_PSEUDO_CONTAINS)),
-            ("pseudo_nth_child", SelectorPattern(PAT_PSEUDO_NTH_CHILD)),
-            ("pseudo_nth_type", SelectorPattern(PAT_PSEUDO_NTH_TYPE)),
-            ("pseudo_lang", SelectorPattern(PAT_PSEUDO_LANG)),
-            ("pseudo_dir", SelectorPattern(PAT_PSEUDO_DIR)),
-            ("pseudo_class_custom", SelectorPattern(PAT_PSEUDO_CLASS_CUSTOM)),
-            ("pseudo_class", SelectorPattern(PAT_PSEUDO_CLASS)),
-            ("pseudo_element", SelectorPattern(PAT_PSEUDO_ELEMENT)),
-            ("at_rule", SelectorPattern(PAT_AT_RULE)),
-            ("id", SelectorPattern(PAT_ID)),
-            ("class", SelectorPattern(PAT_CLASS)),
-            ("tag", SelectorPattern(PAT_TAG)),
-            ("attribute", SelectorPattern(PAT_ATTR)),
-            ("quirks_attribute", QuirkPattern(PAT_QUIRKS_ATTR)),
-            ("combine", SelectorPattern(PAT_COMBINE))
-        ]
+    css_tokens = (
+        SelectorPattern("pseudo_close", PAT_PSEUDO_CLOSE),
+        SpecialPseudoPattern(
+            (
+                ("pseudo_contains", (':contains',), PAT_PSEUDO_CONTAINS),
+                ("pseudo_nth_child", (':nth-child', ':nth-last-child'), PAT_PSEUDO_NTH_CHILD),
+                ("pseudo_nth_type", (':nth-of-type', ':nth-last-of-type'), PAT_PSEUDO_NTH_TYPE),
+                ("pseudo_lang", (':lang',), PAT_PSEUDO_LANG),
+                ("pseudo_dir", (':dir',), PAT_PSEUDO_DIR)
+            )
+        ),
+        SelectorPattern("pseudo_class_custom", PAT_PSEUDO_CLASS_CUSTOM),
+        SelectorPattern("pseudo_class", PAT_PSEUDO_CLASS),
+        SelectorPattern("pseudo_element", PAT_PSEUDO_ELEMENT),
+        SelectorPattern("at_rule", PAT_AT_RULE),
+        SelectorPattern("id", PAT_ID),
+        SelectorPattern("class", PAT_CLASS),
+        SelectorPattern("tag", PAT_TAG),
+        SelectorPattern("attribute", PAT_ATTR),
+        QuirkPattern("quirks_attribute", PAT_QUIRKS_ATTR),
+        SelectorPattern("combine", PAT_COMBINE)
     )
 
     def __init__(self, selector, custom=None, flags=0):
@@ -511,7 +571,7 @@ class CSSParser(object):
         set it to `None` in the dictionary so we can avoid an infinite loop.
         """
 
-        pseudo = util.lower(m.group('name'))
+        pseudo = util.lower(css_unescape(m.group('name')))
         selector = self.custom.get(pseudo)
         if selector is None:
             raise SelectorSyntaxError(
@@ -535,7 +595,7 @@ class CSSParser(object):
         """Parse pseudo class."""
 
         complex_pseudo = False
-        pseudo = util.lower(m.group('name'))
+        pseudo = util.lower(css_unescape(m.group('name')))
         if m.group('open'):
             complex_pseudo = True
         if complex_pseudo and pseudo in PSEUDO_COMPLEX:
@@ -623,8 +683,12 @@ class CSSParser(object):
         """Parse `nth` pseudo."""
 
         mdict = m.groupdict()
-        postfix = '_child' if mdict.get('pseudo_nth_child') else '_type'
-        content = mdict.get('nth' + postfix)
+        if mdict.get('pseudo_nth_child'):
+            postfix = '_child'
+        else:
+            postfix = '_type'
+        mdict['name'] = util.lower(css_unescape(mdict['name']))
+        content = util.lower(mdict.get('nth' + postfix))
         if content == 'even':
             # 2n
             s1 = 2
@@ -654,7 +718,7 @@ class CSSParser(object):
             s1 = int(s1, 10)
             s2 = int(s2, 10)
 
-        pseudo_sel = util.lower(m.group('pseudo_nth' + postfix))
+        pseudo_sel = mdict['name']
         if postfix == '_child':
             if m.group('of'):
                 # Parse the rest of `of S`.
@@ -662,14 +726,14 @@ class CSSParser(object):
             else:
                 # Use default `*|*` for `of S`.
                 nth_sel = CSS_NTH_OF_S_DEFAULT
-            if pseudo_sel.startswith(':nth-child'):
+            if pseudo_sel == ':nth-child':
                 sel.nth.append(ct.SelectorNth(s1, var, s2, False, False, nth_sel))
-            elif pseudo_sel.startswith(':nth-last-child'):
+            elif pseudo_sel == ':nth-last-child':
                 sel.nth.append(ct.SelectorNth(s1, var, s2, False, True, nth_sel))
         else:
-            if pseudo_sel.startswith(':nth-of-type'):
+            if pseudo_sel == ':nth-of-type':
                 sel.nth.append(ct.SelectorNth(s1, var, s2, True, False, ct.SelectorList()))
-            elif pseudo_sel.startswith(':nth-last-of-type'):
+            elif pseudo_sel == ':nth-last-of-type':
                 sel.nth.append(ct.SelectorNth(s1, var, s2, True, True, ct.SelectorList()))
         has_selector = True
         return has_selector
@@ -1007,15 +1071,16 @@ class CSSParser(object):
             print('## PARSING: {!r}'.format(pattern))
         while index <= end:
             m = None
-            for k, v in self.css_tokens.items():
+            for v in self.css_tokens:
                 if not v.enabled(self.flags):  # pragma: no cover
                     continue
-                m = v.pattern.match(pattern, index)
+                m = v.match(pattern, index)
                 if m:
+                    name = v.get_name()
                     if self.debug:  # pragma: no cover
-                        print("TOKEN: '{}' --> {!r} at position {}".format(k, m.group(0), m.start(0)))
+                        print("TOKEN: '{}' --> {!r} at position {}".format(name, m.group(0), m.start(0)))
                     index = m.end(0)
-                    yield k, m
+                    yield name, m
                     break
             if m is None:
                 c = pattern[index]

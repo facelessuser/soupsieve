@@ -48,6 +48,21 @@ class TestCustomSelectors(util.TestCase):
             flags=util.HTML
         )
 
+    def test_custom_escapes(self):
+        """Test custom selectors with escapes."""
+
+        custom_selectors = {
+            r":--Header\s": "h1, h2, h3, h4, h5, h6"
+        }
+
+        self.assert_selector(
+            self.MARKUP,
+            r':--\HeaderS',
+            ['1', '2'],
+            custom=custom_selectors,
+            flags=util.HTML
+        )
+
     def test_custom_selectors_exotic(self):
         """Test custom selectors."""
 

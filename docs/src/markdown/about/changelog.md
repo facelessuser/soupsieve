@@ -7,6 +7,7 @@
 for which the element under consideration applies.
 - **FIX**: HTML pseudo-classes will check that all key elements checked are in the XHTML namespace (HTML parsers that do
 not provide namespaces will assume the XHTML namespace).
+- **FIX**: Ensure that all pseudo-classes names are case insensitive and allow CSS escapes.
 
 ## 1.9.0
 
