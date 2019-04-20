@@ -1,5 +1,9 @@
 # Changelog
 
+## Next
+
+- **FIX**: Shortcut last descendant calculation if possible for performance.
+
 ## 1.9.1
 
 - **FIX**: `:root`, `:contains()`, `:default`, `:indeterminate`, `:lang()`, and `:dir()` will properly account for HTML

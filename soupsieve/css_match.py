@@ -217,10 +217,13 @@ class Document(object):
                 is_tag = self.is_tag(child)
 
                 if no_iframe and is_tag and self.is_iframe(child):
-                    last_child = child
-                    while self.is_tag(last_child) and last_child.contents:
-                        last_child = last_child.contents[-1]
-                    next_good = last_child.next_element
+                    if child.next_sibling is not None:
+                        next_good = child.next_sibling
+                    else:
+                        last_child = child
+                        while self.is_tag(last_child) and last_child.contents:
+                            last_child = last_child.contents[-1]
+                        next_good = last_child.next_element
                     yield child
                     if next_good is None:
                         break
