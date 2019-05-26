@@ -31,11 +31,8 @@ information.
 special. The `type` attribute's value is always case insensitive. This is generally how most browsers treat `type`. If
 you need `type` to be sensitive, you can use the `s` flag: `#!css [type="submit" s]`.
 
-As far as the API is concerned, Soup Sieve mimics Beautiful Soup's original API at the time of writing this, which is
-why the names `select` and `select_one` are used. As of today, Beautiful Soup has agreed to include Soup Sieve as the
-official select library which is slated for the 4.7.0 release.
-
-Soup Sieve will always be available as an external API as well for more controlled tag selection if needed.
+While Soup Sieve access is exposed through Beautiful Soup's API, Soup Sieve's API can always be imported and accessed
+directly for more controlled tag selection if needed.
 
 ## Flags
 
@@ -60,19 +57,6 @@ TOKEN: 'class' --> '.some-class' at position 17
 TOKEN: 'pseudo_contains' --> ':contains(text)' at position 28
 ## END PARSING
 SoupSieve(pattern='p:has(#id) > span.some-class:contains(text)', namespaces=None, custom=None, flags=1)
-```
-
-### `soupsieve.REVERSE`
-
-When calling `filter`, `select`, `iselect`, or `select_one`, searches will be preformed in reverse order, causing the
-elements to be returned/yielded in reverse order.
-
-```pycon3
->>> import soupsieve as sv
->>> sv.select('p', soup)
-[<p class="a">Cat</p>, <p class="b">Dog</p>, <p class='c"'>Mouse</p>]
->>> sv.select('p', soup, flags=sv.REVERSE)
-[<p class='c"'>Mouse</p>, <p class="b">Dog</p>, <p class="a">Cat</p>]
 ```
 
 ## `soupsieve.select_one()`

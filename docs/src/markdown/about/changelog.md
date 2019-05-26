@@ -1,8 +1,8 @@
 # Changelog
 
-## Next
+<!-- ## Next
 
-- **FIX**: Shortcut last descendant calculation if possible for performance.
+- **FIX**: Shortcut last descendant calculation if possible for performance. -->
 
 ## 1.9.1
 
