@@ -1,8 +1,10 @@
 # Changelog
 
-<!-- ## Next
+## 1.9.2
 
-- **FIX**: Shortcut last descendant calculation if possible for performance. -->
+- **FIX**: Shortcut last descendant calculation if possible for performance.
+- **FIX**: `doctype` strings should not be mistaken for a tag's content.
+- **FIX**: A tag cannot be a valid `:root` if it has sibling tags or HTML content strings.
 
 ## 1.9.1
 
