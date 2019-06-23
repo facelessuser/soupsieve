@@ -118,6 +118,82 @@ class TestRoot(util.TestCase):
             ids.append(el['id'])
         self.assertEqual(sorted(ids), sorted(['div2']))
 
+    def test_no_root_double_tag(self):
+        """Test when there is no root due to double root tags."""
+
+        markup = """
+        <div id="1"></div>
+        <div id="2"></div>
+        """
+
+        soup = self.soup(markup, 'html.parser')
+        self.assertEqual(soup.select(':root'), [])
+
+    def test_no_root_text(self):
+        """Test when there is no root due to HTML text."""
+
+        markup = """
+        text
+        <div id="1"></div>
+        """
+
+        soup = self.soup(markup, 'html.parser')
+        self.assertEqual(soup.select(':root'), [])
+
+    def test_no_root_cdata(self):
+        """Test when there is no root due to CDATA and tag."""
+
+        markup = """
+        <![CDATA[test]]>
+        <div id="1"></div>
+        """
+
+        soup = self.soup(markup, 'html.parser')
+        self.assertEqual(soup.select(':root'), [])
+
+    def test_root_whitespace(self):
+        """Test when there is root and white space."""
+
+        markup = """
+
+        <div id="1"></div>
+        """
+
+        ids = []
+        soup = self.soup(markup, 'html.parser')
+        for el in soup.select(':root'):
+            ids.append(el['id'])
+        self.assertEqual(sorted(ids), sorted(['1']))
+
+    def test_root_preprocess(self):
+        """Test when there is root and pre-processing statement."""
+
+        markup = """
+        <?php ?>
+        <div id="1"></div>
+        """
+
+        ids = []
+        soup = self.soup(markup, 'html.parser')
+        for el in soup.select(':root'):
+            ids.append(el['id'])
+        self.assertEqual(sorted(ids), sorted(['1']))
+
+    def test_root_doctype(self):
+        """Test when there is root and doc type."""
+
+        markup = """
+        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+        <div id="1"></div>
+        """
+
+        ids = []
+        soup = self.soup(markup, 'html.parser')
+        for el in soup.select(':root'):
+            ids.append(el['id'])
+        self.assertEqual(sorted(ids), sorted(['1']))
+
 
 class TestRootQuirks(TestRoot):
     """Test root selectors with quirks."""

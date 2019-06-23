@@ -113,11 +113,11 @@ class Document(object):
         return isinstance(obj, bs4.Declaration)
 
     @staticmethod
-    def is_cdata(obj):  # pragma: no cover
+    def is_cdata(obj):
         """Is CDATA."""
 
         import bs4
-        return isinstance(obj, bs4.Declaration)
+        return isinstance(obj, bs4.CData)
 
     @staticmethod
     def is_processing_instruction(obj):  # pragma: no cover
@@ -138,7 +138,7 @@ class Document(object):
         """Is special string."""
 
         import bs4
-        return isinstance(obj, (bs4.Comment, bs4.Declaration, bs4.CData, bs4.ProcessingInstruction))
+        return isinstance(obj, (bs4.Comment, bs4.Declaration, bs4.CData, bs4.ProcessingInstruction, bs4.Doctype))
 
     @classmethod
     def is_content_string(cls, obj):
@@ -254,20 +254,20 @@ class Document(object):
         return el.prefix
 
     @classmethod
-    def get_next_tag(cls, el):
+    def get_next(cls, el, tags=True):
         """Get next sibling tag."""
 
         sibling = el.next_sibling
-        while not cls.is_tag(sibling) and sibling is not None:
+        while tags and not cls.is_tag(sibling) and sibling is not None:
             sibling = sibling.next_sibling
         return sibling
 
     @classmethod
-    def get_previous_tag(cls, el):
+    def get_previous(cls, el, tags=True):
         """Get previous sibling tag."""
 
         sibling = el.previous_sibling
-        while not cls.is_tag(sibling) and sibling is not None:
+        while tags and not cls.is_tag(sibling) and sibling is not None:
             sibling = sibling.previous_sibling
         return sibling
 
@@ -663,12 +663,12 @@ class CSSMatch(Document, object):
             if parent:
                 found = self.match_selectors(parent, relation)
         elif relation[0].rel_type == REL_SIBLING:
-            sibling = self.get_previous_tag(el)
+            sibling = self.get_previous(el)
             while not found and sibling:
                 found = self.match_selectors(sibling, relation)
-                sibling = self.get_previous_tag(sibling)
+                sibling = self.get_previous(sibling)
         elif relation[0].rel_type == REL_CLOSE_SIBLING:
-            sibling = self.get_previous_tag(el)
+            sibling = self.get_previous(el)
             if sibling and self.is_tag(sibling):
                 found = self.match_selectors(sibling, relation)
         return found
@@ -693,12 +693,12 @@ class CSSMatch(Document, object):
         elif relation[0].rel_type == REL_HAS_CLOSE_PARENT:
             found = self.match_future_child(el, relation)
         elif relation[0].rel_type == REL_HAS_SIBLING:
-            sibling = self.get_next_tag(el)
+            sibling = self.get_next(el)
             while not found and sibling:
                 found = self.match_selectors(sibling, relation)
-                sibling = self.get_next_tag(sibling)
+                sibling = self.get_next(sibling)
         elif relation[0].rel_type == REL_HAS_CLOSE_SIBLING:
-            sibling = self.get_next_tag(el)
+            sibling = self.get_next(el)
             if sibling and self.is_tag(sibling):
                 found = self.match_selectors(sibling, relation)
         return found
@@ -739,7 +739,28 @@ class CSSMatch(Document, object):
     def match_root(self, el):
         """Match element as root."""
 
-        return self.is_root(el)
+        is_root = self.is_root(el)
+        if is_root:
+            sibling = self.get_previous(el, tags=False)
+            while is_root and sibling is not None:
+                if (
+                    self.is_tag(sibling) or (self.is_content_string(sibling) and sibling.strip()) or
+                    self.is_cdata(sibling)
+                ):
+                    is_root = False
+                else:
+                    sibling = self.get_previous(sibling, tags=False)
+        if is_root:
+            sibling = self.get_next(el, tags=False)
+            while is_root and sibling is not None:
+                if (
+                    self.is_tag(sibling) or (self.is_content_string(sibling) and sibling.strip()) or
+                    self.is_cdata(sibling)
+                ):
+                    is_root = False
+                else:
+                    sibling = self.get_next(sibling, tags=False)
+        return is_root
 
     def match_scope(self, el):
         """Match element as scope."""
