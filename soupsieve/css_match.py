@@ -53,7 +53,7 @@ FEB_LEAP_MONTH = 29
 DAYS_IN_WEEK = 7
 
 
-class FakeParent(object):
+class _FakeParent(object):
     """
     Fake parent class.
 
@@ -73,7 +73,7 @@ class FakeParent(object):
         return len(self.contents)
 
 
-class Document(object):
+class _DocumentNav(object):
     """Navigate a Beautiful Soup document."""
 
     @classmethod
@@ -150,7 +150,7 @@ class Document(object):
     def create_fake_parent(el):
         """Create fake parent for a given element."""
 
-        return FakeParent(el)
+        return _FakeParent(el)
 
     @staticmethod
     def is_xml_tree(el):
@@ -252,6 +252,12 @@ class Document(object):
         """Get prefix."""
 
         return el.prefix
+
+    @staticmethod
+    def get_uri(el):
+        """Get namespace `URI`."""
+
+        return el.namespace
 
     @classmethod
     def get_next(cls, el, tags=True):
@@ -431,7 +437,7 @@ class Inputs(object):
         return parsed
 
 
-class CSSMatch(Document, object):
+class _Match(object):
     """Perform CSS matching."""
 
     def __init__(self, selectors, scope, namespaces, flags):
@@ -479,7 +485,7 @@ class CSSMatch(Document, object):
 
         if self.supports_namespaces():
             namespace = ''
-            ns = el.namespace
+            ns = self.get_uri(el)
             if ns:
                 namespace = ns
         else:
@@ -1349,7 +1355,11 @@ class CSSMatch(Document, object):
         return not self.is_doc(el) and self.is_tag(el) and self.match_selectors(el, self.selectors)
 
 
-class CommentsMatch(Document, object):
+class CSSMatch(_DocumentNav, _Match):
+    """The Beautiful Soup CSS match class."""
+
+
+class CommentsMatch(_DocumentNav):
     """Comments matcher."""
 
     def __init__(self, el):
