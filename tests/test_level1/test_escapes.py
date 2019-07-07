@@ -23,13 +23,3 @@ class TestEscapes(util.TestCase):
             ["1"],
             flags=util.HTML
         )
-
-
-class TestEscapesQuirks(TestEscapes):
-    """Test escapes with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

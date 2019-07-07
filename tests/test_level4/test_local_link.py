@@ -30,13 +30,3 @@ class TestLocalLink(util.TestCase):
             ["1", "2"],
             flags=util.HTML
         )
-
-
-class TestLocalLinkQuirks(TestLocalLink):
-    """Test local link selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

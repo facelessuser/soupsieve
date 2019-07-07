@@ -142,13 +142,3 @@ class TestCustomSelectors(util.TestCase):
         """Test that a custom selector cannot match an already existing custom name."""
 
         self.assert_raises('div', KeyError, custom={":--parent": ":has(> *|*)", ":--PARENT": ":has(> *|*)"})
-
-
-class TestCustomSelectorsQuirks(TestCustomSelectors):
-    """Test custom selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

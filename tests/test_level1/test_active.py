@@ -24,13 +24,3 @@ class TestActive(util.TestCase):
             [],
             flags=util.HTML
         )
-
-
-class TestActiveQuirks(TestActive):
-    """Test active selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

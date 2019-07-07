@@ -60,13 +60,3 @@ class TestReadWrite(util.TestCase):
             ],
             flags=util.HTML
         )
-
-
-class TestReadWriteQuirks(TestReadWrite):
-    """Test read write selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

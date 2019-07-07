@@ -50,13 +50,3 @@ class TestComments(util.TestCase):
             ['1', '4', '5', '6'],
             flags=util.HTML
         )
-
-
-class TestCommentsQuirks(TestComments):
-    """Test comments with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

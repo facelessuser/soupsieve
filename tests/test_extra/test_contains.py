@@ -254,13 +254,3 @@ class TestContains(util.TestCase):
             ['2'],
             flags=util.XML
         )
-
-
-class TestContainsQuirks(TestContains):
-    """Test contains selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

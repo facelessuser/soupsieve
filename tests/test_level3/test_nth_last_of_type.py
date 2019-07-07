@@ -55,13 +55,3 @@ class TestNthLastOfType(util.TestCase):
             ['1', '8', '10'],
             flags=util.HTML
         )
-
-
-class TestNthLastOfTypeQuirks(TestNthLastOfType):
-    """Test `nth` last of type selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

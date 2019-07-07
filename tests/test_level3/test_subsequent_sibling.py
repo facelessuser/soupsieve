@@ -26,13 +26,3 @@ class TestSubsequentSibling(util.TestCase):
             ["3"],
             flags=util.HTML
         )
-
-
-class TestSubsequentSiblingQuirks(TestSubsequentSibling):
-    """Test subsequent sibling combinator with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

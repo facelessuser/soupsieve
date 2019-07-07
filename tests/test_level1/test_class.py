@@ -107,13 +107,3 @@ class TestClass(util.TestCase):
 
         # Malformed pseudo-class
         self.assert_raises('td:#id', SelectorSyntaxError)
-
-
-class TestClassQuirks(TestClass):
-    """Test class selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

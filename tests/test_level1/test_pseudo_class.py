@@ -15,13 +15,3 @@ class TestPseudoClass(util.TestCase):
         """Test unrecognized pseudo class."""
 
         self.assert_raises(':before', NotImplementedError)
-
-
-class TestPseudoClassQuirks(TestPseudoClass):
-    """Test pseudo-classes with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

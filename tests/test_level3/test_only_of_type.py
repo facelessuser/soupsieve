@@ -30,13 +30,3 @@ class TestOnlyOfType(util.TestCase):
             ['1', '4'],
             flags=util.HTML
         )
-
-
-class TestOnlyOfTypeQuirks(TestOnlyOfType):
-    """Test only of type selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

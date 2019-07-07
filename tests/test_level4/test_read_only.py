@@ -62,13 +62,3 @@ class TestReadOnly(util.TestCase):
             ],
             flags=util.HTML
         )
-
-
-class TestReadOnlyQuirks(TestReadOnly):
-    """Test read only selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

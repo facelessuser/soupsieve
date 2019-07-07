@@ -28,13 +28,3 @@ class TestUniversal(util.TestCase):
             ["0", "1", "2", "3", "4", "5", "6", "div", "pre"],
             flags=util.HTML
         )
-
-
-class TestUniversalQuirks(TestUniversal):
-    """Test universal type selector with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

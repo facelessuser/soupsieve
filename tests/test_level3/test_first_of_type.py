@@ -85,13 +85,3 @@ class TestFirstOfType(util.TestCase):
             ['0', '2'],
             flags=util.HTML
         )
-
-
-class TestFirstOfTypeQuirks(TestFirstOfType):
-    """Test first of type selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

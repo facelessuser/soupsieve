@@ -341,13 +341,3 @@ class TestNamespace(util.TestCase):
             namespaces={"xlink": "http://www.w3.org/1999/xlink"},
             flags=util.XHTML
         )
-
-
-class TestNamespaceQuirks(TestNamespace):
-    """Test namespace selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

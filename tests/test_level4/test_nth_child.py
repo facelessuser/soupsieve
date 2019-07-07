@@ -47,13 +47,3 @@ class TestNthChild(util.TestCase):
             ['2', '6', '10'],
             flags=util.HTML
         )
-
-
-class TestNthChildQuirks(TestNthChild):
-    """Test `nth` child selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

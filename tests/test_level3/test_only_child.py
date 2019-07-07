@@ -26,13 +26,3 @@ class TestOnlyChild(util.TestCase):
             ["1"],
             flags=util.HTML
         )
-
-
-class TestOnlyChildQuirks(TestOnlyChild):
-    """Test only child selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

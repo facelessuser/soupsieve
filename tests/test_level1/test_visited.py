@@ -24,13 +24,3 @@ class TestVisited(util.TestCase):
             [],
             flags=util.HTML
         )
-
-
-class TestVisitedQuirks(TestVisited):
-    """Test visited selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

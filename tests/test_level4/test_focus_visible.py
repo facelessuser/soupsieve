@@ -31,13 +31,3 @@ class TestFocusVisible(util.TestCase):
             ["form"],
             flags=util.HTML
         )
-
-
-class TestFocusVisibleQuirks(TestFocusVisible):
-    """Test focus visible selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

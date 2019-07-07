@@ -41,13 +41,3 @@ class TestLink(util.TestCase):
             [],
             flags=util.XML
         )
-
-
-class TestLinkQuirks(TestLink):
-    """Test link selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

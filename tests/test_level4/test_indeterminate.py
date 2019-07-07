@@ -72,13 +72,3 @@ class TestIndeterminate(util.TestCase):
             ['radio1', 'radio3'],
             flags=util.PYHTML
         )
-
-
-class TestIndeterminateQuirks(TestIndeterminate):
-    """Test indeterminate selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

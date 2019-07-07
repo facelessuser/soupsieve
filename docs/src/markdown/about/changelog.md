@@ -1,10 +1,16 @@
 # Changelog
 
+## Latest
+
+- **FIX**: Remove undocumented `_QUIRKS` mode flag as Beautiful Soup never released with support for it. Six months
+later, people have adapted to Soup Sieve's support moving forward.
+
 ## 1.9.2
 
 - **FIX**: Shortcut last descendant calculation if possible for performance.
 - **FIX**: Fix issue where `Doctype` strings can be mistaken for a normal text node in some cases.
-- **FIX**: A top level tag is not a `:root` tag if it has sibling text nodes or tag nodes. This is an issue that mostly manifests when using `html.parser` as the parser will allow multiple root nodes.
+- **FIX**: A top level tag is not a `:root` tag if it has sibling text nodes or tag nodes. This is an issue that mostly
+manifests when using `html.parser` as the parser will allow multiple root nodes.
 
 ## 1.9.1
 

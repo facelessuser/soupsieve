@@ -41,13 +41,3 @@ class TestPaused(util.TestCase):
             ["vid"],
             flags=util.HTML
         )
-
-
-class TestPausedQuirks(TestPaused):
-    """Test paused selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

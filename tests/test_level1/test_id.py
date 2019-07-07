@@ -40,13 +40,3 @@ class TestId(util.TestCase):
 
         # Malformed id
         self.assert_raises('td#.some-class', SelectorSyntaxError)
-
-
-class TestIdQuirks(TestId):
-    """Test ID selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

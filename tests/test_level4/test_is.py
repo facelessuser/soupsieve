@@ -25,22 +25,12 @@ class TestIs(util.TestCase):
             flags=util.HTML
         )
 
-    def test_matches(self):
-        """Test multiple selectors with the "matches" alias."""
-
-        self.assert_selector(
-            self.MARKUP,
-            ":matches(span, a)",
-            ["1", "2"],
-            flags=util.HTML
-        )
-
     def test_nested_is(self):
         """Test multiple nested selectors."""
 
         self.assert_selector(
             self.MARKUP,
-            ":is(span, a:matches(#\\32))",
+            ":is(span, a:is(#\\32))",
             ["1", "2"],
             flags=util.HTML
         )
@@ -105,13 +95,3 @@ class TestIs(util.TestCase):
         """Test invalid pseudo close."""
 
         self.assert_raises(':is(div', SelectorSyntaxError)
-
-
-class TestIsQuirks(TestIs):
-    """Test is selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

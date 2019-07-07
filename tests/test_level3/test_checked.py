@@ -38,13 +38,3 @@ class TestChecked(util.TestCase):
             ['yes', 'opt-in', '2'],
             flags=util.HTML
         )
-
-
-class TestCheckedQuirks(TestChecked):
-    """Test checked selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

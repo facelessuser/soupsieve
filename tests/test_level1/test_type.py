@@ -106,13 +106,3 @@ class TestType(util.TestCase):
 
         self.assert_raises('div?', SelectorSyntaxError)
         self.assert_raises('-', SelectorSyntaxError)
-
-
-class TestTypeQuirks(TestType):
-    """Test type selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

@@ -49,13 +49,3 @@ class TestPlaceholderShown(util.TestCase):
             ['0', '1', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
             flags=util.HTML
         )
-
-
-class TestPlaceholderShownQuirks(TestPlaceholderShown):
-    """Test placeholder shown selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True
