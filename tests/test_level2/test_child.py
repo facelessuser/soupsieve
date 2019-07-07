@@ -1,7 +1,6 @@
 """Test child combinators."""
 from __future__ import unicode_literals
 from .. import util
-import soupsieve as sv
 from soupsieve import SelectorSyntaxError
 
 
