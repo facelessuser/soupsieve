@@ -236,13 +236,3 @@ class TestInRange(util.TestCase):
             ['0', '1', '2', '3', '4', '5', '6', '7'],
             flags=util.HTML
         )
-
-
-class TestInRangeQuirks(TestInRange):
-    """Test in range selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

@@ -34,13 +34,3 @@ class TestTarget(util.TestCase):
             ["head-2"],
             flags=util.HTML
         )
-
-
-class TestTargetQuirks(TestTarget):
-    """Test target selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

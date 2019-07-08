@@ -87,13 +87,3 @@ class TestScope(util.TestCase):
             for el in sv.select(':scope .wordshere', el, flags=sv.DEBUG):
                 ids.append(el.attrs['id'])
             self.assertEqual(sorted(ids), sorted(['pre']))
-
-
-class TestScopeQuirks(TestScope):
-    """Test scope selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

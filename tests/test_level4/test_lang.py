@@ -313,13 +313,3 @@ class TestLang(util.TestCase):
             [],
             flags=util.XHTML
         )
-
-
-class TestLangQuirks(TestLang):
-    """Test language selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

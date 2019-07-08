@@ -59,13 +59,3 @@ class TestNthLastChild(util.TestCase):
             ['1', '7', '9'],
             flags=util.HTML
         )
-
-
-class TestNthLastChildQuirks(TestNthLastChild):
-    """Test `nth` last child selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

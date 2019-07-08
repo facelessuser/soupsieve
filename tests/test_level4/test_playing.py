@@ -41,13 +41,3 @@ class TestPlaying(util.TestCase):
             ["vid"],
             flags=util.HTML
         )
-
-
-class TestPlayingQuirks(TestPlaying):
-    """Test playing selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

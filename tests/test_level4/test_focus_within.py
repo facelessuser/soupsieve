@@ -31,13 +31,3 @@ class TestFocusWithin(util.TestCase):
             ["form"],
             flags=util.HTML
         )
-
-
-class TestFocusWithinQuirks(TestFocusWithin):
-    """Test focus within selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

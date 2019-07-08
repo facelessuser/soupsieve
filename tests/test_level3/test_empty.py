@@ -31,13 +31,3 @@ class TestEmpty(util.TestCase):
             ["4", "5", "6", "8"],
             flags=util.HTML
         )
-
-
-class TestEmptyQuirks(TestEmpty):
-    """Test empty selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

@@ -245,13 +245,3 @@ class TestNthChild(util.TestCase):
         """Test that pseudo class fails with bad parameters (basically it doesn't match)."""
 
         self.assert_raises(':nth-child(a)', SelectorSyntaxError)
-
-
-class TestNthChildQuirks(TestNthChild):
-    """Test `nth` child selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

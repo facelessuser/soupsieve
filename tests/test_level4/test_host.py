@@ -27,13 +27,3 @@ class TestHost(util.TestCase):
             [],
             flags=util.HTML
         )
-
-
-class TestHostQuirks(TestHost):
-    """Test host selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

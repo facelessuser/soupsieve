@@ -145,13 +145,3 @@ class TestEnabled(util.TestCase):
             ['1', '2', 'opt-enable', 'b', '3'],
             flags=util.PYHTML
         )
-
-
-class TestEnabledQuirks(TestEnabled):
-    """Test enabled selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

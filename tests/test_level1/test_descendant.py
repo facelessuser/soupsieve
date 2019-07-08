@@ -21,13 +21,3 @@ class TestDescendants(util.TestCase):
             ["1"],
             flags=util.HTML
         )
-
-
-class TestDescendantsQuirks(TestDescendants):
-    """Test descendant combinators with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

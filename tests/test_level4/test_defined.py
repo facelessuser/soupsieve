@@ -88,13 +88,3 @@ class TestDefined(util.TestCase):
             [],
             flags=util.XML
         )
-
-
-class TestDefinedQuirks(TestDefined):
-    """Test defined selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

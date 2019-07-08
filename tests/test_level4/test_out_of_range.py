@@ -236,13 +236,3 @@ class TestOutOfRange(util.TestCase):
             ['8', '9', '10', '11', '12', '13', '14'],
             flags=util.HTML
         )
-
-
-class TestOutOfRangeQuirks(TestOutOfRange):
-    """Test out of range selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

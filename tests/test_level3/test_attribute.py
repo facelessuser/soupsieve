@@ -61,13 +61,3 @@ class TestAttribute(util.TestCase):
             ["0", "3", "pre"],
             flags=util.HTML
         )
-
-
-class TestAttributeQuirks(TestAttribute):
-    """Test attribute selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

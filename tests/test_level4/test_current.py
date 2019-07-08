@@ -70,13 +70,3 @@ class TestCurrent(util.TestCase):
             ["div", "0", "1", "2", "3"],
             flags=util.HTML
         )
-
-
-class TestCurrentQuirks(TestCurrent):
-    """Test current selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

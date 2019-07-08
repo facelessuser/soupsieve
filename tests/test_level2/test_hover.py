@@ -24,13 +24,3 @@ class TestHover(util.TestCase):
             [],
             flags=util.HTML
         )
-
-
-class TestHoverQuirks(TestHover):
-    """Test hover selector with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

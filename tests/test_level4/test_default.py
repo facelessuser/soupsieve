@@ -205,13 +205,3 @@ class TestDefault(util.TestCase):
             [],
             flags=util.HTML
         )
-
-
-class TestDefaultQuirks(TestDefault):
-    """Test default selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

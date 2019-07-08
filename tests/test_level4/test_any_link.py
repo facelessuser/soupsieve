@@ -54,13 +54,3 @@ class TestAnyLink(util.TestCase):
             ["div", "0", "1", "2", "3"],
             flags=util.XML
         )
-
-
-class TestAnyLinkQuirks(TestAnyLink):
-    """Test any link selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

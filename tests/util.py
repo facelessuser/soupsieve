@@ -30,18 +30,6 @@ PYHTML = 0x10
 LXML_HTML = 0x20
 
 
-def skip_quirks(func):
-    """Decorator that skips when quirks mode is enabled."""
-
-    def skip_if(self, *args, **kwargs):
-        """Skip conditional wrapper."""
-        if self.quirks is True:
-            raise pytest.skip('not applicable to quirks mode')
-        else:
-            return func(self, *args, **kwargs)
-    return skip_if
-
-
 def skip_py3(func):
     """Decorator that skips when running in Python 3."""
 
@@ -77,7 +65,6 @@ class TestCase(unittest.TestCase):
         """Setup."""
 
         sv.purge()
-        self.quirks = False
 
     def purge(self):
         """Purge cache."""
@@ -89,8 +76,6 @@ class TestCase(unittest.TestCase):
 
         print('PATTERN: ', selectors)
         flags |= sv.DEBUG
-        if self.quirks:
-            flags |= sv._QUIRKS
         return sv.compile(selectors, namespaces=namespaces, custom=custom, flags=flags)
 
     def soup(self, markup, parser):

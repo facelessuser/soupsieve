@@ -36,13 +36,3 @@ class TestFuture(util.TestCase):
             ["0"],
             flags=util.HTML
         )
-
-
-class TestFutureQuirks(TestFuture):
-    """Test future selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

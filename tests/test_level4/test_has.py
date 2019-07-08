@@ -166,13 +166,3 @@ class TestHas(util.TestCase):
         """Test `:has()` fails with trailing comma."""
 
         self.assert_raises(':has(, p)', SelectorSyntaxError)
-
-
-class TestHasQuirks(TestHas):
-    """Test has selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

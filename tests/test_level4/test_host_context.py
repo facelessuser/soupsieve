@@ -17,13 +17,3 @@ class TestHostContext(util.TestCase):
             [],
             flags=util.HTML
         )
-
-
-class TestHostContextQuirks(TestHostContext):
-    """Test host context selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

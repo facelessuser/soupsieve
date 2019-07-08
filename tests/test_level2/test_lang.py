@@ -69,13 +69,3 @@ class TestLang(util.TestCase):
             ['1'],
             flags=util.PYHTML
         )
-
-
-class TestLangQuirks(TestLang):
-    """Test language selector with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

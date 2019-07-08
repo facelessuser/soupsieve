@@ -193,13 +193,3 @@ class TestRoot(util.TestCase):
         for el in soup.select(':root'):
             ids.append(el['id'])
         self.assertEqual(sorted(ids), sorted(['1']))
-
-
-class TestRootQuirks(TestRoot):
-    """Test root selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

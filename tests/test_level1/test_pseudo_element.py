@@ -10,13 +10,3 @@ class TestPseudoElement(util.TestCase):
         """Test that pseudo elements always fail because they are not supported."""
 
         self.assert_raises('::first-line', NotImplementedError)
-
-
-class TestPseudoElementQuirks(TestPseudoElement):
-    """Test pseudo-elements with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

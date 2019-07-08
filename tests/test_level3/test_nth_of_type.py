@@ -73,13 +73,3 @@ class TestNthOfType(util.TestCase):
             ['0', '2', '4', '6', '7', '9'],
             flags=util.HTML
         )
-
-
-class TestNthOfTypeQuirks(TestNthOfType):
-    """Test `nth` of type selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

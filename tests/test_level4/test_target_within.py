@@ -35,13 +35,3 @@ class TestTargetWithin(util.TestCase):
             ["article"],
             flags=util.HTML
         )
-
-
-class TestTargetWithinQuirks(TestTargetWithin):
-    """Test target within selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

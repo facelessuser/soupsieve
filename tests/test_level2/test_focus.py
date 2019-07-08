@@ -54,13 +54,3 @@ class TestFocus(util.TestCase):
             ["1", "2", "3", "4", "5", "6"],
             flags=util.HTML
         )
-
-
-class TestFocusQuirks(TestFocus):
-    """Test focus selector with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

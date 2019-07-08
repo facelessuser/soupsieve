@@ -110,11 +110,6 @@ VALUE = r'''
 ATTR = r'''
 (?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*(?P<value>{value})(?:{ws}+(?P<case>[is]))?)?{ws}*\]
 '''.format(ws=WSC, value=VALUE)
-# Definitions for quirks mode
-QUIRKS_ATTR_IDENTIFIER = r'(?:(?:{esc}|(?!/\*)[^"\] \t\r\n\f])+?)'.format(esc=CSS_ESCAPES)
-QUIRKS_ATTR = r'''
-(?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*(?P<value>{value})(?:{ws}+(?P<case>[is]))?)?{ws}*\]
-'''.format(ws=WSC, value=QUIRKS_ATTR_IDENTIFIER)
 
 # Selector patterns
 # IDs (`#id`)
@@ -125,10 +120,6 @@ PAT_CLASS = r'\.{ident}'.format(ident=IDENTIFIER)
 PAT_TAG = r'(?:(?:{ident}|\*)?\|)?(?:{ident}|\*)'.format(ident=IDENTIFIER)
 # Attributes (`[attr]`, `[attr=value]`, etc.)
 PAT_ATTR = r'\[{ws}*(?P<ns_attr>(?:(?:{ident}|\*)?\|)?{ident}){attr}'.format(ws=WSC, ident=IDENTIFIER, attr=ATTR)
-# Quirks attributes, like real attributes, but unquoted values can contain anything but whitespace and closing `]`.
-PAT_QUIRKS_ATTR = r'''
-\[{ws}*(?P<ns_attr>(?:(?:{ident}|\*)?\|)?{ident}){attr}
-'''.format(ws=WSC, ident=IDENTIFIER, attr=QUIRKS_ATTR)
 # Pseudo class (`:pseudo-class`, `:pseudo-class(`)
 PAT_PSEUDO_CLASS = r'(?P<name>:{ident})(?P<open>\({ws}*)?'.format(ws=WSC, ident=IDENTIFIER)
 # Pseudo class special patterns. Matches `:pseudo-class(` for special case pseudo classes.
@@ -361,15 +352,6 @@ class SpecialPseudoPattern(SelectorPattern):
         return pseudo
 
 
-class QuirkPattern(SelectorPattern):
-    """Selector pattern for quirk mode."""
-
-    def enabled(self, flags):
-        """Enabled if quirks flag is present."""
-
-        return flags & util._QUIRKS
-
-
 class _Selector(object):
     """
     Intermediate selector class.
@@ -461,7 +443,6 @@ class CSSParser(object):
         SelectorPattern("class", PAT_CLASS),
         SelectorPattern("tag", PAT_TAG),
         SelectorPattern("attribute", PAT_ATTR),
-        QuirkPattern("quirks_attribute", PAT_QUIRKS_ATTR),
         SelectorPattern("combine", PAT_COMBINE)
     )
 
@@ -471,10 +452,9 @@ class CSSParser(object):
         self.pattern = selector.replace('\x00', '\ufffd')
         self.flags = flags
         self.debug = self.flags & util.DEBUG
-        self.quirks = self.flags & util._QUIRKS
         self.custom = {} if custom is None else custom
 
-    def parse_attribute_selector(self, sel, m, has_selector, quirks):
+    def parse_attribute_selector(self, sel, m, has_selector):
         """Create attribute selector from the returned regex match."""
 
         inverse = False
@@ -498,7 +478,7 @@ class CSSParser(object):
             flags = 0
 
         if op:
-            if m.group('value').startswith(('"', "'")) and not quirks:
+            if m.group('value').startswith(('"', "'")):
                 value = css_unescape(m.group('value')[1:-1], True)
             else:
                 value = css_unescape(m.group('value'))
@@ -800,21 +780,11 @@ class CSSParser(object):
         if not combinator:
             combinator = WS_COMBINATOR
         if not has_selector:
-            # The only way we don't fail is if we are at the root level and quirks mode is enabled,
-            # and we've found no other selectors yet in this compound selector.
-            if (not self.quirks or is_pseudo or combinator == COMMA_COMBINATOR or relations):
-                raise SelectorSyntaxError(
-                    "The combinator '{}' at postion {}, must have a selector before it".format(combinator, index),
-                    self.pattern,
-                    index
-                )
-            util.warn_quirks(
-                'You have attempted to use a combinator without a selector before it at position {}.'.format(index),
-                'the :scope pseudo class (or another appropriate selector) should be placed before the combinator.',
+            raise SelectorSyntaxError(
+                "The combinator '{}' at postion {}, must have a selector before it".format(combinator, index),
                 self.pattern,
                 index
             )
-            sel.flags |= ct.SEL_SCOPE
 
         if combinator == COMMA_COMBINATOR:
             if not sel.tag and not is_pseudo:
@@ -989,18 +959,8 @@ class CSSParser(object):
                         has_selector, sel = self.parse_combinator(
                             sel, m, has_selector, selectors, relations, is_pseudo, index
                         )
-                elif key in ('attribute', 'quirks_attribute'):
-                    quirks = key == 'quirks_attribute'
-                    if quirks:
-                        temp_index = index + m.group(0).find('=') + 1
-                        util.warn_quirks(
-                            "You have attempted to use an attribute " +
-                            "value that should have been quoted at position {}.".format(temp_index),
-                            "the attribute value should be quoted.",
-                            self.pattern,
-                            temp_index
-                        )
-                    has_selector = self.parse_attribute_selector(sel, m, has_selector, quirks)
+                elif key == 'attribute':
+                    has_selector = self.parse_attribute_selector(sel, m, has_selector)
                 elif key == 'tag':
                     if has_selector:
                         raise SelectorSyntaxError(
@@ -1066,8 +1026,6 @@ class CSSParser(object):
         end = (m.start(0) - 1) if m else (len(pattern) - 1)
 
         if self.debug:  # pragma: no cover
-            if self.quirks:
-                print('## QUIRKS MODE: Throwing out the spec!')
             print('## PARSING: {!r}'.format(pattern))
         while index <= end:
             m = None
@@ -1102,13 +1060,7 @@ class CSSParser(object):
             print('## END PARSING')
 
     def process_selectors(self, index=0, flags=0):
-        """
-        Process selectors.
-
-        We do our own selectors as BeautifulSoup4 has some annoying quirks,
-        and we don't really need to do nth selectors or siblings or
-        descendants etc.
-        """
+        """Process selectors."""
 
         return self.parse_selectors(self.selector_iter(self.pattern), index, flags)
 

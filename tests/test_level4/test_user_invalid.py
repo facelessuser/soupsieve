@@ -28,13 +28,3 @@ class TestInvalid(util.TestCase):
             ["1"],
             flags=util.HTML
         )
-
-
-class TestInvalidQuirks(TestInvalid):
-    """Test invalid selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

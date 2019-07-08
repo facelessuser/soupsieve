@@ -212,13 +212,3 @@ class TestDir(util.TestCase):
             [],
             flags=util.HTML5
         )
-
-
-class TestDirQuirks(TestDir):
-    """Test direction selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

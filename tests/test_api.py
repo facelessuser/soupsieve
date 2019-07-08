@@ -667,8 +667,6 @@ class TestInvalid(util.TestCase):
         """Test bad input into the match API."""
 
         flags = sv.DEBUG
-        if self.quirks:
-            flags = sv._QUIRKS
 
         with self.assertRaises(TypeError):
             sv.match('div', "not a tag", flags=flags)
@@ -677,8 +675,6 @@ class TestInvalid(util.TestCase):
         """Test bad input into the select API."""
 
         flags = sv.DEBUG
-        if self.quirks:
-            flags = sv._QUIRKS
 
         with self.assertRaises(TypeError):
             sv.select('div', "not a tag", flags=flags)
@@ -687,8 +683,6 @@ class TestInvalid(util.TestCase):
         """Test bad input into the filter API."""
 
         flags = sv.DEBUG
-        if self.quirks:
-            flags = sv._QUIRKS
 
         with self.assertRaises(TypeError):
             sv.filter('div', "not a tag", flags=flags)
@@ -697,47 +691,9 @@ class TestInvalid(util.TestCase):
         """Test bad input into the comments API."""
 
         flags = sv.DEBUG
-        if self.quirks:
-            flags = sv._QUIRKS
 
         with self.assertRaises(TypeError):
             sv.comments('div', "not a tag", flags=flags)
-
-
-class TestInvalidQuirks(TestInvalid):
-    """Test invalid with QUIRKS."""
-
-    def setUp(self):
-        """Setup."""
-
-        sv.purge()
-        self.quirks = True
-
-    def test_quirks_warn_relative_combinator(self):
-        """Test that quirks mode raises a warning with relative combinator."""
-
-        sv.purge()
-
-        with warnings.catch_warnings(record=True) as w:
-            # Cause all warnings to always be triggered.
-            warnings.simplefilter("always")
-            # Trigger a warning.
-            sv.compile('> p', flags=sv._QUIRKS)
-            # Verify some things
-            self.assertTrue(len(w) == 1)
-            self.assertTrue(issubclass(w[-1].category, sv_util.QuirksWarning))
-
-    def test_quirks_warn_attribute_unquoted(self):
-        """Test that quirks mode raises a warning with attribute values that normally should be quoted."""
-
-        with warnings.catch_warnings(record=True) as w:
-            # Cause all warnings to always be triggered.
-            warnings.simplefilter("always")
-            # Trigger a warning.
-            sv.compile('[data={}]', flags=sv._QUIRKS)
-            # Verify some things
-            self.assertTrue(len(w) == 1)
-            self.assertTrue(issubclass(w[-1].category, sv_util.QuirksWarning))
 
 
 class TestDeprecated(util.TestCase):

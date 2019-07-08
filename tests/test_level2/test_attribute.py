@@ -195,9 +195,8 @@ class TestAttribute(util.TestCase):
 
         self.assert_raises('[href]p', SelectorSyntaxError)
 
-    @util.skip_quirks
-    def test_malformed_no_quirk(self):
-        """Test malformed with no quirk mode."""
+    def test_malformed(self):
+        """Test malformed."""
 
         # Malformed attribute
         self.assert_raises('div[attr={}]', SelectorSyntaxError)
@@ -370,38 +369,5 @@ class TestAttribute(util.TestCase):
             self.MARKUP_CONTAINS,
             '[class~="test1\\ test2"]',
             [],
-            flags=util.HTML
-        )
-
-
-class TestAttributeQuirks(TestAttribute):
-    """Test attribute selector with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True
-
-    def test_attribute_quirks(self):
-        """Test attributes with quirks."""
-
-        markup = """
-        <div id="div">
-        <p id="0">Some text <span id="1"> in a paragraph</span>.</p>
-        <a id="2" href="{}?/">Link</a>
-        <span id="3">Direct child</span>
-        <pre id="pre">
-        <span id="4">Child 1</span>
-        <span id="5">Child 2</span>
-        <span id="6">Child 3</span>
-        </pre>
-        </div>
-        """
-
-        self.assert_selector(
-            markup,
-            "[href={}?/]",
-            ["2"],
             flags=util.HTML
         )

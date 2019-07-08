@@ -37,13 +37,3 @@ class TestRequired(util.TestCase):
             ['1', '2'],
             flags=util.HTML
         )
-
-
-class TestRequiredQuirks(TestRequired):
-    """Test required selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

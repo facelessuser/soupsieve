@@ -37,13 +37,3 @@ class TestOptional(util.TestCase):
             ['3'],
             flags=util.HTML
         )
-
-
-class TestOptionalQuirks(TestOptional):
-    """Test optional selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

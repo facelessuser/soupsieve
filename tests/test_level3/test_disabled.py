@@ -143,13 +143,3 @@ class TestDisabled(util.TestCase):
             ['4', '5', '6', '7', '8', '9', 'a', 'c'],
             flags=util.PYHTML
         )
-
-
-class TestDisabledQuirks(TestDisabled):
-    """Test disabled selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

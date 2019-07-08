@@ -26,13 +26,3 @@ class TestFirstChild(util.TestCase):
             ["1", "4"],
             flags=util.HTML
         )
-
-
-class TestFirstChildQuirks(TestFirstChild):
-    """Test first child selector with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

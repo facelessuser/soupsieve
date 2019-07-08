@@ -48,13 +48,3 @@ class TestNot(util.TestCase):
             ["0", "2", "3", "4", "5", "6", "pre"],
             flags=util.HTML
         )
-
-
-class TestNotQuirks(TestNot):
-    """Test not selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

@@ -51,13 +51,3 @@ class TestNextSibling(util.TestCase):
             ["5"],
             flags=util.HTML
         )
-
-
-class TestNextSiblingQuirks(TestNextSibling):
-    """Test next sibling combinators with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

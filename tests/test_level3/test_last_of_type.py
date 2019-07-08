@@ -86,13 +86,3 @@ class TestLastOfType(util.TestCase):
             ['10', '11'],
             flags=util.HTML
         )
-
-
-class TestLastOfTypeQuirks(TestLastOfType):
-    """Test last of type selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

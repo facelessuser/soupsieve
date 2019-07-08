@@ -37,13 +37,3 @@ class TestSelectorLists(util.TestCase):
         """Test that selectors cannot have double combinators."""
 
         self.assert_raises('div,, a', SelectorSyntaxError)
-
-
-class TestSelectorListsQuirks(TestSelectorLists):
-    """Test selector lists with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

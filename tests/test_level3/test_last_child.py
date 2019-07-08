@@ -38,13 +38,3 @@ class TestLastChild(util.TestCase):
             ["1", "6"],
             flags=util.HTML
         )
-
-
-class TestLastChildQuirks(TestLastChild):
-    """Test last child selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True

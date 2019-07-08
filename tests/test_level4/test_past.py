@@ -36,13 +36,3 @@ class TestPast(util.TestCase):
             ["0"],
             flags=util.HTML
         )
-
-
-class TestPastQuirks(TestPast):
-    """Test past selectors with quirks."""
-
-    def setUp(self):
-        """Setup."""
-
-        self.purge()
-        self.quirks = True
