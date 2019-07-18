@@ -6,7 +6,6 @@ span.star::after {
   position: relative;
   display: inline-block;
   font: normal normal normal 16px/1 FontAwesome;
-  padding-right: .50rem;
   -moz-osx-font-smoothing: initial;
   -webkit-font-smoothing: initial;
   font-weight: 400;
