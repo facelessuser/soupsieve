@@ -505,13 +505,12 @@ class CSSParser(object):
         elif op.startswith('|'):
             # Value starts with word in dash separated list
             pattern = re.compile(r'^%s(?:-.*)?$' % re.escape(value), flags)
-        elif op.startswith('!'):
-            # Equivalent to `:not([attr=value])`
-            pattern = re.compile(r'^%s(?:-.*)?$' % re.escape(value), flags)
-            inverse = True
         else:
             # Value matches
             pattern = re.compile(r'^%s$' % re.escape(value), flags)
+            if op.startswith('!'):
+                # Equivalent to `:not([attr=value])`
+                inverse = True
         if is_type and pattern:
             pattern2 = re.compile(pattern.pattern)
 
