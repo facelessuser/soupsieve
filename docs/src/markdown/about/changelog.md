@@ -1,9 +1,10 @@
 # Changelog
 
-## Latest
+## 1.9.3
 
-- **FIX**: Remove undocumented `_QUIRKS` mode flag as Beautiful Soup never released with support for it. Six months
-later, people have adapted to Soup Sieve's support moving forward.
+- **FIX**: `[attr!=value]` pattern was mistakenly using `:not([attr|=value])` logic instead of `:not([attr=value])`.
+- **FIX**: Remove undocumented `_QUIRKS` mode flag. Beautiful Soup was meant to use it to help with transition to Soup
+Sieve, but never released with it. Help with transition at this point is no longer needed.
 
 ## 1.9.2
 
