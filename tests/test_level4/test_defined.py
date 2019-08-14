@@ -30,6 +30,7 @@ class TestDefined(util.TestCase):
             flags=util.HTML
         )
 
+    @util.skip_no_lxml
     def test_defined_xhtml(self):
         """Test defined XHTML."""
 
@@ -45,21 +46,23 @@ class TestDefined(util.TestCase):
         <div-custom id="1"></div-custom>
         <prefix:div id="2"></prefix:div>
         <!--
-        lxml or BeautifulSoup seems to strip away the prefix.
-        This is most likely because prefix with no namespace is not really valid.
+        lxml seems to strip away the prefix in versions less than 4.4.0.
+        This was most likely because prefix with no namespace is not really valid.
         XML does allow colons in names, but encourages them to be used for namespaces.
-        Do we really care that the prefix is wiped out in XHTML if there is no namespace?
-        If we do, we should look into this in the future.
+        This is a quirk of LXML, but it appears to be fine in 4.4.0+.
         -->
         <prefix:div-custom id="3"></prefix:div-custom>
         </body>
         </html>
         """
 
+        from lxml import etree
+
         self.assert_selector(
             markup,
             'body :defined',
-            ['0', '2'],  # We should get 3, but we don't for reasons stated above.
+            # We should get 3, but for LXML versions less than 4.4.0 we don't for reasons stated above.
+            ['0', '2'] if etree.LXML_VERSION < (4, 4, 0, 0) else ['0', '1', '2'],
             flags=util.XHTML
         )
 
