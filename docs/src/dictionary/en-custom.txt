@@ -30,6 +30,7 @@ accessor
 amongst
 boolean
 builtin
+centric
 combinator
 combinators
 deprecations
