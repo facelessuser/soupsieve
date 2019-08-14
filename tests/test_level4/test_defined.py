@@ -30,6 +30,7 @@ class TestDefined(util.TestCase):
             flags=util.HTML
         )
 
+    @util.skip_no_lxml
     def test_defined_xhtml(self):
         """Test defined XHTML."""
 
