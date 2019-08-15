@@ -18,13 +18,20 @@ about a malformed attribute, you may need to quote the value.
 For instance, if you previously used a selector like this:
 
 ```py3
-soup.select('[div={}]')
+soup.select('[attr={}]')
 ```
 
 You would need to quote the value as `{}` is not a valid CSS identifier, so it must be quoted:
 
 ```py3
-soup.select('[div="{}"]')
+soup.select('[attr="{}"]')
+```
+
+You can also use the [escape](./api.md#soupsieveescape) function to escape dynamic content:
+
+```py3
+import soupsieve
+soup.select('[attr=%s]' % soupsieve.escape('{}'))
 ```
 
 ## CSS Identifiers
