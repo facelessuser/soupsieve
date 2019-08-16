@@ -885,8 +885,46 @@ Selects any form element that is the default among a group of related elements, 
 !!! example
     Selects all `#!html <inputs>` elements that are the default among their related elements.
 
-    ```css
+    ```css tab="Syntax"
     input:default
+    ```
+
+    ```pycon3 tab="Usage"
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <form>
+    ... 
+    ... <input type="radio" name="season" id="spring">
+    ... <label for="spring">Spring</label>
+    ... 
+    ... <input type="radio" name="season" id="summer" checked>
+    ... <label for="summer">Summer</label>
+    ... 
+    ... <input type="radio" name="season" id="fall">
+    ... <label for="fall">Fall</label>
+    ... 
+    ... <input type="radio" name="season" id="winter">
+    ... <label for="winter">Winter</label>
+    ... 
+    ... <select id="pet-select">
+    ...     <option value="">--Please choose an option--</option>
+    ...     <option id="dog" value="dog">Dog</option>
+    ...     <option id="cat" value="cat">Cat</option>
+    ...     <option id="hamster" value="hamster" selected>Hamster</option>
+    ...     <option id="parrot" value="parrot">Parrot</option>
+    ...     <option id="spider" value="spider">Spider</option>
+    ...     <option id="goldfish" value="goldfish">Goldfish</option>
+    ... </select>
+    ... </form>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select(':default'))
+    [<input checked="" id="summer" name="season" type="radio"/>, <option id="hamster" selected="" value="hamster">Hamster</option>]
     ```
 
 !!! tip "Additional Reading"
@@ -933,8 +971,26 @@ respectively.
 !!! example
     Selects all `#!html <div>` elements that have a text direction of left to right.
 
-    ```css
+    ```css tab="Syntax"
     div:dir(ltr)
+    ```
+
+    ```pycon3 tab="Usage"
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <div>
+    ... <span dir="auto">זאת השפה העברית</span>
+    ... <span dir="ltr">Text</span>
+    ... </div>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select(':dir(rtl)'))
+    [<span dir="auto">זאת השפה העברית</span>]
     ```
 
 !!! tip "Additional Reading"
