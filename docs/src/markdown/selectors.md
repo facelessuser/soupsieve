@@ -613,28 +613,25 @@ CSS employs a number of tokens in order to represent lists or to provide relatio
 Selector lists use the comma (`,`) to join multiple selectors in a list. When presented with a selector list, any
 selector in the list that matches an element will return that element.
 
-!!! example
-    The following would select both `#!html <div>` elements and `#!html <h1>` elements.
+```css tab="Syntax"
+element1, element2
+```
 
-    ```css tab="Syntax"
-    element1, element2
-    ```
-
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <h1>Title</h1>
-    ... <p>Paragraph</p>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('h1, p'))
-    [<h1>Title</h1>, <p>Paragraph</p>]
-    ```
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <h1>Title</h1>
+... <p>Paragraph</p>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select('h1, p'))
+[<h1>Title</h1>, <p>Paragraph</p>]
+```
 
 ### Descendant Combinator
 
@@ -975,12 +972,41 @@ respectively.
 
 Selects any element that is disabled.
 
-!!! example
-    Selects every disabled `#!html <input>` element.
+```css tab="Syntax"
+:disabled
+```
 
-    ```css
-    :disabled
-    ```
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <form action="#">
+...   <fieldset id="shipping">
+...     <legend>Shipping address</legend>
+...     <input type="text" placeholder="Name">
+...     <input type="text" placeholder="Address">
+...     <input type="text" placeholder="Zip Code">
+...   </fieldset>
+...   <br>
+...   <fieldset id="billing">
+...     <legend>Billing address</legend>
+...     <label for="billing-checkbox">Same as shipping address:</label>
+...     <input type="checkbox" id="billing-checkbox" checked>
+...     <br>
+...     <input type="text" placeholder="Name" disabled>
+...     <input type="text" placeholder="Address" disabled>
+...     <input type="text" placeholder="Zip Code" disabled>
+...   </fieldset>
+... </form>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select('input:disabled'))
+[<input disabled="" placeholder="Name" type="text"/>, <input disabled="" placeholder="Address" type="text"/>, <input disabled="" placeholder="Zip Code" type="text"/>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:disabled
@@ -1017,12 +1043,41 @@ Selects elements that have no children and no text (whitespace is ignored).
 
 Selects any element that is enabled.
 
-!!! example
-    Selects every enabled `#!html <input>` element.
+```css tab="Syntax"
+input:enabled
+```
 
-    ```css
-    input:enabled
-    ```
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <form action="#">
+...   <fieldset id="shipping">
+...     <legend>Shipping address</legend>
+...     <input type="text" placeholder="Name">
+...     <input type="text" placeholder="Address">
+...     <input type="text" placeholder="Zip Code">
+...   </fieldset>
+...   <br>
+...   <fieldset id="billing">
+...     <legend>Billing address</legend>
+...     <label for="billing-checkbox">Same as shipping address:</label>
+...     <input type="checkbox" id="billing-checkbox" checked>
+...     <br>
+...     <input type="text" placeholder="Name" disabled>
+...     <input type="text" placeholder="Address" disabled>
+...     <input type="text" placeholder="Zip Code" disabled>
+...   </fieldset>
+... </form>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select('input:enabled'))
+[<input placeholder="Name" type="text"/>, <input placeholder="Address" type="text"/>, <input placeholder="Zip Code" type="text"/>, <input checked="" id="billing-checkbox" type="checkbox"/>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:enabled
@@ -1060,13 +1115,33 @@ Selects the first child of a given type in a group of sibling elements.
 Selects an element if any of the relative selectors passed as parameters (which are relative to the `:scope` of the
 given element), match at least one element.
 
-!!! example
-    Selects elements that have a direct child that is a `#!html <div>` or that have a sibling of `#!html <p>`
-    immediately following it.
+While the level 4 specifications state that [compound](#compound-selector) selectors are supported, some browsers
+(Safari) support complex selectors which are planned for level 5 CSS selectors. Soup Sieve also supports
+[complex](#complex-selector) selectors.
 
-    ```css
-    :has(> div, + p)
-    ```
+```css tab="Syntax"
+:has(selector)
+:has(> selector)
+:has(~ selector)
+:has(+ selector)
+:has(selector1, > selector2, ~ selector3, + selector4)
+```
+
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <div><p>Test <span>paragraph</span></p></div>
+... <div><p class="class">Another test paragraph</p></div>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select('div:has(span, > .class)'))
+[<div><p>Test <span>paragraph</span></p></div>, <div><p class="class">Another test paragraph</p></div>]  
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:has
@@ -1075,12 +1150,25 @@ given element), match at least one element.
 
 Selects all `#!html <input>` elements whose values are in range according to their `type`, `min`, and `max` attributes.
 
-!!! example
-    Matches all `#!html <input type="number"/>` elements whose values are in range.
+```css tab="Syntax"
+:in-range
+```
 
-    ```css
-    input[type="number"]:in-range
-    ```
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <input id="0" type="month" min="1980-02" max="2004-08" value="1999-05">
+... <input id="7" type="month" min="1980-02" max="2004-08" value="1979-02">
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select(':in-range'))
+[<input id="0" max="2004-08" min="1980-02" type="month" value="1999-05"/>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:in-range
@@ -1089,13 +1177,56 @@ Selects all `#!html <input>` elements whose values are in range according to the
 
 Selects all form elements whose are in an indeterminate state.
 
-!!! example
-    Matches all `#!html <input type="radio"/>` elements that are in a form and none of the other radio controls with the
-    same name are selected.
+An element is considered indeterminate if:
 
-    ```css
-    input[type="radio"]:indeterminate
-    ```
+- The element is of type `#!html <input type="checkbox"/>` and the `indeterminate` attribute is set.
+- The element is of type `#!html <input type="radio"/>` and all other radio controls with the same name are not
+selected.
+- The element is of type `#!html <progress>` with no value.
+
+```css tab="Syntax"
+:indeterminate
+```
+
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <input type="checkbox" id="checkbox1" indeterminate>
+... <label for="checkbox1">I like cats.</label>
+... 
+... <input type="checkbox" id="checkbox2">
+... <label for="checkbox2">I like dogs.</label>
+... 
+... <form>
+...     <input type="radio" name="test" id="radio1">
+...     <label for="radio1">Yes</label>
+... 
+...     <input type="radio" name="test" id="radio2">
+...     <label for="radio2">No</label>
+... 
+...     <input type="radio" name="test" id="radio3">
+...     <label for="radio3">Maybe</label>
+... </form>
+... <form>
+...     <input type="radio" name="another" id="radio4">
+...     <label for="radio4">Red</label>
+... 
+...     <input type="radio" name="another" id="radio5" checked>
+...     <label for="radio5">Green</label>
+... 
+...     <input type="radio" name="another" id="radio6">
+...     <label for="radio6">Blue</label>
+... </form>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select(':indeterminate'))
+[<input id="checkbox1" indeterminate="" type="checkbox"/>, <input id="radio1" name="test" type="radio"/>, <input id="radio2" name="test" type="radio"/>, <input id="radio3" name="test" type="radio"/>] 
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate
@@ -1104,42 +1235,115 @@ Selects all form elements whose are in an indeterminate state.
 
 Selects an element, but only if it matches at least one selector in the selector list.
 
-!!! example
-    Matches `#!html <div>` elements and `#!html <p>` elements.
+The alias `:matches()` is also supported as it was the original name for the selector, and some browsers support it.
+It is strongly encouraged to use `:is()` instead as support for `:matches()` may be dropped in the future.
 
-    ```css
-    :is(div, p)
-    ```
+While the level 4 specifications state that [compound](#compound-selector) selectors are supported, some browsers
+(Safari) support complex selectors which are planned for level 5 CSS selectors. Soup Sieve also supports
+[complex](#complex-selector) selectors.
+
+```css tab="Syntax"
+:is(selector1, selector2)
+```
+
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <p id="0">Some text <span id="1"> in a paragraph</span>.
+... <a id="2" href="http://google.com">Link.</a></p>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select('[id]:is(a, span)'))
+[<span id="1"> in a paragraph</span>, <a href="http://google.com" id="2">Link.</a>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:is
 
 ### `:lang()` {:#:lang}
 
-`:lang(language)`
+Level 3 CSS
 : 
     Selects an element whose associated language matches the provided **language** or whose language starts with the
     provided **language** followed by a `-`. Language is determined by the rules of the document type.
 
-    !!! example
-        Selects all elements with language `en`. Will also match languages of `en-US`, `en-GB`, etc.
+    ```css tab="Syntax"
+    :lang(language)
+    ```
 
-        ```css
-        :lang(en)
-        ```
+    ```pycon3 tab="Usage"
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <div lang="de-DE">
+    ...     <p id="1"></p>
+    ... </div>
+    ... <div lang="de-DE-1996">
+    ...     <p id="2"></p>
+    ... </div>
+    ... <div lang="de-Latn-DE">
+    ...     <p id="3"></p>
+    ... </div>
+    ... <div lang="de-Latf-DE">
+    ...     <p id="4"></p>
+    ... </div>
+    ... <div lang="de-Latn-DE-1996">
+    ...     <p id="5"></p>
+    ... </div>
+    ... <p id="6" lang="de-DE"></p>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('p:lang(de)'))
+    [<p id="1"></p>, <p id="2"></p>, <p id="3"></p>, <p id="4"></p>, <p id="5"></p>, <p id="6" lang="de-DE"></p>]
+    ```
 
-`:lang(language1, language2, ...)`<span class="lab badge"></span>
+Level 4 CSS<span class="lab badge"></span>
 : 
     The level 4 `:lang()` adds the ability to define multiple languages, the ability to use `*` for wildcard language
     matching.
 
-    !!! example
-        Select all elements with language `de-CH`, `it-CH`, `fr-CH`, and `rm-CH`. Will also match `en`, `en-US`, and
-        `en-GB`. See CSS4 specification for more info on wildcard matching rules.
+    ```css tab="Syntax"
+    :lang('*-language', language2)
+    ```
 
-        ```css
-        :lang('*-CH', en)
-        ```
+    ```pycon3 tab="Usage"
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <div lang="de-DE">
+    ...     <p id="1"></p>
+    ... </div>
+    ... <div lang="en">
+    ...     <p id="2"></p>
+    ... </div>
+    ... <div lang="de-Latn-DE">
+    ...     <p id="3"></p>
+    ... </div>
+    ... <div lang="de-Latf-DE">
+    ...     <p id="4"></p>
+    ... </div>
+    ... <div lang="en-US">
+    ...     <p id="5"></p>
+    ... </div>
+    ... <p id="6" lang="de-DE"></p>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('p:lang(de-DE, "*-US")'))
+    [<p id="1"></p>, <p id="3"></p>, <p id="4"></p>, <p id="5"></p>, <p id="6" lang="de-DE"></p>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:lang
@@ -1177,12 +1381,27 @@ Selects the last child of a given type in a group of sibling elements.
 Selects a link (every `#!html <a>`, `#!html <link>`, and `#!html <area>` element with an `href` attribute) that has not
 yet been visited.
 
-!!! example
-    Selects all `#!html <a>` elements since Beautiful Soup does not have *visited* states.
+Since Beautiful Soup does not have *visited* states, this will match all links, essentially making the behavior the same
+as `:any-link`.
 
-    ```css
-    a:link
-    ```
+```css tab="Syntax"
+a:link
+```
+
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <p>A link to <a href="http://example.com">click</a></p>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select(':link'))
+[<a href="http://example.com">click</a>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:link
@@ -1214,7 +1433,7 @@ Level 3 CSS
     [<div>Here is some text.</div>]
     ```
 
-Level 4 CSS and Level 5 CSS<span class="lab badge"></span>
+Level 4+ CSS<span class="lab badge"></span>
 : 
     Selects all elements that do not match any of the selectors in the selector list. While the level 4 specifications
     state that [compound](#compound-selector) selectors are supported, some browsers (Safari) support complex selectors
@@ -1454,12 +1673,32 @@ Selects element without any siblings that matches a given type.
 Selects any `#!html <input>`, `#!html <select>`, or `#!html <textarea>` element that does not have the `required`
 attribute set on it.
 
-!!! example
-    Select every `#!html <input>` element without a `required` attribute.
+```css tab="Syntax"
+:optional
+```
 
-    ```css
-    input:optional
-    ```
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <form>
+... <input type="name" required>
+... <input type="checkbox" required>
+... <input type="email">
+... <textarea name="name" cols="30" rows="10" required></textarea>
+... <select name="nm" required>
+...     <!-- options -->
+... </select>
+... </form>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select(':optional'))
+[<input type="email"/>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:optional
@@ -1469,12 +1708,25 @@ attribute set on it.
 Selects all `#!html <input>` elements whose values are out of range according to their `type`, `min`, and `max`
 attributes.
 
-!!! example
-    Matches all `#!html <input type="number"/>` elements whose values are out of range.
+```css tab="Syntax"
+:out-of-range
+```
 
-    ```css
-    input[type="number"]:out-of-range
-    ```
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <input id="0" type="month" min="1980-02" max="2004-08" value="1999-05">
+... <input id="7" type="month" min="1980-02" max="2004-08" value="1979-02">
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select(':out-of-range'))
+[<input id="7" max="2004-08" min="1980-02" type="month" value="1979-02"/>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:out-of-range
@@ -1484,12 +1736,25 @@ attributes.
 Selects any `#!html <input>` or `#!html <textarea>` element that is currently displaying placeholder text via the
 `placeholder` attribute.
 
-!!! example
-    Matches all `#!html <input>` elements that have placeholder text that is shown.
+```css tab="Syntax"
+:placeholder-shown
+```
 
-    ```css
-    input:placeholder-shown
-    ```
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <input id="0" placeholder="This is some text">
+... <textarea id="1" placeholder="This is some text"></textarea>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select(':placeholder-shown'))
+[<input id="0" placeholder="This is some text"/>, <textarea id="1" placeholder="This is some text"></textarea>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:placeholder-shown
@@ -1499,12 +1764,34 @@ Selects any `#!html <input>` or `#!html <textarea>` element that is currently di
 Selects elements (such as `#!html <input>` or `#!html <textarea>`) that are *not* editable by the user. This does not
 just apply to form elements with `readonly` set, but it applies to **any** element that cannot be edited by the user.
 
-!!! example
-    Selects every `#!html <input>` element that is not editable by the user.
 
-    ```css
-    input:read-only
-    ```
+```css tab="Syntax"
+:read-only
+```
+
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... 
+... <input id="0">
+... <input id="1" disabled>
+... <input id="2" type="number" readonly>
+... 
+... <textarea id="3"></textarea>
+... 
+... <p id="4">Not editable</p>
+... <p id="5" contenteditable="true">Editable text</p>
+... 
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select('body :read-only'))
+[<input disabled="" id="1"/>, <input id="2" readonly="" type="number"/>, <p id="4">Not editable</p>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:read-only
@@ -1515,12 +1802,33 @@ Selects elements (such as `#!html <input>` or `#!html <textarea>`) that are edit
 apply to form elements as it applies to **any** element that can be edited by the user, such as a `#!html <p>` element
 with `contenteditable` set on it.
 
-!!! example
-    Selects every `#!html <input>` element that is editable by the user.
+```css tab="Syntax"
+:read-only
+```
 
-    ```css
-    input:read-only
-    ```
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... 
+... <input id="0">
+... <input id="1" disabled>
+... <input id="2" type="number" readonly>
+... 
+... <textarea id="3"></textarea>
+... 
+... <p id="4">Not editable</p>
+... <p id="5" contenteditable="true">Editable text</p>
+... 
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select('body :read-write'))
+[<input id="0"/>, <textarea id="3"></textarea>, <p contenteditable="true" id="5">Editable text</p>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:read-write
@@ -1533,9 +1841,34 @@ it.
 !!! example
     Select every `#!html <input>` element with a `required` attribute.
 
-    ```css
-    input:required
-    ```
+```css tab="Syntax"
+:required
+```
+
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <form>
+... <input type="name" required>
+... <input type="checkbox" required>
+... <input type="email">
+... <textarea name="name" cols="30" rows="10" required></textarea>
+... <select name="nm" required>
+...     <!-- options -->
+... </select>
+... </form>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select(':required'))
+[<input required="" type="name"/>, <input required="" type="checkbox"/>, <textarea cols="30" name="name" required="" rows="10"></textarea>, <select name="nm" required="">
+    <!-- options -->
+</select>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:required
@@ -1607,14 +1940,32 @@ no others. If called on the Beautiful Soup object which represents the entire do
 
 Selects an element, but only if it matches at least one selector in the selector list. In browsers, this also has zero
 specificity, but this only has relevance in a browser environment where you have multiple CSS styles, and specificity is
-used to see which applies. Beautiful Soup and Soup Sieve don't care about specificity.
+used to see which applies. Beautiful Soup and Soup Sieve don't care about specificity so `:where()` is essentially just
+an alias for `:is()`.
 
-!!! example
-    Matches `#!html <div>` elements and `#!html <p>` elements.
+While the level 4 specifications state that [compound](#compound-selector) selectors are supported, some browsers
+(Safari) support complex selectors which are planned for level 5 CSS selectors. Soup Sieve also supports
+[complex](#complex-selector) selectors.
 
-    ```css
-    :where(div, p)
-    ```
+```css tab="Syntax"
+:where(selector1, selector2)
+```
+
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <p id="0">Some text <span id="1"> in a paragraph</span>.
+... <a id="2" href="http://google.com">Link.</a></p>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select('[id]:where(a, span)'))
+[<span id="1"> in a paragraph</span>, <a href="http://google.com" id="2">Link.</a>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:where
