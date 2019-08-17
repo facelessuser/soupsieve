@@ -357,9 +357,6 @@ contains whitespace or special characters, you should quote them with either sin
     Represents elements with an attribute named **attribute** whose value is a dash separated list that starts with
     **value**.
 
-    !!! example
-    The following would select all elements with a `lang` attribute value starting with `en`.
-
     ```css tab="Syntax"
     [attr|=value]
     [attr|="value"]
@@ -576,7 +573,7 @@ Namespaces can be used with attribute selectors as well except that when `[|attr
 : 
     Represents any element with or without a namespace.
 
-    ```css
+    ```css tab="Syntax"
     *|element
     *|*
     [*|attr]
@@ -587,7 +584,7 @@ Namespaces can be used with attribute selectors as well except that when `[|attr
     Represents any element with a namespace that is associated with the prefix `namespace` as defined in the [namespace
     dictionary](./api.md#namespaces).
 
-    ```css
+    ```css tab="Syntax"
     namespace|element
     namespace|*
     [namespace|attr]
@@ -598,7 +595,7 @@ Namespaces can be used with attribute selectors as well except that when `[|attr
     Represents any element with no defined namespace. When used with an attribute name (`[|attribute]`), it is
     equivalent to `[attribute]`.
 
-    ```css
+    ```css tab="Syntax"
     |element
     |*
     [|attr]
@@ -1086,12 +1083,29 @@ input:enabled
 
 Selects the first child in a group of sibling elements.
 
-!!! example
-    Selects every `#!html <p>` that is also the first child of its parent.
+```css tab="Syntax"
+:first-child
+```
 
-    ```css
-    p:first-child
-    ```
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <p id="0"></p>
+... <p id="1"></p>
+... <p id="2"></p>
+... <p id="3"></p>
+... <p id="4"></p>
+... <p id="5"></p>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select('p:first-child'))
+[<p id="0"></p>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:first-child
@@ -1100,12 +1114,35 @@ Selects the first child in a group of sibling elements.
 
 Selects the first child of a given type in a group of sibling elements.
 
-!!! example
-    Selects every `#!html <p>` element that is the first `#!html <p>` element of its parent.
+```css tab="Syntax"
+element:first-of-type
+```
 
-    ```css
-    p:first-of-type
-    ```
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <p id="0"></p>
+... <p id="1"></p>
+... <span id="2"></span>
+... <span id="3"></span>
+... <span id="4"></span>
+... <span id="5"></span>
+... <span id="6"></span>
+... <p id="7"></p>
+... <p id="8"></p>
+... <p id="9"></p>
+... <p id="10"></p>
+... <span id="11"></span>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select('span:first-of-type'))
+[<span id="2"></span>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:first-of-type
@@ -1115,9 +1152,8 @@ Selects the first child of a given type in a group of sibling elements.
 Selects an element if any of the relative selectors passed as parameters (which are relative to the `:scope` of the
 given element), match at least one element.
 
-While the level 4 specifications state that [compound](#compound-selector) selectors are supported, some browsers
-(Safari) support complex selectors which are planned for level 5 CSS selectors. Soup Sieve also supports
-[complex](#complex-selector) selectors.
+While the level 4 specifications state that [compound](#compound-selector) selectors are supported, complex selectors
+are planned for level 5 CSS selectors. Soup Sieve supports [complex](#complex-selector) selectors.
 
 ```css tab="Syntax"
 :has(selector)
@@ -1352,12 +1388,29 @@ Level 4 CSS<span class="lab badge"></span>
 
 Selects the last element among a group of sibling elements.
 
-!!! example
-    Selects every `#!html <p>` element that is also the last child of its parent.
+```css tab="Syntax"
+:last-child
+```
 
-    ```css
-    p:last-child
-    ```
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <p id="0"></p>
+... <p id="1"></p>
+... <p id="2"></p>
+... <p id="3"></p>
+... <p id="4"></p>
+... <p id="5"></p>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select('p:last-child'))
+[<p id="5"></p>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:last-child
@@ -1366,12 +1419,35 @@ Selects the last element among a group of sibling elements.
 
 Selects the last child of a given type in a group of sibling elements.
 
-!!! example
-    Selects every `#!html <p>` element that is the last `#!html <p>` element of its parent.
+```css tab="Syntax"
+element:last-of-type
+```
 
-    ```css
-    p:last-of-type
-    ```
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <p id="0"></p>
+... <p id="1"></p>
+... <span id="2"></span>
+... <span id="3"></span>
+... <span id="4"></span>
+... <span id="5"></span>
+... <span id="6"></span>
+... <p id="7"></p>
+... <p id="8"></p>
+... <p id="9"></p>
+... <p id="10"></p>
+... <span id="11"></span>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select('span:last-of-type'))
+[<span id="11"></span>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:last-of-type
@@ -1464,124 +1540,235 @@ Level 4+ CSS<span class="lab badge"></span>
 
 ### `:nth-child()` {:#:nth-child}
 
-`:nth-child(keyword)`
+`:nth-child()` matches elements based on their position in a group of siblings.
+
+
+Level 3 CSS
 : 
-    `:nth-child` allows the keywords `even` and `odd`, and will respectively select elements whose position is either
-    even or odd amongst a group of siblings.
+    - The keywords `even` and `odd`  will respectively select elements whose position is either even or odd amongst a
+      group of siblings.
 
-    !!! example
-        Select every odd element that is also a `#!html <p>` element.
+    - Patterns in the form `an+b` selects elements based on their position in a group of siblings, for every positive
+      integer or zero value of `n`. The index of the first element is `1`. The values `a` and `b` must both be integers.
 
-        ```css
-        p:nth-child(odd)
-        ```
+    ```css tab="Syntax"
+    :nth-child(even)
+    :nth-child(odd)
+    :nth-child(2)
+    :nth-child(2n+2)
+    ```
 
-`:nth-child(an+b)`
+    ```pycon3 tab="Usage"
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <p id="0"></p>
+    ... <p id="1"></p>
+    ... <p id="2"></p>
+    ... <p id="3"></p>
+    ... <p id="4"></p>
+    ... <p id="5"></p>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('p:nth-child(even)'))
+    [<p id="1"></p>, <p id="3"></p>, <p id="5"></p>]
+    >>> print(soup.select('p:nth-child(odd)'))
+    [<p id="0"></p>, <p id="2"></p>, <p id="4"></p>]
+    >>> print(soup.select('p:nth-child(2)'))
+    [<p id="1"></p>]
+    >>> print(soup.select('p:nth-child(-n+3)'))
+    [<p id="0"></p>, <p id="1"></p>, <p id="2"></p>]
+    ```
+
+Level 4+ CSS<span class="lab badge"></span>
 : 
-    Selects elements based on their position in a group of siblings, using the pattern `an+b`, for every positive integer
-    or zero value of `n`. The index of the first element is `1`. The values `a` and `b` must both be integers.
+    Level 4 CSS adds the additional pattern in the form `an+b of S` where `S` represents a selector list. `an+b` can
+    also be substituted with `even` or `odd`.
 
-    !!! example
-        Selects the first three elements: `1 = 1*0+3`, `2 = -1*1+3`, `3 = -1*2+3`.
+    Wen using the pattern `an+b of S`, the pattern will select elements from a sub-group of sibling elements that all
+    match the selector list (`[of S]?`), based on their position within that sub-group, using the pattern `an+b`, for
+    every positive integer or zero value of `n`. The index of the first element is `1`. The values `a` and `b` must both
+    be integers.
 
-        ```css
-        :nth-child(-n+3)
-        ```
+    Essentially, `#!css img:nth-of-type(2)` would be equivalent to `#!css :nth-child(2 of img)`. The advantage of using
+    `:nth-child(an+b [of S]?)` over `:nth-of-type` is that `:nth-of-type` is restricted to types, while
+    `:nth-child(an+b [of S]?)` can use [complex](#complex-selector) selectors.
 
-`:nth-child(an+b [of S]?)`</span><span class="lab badge"></span>
-: 
-    Selects from a sub-group of sibling elements that all match the selector list (`[of S]?`), based on their position
-    within that sub-group, using the pattern `an+b`, for every positive integer or zero value of `n`. The index of the
-    first element is `1`. The values `a` and `b` must both be integers.
+    While the level 4 specifications state that [compound](#compound-selector) selectors are supported, complex
+    selectors are planned for level 5 CSS selectors. Soup Sieve supports [complex](#complex-selector) selectors.
 
-    Essentially, `#!css img:nth-of-type(2)` would be equivalent to `#!css :nth-child(2 of img)`. The advantage of this
-    of using `:nth-child(an+b [of S]?)` is that `:nth-of-type` is restricted to types, while `:nth-child(an+b [of S]?)`
-    can use compound selectors.
+    ```css tab="Syntax"
+    :nth-child(2 of img)
+    ```
 
-    !!! example
-        Selects the second element of a group of sibling elements that match all match `img`.
-
-        ```css
-        :nth-child(2 of img)
-        ```
+    ```pycon3 tab="Usage"
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <p id="0"></p>
+    ... <p id="1"></p>
+    ... <p id="2"></p>
+    ... <p id="3"></p>
+    ... <p id="4"></p>
+    ... <p id="5"></p>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('*:nth-child(-n+3 of [id])'))
+    [<p id="0"></p>, <p id="1"></p>, <p id="2"></p>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child
 
 ### `:nth-last-child()` {:#:nth-last-child}
 
-`:nth-last-child(keyword)`
+`:nth-last-child()` matches elements based on their position in a group of siblings, counting from the end.
+
+Level 3 CSS
 : 
-    `:nth-last-child` allows the keywords `even` and `odd`, and will respectively select elements whose position is either
-    even or odd amongst a group of siblings, counting from the end.
+    - Counting from the end, the keywords `even` and `odd`  will respectively select elements whose position is either
+      even or odd amongst a group of siblings.
 
-    !!! example
-        Select every odd element that is also a `#!html <p>` element, counting from the end.
+    - Counting from the end, patterns in the form `an+b` selects elements based on their position in a group of
+      siblings, for every positive integer or zero value of `n`. The index of the first element is `1`. The values `a`
+      and `b` must both be integers.
 
-        ```css
-        p:nth-last-child(odd)
-        ```
+    ```css tab="Syntax"
+    :nth-last-child(even)
+    :nth-last-child(odd)
+    :nth-last-child(2)
+    :nth-last-child(2n+2)
+    ```
 
-`:nth-last-child(an+b)`
+    ```pycon3 tab="Usage"
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <p id="0"></p>
+    ... <p id="1"></p>
+    ... <p id="2"></p>
+    ... <p id="3"></p>
+    ... <p id="4"></p>
+    ... <p id="5"></p>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('p:nth-last-child(even)'))
+    [<p id="0"></p>, <p id="2"></p>, <p id="4"></p>]
+    >>> print(soup.select('p:nth-last-child(odd)'))
+    [<p id="1"></p>, <p id="3"></p>, <p id="5"></p>]
+    >>> print(soup.select('p:nth-last-child(2)'))
+    [<p id="4"></p>]
+    >>> print(soup.select('p:nth-last-child(-n+3)'))
+    [<p id="3"></p>, <p id="4"></p>, <p id="5"></p>]
+    ```
+
+Level 4+ CSS<span class="lab badge"></span>
 : 
-    Counting from the end, selects elements based on their position in a group of siblings, using the pattern `an+b`,
-    for every positive integer or zero value of `n`. The index of the first element is `1`. The values `a` and `b` must
-    both be integers.
+    Level 4 CSS adds the additional pattern in the form `an+b of S` where `S` represents a selector list. `an+b` can
+    also be substituted with `even` or `odd`.
 
-    !!! example
-        Selects the last three elements: `1 = 1*0+3`, `2 = -1*1+3`, `3 = -1*2+3`.
-
-        ```css
-        :nth-last-child(-n+3)
-        ```
-
-`:nth-last-child(an+b [of S]?)`</span><span class="lab badge"></span>
-: 
-    Counting from the end, selects from a sub-group of sibling elements that all match the selector list (`[of S]?`),
-    based on their position within that sub-group, using the pattern `an+b`, for every positive integer or zero value of
-    `n`. The index of the first element is `1`. The values `a` and `b` must both be integers.
+    Wen using the pattern `an+b of S`, the pattern will select elements from a sub-group of sibling elements that all
+    match the selector list (`[of S]?`), based on their position within that sub-group, using the pattern `an+b`, for
+    every positive integer or zero value of `n`. The index of the first element is `1`. The values `a` and `b` must both
+    be integers. Elements will be counted from the end.
 
     Essentially, `#!css img:nth-last-of-type(2)` would be equivalent to `#!css :nth-last-child(2 of img)`. The advantage
-    of this of using `:nth-last-child(an+b [of S]?)` is that `:nth-last-of-type` is restricted to types, while
-    `:nth-last-child(an+b [of S]?)` can use compound selectors.
+    of using `:nth-last-child(an+b [of S]?)` over `:nth-last-of-type` is that `:nth-last-of-type` is restricted to
+    types, while `:nth-last-child(an+b [of S]?)` can use [complex](#complex-selector) selectors.
 
-    !!! example
-        Selects the second element (counting from the end) of a group of sibling elements that match all match `img`.
+    While the level 4 specifications state that [compound](#compound-selector) selectors are supported, complex
+    selectors are planned for level 5 CSS selectors. Soup Sieve supports [complex](#complex-selector) selectors.
 
-        ```css
-        :nth-last-child(2 of img)
-        ```
+    ```css tab="Syntax"
+    :nth-last-child(2 of img)
+    ```
+
+    ```pycon3 tab="Usage"
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <p id="0"></p>
+    ... <p id="1"></p>
+    ... <p id="2"></p>
+    ... <p id="3"></p>
+    ... <p id="4"></p>
+    ... <p id="5"></p>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('*:nth-last-child(-n+3 of [id])'))
+    [<p id="3"></p>, <p id="4"></p>, <p id="5"></p>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-child
 
 ### `:nth-last-of-type()` {:#:nth-last-of-type}
 
-`:nth-last-of-type(keyword)`
-: 
-    `:nth-last-of-type` allows the keywords `even` and `odd`, and will respectively select elements, from a sub-group of
-    sibling elements that all match the given type, whose position is either even or odd amongst that sub-group of
-    siblings, counting from the end.
+`:nth-of-type()` matches elements of a given type, based on their position among a group of siblings, counting from the
+end.
 
-    !!! example
-        Counting from the end, selects every even `#!html <p>` amongst sibling `#!html <p>` elements.
+- The keywords `even` and `odd`, and will respectively select elements, from a sub-group of
+  sibling elements that all match the given type, whose position is either even or odd amongst that sub-group of
+  siblings. Starting position is counted from the end.
 
-        ```css
-        p:nth-last-of-type(even)
-        ```
+- Patterns in the form `an+b` select from a sub-group of sibling elements that all match the given type, based on their
+  position within that sub-group, for every positive integer or zero value of `n`. The index of the first element is
+  `1`. The values `a` and `b` must both be integers. Starting position is counted from the end.
 
-`:nth-last-of-type(an+b)`
-: 
-    Counting from the end, selects from a sub-group of sibling elements that all match the given type, based on their
-    position within that sub-group, using the pattern `an+b`, for every positive integer or zero value of `n`. The index
-    of the first element is `1`. The values `a` and `b` must both be integers.
+```css tab="Syntax"
+element:nth-last-of-type(even)
+element:nth-last-of-type(odd)
+element:nth-last-of-type(2)
+element:nth-last-of-type(2n+2)
+```
 
-    !!! example
-        Counting from the end, selects every `#!html <p>` element that is the second `#!html <p>` element of its parent.
-
-        ```css
-        p:nth-last-of-type(2)
-        ```
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <p id="0"></p>
+... <p id="1"></p>
+... <span id="2"></span>
+... <span id="3"></span>
+... <span id="4"></span>
+... <span id="5"></span>
+... <span id="6"></span>
+... <p id="7"></p>
+... <p id="8"></p>
+... <p id="9"></p>
+... <p id="10"></p>
+... <span id="11"></span>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select('span:nth-last-of-type(even)'))
+[<span id="2"></span>, <span id="4"></span>, <span id="6"></span>]
+>>> print(soup.select('span:nth-last-of-type(odd)'))
+[<span id="3"></span>, <span id="5"></span>, <span id="11"></span>]
+>>> print(soup.select('p:nth-last-of-type(2)'))
+[<p id="9"></p>]
+>>> print(soup.select('p:nth-last-of-type(-n+3)'))
+[<p id="8"></p>, <p id="9"></p>, <p id="10"></p>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-of-type
@@ -1599,10 +1786,10 @@ Level 4+ CSS<span class="lab badge"></span>
   `1`. The values `a` and `b` must both be integers.
 
 ```css tab="Syntax"
-p:nth-of-type(even)
-p:nth-of-type(odd)
-p:nth-of-type(2)
-p:nth-of-type(2n+2)
+element:nth-of-type(even)
+element:nth-of-type(odd)
+element:nth-of-type(2)
+element:nth-of-type(2n+2)
 ```
 
 ```pycon3 tab="Usage"
@@ -1644,12 +1831,34 @@ p:nth-of-type(2n+2)
 
 Selects element without any siblings.
 
-!!! example
-    Selects any `#!html <p>` element that is the only child of its parent.
+```css tab="Syntax"
+:only-child
+```
 
-    ```css
-    p:only-child
-    ```
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <div>
+...     <p id="0"></p>
+...     <p id="1"></p>
+...     <p id="2"></p>
+...     <p id="3"></p>
+...     <p id="4"></p>
+...     <p id="5"></p>
+... </div>
+... <div>
+...     <p id="6"></p>
+... </div>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select('p:only-child'))
+[<p id="6"></p>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:only-child
@@ -1658,12 +1867,30 @@ Selects element without any siblings.
 
 Selects element without any siblings that matches a given type.
 
-!!! example
-    Selects every `#!html <p>` element that is the only `#!html <p>` element of its parent.
+```css tab="Syntax"
+element:only-of-type
+```
 
-    ```css
-    p:only-of-type
-    ```
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <p id="0"></p>
+... <p id="1"></p>
+... <span id="2"></span>
+... <p id="3"></p>
+... <p id="4"></p>
+... <p id="5"></p>
+... <p id="6"></p>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select('span:only-of-type'))
+[<span id="2"></span>]
+```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:only-of-type
@@ -1837,9 +2064,6 @@ with `contenteditable` set on it.
 
 Selects any `#!html <input>`, `#!html <select>`, or `#!html <textarea>` element that has the `required` attribute set on
 it.
-
-!!! example
-    Select every `#!html <input>` element with a `required` attribute.
 
 ```css tab="Syntax"
 :required
