@@ -608,7 +608,6 @@ ns|*
 ... </html>
 ... """
 >>> soup = bs(html, 'html5lib')
->>> namespaces = {'svg': 'http://www.w3.org/2000/svg', 'xlink': 'http://www.w3.org/1999/xlink'}
 >>> print(soup.select('svg|a', namespaces={'svg': 'http://www.w3.org/2000/svg'}))
 [<a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>]  
 >>> print(soup.select('a', namespaces={'svg': 'http://www.w3.org/2000/svg'}))
@@ -1061,7 +1060,7 @@ Selects elements that have no children and no text (whitespace is ignored).
 Selects any element that is enabled.
 
 ```css tab="Syntax"
-input:enabled
+:enabled
 ```
 
 ```pycon3 tab="Usage"
@@ -1481,7 +1480,7 @@ Since Beautiful Soup does not have *visited* states, this will match all links, 
 as `:any-link`.
 
 ```css tab="Syntax"
-a:link
+:link
 ```
 
 ```pycon3 tab="Usage"
@@ -2158,7 +2157,7 @@ no others. If called on the Beautiful Soup object which represents the entire do
 [`:root`](#:root).
 
 ```css tab="Syntax"
-:scope > p
+:scope
 ```
 
 ```pycon3 tab="Usage"
