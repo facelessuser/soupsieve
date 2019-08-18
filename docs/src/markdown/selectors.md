@@ -561,45 +561,65 @@ contains whitespace or special characters, you should quote them with either sin
 
 Namespace selectors are used in conjunction with type and universal selectors as well as attribute names in attribute
 selectors. They are specified by declaring the namespace and the selector separated with `|`: `namespace|selector`.
-`namespace` in this context is the prefix defined via the [namespace dictionary](./api.md#namespaces). The prefix does
-not need to match the prefix in the document as it is the namespace that is compared, not the prefix.
+`namespace`, in this context, is the prefix defined via the [namespace dictionary](./api.md#namespaces). The prefix
+defined for the CSS selector does not need to match the prefix name in the document as it is the namespace associated
+with the prefix that is compared, not the prefix itself.
 
-The universal selector (`*`) can be used to represent any namespace as it can with type.
+The universal selector (`*`) can be used to represent any namespace just as it can with types.
+
+By default, type selectors without a namespace selector will match any element whose type matches, regardless of
+namespace. But if a CSS default namespace is declared (one with an empty key: `{"": "http://www.w3.org/1999/xhtml"}`),
+all type selectors will assume the default namespace unless an explicit namespace selector is specified. For example,
+if the default name was defined to be `http://www.w3.org/1999/xhtml`, the selector `a` would only match `a` tags that
+are within the `http://www.w3.org/1999/xhtml` namespace. The one exception is within pseudo classes (`:not()`, `:has()`,
+etc.) as namespaces are not considered within pseudo classes unless one is explicitly specified.
+
+If the namespace is omitted (`|element`), any element without a namespace will be matched. In HTML documents that
+support namespaces (XHTML and HTML5), HTML elements are counted as part of the `http://www.w3.org/1999/xhtml` namespace,
+but attributes usually do not have a namespace unless one is explicitly defined in the markup.
 
 Namespaces can be used with attribute selectors as well except that when `[|attribute`] is used, it is equivalent to
 `[attribute]`.
 
-`*|*`
-: 
-    Represents any element with or without a namespace.
+```css tab="Syntax"
+ns|element
+ns|*
+*|*
+*|element
+|element
+[ns|attr]
+[*|attr]
+[|attr]
+```
 
-    ```css tab="Syntax"
-    *|element
-    *|*
-    [*|attr]
-    ```
-
-`namespace|*`
-: 
-    Represents any element with a namespace that is associated with the prefix `namespace` as defined in the [namespace
-    dictionary](./api.md#namespaces).
-
-    ```css tab="Syntax"
-    namespace|element
-    namespace|*
-    [namespace|attr]
-    ```
-
-`|*`
-: 
-    Represents any element with no defined namespace. When used with an attribute name (`[|attribute]`), it is
-    equivalent to `[attribute]`.
-
-    ```css tab="Syntax"
-    |element
-    |*
-    [|attr]
-    ```
+```pycon3 tab="Usage"
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <h1>SVG Example</h1>
+... <p><a href="http://facelessuser.github.io/soupsieve/">Soup Sieve Docs</a></p>
+... 
+... <svg viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg">
+...   <a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>
+... </svg>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> namespaces = {'svg': 'http://www.w3.org/2000/svg', 'xlink': 'http://www.w3.org/1999/xlink'}
+>>> print(soup.select('svg|a', namespaces={'svg': 'http://www.w3.org/2000/svg'}))
+[<a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>]  
+>>> print(soup.select('a', namespaces={'svg': 'http://www.w3.org/2000/svg'}))
+[<a href="http://facelessuser.github.io/soupsieve/">Soup Sieve Docs</a>, <a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>]
+>>> print(soup.select('a', namespaces={'': 'http://www.w3.org/1999/xhtml', 'svg': 'http://www.w3.org/2000/svg'}))
+[<a href="http://facelessuser.github.io/soupsieve/">Soup Sieve Docs</a>]
+>>> print(soup.select('[xlink|href]', namespaces={'xlink': 'http://www.w3.org/1999/xlink'}))
+[<a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>]
+>>> print(soup.select('[|href]', namespaces={'xlink': 'http://www.w3.org/1999/xlink'}))
+[<a href="http://facelessuser.github.io/soupsieve/">Soup Sieve Docs</a>]
+```
 
 ## Combinators and Selector Lists
 
