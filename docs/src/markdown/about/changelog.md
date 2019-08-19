@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.9.4
+
+- **FIX**: Fix `:lang()` wildcard matching when applied to the primary language tag (i.e. `:lang('*-US')`). When a
+wildcard is applied at the start of the pattern, it should match zero or more, not one or more.
+
 ## 1.9.3
 
 - **FIX**: `[attr!=value]` pattern was mistakenly using `:not([attr|=value])` logic instead of `:not([attr=value])`.

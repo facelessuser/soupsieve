@@ -59,6 +59,8 @@ pytest
 regex
 sublicense
 substring
+subtag
+subtags
 traceback
 tuple
 tuples

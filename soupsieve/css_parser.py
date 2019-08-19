@@ -845,15 +845,22 @@ class CSSParser(object):
             else:
                 parts = css_unescape(value).split('-')
 
-            new_parts = []
-            first = True
+            stars = 0
             for part in parts:
-                if part == '*' and first:
-                    new_parts.append('(?!x\b)[a-z0-9]+?')
-                elif part != '*':
-                    new_parts.append(('' if first else '(-(?!x\b)[a-z0-9]+)*?\\-') + re.escape(part))
-                if first:
-                    first = False
+                if part == '*':
+                    stars += 1
+                else:
+                    break
+
+            new_parts = []
+            if stars:
+                parts = parts[stars:]
+                new_parts.append(r'.+?' if not parts else r'(?:(?:(?!x\b)[a-z0-9]+)(?:-(?!x\b)[a-z0-9]+)*?-)?')
+
+            for index, part in enumerate(parts):
+                if part != '*':
+                    new_parts.append(('' if index == 0 else r'(?:-(?!x\b)[a-z0-9]+)*?-') + re.escape(part))
+
             patterns.append(re.compile(r'^{}(?:-.*)?$'.format(''.join(new_parts)), re.I))
         sel.lang.append(ct.SelectorLang(patterns))
         has_selector = True
