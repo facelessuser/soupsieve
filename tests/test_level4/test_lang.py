@@ -68,7 +68,7 @@ class TestLang(util.TestCase):
         )
 
     def test_wildcard_start_collapse(self):
-        """Test that language with multiple wildcards at start collapse."""
+        """Test that language with multiple wildcard patterns at start collapse."""
 
         self.assert_selector(
             self.MARKUP,

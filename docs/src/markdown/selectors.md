@@ -1368,7 +1368,7 @@ Level 4 CSS<span class="lab badge"></span>
     for extended filtering. This enables implicit wildcard matching between subtags. For instance, `:lang(de-DE)` will
     match all of `de-DE`, `de-DE-1996`, `de-Latn-DE`, `de-Latf-DE`, and `de-Latn-DE-1996`. Implicit wildcard matching
     will not take place at the beginning on the primary language tag, `*` must be used to force wildcard matching at the
-    beginning of the language. If desired explicit wildcards between subtags can be used, but since implicit wildcard
+    beginning of the language. If desired an explicit wildcard between subtags can be used, but since implicit wildcard
     matching already takes place between subtags, it is not needed: `de-*-DE` would be the as just using `de-DE`.
 
     ```css tab="Syntax"
