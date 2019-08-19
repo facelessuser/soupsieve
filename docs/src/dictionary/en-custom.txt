@@ -1,6 +1,7 @@
 API
 Accessors
 Aspell
+BCP
 BeautifulSoup
 CDATA
 CSS
@@ -59,6 +60,8 @@ pytest
 regex
 sublicense
 substring
+subtag
+subtags
 traceback
 tuple
 tuples

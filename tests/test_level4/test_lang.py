@@ -47,6 +47,36 @@ class TestLang(util.TestCase):
             flags=util.HTML
         )
 
+    def test_only_wildcard(self):
+        """Test language with only a wildcard."""
+
+        self.assert_selector(
+            self.MARKUP,
+            "p:lang('*')",
+            ['1', '2', '3', '4', '5', '6'],
+            flags=util.HTML
+        )
+
+    def test_wildcard_start_no_match(self):
+        """Test language with a wildcard at start, but it matches nothing."""
+
+        self.assert_selector(
+            self.MARKUP,
+            "p:lang('*-de-DE')",
+            ['1', '2', '3', '4', '5', '6'],
+            flags=util.HTML
+        )
+
+    def test_wildcard_start_collapse(self):
+        """Test that language with multiple wildcard patterns at start collapse."""
+
+        self.assert_selector(
+            self.MARKUP,
+            "p:lang('*-*-*-de-DE')",
+            ['1', '2', '3', '4', '5', '6'],
+            flags=util.HTML
+        )
+
     def test_wildcard_at_start_escaped(self):
         """
         Test language with wildcard at start (escaped).

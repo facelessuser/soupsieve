@@ -1363,8 +1363,13 @@ Level 3 CSS
 
 Level 4 CSS<span class="lab badge"></span>
 : 
-    The level 4 `:lang()` adds the ability to define multiple languages, the ability to use `*` for wildcard language
-    matching.
+    The level 4 CSS specifications adds the ability to define multiple languages using a comma separated list. The
+    specifications also allow for BCP 47 language ranges as described in [RFC4647](https://tools.ietf.org/html/rfc4647)
+    for extended filtering. This enables implicit wildcard matching between subtags. For instance, `:lang(de-DE)` will
+    match all of `de-DE`, `de-DE-1996`, `de-Latn-DE`, `de-Latf-DE`, and `de-Latn-DE-1996`. Implicit wildcard matching
+    will not take place at the beginning on the primary language tag, `*` must be used to force wildcard matching at the
+    beginning of the language. If desired an explicit wildcard between subtags can be used, but since implicit wildcard
+    matching already takes place between subtags, it is not needed: `de-*-DE` would be the same as just using `de-DE`.
 
     ```css tab="Syntax"
     :lang('*-language', language2)
