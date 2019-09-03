@@ -1182,7 +1182,7 @@ class _Match(object):
 
         out_of_range = False
 
-        itype = self.get_attribute_by_name(el, 'type').lower()
+        itype = util.lower(self.get_attribute_by_name(el, 'type'))
         mn = self.get_attribute_by_name(el, 'min', None)
         if mn is not None:
             mn = Inputs.parse_value(itype, mn)
