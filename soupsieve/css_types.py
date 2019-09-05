@@ -26,6 +26,7 @@ SEL_DIR_RTL = 0x40
 SEL_IN_RANGE = 0x80
 SEL_OUT_OF_RANGE = 0x100
 SEL_DEFINED = 0x200
+SEL_DISABLED = 0x400
 
 
 class Immutable(object):

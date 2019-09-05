@@ -1237,6 +1237,24 @@ class _Match(object):
             self.get_prefix(el) is not None
         )
 
+    def match_disabled(self, el):
+        """
+        Match disabled.
+
+        - Non-option elements are not evaluated here.
+        - `options` elements will be verified to that their closest `optgroup`
+          parent is disabled.
+
+        """
+
+        match = False
+        parent = self.get_parent(el)
+        while self.get_tag(parent) != 'optgroup':
+            parent = self.get_parent(parent)
+        if self.get_attribute_by_name(parent, 'disabled') is not None:
+            match = True
+        return match
+
     def match_selectors(self, el, selectors):
         """Check if element matches one of the selectors."""
 
@@ -1268,6 +1286,9 @@ class _Match(object):
                     continue
                 # Verify element is scope
                 if selector.flags & ct.SEL_SCOPE and not self.match_scope(el):
+                    continue
+                # Verify element is disabled
+                if selector.flags & ct.SEL_DISABLED and not self.match_disabled(el):
                     continue
                 # Verify `nth` matches
                 if not self.match_nth(el, selector.nth):

@@ -143,3 +143,20 @@ class TestDisabled(util.TestCase):
             ['4', '5', '6', '7', '8', '9', 'a', 'c'],
             flags=util.PYHTML
         )
+
+    def test_disabled_with_nested_optgroup(self):
+        """Test `:disabled` only selects `option` elements whose closest `optgroup` parent is disabled."""
+
+        self.assert_selector(
+            """
+            <optgroup id="0" disabled>
+               <option id="1"></option>
+               <optgroup id="3">
+                   <option id="4"></option>
+               </optgroup>
+            </optgroup>
+            """,
+            ":disabled",
+            ['0', '1'],
+            flags=util.HTML
+        )
