@@ -10,6 +10,8 @@ RE_NOT_EMPTY = re.compile('[^ \t\r\n\f]')
 
 RE_NOT_WS = re.compile('[^ \t\r\n\f]+')
 
+RE_SIZE = re.compile(r'^[ \t\r\n\f]*([-+]?[0-9]+)$')
+
 # Relationships
 REL_PARENT = ' '
 REL_CLOSE_PARENT = '>'
@@ -1292,14 +1294,50 @@ class _Match(object):
         """
         Match placeholder shown according to HTML spec.
 
-        - text area should be checked if they have content. A single newline does not count as content.
+        - `inputs` will not be evaluated here.
+        - `textarea` should be checked if they have content. A single newline does not count as content.
+        - `select` will need to evaluate the `size` attribute and ensure non-placeholder options are not selected
+          before returning `True`.
 
         """
 
         match = False
-        content = self.get_text(el)
-        if content in ('', '\n'):
-            match = True
+        if self.get_tag(el) == 'textarea':
+            # `textarea` is allowed only a single new line to be considered empty.
+            # Carriage returns do not count as a new line. We rely on the parser to
+            # remove carriage returns that are not intended to be rendered in the output.
+            # Only `html5lib` handles these carriage returns.
+            content = self.get_text(el)
+            if content in ('', '\n'):
+                match = True
+        else:
+            # Validate size
+            calc_size = 1
+            size = el.get('size')
+            if size is not None:
+                m = RE_SIZE.match(size)
+                if m is not None:
+                    value = m.group(1)
+                    if value.startswith('+'):
+                        value = value[1:]
+                    nvalue = int(value, 10)
+                    if nvalue >= 0:
+                        calc_size = nvalue
+            if calc_size == 1:
+                match = True
+
+            # Check if a non-placeholder option is selected
+            if match is True:
+                # Get the first child, which is the placeholder
+                for child in self.get_children(el):
+                    placeholder = child
+                    break
+                # Ensure no other options are selected that come after the placeholder
+                for child in self.get_descendants(el, no_iframe=True):
+                    if self.get_tag(child) == 'option':
+                        if child is not placeholder and self.get_attribute_by_name(child, 'selected', None) is not None:
+                            match = False
+                            break
 
         return match
 

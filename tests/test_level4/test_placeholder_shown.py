@@ -69,3 +69,84 @@ class TestPlaceholderShown(util.TestCase):
             ['0', '1', '4', '5', '6', '7', '8', '9', '10', '11', '12', '28', '32'],
             flags=util.HTML
         )
+
+    def test_placeholder_shown_option(self):
+        """Test placeholder shown for option."""
+
+        markup = """
+        <select required id="1">
+            <option value="">Placeholder</option>
+        </select>
+        <select required id="2">
+            <option value="value">Value</option>
+            <option value="">Placeholder</option>
+        </select>
+        <select required id="3">
+            <script></script>
+            <option value="">Placeholder</option>
+        </select>
+        <select required id="4">
+            <option value="">Placeholder</option>
+            <option selected>Other option</option>
+        </select>
+        """
+
+        self.assert_selector(
+            markup,
+            ":placeholder-shown",
+            ['1', '3'],
+            flags=util.HTML
+        )
+
+    def test_placeholder_shown_option_multiple(self):
+        """Test placeholder shown for option when multiple is present."""
+
+        markup = """
+        <select required multiple id="1">
+            <option value="">Placeholder</option>
+        </select>
+        """
+
+        self.assert_selector(
+            markup,
+            ":placeholder-shown",
+            [],
+            flags=util.HTML
+        )
+
+    def test_placeholder_shown_option_size(self):
+        """Test placeholder shown for option when size is explicitly '1'."""
+
+        markup = """
+        <select required size="1" id="1">
+            <option value="">Placeholder</option>
+        </select>
+        <select required size="+1" id="2">
+            <option value="">Placeholder</option>
+        </select>
+        <select required size="     +1" id="3">
+            <option value="">Placeholder</option>
+        </select>
+        <select required size="0" id="4">
+            <option value="">Placeholder</option>
+        </select>
+        <select required size="99" id="5">
+            <option value="">Placeholder</option>
+        </select>
+        <select required size="-3" id="6">
+            <option value="">Placeholder</option>
+        </select>
+        <select required size="" id="7">
+            <option value="">Placeholder</option>
+        </select>
+        <select required size="BAD" id="8">
+            <option value="">Placeholder</option>
+        </select>
+        """
+
+        self.assert_selector(
+            markup,
+            ":placeholder-shown",
+            ['1', '2', '3', '6', '7', '8'],
+            flags=util.HTML
+        )

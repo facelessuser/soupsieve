@@ -1010,6 +1010,7 @@ class CSSParser(object):
             selectors[-1].flags = ct.SEL_OUT_OF_RANGE
         if is_placeholder_shown:
             selectors[-1].flags = ct.SEL_PLACEHOLDER_SHOWN
+            selectors[-2].flags = ct.SEL_PLACEHOLDER_SHOWN
 
         return ct.SelectorList([s.freeze() for s in selectors], is_not, is_html)
 
@@ -1139,7 +1140,13 @@ CSS_PLACEHOLDER_SHOWN = CSSParser(
         [type=password],
         [type=number]
     )[placeholder][placeholder!='']:is(:not([value]), [value=""]),
-    html|textarea[placeholder][placeholder!='']
+
+    /*
+    These patterns must be at the end.
+    Special logic is applied to the last selector.
+    */
+    html|textarea[placeholder][placeholder!=''],
+    html|select:required:not([multiple]):has(> html|option:nth-of-type(1):is([value=""], :not([value])))
     '''
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML | FLG_PLACEHOLDER_SHOWN)
 # CSS pattern default for `:nth-child` "of S" feature
