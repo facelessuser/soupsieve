@@ -190,7 +190,6 @@ FLG_INDETERMINATE = 0x20
 FLG_OPEN = 0x40
 FLG_IN_RANGE = 0x80
 FLG_OUT_OF_RANGE = 0x100
-FLG_DISABLED = 0x200
 
 # Maximum cached patterns to store
 _MAXCACHE = 500
@@ -894,7 +893,6 @@ class CSSParser(object):
         is_indeterminate = bool(flags & FLG_INDETERMINATE)
         is_in_range = bool(flags & FLG_IN_RANGE)
         is_out_of_range = bool(flags & FLG_OUT_OF_RANGE)
-        is_disabled = bool(flags & FLG_DISABLED)
 
         if self.debug:  # pragma: no cover
             if is_pseudo:
@@ -915,8 +913,6 @@ class CSSParser(object):
                 print('    is_in_range: True')
             if is_out_of_range:
                 print('    is_out_of_range: True')
-            if is_disabled:
-                print('    is_disabled: True')
 
         if is_relative:
             selectors.append(_Selector())
@@ -1023,8 +1019,6 @@ class CSSParser(object):
             selectors[-1].flags = ct.SEL_IN_RANGE
         if is_out_of_range:
             selectors[-1].flags = ct.SEL_OUT_OF_RANGE
-        if is_disabled:
-            selectors[-1].flags = ct.SEL_DISABLED
 
         return ct.SelectorList([s.freeze() for s in selectors], is_not, is_html)
 
@@ -1120,16 +1114,12 @@ CSS_INDETERMINATE = CSSParser(
 CSS_DISABLED = CSSParser(
     '''
     html|*:is(input[type!=hidden], button, select, textarea, fieldset, optgroup, option, fieldset)[disabled],
+    html|optgroup[disabled] > html|option,
     html|fieldset[disabled] > html|*:is(input[type!=hidden], button, select, textarea, fieldset),
     html|fieldset[disabled] >
-        html|*:not(legend:nth-of-type(1)) html|*:is(input[type!=hidden], button, select, textarea, fieldset),
-    /*
-    This pattern must be at the end.
-    Special logic is applied to the last selector.
-    */
-    html|optgroup[disabled] html|option
+        html|*:not(legend:nth-of-type(1)) html|*:is(input[type!=hidden], button, select, textarea, fieldset)
     '''
-).process_selectors(flags=FLG_PSEUDO | FLG_HTML | FLG_DISABLED)
+).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:enabled`
 CSS_ENABLED = CSSParser(
     '''

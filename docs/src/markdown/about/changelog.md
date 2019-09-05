@@ -2,9 +2,8 @@
 
 ## 1.9.4
 
-- **FIX**: `:checked` does not require an `option` element to be a child of a `select` element for it to match.
-- **FIX**: `:disabled` should only select `option` elements under a disabled `optgroup` if that `optgroup` is the
-closest parent.
+- **FIX**: `:checked` rule was too strict with `option` elements. The specification for `:checked` does not require an
+`option` element to be under a `select` element.
 - **FIX**: Fix `:lang()` wildcard matching when applied to the primary language tag (i.e. `:lang('*-US')`). When a
 wildcard is applied at the start of the pattern, it should match zero or more, not one or more.
 
