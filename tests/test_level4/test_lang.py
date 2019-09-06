@@ -23,6 +23,16 @@ class TestLang(util.TestCase):
         <p id="5"></p>
     </div>
     <p id="6" lang="de-DE"></p>
+    <div lang="a-DE">
+        <p id="7"></p>
+    </div>
+    <!-- Singletons don't match implicit wildcards (* not at start are ignored and treated as implicit) -->
+    <div lang="a-a-DE">
+        <p id="8"></p>
+    </div>
+    <div lang="en-a-DE">
+        <p id="9"></p>
+    </div>
     """
 
     def test_lang(self):
@@ -53,7 +63,7 @@ class TestLang(util.TestCase):
         self.assert_selector(
             self.MARKUP,
             "p:lang('*')",
-            ['1', '2', '3', '4', '5', '6'],
+            ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
             flags=util.HTML
         )
 
@@ -63,7 +73,7 @@ class TestLang(util.TestCase):
         self.assert_selector(
             self.MARKUP,
             "p:lang('*-de-DE')",
-            ['1', '2', '3', '4', '5', '6'],
+            [],
             flags=util.HTML
         )
 
@@ -72,8 +82,8 @@ class TestLang(util.TestCase):
 
         self.assert_selector(
             self.MARKUP,
-            "p:lang('*-*-*-de-DE')",
-            ['1', '2', '3', '4', '5', '6'],
+            "p:lang('*-*-*-DE')",
+            ['1', '2', '3', '4', '5', '6', '7'],
             flags=util.HTML
         )
 
@@ -87,7 +97,7 @@ class TestLang(util.TestCase):
         self.assert_selector(
             self.MARKUP,
             "p:lang(\\*-DE)",
-            ['1', '2', '3', '4', '5', '6'],
+            ['1', '2', '3', '4', '5', '6', '7'],
             flags=util.HTML
         )
 
@@ -120,7 +130,7 @@ class TestLang(util.TestCase):
         self.assert_selector(
             self.MARKUP,
             "p:lang('*-DE')",
-            ['1', '2', '3', '4', '5', '6'],
+            ['1', '2', '3', '4', '5', '6', '7'],
             flags=util.HTML
         )
 

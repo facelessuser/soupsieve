@@ -3,30 +3,30 @@
 ## 1.9.4
 
 - **FIX**: `:checked` rule was too strict with `option` elements. The specification for `:checked` does not require an
-`option` element to be under a `select` element.
-- **FIX**: Fix `:lang()` wildcard matching when applied to the primary language tag (i.e. `:lang('*-US')`). When a
-wildcard is applied at the start of the pattern, it should match zero or more, not one or more.
+  `option` element to be under a `select` element.
+- **FIX**: Fix level 4 `:lang()` wildcard match handling with singletons. Implicit wildcard matching should not
+  match any singleton. Explicit wildcard matching (`*` in the language range: `*-US`) is allowed to match singletons.
 
 ## 1.9.3
 
 - **FIX**: `[attr!=value]` pattern was mistakenly using `:not([attr|=value])` logic instead of `:not([attr=value])`.
 - **FIX**: Remove undocumented `_QUIRKS` mode flag. Beautiful Soup was meant to use it to help with transition to Soup
-Sieve, but never released with it. Help with transition at this point is no longer needed.
+  Sieve, but never released with it. Help with transition at this point is no longer needed.
 
 ## 1.9.2
 
 - **FIX**: Shortcut last descendant calculation if possible for performance.
 - **FIX**: Fix issue where `Doctype` strings can be mistaken for a normal text node in some cases.
 - **FIX**: A top level tag is not a `:root` tag if it has sibling text nodes or tag nodes. This is an issue that mostly
-manifests when using `html.parser` as the parser will allow multiple root nodes.
+  manifests when using `html.parser` as the parser will allow multiple root nodes.
 
 ## 1.9.1
 
 - **FIX**: `:root`, `:contains()`, `:default`, `:indeterminate`, `:lang()`, and `:dir()` will properly account for HTML
-`iframe` elements in their logic when selecting or matching an element. Their logic will be restricted to the document
-for which the element under consideration applies.
+  `iframe` elements in their logic when selecting or matching an element. Their logic will be restricted to the document
+  for which the element under consideration applies.
 - **FIX**: HTML pseudo-classes will check that all key elements checked are in the XHTML namespace (HTML parsers that do
-not provide namespaces will assume the XHTML namespace).
+  not provide namespaces will assume the XHTML namespace).
 - **FIX**: Ensure that all pseudo-class names are case insensitive and allow CSS escapes.
 
 ## 1.9.0
@@ -34,32 +34,32 @@ not provide namespaces will assume the XHTML namespace).
 - **NEW**: Allow `:contains()` to accept a list of text to search for. (#115)
 - **NEW**: Add new `escape` function for escaping CSS identifiers. (#125)
 - **NEW**: Deprecate `comments` and `icomments` functions in the API to ensure Soup Sieve focuses only on CSS selectors.
-`comments` and `icomments` will most likely be removed in 2.0. (#130)
+  `comments` and `icomments` will most likely be removed in 2.0. (#130)
 - **NEW**: Add Python 3.8 support. (#133)
 - **FIX**: Don't install test files when installing the `soupsieve` package. (#111)
 - **FIX**: Improve efficiency of `:contains()` comparison.
 - **FIX**: Null characters should translate to the Unicode REPLACEMENT CHARACTER (`U+FFFD`) according to the
-specification. This applies to CSS escaped NULL characters as well. (#124)
+  specification. This applies to CSS escaped NULL characters as well. (#124)
 - **FIX**: Escaped EOF should translate to `U+FFFD` outside of CSS strings. In a string, they should just be ignored,
-but as there is no case where we could resolve such a string and still have a valid selector, string handling remains
-the same. (#128)
+  but as there is no case where we could resolve such a string and still have a valid selector, string handling remains
+  the same. (#128)
 
 ## 1.8.0
 
 - **NEW**: Add custom selector support. (#92)(#108)
 - **FIX**: Small tweak to CSS identifier pattern to ensure it matches the CSS specification exactly. Specifically, you
-can't have an identifier of only `-`. (#107)
+  can't have an identifier of only `-`. (#107)
 - **FIX**: CSS string patterns should allow escaping newlines to span strings across multiple lines. (#107)
 - **FIX**: Newline regular expression for CSS newlines should treat `\r\n` as a single character, especially in cases
-such as string escapes: `\\\r\n`. (#107)
+  such as string escapes: `\\\r\n`. (#107)
 - **FIX**: Allow `--` as a valid identifier or identifier start. (#107)
 - **FIX**: Bad CSS syntax now raises a `SelectorSyntaxError`, which is still currently derived from `SyntaxError`, but
-will most likely be derived from `Exception` in the future.
+  will most likely be derived from `Exception` in the future.
 
 ## 1.7.3
 
 - **FIX**: Fix regression with tag names in regards to case sensitivity, and ensure there are tests to prevent breakage
-in the future.
+  in the future.
 - **FIX**: XHTML should always be case sensitive like XML.
 
 ## 1.7.2
@@ -67,9 +67,9 @@ in the future.
 - **FIX**: Fix HTML detection `type` selector.
 - **FIX**: Fixes for `:enabled` and `:disabled`.
 - **FIX**: Provide a way for Beautiful Soup to parse selectors in a quirks mode to mimic some of the quirks of the old
-select method prior to Soup Sieve, but with warnings. This is to help old scripts to not break during the transitional
-period with newest Beautiful Soup. In the future, these quirks will raise an exception as Soup Sieve requires
-selectors to follow the CSS specification.
+  select method prior to Soup Sieve, but with warnings. This is to help old scripts to not break during the transitional
+  period with newest Beautiful Soup. In the future, these quirks will raise an exception as Soup Sieve requires
+  selectors to follow the CSS specification.
 
 ## 1.7.1
 
@@ -82,7 +82,7 @@ selectors to follow the CSS specification.
 - **NEW**: Add support for `:defined` selector. (#76)
 - **FIX**: Fix pickling issue when compiled selector contains a `NullSelector` object. (#70)
 - **FIX**: Better exception messages in the CSS selector parser and fix a position reporting issue that can occur in
-some exceptions. (#72, #73)
+  some exceptions. (#72, #73)
 - **FIX**: Don't compare prefixes when evaluating attribute namespaces, compare the actual namespace. (#75)
 - **FIX**: Split whitespace attribute lists by all whitespace characters, not just space.
 - **FIX**: `:nth-*` patterns were converting numbers to base 16 when they should have been converting to base 10.
@@ -124,20 +124,20 @@ some exceptions. (#72, #73)
 
 - **NEW**: Add support for `:scope`.
 - **NEW**: `:user-invalid`, `:playing`, `:paused`, and `:local-link` will not cause a failure, but all will match
-nothing as their use cases are not possible in an environment outside a web browser.
+  nothing as their use cases are not possible in an environment outside a web browser.
 - **FIX**: Fix `[attr~=value]` handling of whitespace. According to the spec, if the value contains whitespace, or is an
-empty string, it should not match anything.
+  empty string, it should not match anything.
 - **FIX**: Precompile internal patterns for pseudo-classes to prevent having to parse them again.
 
 ## 1.2.1
 
 - **FIX**: More descriptive exceptions. Exceptions will also now mention position in the pattern that is problematic.
 - **FIX**: `filter` ignores `NavigableString` objects in normal iterables and `Tag` iterables. Basically, it filters all
-Beautiful Soup document parts regardless of iterable type where as it used to only filter out a `NavigableString` in a
-`Tag` object. This is viewed as fixing an inconsistency.
+  Beautiful Soup document parts regardless of iterable type where as it used to only filter out a `NavigableString` in a
+  `Tag` object. This is viewed as fixing an inconsistency.
 - **FIX**: `DEBUG` flag has been added to help with debugging CSS selector parsing. This is mainly for development.
 - **FIX**: If forced to search for language in `meta` tag, and no language is found, cache that there is no language in
-the `meta` tag to prevent searching again during the current select.
+  the `meta` tag to prevent searching again during the current select.
 - **FIX**: If a non `BeautifulSoup`/`Tag` object is given to the API to compare against, raise a `TypeError`.
 
 ## 1.2.0
@@ -149,26 +149,25 @@ the `meta` tag to prevent searching again during the current select.
 
 - **NEW**: Adds support for `[attr!=value]` which is equivalent to `:not([attr=value])`.
 - **NEW**: Add support for `:active`, `:focus`, `:hover`, `:visited`, `:target`, `:focus-within`, `:focus-visible`,
-`:target-within`, `:current()`/`:current`, `:past`, and `:future`, but they will never match as these states don't
-exist
-in the Soup Sieve environment.
+  `:target-within`, `:current()`/`:current`, `:past`, and `:future`, but they will never match as these states don't
+  exist in the Soup Sieve environment.
 - **NEW**: Add support for `:checked`, `:enabled`, `:disabled`, `:required`, `:optional`, `:default`, and
-`:placeholder-shown` which will only match in HTML documents as these concepts are not defined in XML.
+  `:placeholder-shown` which will only match in HTML documents as these concepts are not defined in XML.
 - **NEW**: Add support for `:link` and `:any-link`, both of which will target all `<a>`, `<area>`, and `<link>` elements
-with an `href` attribute as all links will be treated as unvisited in Soup Sieve.
+  with an `href` attribute as all links will be treated as unvisited in Soup Sieve.
 - **NEW**: Add support for `:lang()` (CSS4) which works in XML and HTML.
 - **NEW**: Users must install Beautiful Soup themselves. This requirement is removed in the hopes that Beautiful Soup
-may use this in the future.
+  may use this in the future.
 - **FIX**: Attributes in the form `prefix:attr` can be matched with the form `[prefix\:attr]` without specifying a
-namespaces if desired.
+  namespaces if desired.
 - **FIX**: Fix exception when `[type]` is used (with no value).
 
 ## 1.0.2
 
 - **FIX**: Use proper CSS identifier patterns for tag names, classes, ids, etc. Things like `#3` or `#-3` should not
-match and should require `#\33` or `#-\33`.
+  match and should require `#\33` or `#-\33`.
 - **FIX**: Do not raise `NotImplementedError` for supported pseudo classes/elements with bad syntax, instead raise
-`SyntaxError`.
+  `SyntaxError`.
 
 ## 1.0.1
 
@@ -184,7 +183,7 @@ match and should require `#\33` or `#-\33`.
 - **NEW**: Drop document flags. Document type can be detected from the Beautiful Soup object directly.
 - **FIX**: CSS selectors should be evaluated with CSS whitespace rules.
 - **FIX**: Processing instructions, CDATA, and declarations should all be ignored in `:contains` and child
-considerations for `:empty`.
+  considerations for `:empty`.
 - **FIX**: In Beautiful Soup, the document itself is the first tag. Do not match the "document" tag by returning false
   for any tag that doesn't have a parent.
 
