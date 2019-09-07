@@ -1,3 +1,4 @@
+ABNF
 API
 Accessors
 Aspell
@@ -6,14 +7,18 @@ BeautifulSoup
 CDATA
 CSS
 CSS's
+Canonicalization
+Canonicalize
 Changelog
 Combinators
 DOM
 EOF
 EOL
+Extlang
 GitHub
 Gitter
 Hashable
+IANA
 JQuery
 MERCHANTABILITY
 MkDocs
@@ -21,6 +26,7 @@ NONINFRINGEMENT
 Precompile
 PyPI
 PySpelling
+RCF
 SVG
 TODO
 Tox
@@ -28,11 +34,14 @@ URL's
 Unescape
 Virtualenv
 WIP
+Wellformed
 XHTML
 accessor
 amongst
 boolean
 builtin
+canonicalize
+canonicalize
 centric
 combinator
 combinators
@@ -46,6 +55,7 @@ iterable
 iterables
 linter
 lxml
+macrolanguage
 matchable
 matcher
 matchers
@@ -71,6 +81,7 @@ un
 unmatchable
 unpickle
 unvisited
+wellformed
 whitespace
 wildcard
 wordlist

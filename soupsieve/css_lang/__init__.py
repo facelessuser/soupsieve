@@ -6,7 +6,7 @@ from .registry import registry
 SINGLETON = r"[0-9a-wy-z]"
 
 # Sub-tags
-# Though the ABNF support 3 extlang tags, any tags that use these
+# Though the ABNF support 3 `extlang` tags, any tags that use these
 # ranges are invalid, and always will be, per RCF5646.
 # Though wellformed, We cannot canonicalize an invalid tag.
 # `WELLFORMED_EXTLANG = r"[a-z]{3}(?:-[a-z]{3}){0,2}"`
@@ -81,7 +81,7 @@ class Canonicalize(object):
     Canonicalization is based off of RFC5646 section 4.5.
     General algorithm:
 
-    - Normalize range or language tag. Laguage tags we will
+    - Normalize range or language tag. Language tags we will
       remove wildcard ranges except when the one which represents
       the primary subtag. Per the spec, all others are ignored.
       We also normalize case by lower casing the tag/range.
@@ -92,12 +92,12 @@ class Canonicalize(object):
       their preferred form if present.
 
     - Languages are then resolved primary subtags are replaced with their
-      preferred value. If an extlang is present, the primary tag may be
-      removed in favor of the extlang. Language subtags and extlang subtags
+      preferred value. If an `extlang` is present, the primary tag may be
+      removed in favor of the `extlang`. Language subtags and `extlang` subtags
       are also validated as to whether they are registered. Unregistered
       subtags will halt canonicalization.
 
-    - Script and region subtags are replaced with thier preferred value
+    - Script and region subtags are replaced with their preferred value
       if present. Subtags are also validated as to whether they are registered.
       Unregistered subtags will halt canonicalization.
 
@@ -241,7 +241,7 @@ class Canonicalize(object):
                     if match:
                         matched = True
 
-                # We SHOULD require a varant to be preceeded by its prefixes.
+                # We SHOULD require a variant to be preceded by its prefixes.
                 # We do not currently require it though.
                 # ```
                 # if not matched:
@@ -283,7 +283,7 @@ class Canonicalize(object):
                 self.parts[k] = v
 
     def to_extlang_form(self):
-        """Convert to extlang form."""
+        """Convert to `extlang` form."""
 
         primary = self.parts['language']
         if primary and not primary.startswith('*') and not self.parts['extlang']:
@@ -348,7 +348,7 @@ class Canonicalize(object):
         return self._canonicalize()
 
     def canonicalize_extlang(self):
-        """Canonicalize to extlang form."""
+        """Canonicalize to `extlang` form."""
 
         return self._canonicalize(extlang_form=True)
 
