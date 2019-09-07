@@ -3,6 +3,7 @@ from datetime import datetime
 from . import util
 import re
 from .import css_types as ct
+from . import css_lang as cl
 import unicodedata
 
 # Empty tag pattern (whitespace okay)
@@ -1151,7 +1152,7 @@ class _Match(object):
             for patterns in langs:
                 match = False
                 for pattern in patterns:
-                    if self.extended_language_filter(pattern, found_lang):
+                    if cl.extended_filter(pattern, [found_lang]):
                         match = True
                 if not match:
                     break
