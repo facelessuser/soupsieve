@@ -6,7 +6,7 @@ from .registry import registry
 SINGLETON = r"[0-9a-wy-z]"
 
 # Sub-tags
-# Though the ABNF support 3 `extlang` tags, any tags that use these
+# Though the ABNF support 3 extlang tags, any tags that use these
 # ranges are invalid, and always will be, per RCF5646.
 # Though wellformed, We cannot canonicalize an invalid tag.
 # `WELLFORMED_EXTLANG = r"[a-z]{3}(?:-[a-z]{3}){0,2}"`
@@ -92,8 +92,8 @@ class Canonicalize(object):
       their preferred form if present.
 
     - Languages are then resolved primary subtags are replaced with their
-      preferred value. If an `extlang` is present, the primary tag may be
-      removed in favor of the `extlang`. Language subtags and `extlang` subtags
+      preferred value. If an extlang is present, the primary tag may be
+      removed in favor of the extlang. Language subtags and extlang subtags
       are also validated as to whether they are registered. Unregistered
       subtags will halt canonicalization.
 
@@ -137,7 +137,7 @@ class Canonicalize(object):
 
         if values[0] not in registry['language']:
             raise InvalidSubtagError("'{}' is not a registered language.".format(values[0]))
-        if registry['language'][values[0]]['macrolanguage']:
+        if registry['extlang'].get(values[0]):
             extlang = values[0]
         else:
             value = registry['language'][values[0]]['preferred']
@@ -155,6 +155,7 @@ class Canonicalize(object):
                 raise InvalidSubtagError("'{}' is an invalid prefix for '{}'".format(primary, extlang))
             primary = None
 
+        # Do not allow extlang in canonical form
         if not primary:
             self.parts['language'] = extlang
             self.parts['extlang'] = ''
@@ -283,7 +284,7 @@ class Canonicalize(object):
                 self.parts[k] = v
 
     def to_extlang_form(self):
-        """Convert to `extlang` form."""
+        """Convert to extlang form."""
 
         primary = self.parts['language']
         if primary and not primary.startswith('*') and not self.parts['extlang']:
@@ -313,7 +314,7 @@ class Canonicalize(object):
             print('Decomposed language: ', self.parts)
 
         # Don't canonicalize if we couldn't match a wellformed tag or
-        # if we found more than one `extlang`. Wellformed does not always mean valid.
+        # if we found more than one extlang. Wellformed does not always mean valid.
         if self.parts and not self.parts['extlang'].count('-') > 1:
             try:
                 if not m.group('private'):
@@ -348,7 +349,7 @@ class Canonicalize(object):
         return self._canonicalize()
 
     def canonicalize_extlang(self):
-        """Canonicalize to `extlang` form."""
+        """Canonicalize to extlang form."""
 
         return self._canonicalize(extlang_form=True)
 

@@ -49,6 +49,7 @@ combinators
 deprecations
 deregister
 directionality
+extlang
 formatter
 hashable
 html

@@ -7,6 +7,7 @@ class Tag:
     """Tag structure."""
 
     tag_type = 'Tag'
+    ignore = set()
 
     def __init__(self):
         """Initialize."""
@@ -14,13 +15,16 @@ class Tag:
         self.name = ''
 
         self.tag = {
-            'type': self.tag_type.lower(),
-            'prefix': [],
+            'added': None,
+            'comments': None,
             'deprecated': False,
-            'scope': None,
+            'description': None,
             'macrolanguage': None,
+            'preferred': None,
+            'prefix': [],
+            'scope': None,
             'suppress': None,
-            'preferred': None
+            'type': self.tag_type.lower()
         }
 
     def add_prefix(self, prefix):
@@ -63,10 +67,25 @@ class Tag:
 
         self.tag['suppress'] = suppress.lower()
 
+    def set_comments(self, comments):
+        """Set comments."""
+
+        self.tag['comments'] = comments
+
+    def set_description(self, description):
+        """Set description."""
+
+        self.tag['description'] = description
+
+    def set_added(self, added):
+        """Set added."""
+
+        self.tag['added'] = added
+
     def __repr__(self):
         """Representation."""
 
-        return str(self.tag)
+        return str({k: v for k, v in self.tag.items() if k not in self.ignore})
 
     __str__ = __repr__
 
@@ -74,42 +93,49 @@ class Tag:
 class Language(Tag):
     """Language."""
 
+    ignore = set(['scope', 'suppress', 'deprecated', 'macrolanguage', 'prefix', 'added', 'comments', 'description'])
     tag_type = "Language"
 
 
 class Variant(Tag):
     """Variant."""
 
+    ignore = set(['scope', 'suppress', 'deprecated', 'macrolanguage', 'added', 'comments', 'description'])
     tag_type = "Variant"
 
 
 class Extlang(Tag):
     """Extlang."""
 
+    ignore = set(['scope', 'suppress', 'deprecated', 'macrolanguage', 'added', 'comments', 'description'])
     tag_type = "Extlang"
 
 
 class Script(Tag):
     """Script."""
 
+    ignore = set(['scope', 'deprecated', 'macrolanguage', 'prefix', 'added', 'comments', 'description'])
     tag_type = "Script"
 
 
 class Region(Tag):
     """Region."""
 
+    ignore = set(['scope', 'suppress', 'deprecated', 'macrolanguage', 'prefix', 'added', 'comments', 'description'])
     tag_type = "Region"
 
 
 class Grandfathered(Tag):
     """Grandfathered."""
 
+    ignore = set(['scope', 'suppress', 'deprecated', 'macrolanguage', 'prefix', 'added', 'comments', 'description'])
     tag_type = "Grandfathered"
 
 
 class Redundant(Tag):
     """Redundant."""
 
+    ignore = set(['scope', 'suppress', 'deprecated', 'macrolanguage', 'prefix', 'added', 'comments', 'description'])
     tag_type = "Redundant"
 
 
@@ -174,10 +200,16 @@ for block in blocks:
             obj.set_scope(value)
         elif key == 'Macrolanguage':
             obj.set_macrolanguage(value)
-        elif key not in ('Comments', 'Description', 'Added'):
+        elif key == "Comments":
+            obj.set_comments(value)
+        elif key == "Description":
+            obj.set_description(value)
+        elif key == 'Added':
+            obj.set_added(value)
+        else:
             raise RuntimeError("Unexpected key '{}'".format(key))
 
-with codecs.open('soupsieve/css_lang/registry.py', 'w') as f:
+with codecs.open('soupsieve/css_lang/registry.py', 'w', encoding='utf-8') as f:
     f.write('"""IANA Registry."""\n')
     f.write('registry = {\n')
     f.write('    "filedate": {!r},\n'.format(date))
@@ -186,7 +218,8 @@ with codecs.open('soupsieve/css_lang/registry.py', 'w') as f:
         for item in data[key]:
             f.write('        "{}": {{\n'.format(item.name))
             for k, v in sorted(item.tag.items()):
-                f.write('            "{}": {!r},\n'.format(k, v))
+                if k not in item.ignore:
+                    f.write('            "{}": {!r},\n'.format(k, v))
             f.write('        },\n')
         f.write('    },\n')
     f.write('}\n')
