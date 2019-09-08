@@ -1152,7 +1152,7 @@ class _Match(object):
             for patterns in langs:
                 match = False
                 for pattern in patterns:
-                    if cl.extended_filter(pattern, [found_lang]):
+                    if cl.extended_filter(pattern, [found_lang], True):
                         match = True
                 if not match:
                     break
