@@ -1,0 +1,7 @@
+[run]
+omit=
+    soupsieve/css_lang/registry.py
+
+[report]
+omit=
+    soupsieve/css_lang/registry.py

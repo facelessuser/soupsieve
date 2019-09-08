@@ -211,6 +211,7 @@ for block in blocks:
 
 with codecs.open('soupsieve/css_lang/registry.py', 'w', encoding='utf-8') as f:
     f.write('"""IANA Registry."""\n')
+    f.write('from __future__ import unicode_literals\n\n')
     f.write('registry = {\n')
     f.write('    "filedate": {!r},\n'.format(date))
     for key in sorted(data.keys()):

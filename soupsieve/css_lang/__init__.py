@@ -1,4 +1,5 @@
 """Language handler."""
+from __future__ import unicode_literals
 import re
 from .registry import registry
 
@@ -9,7 +10,6 @@ SINGLETON = r"[0-9a-wy-z]"
 # Though the ABNF support 3 extlang tags, any tags that use these
 # ranges are invalid, and always will be, per RCF5646.
 # Though wellformed, We cannot canonicalize an invalid tag.
-# `WELLFORMED_EXTLANG = r"[a-z]{3}(?:-[a-z]{3}){0,2}"`
 EXTLANG = r"[a-z]{3}(?:-[a-z]{3}){0,2}"
 SCRIPT = r"[a-z]{4}"
 REGION = r"(?:[a-z]{2}|[0-9]{3})"
@@ -74,7 +74,7 @@ def normalize(language):
     return RE_WILD_STRIP.sub('-', language).lower()
 
 
-class Canonicalize(object):
+class Canonicalize(object):  # pragma: no cover
     """
     Canonicalize language tags and ranges.
 
@@ -119,7 +119,7 @@ class Canonicalize(object):
         self.is_range = '*' in language
         self.language = language
 
-    def canonicalize_language(self):
+    def _canonicalize_language(self):
         """Canonicalize language tags."""
 
         language = self.parts['language']
@@ -163,7 +163,7 @@ class Canonicalize(object):
             self.parts['language'] = primary
             self.parts['extlang'] = ''
 
-    def canonicalize_script(self):
+    def _canonicalize_script(self):
         """Canonicalize script tags."""
 
         script = self.parts['script'].lstrip('-')
@@ -176,7 +176,7 @@ class Canonicalize(object):
             if value:
                 self.parts['script'] = '-' + value
 
-    def canonicalize_region(self):
+    def _canonicalize_region(self):
         """Canonicalize region tags."""
 
         region = self.parts['region'].lstrip('-')
@@ -190,7 +190,7 @@ class Canonicalize(object):
             if value:
                 self.parts['region'] = '-' + value
 
-    def canonicalize_variant(self):
+    def _canonicalize_variant(self):
         """Canonicalize variant tags."""
 
         variant = self.parts['variant'].lstrip('-')
@@ -255,7 +255,7 @@ class Canonicalize(object):
                 if variant != ordered:
                     self.parts['variant'] = '-' + ordered
 
-    def canonicalize_extension(self):
+    def _canonicalize_extension(self):
         """Canonicalize extension."""
 
         extension = self.parts['extension']
@@ -264,7 +264,7 @@ class Canonicalize(object):
             extension = '-'.join(sorted(RE_EXT_SPLIT.split(extension.lstrip('-'))))
             self.parts['extension'] = '-' + extension if extension else extension
 
-    def canonicalize_redundant_grandfathered(self):
+    def _canonicalize_redundant_grandfathered(self):
         """Canonicalize redundant tags."""
 
         lang = None
@@ -283,7 +283,7 @@ class Canonicalize(object):
             for k, v in RE_LANGUAGETAG.match(lang).groupdict(default='').items():
                 self.parts[k] = v
 
-    def to_extlang_form(self):
+    def _to_extlang_form(self):
         """Convert to extlang form."""
 
         primary = self.parts['language']
@@ -293,7 +293,7 @@ class Canonicalize(object):
                 self.parts['language'] = r'{}-{}'.format(prefix[0], primary)
                 self.parts['extlang'] = r'-{}'.format(primary)
 
-    def format_case(self):
+    def _format_case(self):
         """Format case."""
 
         if not self.is_range or not self.parts['language'].startswith('*'):
@@ -318,17 +318,17 @@ class Canonicalize(object):
         if self.parts and not self.parts['extlang'].count('-') > 1:
             try:
                 if not m.group('private'):
-                    self.canonicalize_extension()
-                    self.canonicalize_redundant_grandfathered()
-                    self.canonicalize_language()
-                    self.canonicalize_script()
-                    self.canonicalize_region()
-                    self.canonicalize_variant()
+                    self._canonicalize_extension()
+                    self._canonicalize_redundant_grandfathered()
+                    self._canonicalize_language()
+                    self._canonicalize_script()
+                    self._canonicalize_region()
+                    self._canonicalize_variant()
 
                     if extlang_form:
-                        self.to_extlang_form()
+                        self._to_extlang_form()
 
-                    self.format_case()
+                    self._format_case()
 
                 # Rebuild the tag. Some variables may be empty strings.
                 # For instance, when grandfathered is present, nothing else is.
@@ -343,7 +343,7 @@ class Canonicalize(object):
             print('Canonicalized: ', lang)
         return lang
 
-    def canonicalize(self):
+    def canonicalize(self):  # pragma: no cover
         """Canonicalize."""
 
         return self._canonicalize()
@@ -414,7 +414,7 @@ def extended_filter(lang_range, lang_tags, canonicalize=False):
     return matches
 
 
-def basic_filter(lang_range, lang_tags, canonicalize=False):
+def basic_filter(lang_range, lang_tags, canonicalize=False):  # pragma: no cover
     """Language tags."""
 
     lang_range = normalize(Canonicalize(lang_range).canonicalize_extlang() if canonicalize else lang_range)
