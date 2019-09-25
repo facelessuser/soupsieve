@@ -112,11 +112,11 @@ class Canonicalize(object):  # pragma: no cover
 
     """
 
-    def __init__(self, language, debug=False):
+    def __init__(self, language, lang_range=False, debug=False):
         """Initialize."""
 
         self.debug = False
-        self.is_range = '*' in language
+        self.is_range = lang_range
         self.language = language
 
     def _canonicalize_language(self):
@@ -305,7 +305,7 @@ class Canonicalize(object):  # pragma: no cover
 
         if self.debug:
             print('Language: ', self.language)
-        lang = normalize(self.language)
+        lang = normalize(self.language) if self.is_range else self.language.lower()
         if self.debug:
             print('Normalized language: ', lang)
         m = (RE_LANGUAGETAG_RANGE if self.is_range else RE_LANGUAGETAG).match(lang.lower())
@@ -357,7 +357,9 @@ class Canonicalize(object):  # pragma: no cover
 def extended_filter(lang_range, lang_tags, canonicalize=False):
     """Filter the language tags."""
 
-    lang_range = normalize(Canonicalize(lang_range).canonicalize_extlang() if canonicalize else lang_range)
+    lang_range = (
+        Canonicalize(lang_range, lang_range=True).canonicalize_extlang() if canonicalize else normalize(lang_range)
+    ).lower()
     matches = []
 
     for tag in lang_tags:
@@ -365,7 +367,7 @@ def extended_filter(lang_range, lang_tags, canonicalize=False):
         if canonicalize:
             tag = Canonicalize(tag).canonicalize_extlang()
         ranges = lang_range.split('-')
-        subtags = normalize(tag).split('-')
+        subtags = tag.lower().split('-')
         length = len(ranges)
         rindex = 0
         sindex = 0
@@ -417,13 +419,15 @@ def extended_filter(lang_range, lang_tags, canonicalize=False):
 def basic_filter(lang_range, lang_tags, canonicalize=False):  # pragma: no cover
     """Language tags."""
 
-    lang_range = normalize(Canonicalize(lang_range).canonicalize_extlang() if canonicalize else lang_range)
+    lang_range = (
+        Canonicalize(lang_range, lang_range=True).canonicalize_extlang() if canonicalize else normalize(lang_range)
+    ).lower()
     matches = []
 
     for tag in lang_tags:
         if canonicalize:
             tag = Canonicalize(tag).canonicalize_extlang()
-        norm_tag = normalize(tag)
+        norm_tag = tag.lower()
         if lang_range == '*' or lang_range == norm_tag or norm_tag.startswith(lang_range + '-'):
             matches.append(tag)
 

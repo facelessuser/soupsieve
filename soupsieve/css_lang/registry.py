@@ -1,4 +1,6 @@
 """IANA Registry."""
+from __future__ import unicode_literals
+
 registry = {
     "filedate": '2019-04-30',
     "extlang": {
