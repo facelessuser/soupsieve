@@ -43,6 +43,7 @@ RE_DATE = re.compile(r'^(?P<year>[0-9]{4,})-(?P<month>[0-9]{2})-(?P<day>[0-9]{2}
 RE_DATETIME = re.compile(
     r'^(?P<year>[0-9]{4,})-(?P<month>[0-9]{2})-(?P<day>[0-9]{2})T(?P<hour>[0-9]{2}):(?P<minutes>[0-9]{2})$'
 )
+RE_WILD_STRIP = re.compile(r'(?:(?:-\*-)(?:\*(?:-|$))*|-\*$)')
 
 MONTHS_30 = (4, 6, 9, 11)  # April, June, September, and November
 FEB = 2
@@ -544,6 +545,57 @@ class _Match(object):
                 if bidi in ('AL', 'R', 'L'):
                     return ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
         return None
+
+    def extended_language_filter(self, lang_range, lang_tag):
+        """Filter the language tags."""
+
+        match = True
+        lang_range = RE_WILD_STRIP.sub('-', lang_range).lower()
+        ranges = lang_range.split('-')
+        subtags = lang_tag.lower().split('-')
+        length = len(ranges)
+        rindex = 0
+        sindex = 0
+        r = ranges[rindex]
+        s = subtags[sindex]
+
+        # Primary tag needs to match
+        if r != '*' and r != s:
+            match = False
+
+        rindex += 1
+        sindex += 1
+
+        # Match until we run out of ranges
+        while match and rindex < length:
+            r = ranges[rindex]
+            try:
+                s = subtags[sindex]
+            except IndexError:
+                # Ran out of subtags,
+                # but we still have ranges
+                match = False
+                continue
+
+            # Empty range
+            if not r:
+                match = False
+                continue
+
+            # Matched range
+            elif s == r:
+                rindex += 1
+
+            # Implicit wildcard cannot match
+            # singletons
+            elif len(s) == 1:
+                match = False
+                continue
+
+            # Implicitly matched, so grab next subtag
+            sindex += 1
+
+        return match
 
     def match_attribute_name(self, el, attr, prefix):
         """Match attribute name and return value if it exists."""
@@ -1100,7 +1152,7 @@ class _Match(object):
             for patterns in langs:
                 match = False
                 for pattern in patterns:
-                    if pattern.match(found_lang):
+                    if self.extended_language_filter(pattern, found_lang):
                         match = True
                 if not match:
                     break
