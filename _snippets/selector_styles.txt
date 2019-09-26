@@ -1,0 +1,37 @@
+<style>
+span.lab::after,
+span.html5::after,
+span.null::after,
+span.star::after {
+  position: relative;
+  display: inline-block;
+  font: normal normal normal 16px/1 FontAwesome;
+  -moz-osx-font-smoothing: initial;
+  -webkit-font-smoothing: initial;
+  font-weight: 400;
+}
+
+.badge {
+  float: right;
+}
+
+span.lab::after {
+  color: purple;
+  content: '\f0c3';
+}
+
+span.html5::after {
+  color: orange;
+  content: '\f13b';
+}
+
+span.null::after {
+  color: red;
+  content: '\f071'
+}
+
+span.star::after {
+   color: green;
+   content: '\f005'
+}
+</style>

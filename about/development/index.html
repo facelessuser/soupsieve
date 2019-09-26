@@ -1,0 +1,1315 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="A modern CSS selector library for Beautiful Soup.">
+      
+      
+        <link rel="canonical" href="https://facelessuser.github.io/soupsieve/about/development/">
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.2">
+    
+    
+      
+        <title>Development - Soup Sieve</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.30686662.css">
+      
+        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#2196f3">
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.74668098.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+      <link rel="stylesheet" href="../../extra-30d8e6755c.css">
+    
+    
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#development" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://facelessuser.github.io/soupsieve" title="Soup Sieve" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon">description</i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              Soup Sieve
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Development
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/facelessuser/soupsieve/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+        
+
+  
+
+<nav class="md-tabs md-tabs--active" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../.." class="md-tabs__link">
+          Usage
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../contributing/" class="md-tabs__link md-tabs__link--active">
+          About
+        </a>
+      
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://facelessuser.github.io/soupsieve" title="Soup Sieve" class="md-nav__button md-logo">
+      
+        <i class="md-icon">description</i>
+      
+    </a>
+    Soup Sieve
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/facelessuser/soupsieve/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1">
+    
+    <label class="md-nav__link" for="nav-1">
+      Usage
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        Usage
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Soup Sieve" class="md-nav__link">
+      Soup Sieve
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../api/" title="API" class="md-nav__link">
+      API
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../selectors/" title="CSS Selectors" class="md-nav__link">
+      CSS Selectors
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../faq/" title="F.A.Q." class="md-nav__link">
+      F.A.Q.
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../differences/" title="Beautiful Soup Differences" class="md-nav__link">
+      Beautiful Soup Differences
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      About
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        About
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../contributing/" title="Contributing & Support" class="md-nav__link">
+      Contributing &amp; Support
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Development
+      </label>
+    
+    <a href="./" title="Development" class="md-nav__link md-nav__link--active">
+      Development
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#project-layout" class="md-nav__link">
+    Project Layout
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coding-standards" class="md-nav__link">
+    Coding Standards
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#building-and-editing-documents" class="md-nav__link">
+    Building and Editing Documents
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spell-checking-documents" class="md-nav__link">
+    Spell Checking Documents
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-tests" class="md-nav__link">
+    Validation Tests
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#running-validation-with-tox" class="md-nav__link">
+    Running Validation With Tox
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-coverage" class="md-nav__link">
+    Code Coverage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-documentation" class="md-nav__link">
+    Code Documentation
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#compiled-css-selector-structure" class="md-nav__link">
+    Compiled CSS Selector Structure
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selectorlist" class="md-nav__link">
+    SelectorList
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selector" class="md-nav__link">
+    Selector
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selectornull" class="md-nav__link">
+    SelectorNull
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selectortag" class="md-nav__link">
+    SelectorTag
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selectorattribute" class="md-nav__link">
+    SelectorAttribute
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selectorcontains" class="md-nav__link">
+    SelectorContains
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selectornth" class="md-nav__link">
+    SelectorNth
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selectorlang" class="md-nav__link">
+    SelectorLang
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../changelog/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#project-layout" class="md-nav__link">
+    Project Layout
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coding-standards" class="md-nav__link">
+    Coding Standards
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#building-and-editing-documents" class="md-nav__link">
+    Building and Editing Documents
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spell-checking-documents" class="md-nav__link">
+    Spell Checking Documents
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-tests" class="md-nav__link">
+    Validation Tests
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#running-validation-with-tox" class="md-nav__link">
+    Running Validation With Tox
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-coverage" class="md-nav__link">
+    Code Coverage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-documentation" class="md-nav__link">
+    Code Documentation
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#compiled-css-selector-structure" class="md-nav__link">
+    Compiled CSS Selector Structure
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selectorlist" class="md-nav__link">
+    SelectorList
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selector" class="md-nav__link">
+    Selector
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selectornull" class="md-nav__link">
+    SelectorNull
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selectortag" class="md-nav__link">
+    SelectorTag
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selectorattribute" class="md-nav__link">
+    SelectorAttribute
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selectorcontains" class="md-nav__link">
+    SelectorContains
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selectornth" class="md-nav__link">
+    SelectorNth
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selectorlang" class="md-nav__link">
+    SelectorLang
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/facelessuser/soupsieve/tree/master/docs/src/markdown/about/development.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="development">Development<a class="headerlink" href="#development" title="Permanent link"></a></h1>
+<h2 id="project-layout">Project Layout<a class="headerlink" href="#project-layout" title="Permanent link"></a></h2>
+<p>There are a number of files for build, test, and continuous integration in the root of the project, but in general, the
+project is broken up like so.</p>
+<div class="codehilite"><pre><span></span>├── docs
+│   └── src
+│       ├── dictionary
+│       └── markdown
+├── soupsieve
+├── requirements
+└── tests
+</pre></div>
+
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docs/src/dictionary</code></td>
+<td>Contains the spell check wordlist(s) for the project.</td>
+</tr>
+<tr>
+<td><code>docs/src/markdown</code></td>
+<td>Contains the content for the documentation.</td>
+</tr>
+<tr>
+<td><code>soupsieve</code></td>
+<td>Contains the source code for the project.</td>
+</tr>
+<tr>
+<td><code>requirements</code></td>
+<td>Contains files with lists of dependencies that are required for the project, and required for continuous integration.</td>
+</tr>
+<tr>
+<td><code>tests</code></td>
+<td>Contains unit test files.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="coding-standards">Coding Standards<a class="headerlink" href="#coding-standards" title="Permanent link"></a></h2>
+<p>When writing code, the code should roughly conform to PEP8 and PEP257 suggestions.  The project utilizes the Flake8
+linter (with some additional plugins) to ensure code conforms (give or take some of the rules).  When in doubt, follow
+the formatting hints of existing code when adding files or modifying existing files.  Listed below are the modules used:</p>
+<ul>
+<li><a class="magiclink magiclink-gitlab magiclink-repository" href="https://gitlab.com/pycqa/flake8" title="GitLab Repository: pycqa/flake8">pycqa/flake8</a></li>
+<li><a class="magiclink magiclink-gitlab magiclink-repository" href="https://gitlab.com/pycqa/flake8-docstrings" title="GitLab Repository: pycqa/flake8-docstrings">pycqa/flake8-docstrings</a></li>
+<li><a class="magiclink magiclink-gitlab magiclink-repository" href="https://gitlab.com/pycqa/pep8-naming" title="GitLab Repository: pycqa/pep8-naming">pycqa/pep8-naming</a></li>
+<li><a class="magiclink magiclink-github magiclink-repository" href="https://github.com/ebeweber/flake8-mutable" title="GitHub Repository: ebeweber/flake8-mutable">ebeweber/flake8-mutable</a></li>
+<li><a class="magiclink magiclink-github magiclink-repository" href="https://github.com/gforcada/flake8-builtins" title="GitHub Repository: gforcada/flake8-builtins">gforcada/flake8-builtins</a></li>
+</ul>
+<p>Usually this can be automated with Tox (assuming it is installed): <code>tox -e lint</code>.</p>
+<h2 id="building-and-editing-documents">Building and Editing Documents<a class="headerlink" href="#building-and-editing-documents" title="Permanent link"></a></h2>
+<p>Documents are in Markdown (with with some additional syntax provided by extensions) and are converted to HTML via Python
+Markdown. If you would like to build and preview the documentation, you must have these packages installed:</p>
+<ul>
+<li><a class="magiclink magiclink-github magiclink-repository" href="https://github.com/Python-Markdown/markdown" title="GitHub Repository: Python-Markdown/markdown">Python-Markdown/markdown</a>: the Markdown parser.</li>
+<li><a class="magiclink magiclink-github magiclink-repository" href="https://github.com/mkdocs/mkdocs" title="GitHub Repository: mkdocs/mkdocs">mkdocs/mkdocs</a>: the document site generator.</li>
+<li><a class="magiclink magiclink-github magiclink-repository" href="https://github.com/squidfunk/mkdocs-material" title="GitHub Repository: squidfunk/mkdocs-material">squidfunk/mkdocs-material</a>: a material theme for MkDocs.</li>
+<li><a class="magiclink magiclink-github magiclink-repository" href="https://github.com/facelessuser/pymdown-extensions" title="GitHub Repository: facelessuser/pymdown-extensions">facelessuser/pymdown-extensions</a>: this Python Markdown extension bundle.</li>
+</ul>
+<p>In order to build and preview the documents, just run the command below from the root of the project and you should be
+able to view the documents at <code>localhost:8000</code> in your browser. After that, you should be able to update the documents
+and have your browser preview update live.</p>
+<div class="codehilite"><pre><span></span>mkdocs serve
+</pre></div>
+
+<h2 id="spell-checking-documents">Spell Checking Documents<a class="headerlink" href="#spell-checking-documents" title="Permanent link"></a></h2>
+<p>Spell checking is performed via <a class="magiclink magiclink-github magiclink-repository" href="https://github.com/facelessuser/pyspelling" title="GitHub Repository: facelessuser/pyspelling">facelessuser/pyspelling</a>.</p>
+<p>During validation we build the docs and spell check various files in the project. <a href="https://github.com/GNUAspell/aspell">Aspell</a> must be installed and
+in the path.  Currently this project uses one of the more recent versions of Aspell.  It is not expected that everyone
+will install and run Aspell locally, but it will be run in CI tests for pull requests.</p>
+<p>In order to perform the spell check locally, it is expected you are setup to build the documents, and that you have
+Aspell installed in your system path (if needed you can use the <code>--binary</code> option to point to the location of your
+Aspell binary). It is also expected that you have the <code>en</code> dictionary installed as well. To initiate the spell check,
+run the following command from the root of the project.</p>
+<p>You will need to make sure the documents are built first:</p>
+<div class="codehilite"><pre><span></span>mkdocs build --clean
+</pre></div>
+
+<p>And then run the spell checker.</p>
+<div class="codehilite"><pre><span></span>pyspelling
+</pre></div>
+
+<p>It should print out the files with the misspelled words if any are found.  If you find it prints words that are not
+misspelled, you can add them in <code>docs/src/dictionary/en-custom.text</code>.</p>
+<h2 id="validation-tests">Validation Tests<a class="headerlink" href="#validation-tests" title="Permanent link"></a></h2>
+<p>In order to preserve good code health, a test suite has been put together with pytest (<a class="magiclink magiclink-github magiclink-repository" href="https://github.com/pytest-dev/pytest" title="GitHub Repository: pytest-dev/pytest">pytest-dev/pytest</a>).  To run
+these tests, you can use the following command:</p>
+<div class="codehilite"><pre><span></span>py.test
+</pre></div>
+
+<h3 id="running-validation-with-tox">Running Validation With Tox<a class="headerlink" href="#running-validation-with-tox" title="Permanent link"></a></h3>
+<p>Tox (<a class="magiclink magiclink-github magiclink-repository" href="https://github.com/tox-dev/tox" title="GitHub Repository: tox-dev/tox">tox-dev/tox</a>) is a great way to run the validation tests, spelling checks, and linting in virtual environments so
+as not to mess with your current working environment. Tox will use the specified Python version for the given
+environment and create a virtual environment and install all the needed requirements (minus Aspell).  You could also
+setup your own virtual environments with the Virtualenv module without Tox, and manually do the same.</p>
+<p>First, you need to have Tox installed:</p>
+<div class="codehilite"><pre><span></span>pip install tox
+</pre></div>
+
+<p>By running Tox, it will walk through all the environments and create them (assuming you have all the python versions on
+your machine) and run the related tests.  See <code>tox.ini</code> to learn more.</p>
+<div class="codehilite"><pre><span></span>tox
+</pre></div>
+
+<p>If you don't have all the Python versions needed to test all the environments, those entries will fail. To run the tests
+for specific versions of Python, you specify the environment with <code>-e PXY</code> where <code>X</code> is the major version and <code>Y</code> is the
+minor version.</p>
+<div class="codehilite"><pre><span></span>tox -e py37
+</pre></div>
+
+<p>To target linting:</p>
+<div class="codehilite"><pre><span></span>tox -e lint
+</pre></div>
+
+<p>To select spell checking and document building:</p>
+<div class="codehilite"><pre><span></span>tox -e documents
+</pre></div>
+
+<h2 id="code-coverage">Code Coverage<a class="headerlink" href="#code-coverage" title="Permanent link"></a></h2>
+<p>When running the validation tests through Tox, it is setup to track code coverage via the Coverage
+(<a class="magiclink magiclink-bitbucket magiclink-repository" href="https://bitbucket.org/ned/coveragepy" title="Bitbucket Repository: ned/coveragepy">ned/coveragepy</a>) module.  Coverage is run on each <code>pyxx</code> environment.  If you've made changes to the code,
+you can clear the old coverage data:</p>
+<div class="codehilite"><pre><span></span>coverage erase
+</pre></div>
+
+<p>Then run each unit test environment to generate coverage data. All the data from each run is merged together.  HTML is
+output for each file in <code>.tox/pyXX/tmp</code>.  You can use these to see areas that are not covered/exercised yet with
+testing.</p>
+<p>You can checkout <code>tox.ini</code> to see how this is accomplished.</p>
+<h2 id="code-documentation">Code Documentation<a class="headerlink" href="#code-documentation" title="Permanent link"></a></h2>
+<p>The Soup Sieve module is laid out in the following structure:</p>
+<div class="codehilite"><pre><span></span>soupseive
+├── __init__.py
+├── __meta__.py
+├── css_match.py
+├── css_parser.py
+├── css_types.py
+└── util.py
+</pre></div>
+
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>__init__.py</code></td>
+<td>Contains the API for the user.</td>
+</tr>
+<tr>
+<td><code>__meta__.py</code></td>
+<td>Contains package meta data like version.</td>
+</tr>
+<tr>
+<td><code>css_match.py</code></td>
+<td>Contains the logic for matching tags with a CSS selector.</td>
+</tr>
+<tr>
+<td><code>css_parser.py</code></td>
+<td>Contains the CSS selector parser.</td>
+</tr>
+<tr>
+<td><code>css_types.py</code></td>
+<td>Contains the CSS types for the compiled CSS patterns.</td>
+</tr>
+<tr>
+<td><code>util.py</code></td>
+<td>Contains miscellaneous helper functions, classes, and constants.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="compiled-css-selector-structure">Compiled CSS Selector Structure<a class="headerlink" href="#compiled-css-selector-structure" title="Permanent link"></a></h3>
+<p>When a CSS selector string is given to Soup Sieve, it is run through the <code>CSSParser</code> class.  <code>CSSParser</code> will return a
+<code>SelectorList</code> class. This class is sent to the <code>SoupSieve</code> class as a parameter along with things like <code>namespace</code> and
+<code>flags</code>. One of the most important things to understand when contributing is the structure of the <code>SelectorList</code> class.</p>
+<p>A <code>SelectorList</code> represents a list of compound selectors.  So if you had the selector <code class="codehilite"><span class="nt">div</span> <span class="o">&gt;</span> <span class="nt">p</span></code>, you would get a
+<code>SelectorList</code> object containing one <code>Selector</code> object. If you had <code class="codehilite"><span class="nt">div</span><span class="o">,</span> <span class="nt">p</span></code>, you would get a <code>SelectorList</code> with
+two <code>Selector</code> objects as this is a selector list of two compound selectors.</p>
+<p>A compound selector gets parsed into pieces. Each part of a specific compound selector is usually assigned to an
+attribute in a single <code>Selector</code> object. The attributes of the <code>Selector</code> object may be as simple as a boolean or a
+string, but they can also be a tuple of more <code>SelectorList</code> objects. In the case of <code class="codehilite"><span class="o">*</span><span class="p">:</span><span class="nd">not</span><span class="o">(</span><span class="nt">p</span><span class="o">,</span> <span class="nt">div</span><span class="o">)</span></code>, <code class="codehilite"><span class="o">*</span></code>
+will be a <code>SelectorList</code> with one <code>Selector</code>. The <code class="codehilite"><span class="p">:</span><span class="nd">not</span><span class="o">(</span><span class="nt">p</span><span class="o">,</span> <span class="nt">div</span><span class="o">)</span></code> selector list will be a tuple containing one
+<code>SelectorList</code> of two <code>Selectors</code> (one for <code>p</code> and one for <code>div</code>) under the <code>selectors</code> attribute of the <code class="codehilite"><span class="o">*</span></code>
+<code>Selector</code>.</p>
+<p>In short, <code>Selectors</code> are always contained within a <code>SelectorList</code>, and a compound selector is a single <code>Selector</code>
+object that may chain other <code>SelectorLists</code> objects depending on the complexity of the compound selector. If you provide
+a selector list, then you will get multiple <code>Selector</code> objects (one for each compound selector in the list) which in
+turn may chain other <code>Selector</code> objects.</p>
+<h3 id="selectorlist"><code>SelectorList</code><a class="headerlink" href="#selectorlist" title="Permanent link"></a></h3>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">SelectorList</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Selector list.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectors</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(),</span> <span class="n">is_not</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize.&quot;&quot;&quot;</span>
+</pre></div>
+
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>selectors</code></td>
+<td>A list of <code>Selector</code> objects.</td>
+</tr>
+<tr>
+<td><code>is_not</code></td>
+<td>The selectors in the selector list are from a <code>:not()</code>.</td>
+</tr>
+<tr>
+<td><code>is_html</code></td>
+<td>The selectors in the selector list are HTML specific.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="selector"><code>Selector</code><a class="headerlink" href="#selector" title="Permanent link"></a></h3>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">Selector</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Selector.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">nth</span><span class="p">,</span> <span class="n">selectors</span><span class="p">,</span> <span class="n">relation</span><span class="p">,</span>
+        <span class="n">rel_type</span><span class="p">,</span> <span class="n">contains</span><span class="p">,</span> <span class="n">lang</span><span class="p">,</span> <span class="n">flags</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize.&quot;&quot;&quot;</span>
+</pre></div>
+
+<table>
+<thead>
+<tr>
+<th>Flags</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SEL_EMPTY</code></td>
+<td>The current compound selector contained an <code>:empty</code> pseudo-class.</td>
+</tr>
+<tr>
+<td><code>SEL_ROOT</code></td>
+<td>The current compound selector contains <code>:root</code>.</td>
+</tr>
+<tr>
+<td><code>SEL_DEFAULT</code></td>
+<td>The compound selector has a <code>:default</code> pattern  and requires additional logic to determine if it is the first <code>submit</code> button in a form.</td>
+</tr>
+<tr>
+<td><code>SEL_INDETERMINATE</code></td>
+<td>The compound selector has a <code>:indeterminate</code> pattern and requires additional logic to ensure a <code>radio</code> element and all of the <code>radio</code> elements with the same <code>name</code> under a form are not set.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tag</code></td>
+<td>Contains a single <a href="#selectortag"><code>SelectorTag</code></a> object, or <code>None</code>.</td>
+</tr>
+<tr>
+<td><code>id</code></td>
+<td>Contains a tuple of ids to match. Usually if multiple conflicting ids are present, it simply won't match a tag, but it allows multiple to handle the syntax <code>tag#1#2</code> even if it is invalid.</td>
+</tr>
+<tr>
+<td><code>classes</code></td>
+<td>Contains a tuple of class names to match.</td>
+</tr>
+<tr>
+<td><code>attributes</code></td>
+<td>Contains a tuple of attributes. Each attribute is represented as a <a href="#selectorattribute"><code>SelectorAttribute</code></a>.</td>
+</tr>
+<tr>
+<td><code>nth</code></td>
+<td>Contains a tuple containing <code>nth</code> selectors, each selector being represented as a <a href="#selectornth"><code>SelectorNth</code></a>. <code>nth</code> selectors contain things like <code>:first-child</code>, <code>:only-child</code>, <code class="codehilite"><span class="p">:</span><span class="nd">nth-child</span><span class="o">()</span></code>, <code class="codehilite"><span class="p">:</span><span class="nd">nth-of-type</span><span class="o">()</span></code>, etc.</td>
+</tr>
+<tr>
+<td><code>selectors</code></td>
+<td>Contains a tuple of <code>SelectorList</code> objects for each pseudo-class selector  part of the compound selector: <code class="codehilite"><span class="p">:</span><span class="nd">is</span><span class="o">()</span></code>, <code class="codehilite"><span class="p">:</span><span class="nd">not</span><span class="o">()</span></code>, <code class="codehilite"><span class="p">:</span><span class="nd">has</span><span class="o">()</span></code>, etc.</td>
+</tr>
+<tr>
+<td><code>relation</code></td>
+<td>This will contain a <code>SelectorList</code> object with one <code>Selector</code> object, which could in turn chain an additional relation depending on the complexity of the compound selector.  For instance, <code>div &gt; p + a</code> would be a <code>Selector</code> for <code>a</code> that contains a <code>relation</code> for <code>p</code> (another <code>SelectorList</code> object) which also contains a relation of <code>div</code>.  When matching, we would match that the tag is <code>a</code>, and then walk its relation chain verifying that they all match. In this case, the relation chain would be a direct, previous sibling of <code>p</code>, which has a direct parent of <code>div</code>. A <code>:has()</code> pseudo-class would walk this in the opposite order. <code>div:has(&gt; p + a)</code> would verify <code>div</code>, and then check for a child of <code>p</code> with a sibling of <code>a</code>.</td>
+</tr>
+<tr>
+<td><code>rel_type</code></td>
+<td><code>rel_type</code> is attached to relational selectors. In the case of <code class="codehilite"><span class="nt">div</span> <span class="o">&gt;</span> <span class="nt">p</span> <span class="o">+</span> <span class="nt">a</span></code>, the relational selectors of <code>div</code> and <code>p</code> would get a relational type of <code>&gt;</code> and <code>+</code> respectively. <code>:has()</code> relational <code>rel_type</code> are preceded with <code>:</code> to signify a forward looking relation.</td>
+</tr>
+<tr>
+<td><code>contains</code></td>
+<td>Contains a tuple of <a href="#selectorcontains"><code>SelectorContains</code></a> objects. Each object contains the list of text to match an element's content against.</td>
+</tr>
+<tr>
+<td><code>lang</code></td>
+<td>Contains a tuple of <a href="#selectorlang"><code>SelectorLang</code></a> objects.</td>
+</tr>
+<tr>
+<td><code>flags</code></td>
+<td>Selector flags that used to signal a type of selector is present.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="selectornull"><code>SelectorNull</code><a class="headerlink" href="#selectornull" title="Permanent link"></a></h3>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">SelectorNull</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Null Selector.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize.&quot;&quot;&quot;</span>
+</pre></div>
+
+<p>The null selector is like <code>Selector</code>, but it matches nothing.</p>
+<h3 id="selectortag"><code>SelectorTag</code><a class="headerlink" href="#selectortag" title="Permanent link"></a></h3>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">SelectorTag</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Selector tag.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize.&quot;&quot;&quot;</span>
+</pre></div>
+
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>name</code> contains the tag name to match.</td>
+</tr>
+<tr>
+<td><code>prefix</code></td>
+<td><code>prefix</code> contains the namespace prefix to match. <code>prefix</code> can also be <code>None</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="selectorattribute"><code>SelectorAttribute</code><a class="headerlink" href="#selectorattribute" title="Permanent link"></a></h3>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">SelectorAttribute</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Selector attribute rule.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">xml_type_pattern</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize.&quot;&quot;&quot;</span>
+</pre></div>
+
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>attribute</code></td>
+<td>Contains the attribute name to match.</td>
+</tr>
+<tr>
+<td><code>prefix</code></td>
+<td>Contains the attribute namespace prefix to match if any.</td>
+</tr>
+<tr>
+<td><code>pattern</code></td>
+<td>Contains a <code>re</code> regular expression object that matches the desired attribute value.</td>
+</tr>
+<tr>
+<td><code>xml_type_pattern</code></td>
+<td>As the default <code>type</code> pattern is case insensitive, when the attribute value is <code>type</code> and a case sensitivity has not been explicitly defined, a secondary case sensitive <code>type</code> pattern is compiled for use with XML documents when detected.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="selectorcontains"><code>SelectorContains</code><a class="headerlink" href="#selectorcontains" title="Permanent link"></a></h3>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">SelectorContains</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Selector contains rule.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize.&quot;&quot;&quot;</span>
+</pre></div>
+
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>text</code></td>
+<td>A tuple of acceptable text that that an element should match. An element only needs to match at least one.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="selectornth"><code>SelectorNth</code><a class="headerlink" href="#selectornth" title="Permanent link"></a></h3>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">SelectorNth</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Selector nth type.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">of_type</span><span class="p">,</span> <span class="n">last</span><span class="p">,</span> <span class="n">selectors</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize.&quot;&quot;&quot;</span>
+</pre></div>
+
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a</code></td>
+<td>The <code>a</code> value in the formula <code>an+b</code> specifying an index.</td>
+</tr>
+<tr>
+<td><code>n</code></td>
+<td><code>True</code> if the provided formula has included a literal <code>n</code> which signifies the formula is not a static index.</td>
+</tr>
+<tr>
+<td><code>b</code></td>
+<td>The <code>b</code> value in the formula <code>an+b</code>.</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td><code>True</code> if the <code>nth</code> pseudo-class is an <code>*-of-type</code> variant.</td>
+</tr>
+<tr>
+<td><code>last</code></td>
+<td><code>True</code> if the <code>nth</code> pseudo-class is a <code>*last*</code> variant.</td>
+</tr>
+<tr>
+<td><code>selectors</code></td>
+<td>A <code>SelectorList</code> object representing the <code>of S</code> portion of <code>:nth-chld(an+b [of S]?)</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="selectorlang"><code>SelectorLang</code><a class="headerlink" href="#selectorlang" title="Permanent link"></a></h3>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">SelectorLang</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Selector language rules.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">languages</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize.&quot;&quot;&quot;</span>
+</pre></div>
+
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>languages</code></td>
+<td>A list of regular expression objects that match a language pattern.</td>
+</tr>
+</tbody>
+</table>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../contributing/" title="Contributing & Support" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Contributing &amp; Support
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../changelog/" title="Changelog" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Changelog
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2018 - 2019 <a href="https://github.com/facelessuser">Isaac Muse</a>
+<br><span class="md-footer-custom-text">emoji provided free by <a href="http://www.emojione.com">EmojiOne</a></span>
+
+          </div>
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
+    
+      <a href="https://github.com/facelessuser" class="md-footer-social__link fa fa-github"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.c648116f.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      
+        <script src="../../extra-0b9b22dd13.js"></script>
+      
+    
+  </body>
+</html>

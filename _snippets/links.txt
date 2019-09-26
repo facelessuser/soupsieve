@@ -1,0 +1,8 @@
+[aspell]: https://github.com/GNUAspell/aspell
+[bs4]: https://beautiful-soup-4.readthedocs.io/en/latest/#
+[contains-draft]: https://www.w3.org/TR/2001/CR-css3-selectors-20011113/#content-selectors
+[cssom]: https://drafts.csswg.org/cssom/#common-serializing-idioms
+[custom-extensions-1]: https://drafts.csswg.org/css-extensions-1/
+[html5lib]: https://github.com/html5lib/html5lib-python
+[lxml]: https://github.com/lxml/lxml
+[registry]: https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry

@@ -1,0 +1,1241 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="A modern CSS selector library for Beautiful Soup.">
+      
+      
+        <link rel="canonical" href="https://facelessuser.github.io/soupsieve/about/changelog/">
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.2">
+    
+    
+      
+        <title>Changelog - Soup Sieve</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.30686662.css">
+      
+        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#2196f3">
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.74668098.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+      <link rel="stylesheet" href="../../extra-30d8e6755c.css">
+    
+    
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#changelog" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://facelessuser.github.io/soupsieve" title="Soup Sieve" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon">description</i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              Soup Sieve
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Changelog
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/facelessuser/soupsieve/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+        
+
+  
+
+<nav class="md-tabs md-tabs--active" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../.." class="md-tabs__link">
+          Usage
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../contributing/" class="md-tabs__link md-tabs__link--active">
+          About
+        </a>
+      
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://facelessuser.github.io/soupsieve" title="Soup Sieve" class="md-nav__button md-logo">
+      
+        <i class="md-icon">description</i>
+      
+    </a>
+    Soup Sieve
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/facelessuser/soupsieve/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1">
+    
+    <label class="md-nav__link" for="nav-1">
+      Usage
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        Usage
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Soup Sieve" class="md-nav__link">
+      Soup Sieve
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../api/" title="API" class="md-nav__link">
+      API
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../selectors/" title="CSS Selectors" class="md-nav__link">
+      CSS Selectors
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../faq/" title="F.A.Q." class="md-nav__link">
+      F.A.Q.
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../differences/" title="Beautiful Soup Differences" class="md-nav__link">
+      Beautiful Soup Differences
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      About
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        About
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../contributing/" title="Contributing & Support" class="md-nav__link">
+      Contributing &amp; Support
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../development/" title="Development" class="md-nav__link">
+      Development
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Changelog
+      </label>
+    
+    <a href="./" title="Changelog" class="md-nav__link md-nav__link--active">
+      Changelog
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#194" class="md-nav__link">
+    1.9.4
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#193" class="md-nav__link">
+    1.9.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#192" class="md-nav__link">
+    1.9.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#191" class="md-nav__link">
+    1.9.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#190" class="md-nav__link">
+    1.9.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#180" class="md-nav__link">
+    1.8.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#173" class="md-nav__link">
+    1.7.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#172" class="md-nav__link">
+    1.7.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#171" class="md-nav__link">
+    1.7.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#170" class="md-nav__link">
+    1.7.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#162" class="md-nav__link">
+    1.6.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#161" class="md-nav__link">
+    1.6.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#160" class="md-nav__link">
+    1.6.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#150" class="md-nav__link">
+    1.5.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#140" class="md-nav__link">
+    1.4.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#131" class="md-nav__link">
+    1.3.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#130" class="md-nav__link">
+    1.3.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#121" class="md-nav__link">
+    1.2.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#120" class="md-nav__link">
+    1.2.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#110" class="md-nav__link">
+    1.1.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#102" class="md-nav__link">
+    1.0.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#101" class="md-nav__link">
+    1.0.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100" class="md-nav__link">
+    1.0.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100b2" class="md-nav__link">
+    1.0.0b2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100b1" class="md-nav__link">
+    1.0.0b1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#060" class="md-nav__link">
+    0.6.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#053" class="md-nav__link">
+    0.5.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#052" class="md-nav__link">
+    0.5.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#051" class="md-nav__link">
+    0.5.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#050" class="md-nav__link">
+    0.5.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#040" class="md-nav__link">
+    0.4.0
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#194" class="md-nav__link">
+    1.9.4
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#193" class="md-nav__link">
+    1.9.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#192" class="md-nav__link">
+    1.9.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#191" class="md-nav__link">
+    1.9.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#190" class="md-nav__link">
+    1.9.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#180" class="md-nav__link">
+    1.8.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#173" class="md-nav__link">
+    1.7.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#172" class="md-nav__link">
+    1.7.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#171" class="md-nav__link">
+    1.7.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#170" class="md-nav__link">
+    1.7.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#162" class="md-nav__link">
+    1.6.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#161" class="md-nav__link">
+    1.6.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#160" class="md-nav__link">
+    1.6.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#150" class="md-nav__link">
+    1.5.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#140" class="md-nav__link">
+    1.4.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#131" class="md-nav__link">
+    1.3.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#130" class="md-nav__link">
+    1.3.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#121" class="md-nav__link">
+    1.2.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#120" class="md-nav__link">
+    1.2.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#110" class="md-nav__link">
+    1.1.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#102" class="md-nav__link">
+    1.0.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#101" class="md-nav__link">
+    1.0.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100" class="md-nav__link">
+    1.0.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100b2" class="md-nav__link">
+    1.0.0b2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100b1" class="md-nav__link">
+    1.0.0b1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#060" class="md-nav__link">
+    0.6.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#053" class="md-nav__link">
+    0.5.3
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#052" class="md-nav__link">
+    0.5.2
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#051" class="md-nav__link">
+    0.5.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#050" class="md-nav__link">
+    0.5.0
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#040" class="md-nav__link">
+    0.4.0
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/facelessuser/soupsieve/tree/master/docs/src/markdown/about/changelog.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link"></a></h1>
+<h2 id="194">1.9.4<a class="headerlink" href="#194" title="Permanent link"></a></h2>
+<ul>
+<li><strong>FIX</strong>: <code>:checked</code> rule was too strict with <code>option</code> elements. The specification for <code>:checked</code> does not require an
+  <code>option</code> element to be under a <code>select</code> element.</li>
+<li><strong>FIX</strong>: Fix level 4 <code>:lang()</code> wildcard match handling with singletons. Implicit wildcard matching should not
+  match any singleton. Explicit wildcard matching (<code>*</code> in the language range: <code>*-US</code>) is allowed to match singletons.</li>
+</ul>
+<h2 id="193">1.9.3<a class="headerlink" href="#193" title="Permanent link"></a></h2>
+<ul>
+<li><strong>FIX</strong>: <code>[attr!=value]</code> pattern was mistakenly using <code>:not([attr|=value])</code> logic instead of <code>:not([attr=value])</code>.</li>
+<li><strong>FIX</strong>: Remove undocumented <code>_QUIRKS</code> mode flag. Beautiful Soup was meant to use it to help with transition to Soup
+  Sieve, but never released with it. Help with transition at this point is no longer needed.</li>
+</ul>
+<h2 id="192">1.9.2<a class="headerlink" href="#192" title="Permanent link"></a></h2>
+<ul>
+<li><strong>FIX</strong>: Shortcut last descendant calculation if possible for performance.</li>
+<li><strong>FIX</strong>: Fix issue where <code>Doctype</code> strings can be mistaken for a normal text node in some cases.</li>
+<li><strong>FIX</strong>: A top level tag is not a <code>:root</code> tag if it has sibling text nodes or tag nodes. This is an issue that mostly
+  manifests when using <code>html.parser</code> as the parser will allow multiple root nodes.</li>
+</ul>
+<h2 id="191">1.9.1<a class="headerlink" href="#191" title="Permanent link"></a></h2>
+<ul>
+<li><strong>FIX</strong>: <code>:root</code>, <code>:contains()</code>, <code>:default</code>, <code>:indeterminate</code>, <code>:lang()</code>, and <code>:dir()</code> will properly account for HTML
+  <code>iframe</code> elements in their logic when selecting or matching an element. Their logic will be restricted to the document
+  for which the element under consideration applies.</li>
+<li><strong>FIX</strong>: HTML pseudo-classes will check that all key elements checked are in the XHTML namespace (HTML parsers that do
+  not provide namespaces will assume the XHTML namespace).</li>
+<li><strong>FIX</strong>: Ensure that all pseudo-class names are case insensitive and allow CSS escapes.</li>
+</ul>
+<h2 id="190">1.9.0<a class="headerlink" href="#190" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: Allow <code>:contains()</code> to accept a list of text to search for. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/115" title="GitHub Issue: facelessuser/soupsieve#115">#115</a>)</li>
+<li><strong>NEW</strong>: Add new <code>escape</code> function for escaping CSS identifiers. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/125" title="GitHub Issue: facelessuser/soupsieve#125">#125</a>)</li>
+<li><strong>NEW</strong>: Deprecate <code>comments</code> and <code>icomments</code> functions in the API to ensure Soup Sieve focuses only on CSS selectors.
+  <code>comments</code> and <code>icomments</code> will most likely be removed in 2.0. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/130" title="GitHub Issue: facelessuser/soupsieve#130">#130</a>)</li>
+<li><strong>NEW</strong>: Add Python 3.8 support. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/133" title="GitHub Issue: facelessuser/soupsieve#133">#133</a>)</li>
+<li><strong>FIX</strong>: Don't install test files when installing the <code>soupsieve</code> package. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/111" title="GitHub Issue: facelessuser/soupsieve#111">#111</a>)</li>
+<li><strong>FIX</strong>: Improve efficiency of <code>:contains()</code> comparison.</li>
+<li><strong>FIX</strong>: Null characters should translate to the Unicode REPLACEMENT CHARACTER (<code>U+FFFD</code>) according to the
+  specification. This applies to CSS escaped NULL characters as well. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/124" title="GitHub Issue: facelessuser/soupsieve#124">#124</a>)</li>
+<li><strong>FIX</strong>: Escaped EOF should translate to <code>U+FFFD</code> outside of CSS strings. In a string, they should just be ignored,
+  but as there is no case where we could resolve such a string and still have a valid selector, string handling remains
+  the same. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/128" title="GitHub Issue: facelessuser/soupsieve#128">#128</a>)</li>
+</ul>
+<h2 id="180">1.8.0<a class="headerlink" href="#180" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: Add custom selector support. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/92" title="GitHub Issue: facelessuser/soupsieve#92">#92</a>)(<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/108" title="GitHub Issue: facelessuser/soupsieve#108">#108</a>)</li>
+<li><strong>FIX</strong>: Small tweak to CSS identifier pattern to ensure it matches the CSS specification exactly. Specifically, you
+  can't have an identifier of only <code>-</code>. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/107" title="GitHub Issue: facelessuser/soupsieve#107">#107</a>)</li>
+<li><strong>FIX</strong>: CSS string patterns should allow escaping newlines to span strings across multiple lines. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/107" title="GitHub Issue: facelessuser/soupsieve#107">#107</a>)</li>
+<li><strong>FIX</strong>: Newline regular expression for CSS newlines should treat <code>\r\n</code> as a single character, especially in cases
+  such as string escapes: <code>\\\r\n</code>. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/107" title="GitHub Issue: facelessuser/soupsieve#107">#107</a>)</li>
+<li><strong>FIX</strong>: Allow <code>--</code> as a valid identifier or identifier start. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/107" title="GitHub Issue: facelessuser/soupsieve#107">#107</a>)</li>
+<li><strong>FIX</strong>: Bad CSS syntax now raises a <code>SelectorSyntaxError</code>, which is still currently derived from <code>SyntaxError</code>, but
+  will most likely be derived from <code>Exception</code> in the future.</li>
+</ul>
+<h2 id="173">1.7.3<a class="headerlink" href="#173" title="Permanent link"></a></h2>
+<ul>
+<li><strong>FIX</strong>: Fix regression with tag names in regards to case sensitivity, and ensure there are tests to prevent breakage
+  in the future.</li>
+<li><strong>FIX</strong>: XHTML should always be case sensitive like XML.</li>
+</ul>
+<h2 id="172">1.7.2<a class="headerlink" href="#172" title="Permanent link"></a></h2>
+<ul>
+<li><strong>FIX</strong>: Fix HTML detection <code>type</code> selector.</li>
+<li><strong>FIX</strong>: Fixes for <code>:enabled</code> and <code>:disabled</code>.</li>
+<li><strong>FIX</strong>: Provide a way for Beautiful Soup to parse selectors in a quirks mode to mimic some of the quirks of the old
+  select method prior to Soup Sieve, but with warnings. This is to help old scripts to not break during the transitional
+  period with newest Beautiful Soup. In the future, these quirks will raise an exception as Soup Sieve requires
+  selectors to follow the CSS specification.</li>
+</ul>
+<h2 id="171">1.7.1<a class="headerlink" href="#171" title="Permanent link"></a></h2>
+<ul>
+<li><strong>FIX</strong>: Fix issue with <code>:has()</code> selector where a leading combinator can only be provided in the first selector in a
+  relative selector list.</li>
+</ul>
+<h2 id="170">1.7.0<a class="headerlink" href="#170" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: Add support for <code>:in-range</code> and <code>:out-of-range</code> selectors. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/60" title="GitHub Issue: facelessuser/soupsieve#60">#60</a>)</li>
+<li><strong>NEW</strong>: Add support for <code>:defined</code> selector. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/76" title="GitHub Issue: facelessuser/soupsieve#76">#76</a>)</li>
+<li><strong>FIX</strong>: Fix pickling issue when compiled selector contains a <code>NullSelector</code> object. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/70" title="GitHub Issue: facelessuser/soupsieve#70">#70</a>)</li>
+<li><strong>FIX</strong>: Better exception messages in the CSS selector parser and fix a position reporting issue that can occur in
+  some exceptions. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/72" title="GitHub Issue: facelessuser/soupsieve#72">#72</a>, <a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/73" title="GitHub Issue: facelessuser/soupsieve#73">#73</a>)</li>
+<li><strong>FIX</strong>: Don't compare prefixes when evaluating attribute namespaces, compare the actual namespace. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/75" title="GitHub Issue: facelessuser/soupsieve#75">#75</a>)</li>
+<li><strong>FIX</strong>: Split whitespace attribute lists by all whitespace characters, not just space.</li>
+<li><strong>FIX</strong>: <code>:nth-*</code> patterns were converting numbers to base 16 when they should have been converting to base 10.</li>
+</ul>
+<h2 id="162">1.6.2<a class="headerlink" href="#162" title="Permanent link"></a></h2>
+<ul>
+<li><strong>FIX</strong>: Fix pattern compile issues on Python &lt; 2.7.4.</li>
+<li><strong>FIX</strong>: Don't use <code>\d</code> in Unicode <code>Re</code> patterns as they will contain characters outside the range of <code>[0-9]</code>.</li>
+</ul>
+<h2 id="161">1.6.1<a class="headerlink" href="#161" title="Permanent link"></a></h2>
+<ul>
+<li><strong>FIX</strong>: Fix warning about not importing <code>Mapping</code> from <code>collections.abc</code>.</li>
+</ul>
+<h2 id="160">1.6.0<a class="headerlink" href="#160" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: Add <code>closest</code> method to the API that matches closest ancestor.</li>
+<li><strong>FIX</strong>: Add missing <code>select_one</code> reference to module's <code>__all__</code>.</li>
+</ul>
+<h2 id="150">1.5.0<a class="headerlink" href="#150" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: Add <code>select_one</code> method like Beautiful Soup has.</li>
+<li><strong>NEW</strong>: Add <code>:dir()</code> selector (HTML only).</li>
+<li><strong>FIX</strong>: Fix issues when handling HTML fragments (elements without a <code>BeautifulSoup</code> object as a parent).</li>
+<li><strong>FIX</strong>: Fix internal <code>nth</code> range check.</li>
+</ul>
+<h2 id="140">1.4.0<a class="headerlink" href="#140" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: Throw <code>NotImplementedError</code> for at-rules: <code>@page</code>, etc.</li>
+<li><strong>NEW</strong>: Match nothing for <code>:host</code>, <code>:host()</code>, and <code>:host-context()</code>.</li>
+<li><strong>NEW</strong>: Add support for <code>:read-write</code> and <code>:read-only</code>.</li>
+<li><strong>NEW</strong>: Selector patterns can be annotated with CSS comments.</li>
+<li><strong>FIX</strong>: <code>\r</code>, <code>\n</code>, and <code>\f</code> cannot be escaped with <code>\</code> in CSS. You must use Unicode escapes.</li>
+</ul>
+<h2 id="131">1.3.1<a class="headerlink" href="#131" title="Permanent link"></a></h2>
+<ul>
+<li><strong>FIX</strong>: Fix issue with undefined namespaces.</li>
+</ul>
+<h2 id="130">1.3.0<a class="headerlink" href="#130" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: Add support for <code>:scope</code>.</li>
+<li><strong>NEW</strong>: <code>:user-invalid</code>, <code>:playing</code>, <code>:paused</code>, and <code>:local-link</code> will not cause a failure, but all will match
+  nothing as their use cases are not possible in an environment outside a web browser.</li>
+<li><strong>FIX</strong>: Fix <code>[attr~=value]</code> handling of whitespace. According to the spec, if the value contains whitespace, or is an
+  empty string, it should not match anything.</li>
+<li><strong>FIX</strong>: Precompile internal patterns for pseudo-classes to prevent having to parse them again.</li>
+</ul>
+<h2 id="121">1.2.1<a class="headerlink" href="#121" title="Permanent link"></a></h2>
+<ul>
+<li><strong>FIX</strong>: More descriptive exceptions. Exceptions will also now mention position in the pattern that is problematic.</li>
+<li><strong>FIX</strong>: <code>filter</code> ignores <code>NavigableString</code> objects in normal iterables and <code>Tag</code> iterables. Basically, it filters all
+  Beautiful Soup document parts regardless of iterable type where as it used to only filter out a <code>NavigableString</code> in a
+  <code>Tag</code> object. This is viewed as fixing an inconsistency.</li>
+<li><strong>FIX</strong>: <code>DEBUG</code> flag has been added to help with debugging CSS selector parsing. This is mainly for development.</li>
+<li><strong>FIX</strong>: If forced to search for language in <code>meta</code> tag, and no language is found, cache that there is no language in
+  the <code>meta</code> tag to prevent searching again during the current select.</li>
+<li><strong>FIX</strong>: If a non <code>BeautifulSoup</code>/<code>Tag</code> object is given to the API to compare against, raise a <code>TypeError</code>.</li>
+</ul>
+<h2 id="120">1.2.0<a class="headerlink" href="#120" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: Add Python 2.7 support.</li>
+<li><strong>NEW</strong>: Remove old pre 1.0 deprecations.</li>
+</ul>
+<h2 id="110">1.1.0<a class="headerlink" href="#110" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: Adds support for <code>[attr!=value]</code> which is equivalent to <code>:not([attr=value])</code>.</li>
+<li><strong>NEW</strong>: Add support for <code>:active</code>, <code>:focus</code>, <code>:hover</code>, <code>:visited</code>, <code>:target</code>, <code>:focus-within</code>, <code>:focus-visible</code>,
+  <code>:target-within</code>, <code>:current()</code>/<code>:current</code>, <code>:past</code>, and <code>:future</code>, but they will never match as these states don't
+  exist in the Soup Sieve environment.</li>
+<li><strong>NEW</strong>: Add support for <code>:checked</code>, <code>:enabled</code>, <code>:disabled</code>, <code>:required</code>, <code>:optional</code>, <code>:default</code>, and
+  <code>:placeholder-shown</code> which will only match in HTML documents as these concepts are not defined in XML.</li>
+<li><strong>NEW</strong>: Add support for <code>:link</code> and <code>:any-link</code>, both of which will target all <code>&lt;a&gt;</code>, <code>&lt;area&gt;</code>, and <code>&lt;link&gt;</code> elements
+  with an <code>href</code> attribute as all links will be treated as unvisited in Soup Sieve.</li>
+<li><strong>NEW</strong>: Add support for <code>:lang()</code> (CSS4) which works in XML and HTML.</li>
+<li><strong>NEW</strong>: Users must install Beautiful Soup themselves. This requirement is removed in the hopes that Beautiful Soup
+  may use this in the future.</li>
+<li><strong>FIX</strong>: Attributes in the form <code>prefix:attr</code> can be matched with the form <code>[prefix\:attr]</code> without specifying a
+  namespaces if desired.</li>
+<li><strong>FIX</strong>: Fix exception when <code>[type]</code> is used (with no value).</li>
+</ul>
+<h2 id="102">1.0.2<a class="headerlink" href="#102" title="Permanent link"></a></h2>
+<ul>
+<li><strong>FIX</strong>: Use proper CSS identifier patterns for tag names, classes, ids, etc. Things like <code>#3</code> or <code>#-3</code> should not
+  match and should require <code>#\33</code> or <code>#-\33</code>.</li>
+<li><strong>FIX</strong>: Do not raise <code>NotImplementedError</code> for supported pseudo classes/elements with bad syntax, instead raise
+  <code>SyntaxError</code>.</li>
+</ul>
+<h2 id="101">1.0.1<a class="headerlink" href="#101" title="Permanent link"></a></h2>
+<ul>
+<li><strong>FIX</strong>: When giving a tag to <code>select</code>, it should only return the children of that tag, never the tag itself.</li>
+<li><strong>FIX</strong>: For informational purposes, raise a <code>NotImplementedError</code> when an unsupported pseudo class is used.</li>
+</ul>
+<h2 id="100">1.0.0<a class="headerlink" href="#100" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: Official 1.0.0 release.</li>
+</ul>
+<h2 id="100b2">1.0.0b2<a class="headerlink" href="#100b2" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: Drop document flags. Document type can be detected from the Beautiful Soup object directly.</li>
+<li><strong>FIX</strong>: CSS selectors should be evaluated with CSS whitespace rules.</li>
+<li><strong>FIX</strong>: Processing instructions, CDATA, and declarations should all be ignored in <code>:contains</code> and child
+  considerations for <code>:empty</code>.</li>
+<li><strong>FIX</strong>: In Beautiful Soup, the document itself is the first tag. Do not match the "document" tag by returning false
+  for any tag that doesn't have a parent.</li>
+</ul>
+<h2 id="100b1">1.0.0b1<a class="headerlink" href="#100b1" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: Add support for non-standard <code>:contains()</code> selector.</li>
+<li><strong>FIX</strong>: Compare pseudo class names case insensitively when matching unexpected cases.</li>
+<li><strong>FIX</strong>: Don't allow attribute case flags when no attribute value is defined.</li>
+</ul>
+<h2 id="060">0.6.0<a class="headerlink" href="#060" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: <code>mode</code> attribute is now called <code>flags</code> to allow for other options in the future.</li>
+<li><strong>FIX</strong>: More corner cases for <code>nth</code> selectors.</li>
+</ul>
+<h2 id="053">0.5.3<a class="headerlink" href="#053" title="Permanent link"></a></h2>
+<ul>
+<li><strong>FIX</strong>: Previously, all pseudo classes' selector lists were evaluated as one big group, but now each pseudo classes'
+  selector lists are evaluated separately.</li>
+<li><strong>FIX</strong>: CSS selector tokens are not case sensitive.</li>
+</ul>
+<h2 id="052">0.5.2<a class="headerlink" href="#052" title="Permanent link"></a></h2>
+<ul>
+<li><strong>FIX</strong>: Add missing <code>s</code> flag to attribute selector for forced case sensitivity of attribute values.</li>
+<li><strong>FIX</strong>: Relax attribute pattern matching to allow non-essential whitespace.</li>
+<li><strong>FIX</strong>: Attribute selector flags themselves are not case sensitive.</li>
+<li><strong>FIX</strong>: <code>type</code> attribute in HTML is handled special. While all other attributes values are case sensitive, <code>type</code> in
+  HTML is usually treated special and is insensitive. In XML, this is not the case.</li>
+</ul>
+<h2 id="051">0.5.1<a class="headerlink" href="#051" title="Permanent link"></a></h2>
+<ul>
+<li><strong>FIX</strong>: Fix namespace check for <code>:nth-of-type</code>.</li>
+</ul>
+<h2 id="050">0.5.0<a class="headerlink" href="#050" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: Deprecate <code>commentsiter</code> and <code>selectiter</code> in favor of <code>icomments</code> and <code>iselect</code>. Expect removal in version
+1.0.</li>
+</ul>
+<h2 id="040">0.4.0<a class="headerlink" href="#040" title="Permanent link"></a></h2>
+<ul>
+<li><strong>NEW</strong>: Initial prerelease.</li>
+</ul>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../development/" title="Development" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Development
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../license/" title="License" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                License
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2018 - 2019 <a href="https://github.com/facelessuser">Isaac Muse</a>
+<br><span class="md-footer-custom-text">emoji provided free by <a href="http://www.emojione.com">EmojiOne</a></span>
+
+          </div>
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
+    
+      <a href="https://github.com/facelessuser" class="md-footer-social__link fa fa-github"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.c648116f.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      
+        <script src="../../extra-0b9b22dd13.js"></script>
+      
+    
+  </body>
+</html>
