@@ -56,17 +56,6 @@ class TestLang(util.TestCase):
             flags=util.HTML
         )
 
-    def test_lang_missing_range(self):
-        """Test language range with a missing range."""
-
-        # Implicit wild
-        self.assert_selector(
-            self.MARKUP,
-            "p:lang(de--DE)",
-            [],
-            flags=util.HTML
-        )
-
     def test_explicit_wildcard(self):
         """Test language with explicit wildcard (same as implicit)."""
 
