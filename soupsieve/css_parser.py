@@ -173,7 +173,6 @@ RE_WS = re.compile(WS)
 RE_WS_BEGIN = re.compile('^{}*'.format(WSC))
 RE_WS_END = re.compile('{}*$'.format(WSC))
 RE_CUSTOM = re.compile(r'^{}$'.format(PAT_PSEUDO_CLASS_CUSTOM), re.X)
-RE_WILD_STRIP = re.compile(r'(?:(?:-\*-)(?:\*(?:-|$))*|-\*$)')
 
 # Constants
 # List split token
@@ -842,22 +841,12 @@ class CSSParser(object):
                 continue
             value = token.group('value')
             if value.startswith(('"', "'")):
-                parts = RE_WILD_STRIP.sub('-', css_unescape(value[1:-1], True)).split('-')
+                value = css_unescape(value[1:-1], True)
             else:
-                parts = RE_WILD_STRIP.sub('-', css_unescape(value)).split('-')
+                value = css_unescape(value)
 
-            new_parts = []
-            length = len(parts)
-            start = 1 if parts and parts[0] == '*' else 0
-            for index, part in enumerate(parts):
-                if part == '*':
-                    new_parts.append(
-                        '[a-z0-9]+' if length == 1 else r'(?:(?:[a-z0-9]+)(?:-[a-z0-9]{2,})*?-)'
-                    )
-                else:
-                    new_parts.append(('' if index == start else r'(?:-[a-z0-9]{2,})*?-') + re.escape(part))
+            patterns.append(value)
 
-            patterns.append(re.compile(r'^{}(?:-.*)?$'.format(''.join(new_parts)), re.I))
         sel.lang.append(ct.SelectorLang(patterns))
         has_selector = True
 
