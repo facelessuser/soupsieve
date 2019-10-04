@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0
+
+- **NEW**: `SelectorSyntaxError` is derived from `Exception` not `SyntaxError`.
+
 ## 1.9.4
 
 - **FIX**: `:checked` rule was too strict with `option` elements. The specification for `:checked` does not require an
