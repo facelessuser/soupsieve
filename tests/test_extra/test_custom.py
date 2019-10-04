@@ -1,5 +1,4 @@
 """Test custom selector aliases."""
-from __future__ import unicode_literals
 from .. import util
 import soupsieve as sv
 

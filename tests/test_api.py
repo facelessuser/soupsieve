@@ -1,7 +1,5 @@
 """Test Soup Sieve API."""
-from __future__ import unicode_literals
 import soupsieve as sv
-from soupsieve import util as sv_util
 from . import util
 import copy
 import random
@@ -34,7 +32,7 @@ class TestSoupSieve(util.TestCase):
         """
 
         soup = self.soup(markup, 'html.parser')
-        comments = [sv_util.ustr(c).strip() for c in sv.comments(soup)]
+        comments = [str(c).strip() for c in sv.comments(soup)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment', "don't ignore"]))
 
     def test_icomments(self):
@@ -58,7 +56,7 @@ class TestSoupSieve(util.TestCase):
         """
 
         soup = self.soup(markup, 'html.parser')
-        comments = [sv_util.ustr(c).strip() for c in sv.icomments(soup, limit=2)]
+        comments = [str(c).strip() for c in sv.icomments(soup, limit=2)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
 
     def test_compiled_comments(self):
@@ -85,7 +83,7 @@ class TestSoupSieve(util.TestCase):
 
         # Check that comments on compiled object work just like `sv.comments`
         pattern = sv.compile('div', None, 0)
-        comments = [sv_util.ustr(c).strip() for c in pattern.comments(soup)]
+        comments = [str(c).strip() for c in pattern.comments(soup)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment', "don't ignore"]))
 
     def test_compiled_icomments(self):
@@ -110,7 +108,7 @@ class TestSoupSieve(util.TestCase):
 
         soup = self.soup(markup, 'html.parser')
         pattern = sv.compile('div', None, 0)
-        comments = [sv_util.ustr(c).strip() for c in pattern.icomments(soup, limit=2)]
+        comments = [str(c).strip() for c in pattern.icomments(soup, limit=2)]
         self.assertEqual(sorted(comments), sorted(['before header', 'comment']))
 
     def test_select(self):
@@ -566,7 +564,7 @@ class TestSoupSieve(util.TestCase):
         sv.purge()
         self.assertEqual(sv.cp._cached_css_compile.cache_info().currsize, 0)
         for x in range(1000):
-            value = '[value="{}"]'.format(sv_util.ustr(random.randint(1, 10000)))
+            value = '[value="{}"]'.format(str(random.randint(1, 10000)))
             p = sv.compile(value)
             self.assertTrue(p.pattern == value)
             self.assertTrue(sv.cp._cached_css_compile.cache_info().currsize > 0)

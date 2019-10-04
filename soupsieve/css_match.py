@@ -1,5 +1,4 @@
 """CSS matcher."""
-from __future__ import unicode_literals
 from datetime import datetime
 from . import util
 import re
@@ -325,7 +324,7 @@ class _DocumentNav(object):
         """Get classes."""
 
         classes = cls.get_attribute_by_name(el, 'class', [])
-        if isinstance(classes, util.ustr):
+        if isinstance(classes, str):
             classes = RE_NOT_WS.findall(classes)
         return classes
 

@@ -1,10 +1,8 @@
 """Test utilities."""
-from __future__ import unicode_literals
 import unittest
 import bs4
 import textwrap
 import soupsieve as sv
-import sys
 import pytest
 
 try:
@@ -19,27 +17,12 @@ try:
 except ImportError:
     LXML_PRESENT = False
 
-PY3 = sys.version_info >= (3, 0)
-PY37 = sys.version_info >= (3, 7)
-
 HTML5 = 0x1
 HTML = 0x2
 XHTML = 0x4
 XML = 0x8
 PYHTML = 0x10
 LXML_HTML = 0x20
-
-
-def skip_py3(func):
-    """Decorator that skips when running in Python 3."""
-
-    def skip_if(self, *args, **kwargs):
-        """Skip conditional wrapper."""
-        if PY3:
-            raise pytest.skip('not Python 3+')
-        else:
-            return func(self, *args, **kwargs)
-    return skip_if
 
 
 def skip_no_lxml(func):
