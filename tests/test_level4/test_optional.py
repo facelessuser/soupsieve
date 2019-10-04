@@ -1,5 +1,4 @@
 """Test optional selectors."""
-from __future__ import unicode_literals
 from .. import util
 
 

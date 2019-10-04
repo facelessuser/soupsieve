@@ -1,6 +1,6 @@
 """CSS selector parser."""
-from __future__ import unicode_literals
 import re
+from functools import lru_cache
 from . import util
 from . import css_match as cm
 from . import css_types as ct
@@ -195,7 +195,7 @@ FLG_OUT_OF_RANGE = 0x100
 _MAXCACHE = 500
 
 
-@util.lru_cache(maxsize=_MAXCACHE)
+@lru_cache(maxsize=_MAXCACHE)
 def _cached_css_compile(pattern, namespaces, custom, flags):
     """Cached CSS compile."""
 
@@ -244,7 +244,7 @@ def css_unescape(content, string=False):
             codepoint = int(m.group(1)[1:], 16)
             if codepoint == 0:
                 codepoint = UNICODE_REPLACEMENT_CHAR
-            value = util.uchr(codepoint)
+            value = chr(codepoint)
         elif m.group(2):
             value = m.group(2)[1:]
         elif m.group(3):
@@ -268,7 +268,7 @@ def escape(ident):
         string.append('\\{}'.format(ident))
     else:
         for index, c in enumerate(ident):
-            codepoint = util.uord(c)
+            codepoint = ord(c)
             if codepoint == 0x00:
                 string.append('\ufffd')
             elif (0x01 <= codepoint <= 0x1F) or codepoint == 0x7F:

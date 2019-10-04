@@ -1,5 +1,4 @@
 """Test namespace selectors."""
-from __future__ import unicode_literals
 from .. import util
 
 
@@ -112,21 +111,6 @@ class TestNamespace(util.TestCase):
             namespaces={
                 "FOO": "http://me.com/namespaces/foofoo",
                 "bar": "http://me.com/namespaces/foobar"
-            },
-            flags=util.XML
-        )
-
-    @util.skip_py3
-    def test_namespace_bytes(self):
-        """Test namespace with byte strings."""
-
-        self.assert_selector(
-            self.MARKUP,
-            b"foo|title",
-            ["3"],
-            namespaces={
-                b"foo": b"http://me.com/namespaces/foofoo",
-                b"bar": b"http://me.com/namespaces/foobar"
             },
             flags=util.XML
         )

@@ -1,5 +1,4 @@
 """Test selector lists."""
-from __future__ import unicode_literals
 from .. import util
 from soupsieve import SelectorSyntaxError
 

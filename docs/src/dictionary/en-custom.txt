@@ -10,6 +10,7 @@ Changelog
 Combinators
 DOM
 EOF
+EOL
 GitHub
 Hashable
 JQuery

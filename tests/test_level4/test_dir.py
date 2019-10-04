@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Test direction selectors."""
-from __future__ import unicode_literals
 from .. import util
 import soupsieve as sv
 

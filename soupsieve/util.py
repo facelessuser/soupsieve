@@ -1,35 +1,9 @@
 """Utility."""
-from __future__ import unicode_literals
 from functools import wraps
 import warnings
-import sys
-import struct
 import os
 import re
 MODULE = os.path.dirname(__file__)
-
-PY3 = sys.version_info >= (3, 0)
-PY35 = sys.version_info >= (3, 5)
-PY37 = sys.version_info >= (3, 7)
-
-if PY3:
-    from functools import lru_cache  # noqa F401
-    import copyreg  # noqa F401
-    from collections.abc import Hashable, Mapping  # noqa F401
-
-    ustr = str
-    bstr = bytes
-    unichar = chr
-    string = str
-else:
-    from backports.functools_lru_cache import lru_cache  # noqa F401
-    import copy_reg as copyreg  # noqa F401
-    from collections import Hashable, Mapping  # noqa F401
-
-    ustr = unicode  # noqa: F821
-    bstr = str
-    unichar = unichr  # noqa: F821
-    string = basestring  # noqa: F821
 
 DEBUG = 0x00001
 
@@ -59,27 +33,6 @@ def upper(string):  # pragma: no cover
         o = ord(c)
         new_string.append(chr(o - 32) if LC_A <= o <= LC_Z else c)
     return ''.join(new_string)
-
-
-def uchr(i):
-    """Allow getting Unicode character on narrow python builds."""
-
-    try:
-        return unichar(i)
-    except ValueError:  # pragma: no cover
-        return struct.pack('i', i).decode('utf-32')
-
-
-def uord(c):
-    """Get Unicode ordinal."""
-
-    if len(c) == 2:  # pragma: no cover
-        high, low = [ord(p) for p in c]
-        ordinal = (high - 0xD800) * 0x400 + low - 0xDC00 + 0x10000
-    else:
-        ordinal = ord(c)
-
-    return ordinal
 
 
 class SelectorSyntaxError(Exception):

@@ -1,5 +1,4 @@
 """Test general pseudo-element cases."""
-from __future__ import unicode_literals
 from .. import util
 
 

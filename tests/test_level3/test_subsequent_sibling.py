@@ -1,5 +1,4 @@
 """Test subsequent sibling combinator."""
-from __future__ import unicode_literals
 from .. import util
 
 
