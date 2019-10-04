@@ -82,7 +82,7 @@ def uord(c):
     return ordinal
 
 
-class SelectorSyntaxError(SyntaxError):
+class SelectorSyntaxError(Exception):
     """Syntax error in a CSS selector."""
 
     def __init__(self, msg, pattern=None, index=None):
