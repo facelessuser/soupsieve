@@ -1289,6 +1289,21 @@ class _Match(object):
             self.get_prefix(el) is not None
         )
 
+    def match_placeholder_shown(self, el):
+        """
+        Match placeholder shown according to HTML spec.
+
+        - text area should be checked if they have content. A single newline does not count as content.
+
+        """
+
+        match = False
+        content = self.get_text(el)
+        if content in ('', '\n'):
+            match = True
+
+        return match
+
     def match_selectors(self, el, selectors):
         """Check if element matches one of the selectors."""
 
@@ -1320,6 +1335,9 @@ class _Match(object):
                     continue
                 # Verify element is scope
                 if selector.flags & ct.SEL_SCOPE and not self.match_scope(el):
+                    continue
+                # Verify element has placeholder shown
+                if selector.flags & ct.SEL_PLACEHOLDER_SHOWN and not self.match_placeholder_shown(el):
                     continue
                 # Verify `nth` matches
                 if not self.match_nth(el, selector.nth):

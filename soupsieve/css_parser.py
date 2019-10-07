@@ -190,6 +190,7 @@ FLG_INDETERMINATE = 0x20
 FLG_OPEN = 0x40
 FLG_IN_RANGE = 0x80
 FLG_OUT_OF_RANGE = 0x100
+FLG_PLACEHOLDER_SHOWN = 0x200
 
 # Maximum cached patterns to store
 _MAXCACHE = 500
@@ -878,6 +879,7 @@ class CSSParser(object):
         is_indeterminate = bool(flags & FLG_INDETERMINATE)
         is_in_range = bool(flags & FLG_IN_RANGE)
         is_out_of_range = bool(flags & FLG_OUT_OF_RANGE)
+        is_placeholder_shown = bool(flags & FLG_PLACEHOLDER_SHOWN)
 
         if self.debug:  # pragma: no cover
             if is_pseudo:
@@ -898,6 +900,8 @@ class CSSParser(object):
                 print('    is_in_range: True')
             if is_out_of_range:
                 print('    is_out_of_range: True')
+            if is_placeholder_shown:
+                print('    is_placeholder_shown: True')
 
         if is_relative:
             selectors.append(_Selector())
@@ -1004,6 +1008,8 @@ class CSSParser(object):
             selectors[-1].flags = ct.SEL_IN_RANGE
         if is_out_of_range:
             selectors[-1].flags = ct.SEL_OUT_OF_RANGE
+        if is_placeholder_shown:
+            selectors[-1].flags = ct.SEL_PLACEHOLDER_SHOWN
 
         return ct.SelectorList([s.freeze() for s in selectors], is_not, is_html)
 
@@ -1122,22 +1128,20 @@ CSS_OPTIONAL = CSSParser(
 # CSS pattern for `:placeholder-shown`
 CSS_PLACEHOLDER_SHOWN = CSSParser(
     '''
-    html|*:is(
-        input:is(
-            :not([type]),
-            [type=""],
-            [type=text],
-            [type=search],
-            [type=url],
-            [type=tel],
-            [type=email],
-            [type=password],
-            [type=number]
-        ),
-        textarea
-    )[placeholder][placeholder!='']
+    html|input:is(
+        :not([type]),
+        [type=""],
+        [type=text],
+        [type=search],
+        [type=url],
+        [type=tel],
+        [type=email],
+        [type=password],
+        [type=number]
+    )[placeholder][placeholder!='']:is(:not([value]), [value=""]),
+    html|textarea[placeholder][placeholder!='']
     '''
-).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
+).process_selectors(flags=FLG_PSEUDO | FLG_HTML | FLG_PLACEHOLDER_SHOWN)
 # CSS pattern default for `:nth-child` "of S" feature
 CSS_NTH_OF_S_DEFAULT = CSSParser(
     '*|*'
