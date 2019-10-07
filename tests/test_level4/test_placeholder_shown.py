@@ -9,12 +9,15 @@ class TestPlaceholderShown(util.TestCase):
         """Test placeholder shown."""
 
         markup = """
+        /* These have a placeholder. */
         <input id="0" placeholder="This is some text">
         <textarea id="1" placeholder="This is some text"></textarea>
 
+        /* These do not have a placeholder. */
         <input id="2" placeholder="">
         <input id="3">
 
+        /* All types that should register has having a placeholder. */
         <input id="4" type="email" placeholder="This is some text">
         <input id="5" type="number" placeholder="This is some text">
         <input id="6" type="password" placeholder="This is some text">
@@ -25,6 +28,7 @@ class TestPlaceholderShown(util.TestCase):
         <input id="11" type="" placeholder="This is some text">
         <input id="12" type placeholder="This is some text">
 
+        /* Types that should not register has having a placeholder. */
         <input id="13" type="button" placeholder="This is some text">
         <input id="14" type="checkbox" placeholder="This is some text">
         <input id="15" type="color" placeholder="This is some text">
@@ -40,11 +44,28 @@ class TestPlaceholderShown(util.TestCase):
         <input id="25" type="submit" placeholder="This is some text">
         <input id="26" type="time" placeholder="This is some text">
         <input id="27" type="week" placeholder="This is some text">
+
+        /* Value will not override this instance as value is empty. */
+        <input id="28" type placeholder="This is some text" value="">
+
+        /* Value will override this input */
+        <input id="29" type placeholder="This is some text" value="Actual value">
+
+        /* Text area content overides the placeholder
+        <textarea id="30" placeholder="This is some text">Value</textarea>
+        <textarea id="31" placeholder="This is some text">
+
+
+        </textarea>
+
+        /* Text area is still considered empty with a single new line (does not include carriage return). */
+        <textarea id="32" placeholder="This is some text">
+        </textarea>
         """
 
         self.assert_selector(
             markup,
             ":placeholder-shown",
-            ['0', '1', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+            ['0', '1', '4', '5', '6', '7', '8', '9', '10', '11', '12', '28', '32'],
             flags=util.HTML
         )

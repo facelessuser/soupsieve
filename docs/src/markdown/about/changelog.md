@@ -5,6 +5,10 @@
 - **NEW**: `SelectorSyntaxError` is derived from `Exception` not `SyntaxError`.
 - **NEW**: Drop support for EOL Python versions (Python 2 and Python < 3.5).
 
+## 1.9.5
+
+- **FIX**: `:placeholder-shown` should not match if the element has content that overrides the placeholder.
+
 ## 1.9.4
 
 - **FIX**: `:checked` rule was too strict with `option` elements. The specification for `:checked` does not require an

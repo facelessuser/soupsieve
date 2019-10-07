@@ -2007,6 +2007,17 @@ Selects any `#!html <input>` or `#!html <textarea>` element that is currently di
 [<input id="0" placeholder="This is some text"/>, <textarea id="1" placeholder="This is some text"></textarea>]
 ```
 
+!!! note "Parser Differences"
+    In general, when an input has a placeholder, but the element also has valid content, the placeholder is not shown.
+    For instance, when a `textarea` has actual text associated with the element, the placeholder is overridden with the
+    actual content. A `textarea` is allowed no more than a single newline to be considered as having no content
+    (carriage returns don't count).
+
+    `html5lib` will strip out carriage returns, but `lxml` and `html.parser` will not. This will cause a difference
+    between the parsers when dealing with Windows style line endings and `textareas`. `html5lib` seems to follow
+    *closest* to what real browsers do. Soup Sieve is simply following the specification as best it can. Unfortunately,
+    it can't account for the quirks of the parsers in this case without introducing other issues.
+
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:placeholder-shown
 
