@@ -12,6 +12,7 @@ DOM
 EOF
 EOL
 GitHub
+Gitter
 Hashable
 JQuery
 MERCHANTABILITY
