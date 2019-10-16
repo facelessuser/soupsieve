@@ -8,37 +8,9 @@ git:
 
 matrix:
   include:
-  - python: 2.7
-    env:
-    - TOXENV=py27
-  - python: 3.5
-    env:
-    - TOXENV=py35
-  - python: 3.6
-    env:
-    - TOXENV=py36
-  - python: 3.7
-    env:
-    - TOXENV=py37
   - python: 3.8-dev
     env:
     - TOXENV=py38
-  - python: 3.7
-    env: TOXENV=nolxml
-  - python: 3.7
-    env: TOXENV=nohtml5lib
-  - python: 3.7
-    env: TOXENV=lint
-  - python: 3.7
-    env: TOXENV=documents
-  allow_failures:
-  - python: 3.8-dev
-
-addons:
-  apt:
-    packages:
-    - aspell
-    - aspell-en
 
 install:
 - pip install tox
@@ -49,26 +21,3 @@ script:
 
 after_success:
 - codecov
-
-deploy:
-  - provider: pypi
-    user: facelessuser
-    server: https://upload.pypi.org/legacy/
-    password:
-      secure: FqfyG0saEKtB1xVdo2hKb4rlhgUGJxO0luYXPtsJFnbYZGkUTieDNNPSVl1tinshiVJYJ2cmvBENVWZ8I3LuqoD2s4+PeV55hvSCGk8EKE2+0Ej0OQg82j9dEI0iT1tuvZdLD/wF/u3N9f+dlV4TS/D8c7hrTZRdsik2pvCSStqw7/uGX9WQSf8LM73MUMkvWUn0qpXDMIKlQdL9PdlCAL+Noh4arP1DIDrapkRwkHmb3XVFWz1f+vwSQsXfBdtJrg7z5biiy9nj9+lDcAv8Sju+MVlQVXltZsAiIhepBQyL9DBKRFLcZ9tSAwsYYUkSPjdEF3H3emUhSp7fGeEgVXv7qnkQS6/CNT3Gr6CKaz8wNVYbDdgK3MCECELsasSEtDwleVvhsn9gXS40mOsWlR0D9OueZaM8BQ5DPP1YIfCz0Q5qut+dEVPlAlq4EtG2iP/UapeUo8PY1a8Mx/Rch9lfDlve3TKzgHH8/rWrXGQ5AlDo4idp3OAsov4DFFEuerkb1vMgv3+BwUvw8kMQxd5xOALcQPNPZKrqyMjciFDTdf1s2gOvQqKggnmMhvjTPDQVph9smoByC4Mgu5K/PzY+UZyd+7YuLDU3RST6UqKK3sisa9gzOhmfQkQhLD7K0Hhc4RpzrJQz6uFiYLBel67Mz1Nji9Sdlx5j2C26iaU=
-    distributions: "sdist bdist_wheel"
-    skip_upload_docs: true
-    on:
-      tags: true
-      repo: facelessuser/soupsieve
-      condition: "$TOXENV = documents"
-  - provider: pages
-    github_token: $GITHUB_TOKEN
-    name: $GITHUB_USER
-    email: $GITHUB_EMAIL
-    skip_cleanup: true
-    local_dir: site
-    on:
-      tags: true
-      repo: facelessuser/soupsieve
-      condition: "$TOXENV = documents"
