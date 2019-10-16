@@ -1,0 +1,55 @@
+{
+    "user": "facelessuser",
+    "repo": "soupsieve",
+
+    "colors": {
+        "bug": "#c45b46",
+        "feature": "#7b17d8",
+        "support": "#efbe62",
+        "maintenance": "#b2ffeb",
+
+        "category": "#709ad8",
+        "subcategory": "#bfd4f2",
+
+        "pending": "#f0f49a",
+        "rejected": "#f7c7be",
+        "approved": "#beed6d",
+
+        "low": "#dddddd"
+    },
+
+    "labels": {
+
+        "bug": {"color": "bug", "description": "Bug report."},
+        "feature": {"color": "feature", "description": "Feature request."},
+        "maintenance": {"color": "maintenance", "description": "Maintenance chore."},
+        "support": {"color": "support", "description": "Support request."},
+
+        "API": {"color": "category", "description": "Related to the API."},
+        "selectors": {"color": "category", "description": "Related to selector implementations."},
+        "integration": {"color": "category", "description": "Related to packaging and/or testing."},
+        "docs": {"color": "category", "description": "Related to documentation."},
+
+        "css-level-1": {"color": "subcategory", "description": "CSS level 1 selectors."},
+        "css-level-2": {"color": "subcategory", "description": "CSS level 2 selectors."},
+        "css-level-3": {"color": "subcategory", "description": "CSS level 3 selectors."},
+        "css-level-4": {"color": "subcategory", "description": "CSS level 4 selectors."},
+        "css-level-5": {"color": "subcategory", "description": "CSS level 5 selectors."},
+        "css-custom": {"color": "subcategory", "description": "CSS custom selectors."},
+
+        "more-info-needed": {"color": "pending", "description": "More information is required."},
+        "needs-confirmation": {"color": "pending", "description": "The alleged behavior needs to be confirmed."},
+        "needs-decision": {"color": "pending", "description": "A decision needs to be made regarding request."},
+        "confirmed": {"color": "approved", "description": "Confirmed bug report or approved feature request."},
+        "maybe": {"color": "low", "description": "Pending approval of low priority request."},
+        "duplicate": {"color": "rejected", "description": "The issue has been previously reported."},
+        "wontfix": {"color": "rejected", "description": "The issue will not be fixed for the stated reasons."},
+        "invalid": {"color": "rejected", "description": "Invalid report (user error, upstream issue, etc)."},
+
+        "work-in-progress": {"color": "pending", "description": "A partial solution. More changes will be coming."},
+        "needs-review": {"color": "pending", "description": "Needs to be reviewed and/or approved."},
+        "requires-changes": {"color": "pending", "description": "Awaiting updates after a review."},
+        "approved": {"color": "approved", "description": "The pull request is ready to be merged."},
+        "rejected": {"color": "rejected", "description": "The pull request is rejected for the stated reasons."}
+    }
+}
