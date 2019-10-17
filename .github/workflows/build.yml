@@ -3,7 +3,7 @@ name: build
 on:
   push:
     branches:
-      - 'master'
+      - '1.9.X'
 
 jobs:
   tests:
@@ -12,8 +12,10 @@ jobs:
       max-parallel: 4
       matrix:
         platform: [ubuntu-latest, windows-latest]
-        python-version: [3.5, 3.6, 3.7]
+        python-version: [2.7, 3.5, 3.6, 3.7]
         include:
+          - python-version: 2.7
+            tox-env: py27
           - python-version: 3.5
             tox-env: py35
           - python-version: 3.6
