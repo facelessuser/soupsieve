@@ -1,4 +1,4 @@
-name: build
+name: build 1.9.X
 
 on:
   push:
