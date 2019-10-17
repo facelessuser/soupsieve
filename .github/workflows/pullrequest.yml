@@ -18,6 +18,9 @@ jobs:
           - python-version: 3.7
             tox-env: py37
 
+    env:
+      TOXENV: ${{ matrix.tox-env }}
+
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -31,7 +34,7 @@ jobs:
         python -m pip install --upgrade pip setuptools tox coverage codecov
     - name: Test with pytest
       run: |
-        python -m tox -e ${{ matrix.tox-env }}
+        python -m tox
     - name: Coverage Report
       if: success()
       run: |
@@ -42,6 +45,9 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [3.7]
+
+    env:
+      TOXENV: lint
 
     runs-on: ubuntu-latest
 
@@ -56,13 +62,16 @@ jobs:
         python -m pip install --upgrade pip setuptools tox
     - name: Lint
       run: |
-        python -m tox -e lint
+        python -m tox
 
   documents:
     strategy:
       max-parallel: 4
       matrix:
         python-version: [3.7]
+
+    env:
+      TOXENV: documents
 
     runs-on: ubuntu-latest
 
@@ -80,4 +89,4 @@ jobs:
         sudo apt-get install aspell aspell-en
     - name: Build documents
       run: |
-        python -m tox -e documents
+        python -m tox
