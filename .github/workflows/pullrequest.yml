@@ -40,6 +40,36 @@ jobs:
       run: |
         python -m codecov -t ${{ secrets.CODECOV_TOKEN }}
 
+  special-tests:
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        platform: [ubuntu-latest, windows-latest]
+        tox-env: [nolxml, nohtml5lib]
+
+    env:
+      TOXENV: ${{ matrix.tox-env }}
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.7'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools tox coverage codecov
+    - name: Test with pytest
+      run: |
+        python -m tox
+    - name: Coverage Report
+      if: success()
+      run: |
+        python -m codecov -t ${{ secrets.CODECOV_TOKEN }}
+
   lint:
     strategy:
       max-parallel: 4
