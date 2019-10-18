@@ -1,0 +1,120 @@
+colors:
+    bug: '#c45b46'
+    feature: '#7b17d8'
+    support: '#efbe62'
+    maintenance: '#b2ffeb'
+    category: '#709ad8'
+    subcategory: '#bfd4f2'
+    pending: '#f0f49a'
+    rejected: '#f7c7be'
+    approved: '#beed6d'
+    low: '#dddddd'
+
+labels:
+- name: bug
+  color: bug
+  description: Bug report.
+
+- name: feature
+  color: feature
+  description: Feature request.
+
+- name: maintenance
+  color: maintenance
+  description: Maintenance chore.
+
+- name: support
+  color: support
+  description: Support request.
+
+- name: API
+  color: category
+  description: Related to the API.
+
+- name: selectors
+  color: category
+  description: Related to selector implementations.
+
+- name: integration
+  color: category
+  description: Related to packaging and/or testing.
+
+- name: docs
+  color: category
+  description: Related to documentation.
+
+- name: css-level-1
+  color: subcategory
+  description: CSS level 1 selectors.
+
+- name: css-level-2
+  color: subcategory
+  description: CSS level 2 selectors.
+
+- name: css-level-3
+  color: subcategory
+  description: CSS level 3 selectors.
+
+- name: css-level-4
+  color: subcategory
+  description: CSS level 4 selectors.
+
+- name: css-level-5
+  color: subcategory
+  description: CSS level 5 selectors.
+
+- name: css-custom
+  color: subcategory
+  description: CSS custom selectors.
+
+- name: more-info-needed
+  color: pending
+  description: More information is required.
+
+- name: needs-confirmation
+  color: pending
+  description: The alleged behavior needs to be confirmed.
+
+- name: needs-decision
+  color: pending
+  description: A decision needs to be made regarding request.
+
+- name: confirmed
+  color: approved
+  description: Confirmed bug report or approved feature request.
+
+- name: maybe
+  color: low
+  description: Pending approval of low priority request.
+
+- name: duplicate
+  color: rejected
+  description: The issue has been previously reported.
+
+- name: wontfix
+  color: rejected
+  description: The issue will not be fixed for the stated reasons.
+
+- name: invalid
+  color: rejected
+  description: Invalid report (user error, upstream issue, etc).
+
+- name: work-in-progress
+  color: pending
+  description: A partial solution. More changes will be coming.
+
+- name: needs-review
+  color: pending
+  description: Needs to be reviewed and/or approved.
+
+- name: requires-changes
+  color: pending
+  description: Awaiting updates after a review.
+
+- name: approved
+  color: approved
+  description: The pull request is ready to be merged.
+
+- name: rejected
+  color: rejected
+  description: The pull request is rejected for the stated reasons.
