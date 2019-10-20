@@ -27,21 +27,37 @@ labels:
   color: support
   description: Support request.
 
-- name: API
-  color: category
-  description: Related to the API.
-
-- name: selectors
-  color: category
-  description: Related to selector implementations.
-
-- name: integration
-  color: category
-  description: Related to packaging and/or testing.
-
 - name: docs
   color: category
   description: Related to documentation.
+
+- name: tests
+  color: category
+  description: Related to testing.
+
+- name: infrastructure
+  color: category
+  description: Related to project infrastructure.
+
+- name: source
+  color: category
+  description: Related to source code.
+
+- name: selectors
+  color: subcategory
+  description: Related to selector implementations.
+
+- name: css-parsing
+  color: subcategory
+  description: Related to CSS parsing.
+
+- name: css-matching
+  color: subcategory
+  description: Related to CSS matching.
+
+- name: API
+  color: subcategory
+  description: Related to the API.
 
 - name: css-level-1
   color: subcategory

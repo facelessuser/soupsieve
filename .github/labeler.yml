@@ -1,0 +1,44 @@
+brace_expansion: true
+
+rules:
+  - labels: [infrastructure]
+    patterns: ['*|{tools,requirements,.github}/**|!README.md']
+
+  - labels: [source]
+    patterns: ['pymdownx/**']
+
+  - labels: [tests]
+    patterns: ['tests/**']
+
+  - labels: [docs]
+    patterns: ['docs/**|README.md']
+
+  - labels: [API]
+    patterns: ['soupsieve/__init__.py|docs/**/api.md']
+
+  - labels: [selectors]
+    patterns: ['docs/**/selectors.md']
+
+  - labels: [selectors, css-parsing]
+    patterns: ['soupsieve/css_parser.py']
+
+  - labels: [selectors, css-matching]
+    patterns: ['soupsieve/css_match.py']
+
+  - labels: [css-level-1]
+    patterns: ['tests/test_level1/**']
+
+  - labels: [css-level-2]
+    patterns: ['tests/test_level2/**']
+
+  - labels: [css-level-3]
+    patterns: ['tests/test_level3/**']
+
+  - labels: [css-level-4]
+    patterns: ['tests/test_level4/**']
+
+  - labels: [css-level-5]
+    patterns: ['tests/test_level5/**']
+
+  - labels: [css-custom]
+    patterns: ['tests/test_extra/**']
