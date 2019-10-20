@@ -1,5 +1,7 @@
 [![Build][github-ci-image]][github-ci-link]
 [![Unix Build Status][travis-image]][travis-link]
+[![Windows Build Status][appveyor-image]][appveyor-link]
+[![Unix Build Status][travis-image]][travis-link]
 [![Coverage Status][codecov-image]][codecov-link]
 [![PyPI Version][pypi-image]][pypi-link]
 ![License][license-image-mit]
@@ -86,6 +88,8 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 [gitter-link]: https://gitter.im/facelessuser/soupsieve
 [codecov-image]: https://img.shields.io/codecov/c/github/facelessuser/soupsieve/master.svg
 [codecov-link]: https://codecov.io/github/facelessuser/soupsieve
+[appveyor-image]: https://img.shields.io/appveyor/ci/facelessuser/soupsieve/master.svg?label=Windows%20Build&logo=appveyor
+[appveyor-link]: https://ci.appveyor.com/project/facelessuser/soupsieve
 [travis-image]: https://img.shields.io/travis/facelessuser/soupsieve/master.svg?label=Unix%20Build&logo=travis
 [travis-link]: https://travis-ci.org/facelessuser/soupsieve
 [pypi-image]: https://img.shields.io/pypi/v/soupsieve.svg?logo=python&logoColor=white
