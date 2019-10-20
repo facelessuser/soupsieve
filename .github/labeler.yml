@@ -5,7 +5,7 @@ rules:
     patterns: ['*|{tools,requirements,.github}/**|!README.md']
 
   - labels: [source]
-    patterns: ['pymdownx/**']
+    patterns: ['soupsieve/**']
 
   - labels: [tests]
     patterns: ['tests/**']
