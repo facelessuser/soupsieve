@@ -51,6 +51,8 @@ wip:
   - requires-changes
   - rejected
 
+delete_labels: True
+
 colors:
     bug: '#c45b46'
     feature: '#7b17d8'
@@ -167,6 +169,10 @@ labels:
 - name: invalid
   color: rejected
   description: Invalid report (user error, upstream issue, etc).
+
+- name: triage
+  color: pending
+  description: Issue needs triage.
 
 - name: work-in-progress
   color: pending
