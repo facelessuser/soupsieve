@@ -1,4 +1,4 @@
-name: traige
+name: triage
 on:
   issues:
     types: [opened]
