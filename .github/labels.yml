@@ -1,3 +1,58 @@
+brace_expansion: true
+
+rules:
+  - labels: [infrastructure]
+    patterns: ['*|{tools,requirements,.github}/**|!README.md']
+
+  - labels: [source]
+    patterns: ['soupsieve/**']
+
+  - labels: [tests]
+    patterns: ['tests/**']
+
+  - labels: [docs]
+    patterns: ['docs/**|README.md']
+
+  - labels: [API]
+    patterns: ['soupsieve/__init__.py|docs/**/api.md']
+
+  - labels: [selectors]
+    patterns: ['docs/**/selectors.md']
+
+  - labels: [selectors, css-parsing]
+    patterns: ['soupsieve/css_parser.py']
+
+  - labels: [selectors, css-matching]
+    patterns: ['soupsieve/css_match.py']
+
+  - labels: [css-level-1]
+    patterns: ['tests/test_level1/**']
+
+  - labels: [css-level-2]
+    patterns: ['tests/test_level2/**']
+
+  - labels: [css-level-3]
+    patterns: ['tests/test_level3/**']
+
+  - labels: [css-level-4]
+    patterns: ['tests/test_level4/**']
+
+  - labels: [css-level-5]
+    patterns: ['tests/test_level5/**']
+
+  - labels: [css-custom]
+    patterns: ['tests/test_extra/**']
+
+wip:
+  - work-in-progress
+  - needs-review
+  - needs-decision
+  - needs-confirmation
+  - requires-changes
+  - rejected
+
+delete_labels: True
+
 colors:
     bug: '#c45b46'
     feature: '#7b17d8'
@@ -114,6 +169,10 @@ labels:
 - name: invalid
   color: rejected
   description: Invalid report (user error, upstream issue, etc).
+
+- name: triage
+  color: pending
+  description: Issue needs triage.
 
 - name: work-in-progress
   color: pending
