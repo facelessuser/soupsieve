@@ -43,6 +43,14 @@ rules:
   - labels: [css-custom]
     patterns: ['tests/test_extra/**']
 
+wip:
+  - work-in-progress
+  - needs-review
+  - needs-decision
+  - needs-confirmation
+  - requires-changes
+  - rejected
+
 colors:
     bug: '#c45b46'
     feature: '#7b17d8'
