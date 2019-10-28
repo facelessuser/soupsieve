@@ -64,6 +64,7 @@ colors:
     rejected: '#f7c7be'
     approved: '#beed6d'
     low: '#dddddd'
+    bot: '#000000'
 
 labels:
 - name: bug
@@ -193,3 +194,11 @@ labels:
 - name: rejected
   color: rejected
   description: The pull request is rejected for the stated reasons.
+
+- name: skip-triage
+  color: bot
+  description: Tells bot to not tag a new issue with 'triage'.
+
+- name: skip-review
+  color: bot
+  description: Tells bot to not tag a reviews with 'needs-review'.
