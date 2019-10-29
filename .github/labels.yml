@@ -14,15 +14,12 @@ rules:
     patterns: ['docs/**|README.md']
 
   - labels: [API]
-    patterns: ['soupsieve/__init__.py|docs/**/api.md']
+    patterns: ['soupsieve/__init__.py']
 
-  - labels: [selectors]
-    patterns: ['docs/**/selectors.md']
-
-  - labels: [selectors, css-parsing]
+  - labels: [css-parsing]
     patterns: ['soupsieve/css_parser.py']
 
-  - labels: [selectors, css-matching]
+  - labels: [css-matching]
     patterns: ['soupsieve/css_match.py']
 
   - labels: [css-level-1]
@@ -43,6 +40,20 @@ rules:
   - labels: [css-custom]
     patterns: ['tests/test_extra/**']
 
+# Triage
+
+triage_add: 'triage'
+triage_skip: ['skip-triage']
+triage_remove: ['confirmed']
+
+# Review
+
+review_add: 'needs-review'
+review_skip: ['skip-review']
+review_remove: ['approved']
+
+# WIP
+
 wip:
   - work-in-progress
   - needs-review
@@ -50,6 +61,30 @@ wip:
   - needs-confirmation
   - requires-changes
   - rejected
+  - duplicate
+  - invalid
+  - triage
+  - wontfix
+
+# LGTM
+
+lgtm_add:
+  pull_request: [approved]
+  issue: []
+
+lgtm_remove:
+  - work-in-progress
+  - needs-review
+  - needs-decision
+  - needs-confirmation
+  - requires-changes
+  - rejected
+  - duplicate
+  - invalid
+  - triage
+  - wontfix
+
+# Label Management
 
 delete_labels: True
 
