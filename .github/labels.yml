@@ -4,7 +4,7 @@ brace_expansion: true
 
 rules:
   - labels: [infrastructure]
-    patterns: ['*|{tools,requirements,.github}/**|!README.md']
+    patterns: ['*|{tools,requirements,.github}/**|!*.md']
 
   - labels: [source]
     patterns: ['soupsieve/**']
@@ -13,18 +13,15 @@ rules:
     patterns: ['tests/**']
 
   - labels: [docs]
-    patterns: ['docs/**|README.md']
+    patterns: ['docs/**|*.md']
 
   - labels: [API]
-    patterns: ['soupsieve/__init__.py|docs/**/api.md']
+    patterns: ['soupsieve/__init__.py']
 
-  - labels: [selectors]
-    patterns: ['docs/**/selectors.md']
-
-  - labels: [selectors, css-parsing]
+  - labels: [css-parsing]
     patterns: ['soupsieve/css_parser.py']
 
-  - labels: [selectors, css-matching]
+  - labels: [css-matching]
     patterns: ['soupsieve/css_match.py']
 
   - labels: [css-level-1]
@@ -46,10 +43,6 @@ rules:
     patterns: ['tests/test_extra/**']
 
 labels:
-- name: selectors
-  color: subcategory
-  description: Related to selector implementations.
-
 - name: css-parsing
   color: subcategory
   description: Related to CSS parsing.
