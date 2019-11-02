@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.2">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
     
     
       
@@ -3654,6 +3654,17 @@ attributes.</p>
 <span class="go">[&lt;input id=&quot;0&quot; placeholder=&quot;This is some text&quot;/&gt;, &lt;textarea id=&quot;1&quot; placeholder=&quot;This is some text&quot;&gt;&lt;/textarea&gt;]</span>
 </pre></div></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Parser Differences</p>
+<p>In general, when an input has a placeholder, but the element also has valid content, the placeholder is not shown.
+For instance, when a <code>textarea</code> has actual text associated with the element, the placeholder is overridden with the
+actual content. A <code>textarea</code> is allowed no more than a single newline to be considered as having no content
+(carriage returns don't count).</p>
+<p><code>html5lib</code> will strip out carriage returns, but <code>lxml</code> and <code>html.parser</code> will not. This will cause a difference
+between the parsers when dealing with Windows style line endings and <code>textareas</code>. <code>html5lib</code> seems to follow
+<em>closest</em> to what real browsers do. Soup Sieve is simply following the specification as best it can. Unfortunately,
+it can't account for the quirks of the parsers in this case without introducing other issues.</p>
+</div>
 <div class="admonition tip">
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:placeholder-shown">https://developer.mozilla.org/en-US/docs/Web/CSS/:placeholder-shown</a></p>
@@ -4139,7 +4150,7 @@ span.star::after {
       
     </div>
     
-      <script src="../assets/javascripts/application.c648116f.js"></script>
+      <script src="../assets/javascripts/application.ac79c3b0.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       
