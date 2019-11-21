@@ -1,9 +1,10 @@
+[![Gitter][gitter-image]][gitter-link]
 [![Build][github-ci-image]][github-ci-link]
 [![Unix Build Status][travis-image]][travis-link]
 [![Windows Build Status][appveyor-image]][appveyor-link]
 [![Coverage Status][codecov-image]][codecov-link]
-[![Gitter][gitter-image]][gitter-link]
 [![PyPI Version][pypi-image]][pypi-link]
+[![PyPI - Python Version][python-image]][pypi-link]
 ![License][license-image-mit]
 
 # Soup Sieve
@@ -84,14 +85,15 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 
 [github-ci-image]: https://github.com/facelessuser/soupsieve/workflows/build/badge.svg
 [github-ci-link]: https://github.com/facelessuser/soupsieve/actions?workflow=build
-[gitter-image]: https://img.shields.io/gitter/room/facelessuser/soupsieve.svg
+[gitter-image]: https://img.shields.io/gitter/room/facelessuser/soupsieve.svg?logo=gitter&color=fuchsia&logoColor=cccccc
 [gitter-link]: https://gitter.im/facelessuser/soupsieve
-[codecov-image]: https://img.shields.io/codecov/c/github/facelessuser/soupsieve/master.svg
+[codecov-image]: https://img.shields.io/codecov/c/github/facelessuser/soupsieve/master.svg?logo=codecov&logoColor=cccccc
 [codecov-link]: https://codecov.io/github/facelessuser/soupsieve
-[appveyor-image]: https://img.shields.io/appveyor/ci/facelessuser/soupsieve/master.svg?label=Windows%20Build&logo=appveyor
+[appveyor-image]: https://img.shields.io/appveyor/ci/facelessuser/soupsieve/master.svg?label=appveyor&logo=appveyor&logoColor=cccccc
 [appveyor-link]: https://ci.appveyor.com/project/facelessuser/soupsieve
-[travis-image]: https://img.shields.io/travis/facelessuser/soupsieve/master.svg?label=Unix%20Build&logo=travis
+[travis-image]: https://img.shields.io/travis/facelessuser/soupsieve/master.svg?label=travis&logo=travis%20ci&logoColor=cccccc
 [travis-link]: https://travis-ci.org/facelessuser/soupsieve
-[pypi-image]: https://img.shields.io/pypi/v/soupsieve.svg?logo=python&logoColor=white
+[pypi-image]: https://img.shields.io/pypi/v/soupsieve.svg?logo=pypi&logoColor=cccccc
 [pypi-link]: https://pypi.python.org/pypi/soupsieve
+[python-image]: https://img.shields.io/pypi/pyversions/soupsieve?logo=python&logoColor=cccccc
 [license-image-mit]: https://img.shields.io/badge/license-MIT-blue.svg
