@@ -60,7 +60,7 @@ python setup.py install
 
 ## Documentation
 
-Documentation is found here: http://facelessuser.github.io/soupsieve/.
+Documentation is found here: https://facelessuser.github.io/soupsieve/.
 
 ## License
 
