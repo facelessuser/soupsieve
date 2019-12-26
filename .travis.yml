@@ -8,23 +8,50 @@ git:
 
 matrix:
   include:
-  - python: 3.5
+  - arch: arm64
+    python: 3.5
     env:
     - TOXENV=py35
-  - python: 3.6
+  - arch: amd64
+    python: 3.5
+    env:
+    - TOXENV=py35
+  - arch: arm64
+    python: 3.6
     env:
     - TOXENV=py36
-  - python: 3.7
+  - arch: amd64
+    python: 3.6
+    env:
+    - TOXENV=py36
+  - arch: arm64
+    python: 3.7
     env:
     - TOXENV=py37
-  - python: 3.8-dev
+  - arch: amd64
+    python: 3.7
+    env:
+    - TOXENV=py37
+  - arch: arm64
+    python: 3.8-dev
     env:
     - TOXENV=py38
-  - python: 3.7
+  - arch: amd64
+    python: 3.8-dev
+    env:
+    - TOXENV=py38
+  - arch: arm64
+    python: 3.7
     env: TOXENV=nolxml
-  - python: 3.7
+  - arch: amd64
+    python: 3.7
+    env: TOXENV=nolxml
+  - arch: arm64
+    python: 3.7
     env: TOXENV=nohtml5lib
-
+  - arch: amd64
+    python: 3.7
+    env: TOXENV=nohtml5lib
 install:
 - pip install tox
 - pip install codecov
