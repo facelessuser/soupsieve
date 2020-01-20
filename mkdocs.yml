@@ -5,7 +5,8 @@ edit_uri: tree/master/docs/src/markdown
 site_description: A modern CSS selector library for Beautiful Soup.
 copyright: |
   Copyright &copy; 2018 - 2020 <a href="https://github.com/facelessuser">Isaac Muse</a>
-  <br><span class="md-footer-custom-text">emoji provided free by <a href="http://www.emojione.com">EmojiOne</a></span>
+  <br><span class="md-footer-custom-text">emoji provided free by </span>
+  <a href="https://github.com/twitter/twemoji">Twemoji</a>
 
 docs_dir: docs/src/markdown
 theme:
@@ -47,7 +48,6 @@ markdown_extensions:
   - markdown.extensions.def_list:
   - markdown.extensions.tables:
   - markdown.extensions.abbr:
-  - markdown.extensions.footnotes:
   - pymdownx.extrarawhtml:
   - pymdownx.superfences:
   - pymdownx.highlight:
@@ -72,6 +72,7 @@ markdown_extensions:
   - pymdownx.caret:
   - pymdownx.smartsymbols:
   - pymdownx.emoji:
+      emoji_index: !!python/name:pymdownx.emoji.twemoji
       emoji_generator: !!python/name:pymdownx.emoji.to_png
   - pymdownx.escapeall:
       hardbreak: True
@@ -79,7 +80,6 @@ markdown_extensions:
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.progressbar:
-  - pymdownx.arithmatex:
   - pymdownx.mark:
   - pymdownx.striphtml:
   - pymdownx.snippets:
@@ -93,6 +93,6 @@ extra:
     - type: github
       link: https://github.com/facelessuser
 extra_css:
-  - extra-30d8e6755c.css
+  - extra-174a536342.css
 extra_javascript:
-  - extra-0b9b22dd13.js
+  - extra-0d9305e748.js

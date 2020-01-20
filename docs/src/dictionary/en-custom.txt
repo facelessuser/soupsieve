@@ -24,6 +24,7 @@ PySpelling
 SVG
 TODO
 Tox
+Twemoji
 URL's
 Unescape
 Virtualenv
