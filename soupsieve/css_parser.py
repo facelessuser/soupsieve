@@ -120,8 +120,10 @@ ATTR = r'''
 # Selector patterns
 # IDs (`#id`)
 PAT_ID = r'\#{ident}'.format(ident=IDENTIFIER)
+PAT_ID_REGEX = r'\#(?:{ident}|{regex})'.format(ident=IDENTIFIER, regex=REGEXP_IDENTIFIER)
 # Classes (`.class`)
 PAT_CLASS = r'\.{ident}'.format(ident=IDENTIFIER)
+PAT_CLASS_REGEX = r'\.(?:{ident}|{regex})'.format(ident=IDENTIFIER, regex=REGEXP_IDENTIFIER)
 # Prefix:Tag (`prefix|tag`)
 PAT_TAG = r'(?P<tag_ns>(?:{ident}|\*)?\|)?(?P<tag_name>{ident}|\*)'.format(ident=IDENTIFIER)
 # Attributes (`[attr]`, `[attr=value]`, etc.)
@@ -442,8 +444,8 @@ class CSSParser(object):
         SelectorPattern("pseudo_class", PAT_PSEUDO_CLASS),
         SelectorPattern("pseudo_element", PAT_PSEUDO_ELEMENT),
         SelectorPattern("at_rule", PAT_AT_RULE),
-        SelectorPattern("id", PAT_ID),
-        SelectorPattern("class", PAT_CLASS),
+        SelectorPattern("id", PAT_ID_REGEX),
+        SelectorPattern("class", PAT_CLASS_REGEX),
         SelectorPattern("tag", PAT_TAG),
         SelectorPattern("attribute", PAT_ATTR),
         SelectorPattern("combine", PAT_COMBINE)
@@ -805,9 +807,15 @@ class CSSParser(object):
 
         selector = m.group(0)
         if selector.startswith('.'):
-            sel.classes.append(css_unescape(selector[1:]))
+            if selector[1] == '/':
+                sel.classes.append(re.compile(selector[2:-1]))
+            else:
+                sel.classes.append(css_unescape(selector[1:]))
         else:
-            sel.ids.append(css_unescape(selector[1:]))
+            if selector[1] == '/':
+                sel.ids.append(re.compile(selector[2:-1]))
+            else:
+                sel.ids.append(css_unescape(selector[1:]))
         has_selector = True
         return has_selector
 

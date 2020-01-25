@@ -165,3 +165,68 @@ class TestRegexAttribute(util.TestCase):
             ["0"],
             flags=util.HTML
         )
+
+
+class TestClass(util.TestCase):
+    """Test class selectors."""
+
+    MARKUP = """
+    <div>
+    <p>Some text <span id="1" class="foo"> in a paragraph</span>.
+    <a id="2" class="bar" href="http://google.com">Link</a>
+    </p>
+    </div>
+    """
+
+    def test_class(self):
+        """Test class."""
+
+        self.assert_selector(
+            self.MARKUP,
+            r"./fo{2}/",
+            ["1"],
+            flags=util.HTML
+        )
+
+
+    def test_multiple_classes(self):
+        """Test multiple classes."""
+
+        markup = """
+        <div>
+        <p>Some text <span id="1" class="foo"> in a paragraph</span>.
+        <a id="2" class="bar" href="http://google.com">Link</a>
+        <a id="3" class="foo" href="http://google.com">Link</a>
+        <a id="4" class="foo bar" href="http://google.com">Link</a>
+        </p>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            "a./fo{2}/./b.*/",
+            ["4"],
+            flags=util.HTML
+        )
+
+
+class TestId(util.TestCase):
+    """Test ID selectors."""
+
+    MARKUP = """
+    <div>
+    <p>Some text <span id="unique"> in a paragraph</span>.
+    <a id="2" href="http://google.com">Link</a>
+    </p>
+    </div>
+    """
+
+    def test_id(self):
+        """Test ID."""
+
+        self.assert_selector(
+            self.MARKUP,
+            "#/u.*/",
+            ["unique"],
+            flags=util.HTML
+        )

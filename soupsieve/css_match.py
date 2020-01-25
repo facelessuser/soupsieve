@@ -769,8 +769,13 @@ class _Match(object):
         """Match element's ID."""
 
         found = True
+        tag_id = self.get_attribute_by_name(el, 'id', '')
         for i in ids:
-            if i != self.get_attribute_by_name(el, 'id', ''):
+            if isinstance(i, str):
+                if i != tag_id:
+                    found = False
+                    break
+            elif i.fullmatch(tag_id) is None:
                 found = False
                 break
         return found
@@ -781,9 +786,19 @@ class _Match(object):
         current_classes = self.get_classes(el)
         found = True
         for c in classes:
-            if c not in current_classes:
-                found = False
-                break
+            if isinstance(c, str):
+                if c not in current_classes:
+                    found = False
+                    break
+            else:
+                matched = False
+                for current in current_classes:
+                    if c.fullmatch(current):
+                        matched = True
+                        break
+                if not matched:
+                    found = False
+                    break
         return found
 
     def match_root(self, el):
