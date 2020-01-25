@@ -188,7 +188,6 @@ class TestClass(util.TestCase):
             flags=util.HTML
         )
 
-
     def test_multiple_classes(self):
         """Test multiple classes."""
 
@@ -226,7 +225,115 @@ class TestId(util.TestCase):
 
         self.assert_selector(
             self.MARKUP,
-            "#/u.*/",
+            r"#/u.*/",
             ["unique"],
             flags=util.HTML
+        )
+
+
+class TestRegexType(util.TestCase):
+    """Test type selectors with regex."""
+
+    def test_basic_type(self):
+        """Test type."""
+
+        self.assert_selector(
+            """
+            <html>
+            <head></head>
+            <body>
+            <div>
+            <p>Some text <span id="1"> in a paragraph</span>.</p>
+            <a id="2" href="http://google.com">Link</a>
+            </div>
+            </body>
+            </html>
+            """,
+            r"body /.*?a.*/",
+            ["1", "2"],
+            flags=util.HTML
+        )
+
+
+class TestNamespace(util.TestCase):
+    """Test namespace selectors."""
+
+    MARKUP = """
+    <?xml version="1.0" encoding="UTF-8"?>
+    <tag id="root">
+      <head id="0"></head>
+      <foo:other id="1" xmlns:foo="http://me.com/namespaces/foofoo"
+             xmlns:bar="http://me.com/namespaces/foobar">
+      <foo:head id="2">
+        <foo:title id="3"></foo:title>
+        <bar:title id="4"></bar:title>
+      </foo:head>
+      <body id="5">
+        <foo:e1 id="6"></foo:e1>
+        <bar:e1 id="7"></bar:e1>
+        <e1 id="8"></e1>
+        <foo:e2 id="9"></foo:e2>
+        <bar:e2 id="10"></bar:e2>
+        <e2 id="11"></e2>
+        <foo:e3 id="12"></foo:e3>
+        <bar:e3 id="13"></bar:e3>
+        <e3 id="14"></e3>
+      </body>
+      </foo:other>
+      <other id="15" xmlns="http://me.com/namespaces/other">
+        <e4 id="16">Inherit</er>
+      </other>
+    </tag>
+    """
+
+    def test_namespace_regex(self):
+        """Test namespace."""
+
+        self.assert_selector(
+            self.MARKUP,
+            r"/fo{2}/|title",
+            ["3"],
+            namespaces={
+                "foo": "http://me.com/namespaces/foofoo",
+                "bar": "http://me.com/namespaces/foobar"
+            },
+            flags=util.XML
+        )
+
+        self.assert_selector(
+            self.MARKUP,
+            r"/(?:foo|bar)/|title",
+            ["3", "4"],
+            namespaces={
+                "foo": "http://me.com/namespaces/foofoo",
+                "bar": "http://me.com/namespaces/foobar"
+            },
+            flags=util.XML
+        )
+
+    def test_namespace_case_regex(self):
+        """Test that namespaces are always case sensitive."""
+
+        # These won't match
+        self.assert_selector(
+            self.MARKUP,
+            r"/FO{2}/|title",
+            [],
+            namespaces={
+                "foo": "http://me.com/namespaces/foofoo",
+                "bar": "http://me.com/namespaces/foobar"
+            },
+            flags=util.XML
+        )
+
+        # These won't match
+        self.assert_selector(
+            self.MARKUP,
+            r"/(?i)FO{2}/|title",
+            ["3"],
+            namespaces={
+                "foo": "http://me.com/namespaces/foofoo",
+                "bar": "http://me.com/namespaces/foobar"
+            },
+            flags=util.XML
         )

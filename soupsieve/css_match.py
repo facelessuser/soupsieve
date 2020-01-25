@@ -643,17 +643,37 @@ class _Match(object):
         match = True
         namespace = self.get_tag_ns(el)
         default_namespace = self.namespaces.get('')
-        tag_ns = '' if tag.prefix is None else self.namespaces.get(tag.prefix, None)
+
+        is_string = tag.prefix is None or isinstance(tag.prefix, str)
+
+        if is_string:
+            tag_ns = '' if tag.prefix is None else self.namespaces.get(tag.prefix, None)
+        else:
+            tag_ns = []
+            for k, v in self.namespaces.items():
+                if tag.prefix.fullmatch(k):
+                    tag_ns.append(v)
+
         # We must match the default namespace if one is not provided
         if tag.prefix is None and (default_namespace is not None and namespace != default_namespace):
             match = False
         # If we specified `|tag`, we must not have a namespace.
-        elif (tag.prefix is not None and tag.prefix == '' and namespace):
+        elif (tag.prefix is not None and is_string and tag.prefix == '' and namespace):
             match = False
         # Verify prefix matches
         elif (
-            tag.prefix and
-            tag.prefix != '*' and (tag_ns is None or namespace != tag_ns)
+            is_string and
+            (
+                tag.prefix and
+                tag.prefix != '*' and (tag_ns is None or namespace != tag_ns)
+            )
+        ):
+            match = False
+        elif (
+            not is_string and
+            (
+                tag.prefix and (not tag_ns or not any([namespace == i for i in tag_ns]))
+            )
         ):
             match = False
         return match
@@ -681,11 +701,14 @@ class _Match(object):
     def match_tagname(self, el, tag):
         """Match tag name."""
 
-        name = (util.lower(tag.name) if not self.is_xml and tag.name is not None else tag.name)
-        return not (
-            name is not None and
-            name not in (self.get_tag(el), '*')
-        )
+        if tag.name is None or isinstance(tag.name, str):
+            name = (util.lower(tag.name) if not self.is_xml and tag.name is not None else tag.name)
+            return not (
+                name is not None and
+                name not in (self.get_tag(el), '*')
+            )
+        else:
+            return tag.name.fullmatch(self.get_tag(el)) is not None
 
     def match_tag(self, el, tag):
         """Match the tag."""

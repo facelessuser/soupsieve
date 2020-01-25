@@ -125,11 +125,13 @@ PAT_ID_REGEX = r'\#(?:{ident}|{regex})'.format(ident=IDENTIFIER, regex=REGEXP_ID
 PAT_CLASS = r'\.{ident}'.format(ident=IDENTIFIER)
 PAT_CLASS_REGEX = r'\.(?:{ident}|{regex})'.format(ident=IDENTIFIER, regex=REGEXP_IDENTIFIER)
 # Prefix:Tag (`prefix|tag`)
-PAT_TAG = r'(?P<tag_ns>(?:{ident}|\*)?\|)?(?P<tag_name>{ident}|\*)'.format(ident=IDENTIFIER)
+PAT_TAG = r'(?P<tag_ns>(?:{ident}|{regex}|\*)?\|)?(?P<tag_name>{ident}|{regex}|\*)'.format(
+    ident=IDENTIFIER, regex=REGEXP_IDENTIFIER
+)
 # Attributes (`[attr]`, `[attr=value]`, etc.)
-PAT_ATTR = r'''
-\[{ws}*(?P<attr_ns>(?:{ident}|\*)?\|)?(?P<attr_name>{ident}){attr}
-'''.format(ws=WSC, ident=IDENTIFIER, attr=ATTR)
+PAT_ATTR = r'\[{ws}*(?P<ns_attr>(?:(?:{ident}|{regex}|\*)?\|)?(?:{ident}|{regex})){attr}'.format(
+    ws=WSC, ident=IDENTIFIER, attr=ATTR, regex=REGEXP_IDENTIFIER
+)
 # Pseudo class (`:pseudo-class`, `:pseudo-class(`)
 PAT_PSEUDO_CLASS = r'(?P<name>:{ident})(?P<open>\({ws}*)?'.format(ws=WSC, ident=IDENTIFIER)
 # Pseudo class special patterns. Matches `:pseudo-class(` for special case pseudo classes.
@@ -536,8 +538,16 @@ class CSSParser(object):
     def parse_tag_pattern(self, sel, m, has_selector):
         """Parse tag pattern from regex match."""
 
-        prefix = css_unescape(m.group('tag_ns')[:-1]) if m.group('tag_ns') else None
-        tag = css_unescape(m.group('tag_name'))
+        ns = m.group('tag_ns')[:-1] if m.group('tag_ns') else None
+        name = m.group('tag_name')
+        if ns is not None and ns.startswith('/'):
+            prefix = re.compile(ns[1:-1])
+        else:
+            prefix = css_unescape(ns) if ns is not None else None
+        if name.startswith('/'):
+            tag = re.compile(name[1:-1])
+        else:
+            tag = css_unescape(name)
         sel.tag = ct.SelectorTag(tag, prefix)
         has_selector = True
         return has_selector
