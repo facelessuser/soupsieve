@@ -100,16 +100,22 @@ IDENTIFIER = r'''
 (?:(?:-?(?:[^\x00-\x2f\x30-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+|--)
 (?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})*)
 '''.format(esc=CSS_ESCAPES)
+# Regex Identifier
+REGEXP_IDENTIFIER = r'/(?:(?:\\[^\r\n\f]|[^\\/\r\n\f]+)+?)/'
 # `nth` content
 NTH = r'(?:[-+])?(?:[0-9]+n?|n)(?:(?<=n){ws}*(?:[-+]){ws}*(?:[0-9]+))?'.format(ws=WSC)
 # Value: quoted string or identifier
 VALUE = r'''
 (?:"(?:\\(?:.|{nl})|[^\\"\r\n\f]+)*?"|'(?:\\(?:.|{nl})|[^\\'\r\n\f]+)*?'|{ident}+)
 '''.format(nl=NEWLINE, ident=IDENTIFIER)
+VALUE_WITH_REGEX = r'''
+(?:"(?:\\(?:.|{nl})|[^\\"\r\n\f]+)*?"|'(?:\\(?:.|{nl})|[^\\'\r\n\f]+)*?'|{ident}+|{regex})
+'''.format(nl=NEWLINE, ident=IDENTIFIER, regex=REGEXP_IDENTIFIER)
 # Attribute value comparison. `!=` is handled special as it is non-standard.
 ATTR = r'''
 (?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*(?P<value>{value})(?:{ws}+(?P<case>[is]))?)?{ws}*\]
-'''.format(ws=WSC, value=VALUE)
+'''.format(ws=WSC, value=VALUE_WITH_REGEX)
+# '''.format(ws=WSC, value=VALUE)
 
 # Selector patterns
 # IDs (`#id`)
@@ -154,7 +160,8 @@ PAT_PSEUDO_DIR = r'{name}(?P<dir>ltr|rtl){ws}*\)'.format(name=PAT_PSEUDO_CLASS_S
 PAT_COMBINE = r'{wsc}*?(?P<relation>[,+>~]|{ws}(?![,+>~])){wsc}*'.format(ws=WS, wsc=WSC)
 # Extra: Contains (`:contains(text)`)
 PAT_PSEUDO_CONTAINS = r'{name}(?P<values>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'.format(
-    name=PAT_PSEUDO_CLASS_SPECIAL, ws=WSC, value=VALUE
+    name=PAT_PSEUDO_CLASS_SPECIAL, ws=WSC, value=VALUE_WITH_REGEX
+    # name=PAT_PSEUDO_CLASS_SPECIAL, ws=WSC, value=VALUE
 )
 
 # Regular expressions
@@ -170,6 +177,9 @@ RE_NTH = re.compile(
 )
 # Pattern to iterate multiple values.
 RE_VALUES = re.compile(r'(?:(?P<value>{value})|(?P<split>{ws}*,{ws}*))'.format(ws=WSC, value=VALUE), re.X)
+RE_VALUES_WITH_REGEX = re.compile(
+    r'(?:(?P<value>{value})|(?P<split>{ws}*,{ws}*))'.format(ws=WSC, value=VALUE_WITH_REGEX), re.X
+)
 # Whitespace checks
 RE_WS = re.compile(WS)
 RE_WS_BEGIN = re.compile('^{}*'.format(WSC))
@@ -451,6 +461,7 @@ class CSSParser(object):
         """Create attribute selector from the returned regex match."""
 
         inverse = False
+        is_regex = False
         op = m.group('cmp')
         case = util.lower(m.group('case')) if m.group('case') else None
         ns = css_unescape(m.group('attr_ns')[:-1]) if m.group('attr_ns') else ''
@@ -460,7 +471,7 @@ class CSSParser(object):
 
         if case:
             flags = re.I if case == 'i' else 0
-        elif util.lower(attr) == 'type':
+        elif util.lower(attr) == 'type' and (not op or not m.group('value').startswith('/')):
             flags = re.I
             is_type = True
         else:
@@ -469,6 +480,9 @@ class CSSParser(object):
         if op:
             if m.group('value').startswith(('"', "'")):
                 value = css_unescape(m.group('value')[1:-1], True)
+            elif m.group('value').startswith('/'):
+                value = m.group('value')[1:-1]
+                is_regex = True
             else:
                 value = css_unescape(m.group('value'))
         else:
@@ -478,25 +492,25 @@ class CSSParser(object):
             pattern = None
         elif op.startswith('^'):
             # Value start with
-            pattern = re.compile(r'^%s.*' % re.escape(value), flags)
+            pattern = re.compile(r'^%s.*' % (value if is_regex else re.escape(value)), flags)
         elif op.startswith('$'):
             # Value ends with
-            pattern = re.compile(r'.*?%s$' % re.escape(value), flags)
+            pattern = re.compile(r'.*?%s$' % (value if is_regex else re.escape(value)), flags)
         elif op.startswith('*'):
             # Value contains
-            pattern = re.compile(r'.*?%s.*' % re.escape(value), flags)
+            pattern = re.compile(r'.*?%s.*' % (value if is_regex else re.escape(value)), flags)
         elif op.startswith('~'):
             # Value contains word within space separated list
             # `~=` should match nothing if it is empty or contains whitespace,
             # so if either of these cases is present, use `[^\s\S]` which cannot be matched.
-            value = r'[^\s\S]' if not value or RE_WS.search(value) else re.escape(value)
+            value = r'[^\s\S]' if not value or RE_WS.search(value) else (value if is_regex else re.escape(value))
             pattern = re.compile(r'.*?(?:(?<=^)|(?<=[ \t\r\n\f]))%s(?=(?:[ \t\r\n\f]|$)).*' % value, flags)
         elif op.startswith('|'):
             # Value starts with word in dash separated list
-            pattern = re.compile(r'^%s(?:-.*)?$' % re.escape(value), flags)
+            pattern = re.compile(r'^%s(?:-.*)?$' % (value if is_regex else re.escape(value)), flags)
         else:
             # Value matches
-            pattern = re.compile(r'^%s$' % re.escape(value), flags)
+            pattern = re.compile(r'^%s$' % (value if is_regex else re.escape(value)), flags)
             if op.startswith('!'):
                 # Equivalent to `:not([attr=value])`
                 inverse = True
@@ -802,12 +816,14 @@ class CSSParser(object):
 
         values = m.group('values')
         patterns = []
-        for token in RE_VALUES.finditer(values):
+        for token in RE_VALUES_WITH_REGEX.finditer(values):
             if token.group('split'):
                 continue
             value = token.group('value')
             if value.startswith(("'", '"')):
                 value = css_unescape(value[1:-1], True)
+            elif value.startswith('/'):
+                value = re.compile(value[1:-1])
             else:
                 value = css_unescape(value)
             patterns.append(value)

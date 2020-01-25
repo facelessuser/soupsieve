@@ -957,8 +957,12 @@ class _Match(object):
             if content is None:
                 content = self.get_text(el, no_iframe=self.is_html)
             found = False
-            for text in contain_list.text:
-                if text in content:
+            for contain in contain_list.contain:
+                if isinstance(contain, str):
+                    if contain in content:
+                        found = True
+                        break
+                elif contain.search(content):
                     found = True
                     break
             if not found:

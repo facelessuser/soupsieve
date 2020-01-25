@@ -239,13 +239,13 @@ class SelectorAttribute(Immutable):
 class SelectorContains(Immutable):
     """Selector contains rule."""
 
-    __slots__ = ("text", "_hash")
+    __slots__ = ("contain", "_hash")
 
-    def __init__(self, text):
+    def __init__(self, contain):
         """Initialize."""
 
         super(SelectorContains, self).__init__(
-            text=text
+            contain=contain
         )
 
 

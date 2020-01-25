@@ -61,6 +61,7 @@ prerelease
 prereleases
 pytest
 regex
+regex
 sublicense
 substring
 subtag
