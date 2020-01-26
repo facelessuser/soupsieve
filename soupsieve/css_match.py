@@ -589,53 +589,96 @@ class _Match(object):
 
         return match
 
-    def match_attribute_name(self, el, attr, prefix):
+    def match_attribute_name(self, el, a):
         """Match attribute name and return value if it exists."""
 
-        value = None
+        attr = a.attribute
+        prefix = a.prefix
+
+        values = []
+        ns_string = False
         if self.supports_namespaces():
-            value = None
             # If we have not defined namespaces, we can't very well find them, so don't bother trying.
             if prefix:
-                ns = self.namespaces.get(prefix)
-                if ns is None and prefix != '*':
-                    return None
+                if isinstance(prefix, str):
+                    ns_string = True
+                    ns = self.namespaces.get(prefix)
+                    if ns is None and prefix != '*':
+                        return values
+                else:
+                    ns = []
+                    for k, v in self.namespaces.items():
+                        if prefix.fullmatch(k):
+                            ns.append(v)
             else:
+                ns_string = True
                 ns = None
+
+            attr_string = isinstance(attr, str)
 
             for k, v in self.iter_attributes(el):
 
                 # Get attribute parts
                 namespace, name = self.split_namespace(el, k)
+                html_type = not (self.is_xml or util.lower(k) != 'type')
 
                 # Can't match a prefix attribute as we haven't specified one to match
                 # Try to match it normally as a whole `p:a` as selector may be trying `p\:a`.
                 if ns is None:
-                    if (self.is_xml and attr == k) or (not self.is_xml and util.lower(attr) == util.lower(k)):
-                        value = v
+                    if (
+                        attr_string and
+                        ((self.is_xml and attr == k) or (not self.is_xml and util.lower(attr) == util.lower(k)))
+                    ):
+                        values.append(
+                            (v, a.xml_type_pattern if not html_type and a.xml_type_pattern else a.pattern)
+                        )
                         break
+                    elif(
+                        not attr_string and
+                        (
+                            (self.is_xml and attr.fullmatch(k)) or
+                            (not self.is_xml and attr.fullmatch(util.lower(k)))
+                        )
+                    ):
+                        values.append((v, a.xml_type_pattern if not html_type and a.xml_type_pattern else a.pattern))
                     # Coverage is not finding this even though it is executed.
                     # Adding a print statement before this (and erasing coverage) causes coverage to find the line.
                     # Ignore the false positive message.
                     continue  # pragma: no cover
 
                 # We can't match our desired prefix attribute as the attribute doesn't have a prefix
-                if namespace is None or ns != namespace and prefix != '*':
+                if ns_string and (namespace is None or (ns != namespace and prefix != '*')):
+                    continue
+                elif not ns_string and (namespace is None or (namespace not in ns)):
                     continue
 
                 # The attribute doesn't match.
-                if (util.lower(attr) != util.lower(name)) if not self.is_xml else (attr != name):
+                if attr_string and ((util.lower(attr) != util.lower(name)) if not self.is_xml else (attr != name)):
+                    continue
+                elif (
+                    not attr_string and
+                    (attr.fullmatch(util.lower(name)) if not self.is_xml else attr.fullmatch(name) is not None)
+                ):
                     continue
 
-                value = v
+                values.append((v, a.xml_type_pattern if not html_type and a.xml_type_pattern else a.pattern))
+                if not ns_string or not attr_string:
+                    continue
                 break
         else:
+            attr_string = isinstance(attr, str)
+
             for k, v in self.iter_attributes(el):
-                if util.lower(attr) != util.lower(k):
+                html_type = not (self.is_xml or util.lower(k) != 'type')
+                if attr_string and util.lower(attr) != util.lower(k):
                     continue
-                value = v
+                elif not attr_string and attr.fullmatch(util.lower(k)) is None:
+                    continue
+                values.append((v, a.xml_type_pattern if not html_type and a.xml_type_pattern else a.pattern))
+                if not attr_string:
+                    continue
                 break
-        return value
+        return values
 
     def match_namespace(self, el, tag):
         """Match the namespace of the element."""
@@ -684,16 +727,25 @@ class _Match(object):
         match = True
         if attributes:
             for a in attributes:
-                value = self.match_attribute_name(el, a.attribute, a.prefix)
-                pattern = a.xml_type_pattern if self.is_xml and a.xml_type_pattern else a.pattern
-                if isinstance(value, list):
-                    value = ' '.join(value)
-                if value is None:
+                values = self.match_attribute_name(el, a)
+                if not values:
                     match = False
                     break
-                elif pattern is None:
-                    continue
-                elif pattern.match(value) is None:
+                found = False
+                for value, pattern in values:
+                    if isinstance(value, list):
+                        value = ' '.join(value)
+                    if value is None:
+                        continue
+                    elif pattern is None:
+                        found = True
+                        break
+                    elif pattern.match(value) is None:
+                        continue
+                    else:
+                        found = True
+                        break
+                if found is False:
                     match = False
                     break
         return match

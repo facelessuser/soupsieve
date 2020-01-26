@@ -167,7 +167,7 @@ class TestRegexAttribute(util.TestCase):
         )
 
 
-class TestClass(util.TestCase):
+class TestRegexClass(util.TestCase):
     """Test class selectors."""
 
     MARKUP = """
@@ -209,7 +209,7 @@ class TestClass(util.TestCase):
         )
 
 
-class TestId(util.TestCase):
+class TestRegexId(util.TestCase):
     """Test ID selectors."""
 
     MARKUP = """
@@ -255,7 +255,7 @@ class TestRegexType(util.TestCase):
         )
 
 
-class TestNamespace(util.TestCase):
+class TestRegexNamespace(util.TestCase):
     """Test namespace selectors."""
 
     MARKUP = """
@@ -285,6 +285,48 @@ class TestNamespace(util.TestCase):
       </other>
     </tag>
     """
+
+    MARKUP_ATTR = """
+    <div>
+      <h1>A contrived example</h1>
+      <svg viewBox="0 0 20 32" class="icon icon-1">
+        <use id="0" xlink:href="images/sprites.svg#icon-undo"></use>
+      </svg>
+      <svg viewBox="0 0 30 32" class="icon icon-2">
+        <use id="1" xlink:href="images/sprites.svg#icon-redo"></use>
+      </svg>
+      <svg viewBox="0 0 40 32" class="icon icon-3">
+        <use id="2" xlink:href="images/sprites.svg#icon-forward"></use>
+      </svg>
+      <svg viewBox="0 0 50 32" class="icon icon-4">
+        <use id="3" xlink:href="other/sprites.svg#icon-reply"></use>
+      </svg>
+      <svg viewBox="0 0 50 32" class="icon icon-4">
+        <use id="4" :href="other/sprites.svg#icon-reply"></use>
+      </svg>
+      <svg viewBox="0 0 50 32" class="icon icon-4">
+        <use id="5" other:href="other/sprites.svg#icon-reply" xlink:other="value doesn't match"></use>
+      </svg>
+    </div>
+    """
+
+    def wrap_xlink(self, content, xhtml=False):
+        """Wrap with `xlink`."""
+
+        xhtml_ns = 'xmlns="http://www.w3.org/1999/xhtml"' if xhtml else ''
+
+        return """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+            "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+        <html {} xmlns:xlink="http://www.w3.org/1999/xlink">
+        <head>
+        </head>
+        <body>
+        {}
+        </body>
+        </html>
+        """.format(xhtml_ns, content)
 
     def test_namespace_regex(self):
         """Test namespace."""
@@ -336,4 +378,52 @@ class TestNamespace(util.TestCase):
                 "bar": "http://me.com/namespaces/foobar"
             },
             flags=util.XML
+        )
+
+    def test_attribute_namespace_xml(self):
+        """Test attribute namespace in XML."""
+
+        self.assert_selector(
+            self.wrap_xlink(self.MARKUP_ATTR),
+            r'[/x.*/|href*=forw],[/x.*/|href="images/sprites.svg#icon-redo"]',
+            ['1', '2'],
+            namespaces={"xlink": "http://www.w3.org/1999/xlink"},
+            flags=util.XHTML
+        )
+
+
+class TestRegexAttributeName(util.TestCase):
+    """Test attribute selectors."""
+
+    MARKUP = """
+    <div id="div">
+    <p id="0" class="herearesomewords">Some text <span id="1"> in a paragraph</span>.</p>
+    <a id="2" href="http://google.com">Link</a>
+    <span id="3">Direct child</span>
+    <pre id="pre">
+    <span id="4">Child 1</span>
+    <span id="5">Child 2</span>
+    <span id="6">Child 3</span>
+    </pre>
+    </div>
+    """
+
+    def test_attribute_begins(self):
+        """Test attribute whose value begins with the specified value."""
+
+        self.assert_selector(
+            self.MARKUP,
+            r"[/clas{2}/^=here]",
+            ["0"],
+            flags=util.HTML
+        )
+
+    def test_attribute_begins_wild(self):
+        """Test attribute whose value begins with the specified value."""
+
+        self.assert_selector(
+            self.MARKUP,
+            r"[/.*/^=here]",
+            ["0"],
+            flags=util.HTML
         )

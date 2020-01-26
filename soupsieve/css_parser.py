@@ -125,11 +125,15 @@ PAT_ID_REGEX = r'\#(?:{ident}|{regex})'.format(ident=IDENTIFIER, regex=REGEXP_ID
 PAT_CLASS = r'\.{ident}'.format(ident=IDENTIFIER)
 PAT_CLASS_REGEX = r'\.(?:{ident}|{regex})'.format(ident=IDENTIFIER, regex=REGEXP_IDENTIFIER)
 # Prefix:Tag (`prefix|tag`)
-PAT_TAG = r'(?P<tag_ns>(?:{ident}|{regex}|\*)?\|)?(?P<tag_name>{ident}|{regex}|\*)'.format(
+PAT_TAG = r'(?P<tag_ns>(?:{ident}|\*)?\|)?(?P<tag_name>{ident}|\*)'.format(ident=IDENTIFIER)
+PAT_TAG_REGEX = r'(?P<tag_ns>(?:{ident}|{regex}|\*)?\|)?(?P<tag_name>{ident}|{regex}|\*)'.format(
     ident=IDENTIFIER, regex=REGEXP_IDENTIFIER
 )
 # Attributes (`[attr]`, `[attr=value]`, etc.)
-PAT_ATTR = r'\[{ws}*(?P<ns_attr>(?:(?:{ident}|{regex}|\*)?\|)?(?:{ident}|{regex})){attr}'.format(
+PAT_ATTR = r'\[{ws}*(?P<attr_ns>(?:{ident}|\*)?\|)?(?P<attr_name>{ident}){attr}'.format(
+    ws=WSC, ident=IDENTIFIER, attr=ATTR
+)
+PAT_ATTR_REGEX = r'\[{ws}*(?P<attr_ns>(?:{ident}|{regex}|\*)?\|)?(?P<attr_name>{ident}|{regex}){attr}'.format(
     ws=WSC, ident=IDENTIFIER, attr=ATTR, regex=REGEXP_IDENTIFIER
 )
 # Pseudo class (`:pseudo-class`, `:pseudo-class(`)
@@ -448,8 +452,8 @@ class CSSParser(object):
         SelectorPattern("at_rule", PAT_AT_RULE),
         SelectorPattern("id", PAT_ID_REGEX),
         SelectorPattern("class", PAT_CLASS_REGEX),
-        SelectorPattern("tag", PAT_TAG),
-        SelectorPattern("attribute", PAT_ATTR),
+        SelectorPattern("tag", PAT_TAG_REGEX),
+        SelectorPattern("attribute", PAT_ATTR_REGEX),
         SelectorPattern("combine", PAT_COMBINE)
     )
 
@@ -468,14 +472,32 @@ class CSSParser(object):
         is_regex = False
         op = m.group('cmp')
         case = util.lower(m.group('case')) if m.group('case') else None
-        ns = css_unescape(m.group('attr_ns')[:-1]) if m.group('attr_ns') else ''
-        attr = css_unescape(m.group('attr_name'))
+
         is_type = False
         pattern2 = None
 
+        ns = m.group('attr_ns')[:-1] if m.group('attr_ns') else ''
+        if ns.startswith('/'):
+            ns = re.compile(ns[1:-1])
+        else:
+            ns = css_unescape(ns)
+
+        attr = m.group('attr_name')
+        if attr.startswith('/'):
+            regex_name = True
+            attr = re.compile(attr[1:-1])
+        else:
+            regex_name = False
+            attr = css_unescape(attr)
+
         if case:
             flags = re.I if case == 'i' else 0
-        elif util.lower(attr) == 'type' and (not op or not m.group('value').startswith('/')):
+        elif (
+            (
+                (not regex_name and util.lower(attr) == 'type') or
+                (regex_name and re.fullmatch(attr.pattern, 'type', re.I))
+            ) and not (op and m.group('value').startswith('/'))
+        ):
             flags = re.I
             is_type = True
         else:
