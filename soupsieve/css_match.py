@@ -657,7 +657,7 @@ class _Match(object):
                     continue
                 elif (
                     not attr_string and
-                    (attr.fullmatch(util.lower(name)) if not self.is_xml else attr.fullmatch(name) is not None)
+                    (attr.fullmatch(util.lower(name)) is None if not self.is_xml else attr.fullmatch(name) is None)
                 ):
                     continue
 
@@ -735,9 +735,7 @@ class _Match(object):
                 for value, pattern in values:
                     if isinstance(value, list):
                         value = ' '.join(value)
-                    if value is None:
-                        continue
-                    elif pattern is None:
+                    if pattern is None:
                         found = True
                         break
                     elif pattern.match(value) is None:

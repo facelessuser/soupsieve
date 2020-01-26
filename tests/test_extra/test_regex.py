@@ -391,6 +391,17 @@ class TestRegexNamespace(util.TestCase):
             flags=util.XHTML
         )
 
+    def test_attribute_namespace_xml_no_match(self):
+        """Test attribute namespace in XML."""
+
+        self.assert_regex_selector(
+            self.wrap_xlink(self.MARKUP_ATTR),
+            r'[/x.*/|/nomatch/*=forw]',
+            [],
+            namespaces={"xlink": "http://www.w3.org/1999/xlink"},
+            flags=util.XHTML
+        )
+
 
 class TestRegexAttributeName(util.TestCase):
     """Test attribute selectors."""
