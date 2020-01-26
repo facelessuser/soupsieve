@@ -138,6 +138,16 @@ class TestRegexAttribute(util.TestCase):
             flags=util.HTML
         )
 
+    def test_attribute_start_dash_regex_case(self):
+        """Test attribute whose dash separated value starts with the specified value with case insensitivity."""
+
+        self.assert_regex_selector(
+            self.MARKUP_LANG,
+            r"[lang|=/(?i)E./]",
+            ["0"],
+            flags=util.HTML
+        )
+
     def test_attribute_start_dash_regex_fail(self):
         """Test attribute whose dash separated value starts with the specified value."""
 

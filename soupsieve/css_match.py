@@ -662,7 +662,7 @@ class _Match(object):
                     continue
 
                 values.append((v, a.xml_type_pattern if not html_type and a.xml_type_pattern else a.pattern))
-                if not ns_string or not attr_string:
+                if not ns_string or not attr_string:  # pragma: no cover
                     continue
                 break
         else:
@@ -738,7 +738,7 @@ class _Match(object):
                     if pattern is None:
                         found = True
                         break
-                    elif pattern.match(value) is None:
+                    elif pattern.fullmatch(value) is None:
                         continue
                     else:
                         found = True

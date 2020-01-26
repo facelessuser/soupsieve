@@ -128,16 +128,16 @@ PAT_CLASS = r'\.{ident}'.format(ident=IDENTIFIER)
 PAT_CLASS_REGEX = r'\.(?:{ident}|{regex})'.format(ident=IDENTIFIER, regex=REGEXP_IDENTIFIER)
 # Prefix:Tag (`prefix|tag`)
 PAT_TAG = r'(?P<tag_ns>(?:{ident}|\*)?\|)?(?P<tag_name>{ident}|\*)'.format(ident=IDENTIFIER)
-PAT_TAG_REGEX = r'(?P<tag_ns>(?:{ident}|{regex}|\*)?\|)?(?P<tag_name>{ident}|{regex}|\*)'.format(
-    ident=IDENTIFIER, regex=REGEXP_IDENTIFIER
-)
+PAT_TAG_REGEX = r'''
+(?P<tag_ns>(?:{ident}|{regex}|\*)?\|)?(?P<tag_name>{ident}|{regex}|\*)
+'''.format(ident=IDENTIFIER, regex=REGEXP_IDENTIFIER)
 # Attributes (`[attr]`, `[attr=value]`, etc.)
-PAT_ATTR = r'\[{ws}*(?P<attr_ns>(?:{ident}|\*)?\|)?(?P<attr_name>{ident}){attr}'.format(
-    ws=WSC, ident=IDENTIFIER, attr=ATTR
-)
-PAT_ATTR_REGEX = r'\[{ws}*(?P<attr_ns>(?:{ident}|{regex}|\*)?\|)?(?P<attr_name>{ident}|{regex}){attr}'.format(
-    ws=WSC, ident=IDENTIFIER, attr=ATTR_REGEX, regex=REGEXP_IDENTIFIER
-)
+PAT_ATTR = r'''
+\[{ws}*(?P<attr_ns>(?:{ident}|\*)?\|)?(?P<attr_name>{ident}){attr}
+'''.format(ws=WSC, ident=IDENTIFIER, attr=ATTR)
+PAT_ATTR_REGEX = r'''
+\[{ws}*(?P<attr_ns>(?:{ident}|{regex}|\*)?\|)?(?P<attr_name>{ident}|{regex}){attr}
+'''.format(ws=WSC, ident=IDENTIFIER, attr=ATTR_REGEX, regex=REGEXP_IDENTIFIER)
 # Pseudo class (`:pseudo-class`, `:pseudo-class(`)
 PAT_PSEUDO_CLASS = r'(?P<name>:{ident})(?P<open>\({ws}*)?'.format(ws=WSC, ident=IDENTIFIER)
 # Pseudo class special patterns. Matches `:pseudo-class(` for special case pseudo classes.
@@ -197,6 +197,9 @@ RE_WS = re.compile(WS)
 RE_WS_BEGIN = re.compile('^{}*'.format(WSC))
 RE_WS_END = re.compile('{}*$'.format(WSC))
 RE_CUSTOM = re.compile(r'^{}$'.format(PAT_PSEUDO_CLASS_CUSTOM), re.X)
+
+# Regex flags
+RE_REGEX_FLAGS = re.compile(r'\s*(\(\?[aiLmsux]+\))')
 
 # Constants
 # List split token
@@ -504,7 +507,6 @@ class CSSParser(object):
         is_regex = False
         op = m.group('cmp')
         case = util.lower(m.group('case')) if m.group('case') else None
-
         is_type = False
         pattern2 = None
 
@@ -514,6 +516,7 @@ class CSSParser(object):
         else:
             ns = css_unescape(ns)
 
+        re_flags = ''
         attr = m.group('attr_name')
         if attr.startswith('/'):
             regex_name = True
@@ -540,6 +543,10 @@ class CSSParser(object):
                 value = css_unescape(m.group('value')[1:-1], True)
             elif m.group('value').startswith('/'):
                 value = m.group('value')[1:-1]
+                m2 = RE_REGEX_FLAGS.match(value)
+                if m2:
+                    re_flags = m2.group(1)
+                    value = value[0:m2.start(1)] + value[m2.end(1):]
                 is_regex = True
             else:
                 value = css_unescape(m.group('value'))
@@ -550,25 +557,28 @@ class CSSParser(object):
             pattern = None
         elif op.startswith('^'):
             # Value start with
-            pattern = re.compile(r'^%s.*' % (value if is_regex else re.escape(value)), flags)
+            pattern = re.compile(r'%s%s.*' % (re_flags, value if is_regex else re.escape(value)), flags)
         elif op.startswith('$'):
             # Value ends with
-            pattern = re.compile(r'.*?%s$' % (value if is_regex else re.escape(value)), flags)
+            pattern = re.compile(r'%s.*?%s' % (re_flags, value if is_regex else re.escape(value)), flags)
         elif op.startswith('*'):
             # Value contains
-            pattern = re.compile(r'.*?%s.*' % (value if is_regex else re.escape(value)), flags)
+            pattern = re.compile(r'%s.*?%s.*' % (re_flags, value if is_regex else re.escape(value)), flags)
         elif op.startswith('~'):
             # Value contains word within space separated list
             # `~=` should match nothing if it is empty or contains whitespace,
             # so if either of these cases is present, use `[^\s\S]` which cannot be matched.
             value = r'[^\s\S]' if not value or RE_WS.search(value) else (value if is_regex else re.escape(value))
-            pattern = re.compile(r'.*?(?:(?<=^)|(?<=[ \t\r\n\f]))%s(?=(?:[ \t\r\n\f]|$)).*' % value, flags)
+            pattern = re.compile(
+                r'%s.*?(?:(?<=^)|(?<=[ \t\r\n\f]))%s(?=(?:[ \t\r\n\f]|$)).*' % (re_flags, value),
+                flags
+            )
         elif op.startswith('|'):
             # Value starts with word in dash separated list
-            pattern = re.compile(r'^%s(?:-.*)?$' % (value if is_regex else re.escape(value)), flags)
+            pattern = re.compile(r'%s%s(?:-.*)?' % (re_flags, value if is_regex else re.escape(value)), flags)
         else:
             # Value matches
-            pattern = re.compile(r'^%s$' % (value if is_regex else re.escape(value)), flags)
+            pattern = re.compile(r'%s%s' % (re_flags, value if is_regex else re.escape(value)), flags)
             if op.startswith('!'):
                 # Equivalent to `:not([attr=value])`
                 inverse = True
