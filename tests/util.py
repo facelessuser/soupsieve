@@ -121,6 +121,24 @@ class TestCase(unittest.TestCase):
                 ids.append(el.attrs['id'])
             self.assertEqual(sorted(ids), sorted(expected_ids))
 
+    def assert_regex_selector(self, markup, selectors, expected_ids, namespaces={}, custom=None, flags=0):
+        """Assert selector."""
+
+        parsers = self.get_parsers(flags)
+
+        print('----Running Selector Test----')
+        selector = self.compile_pattern(selectors, namespaces, custom, sv.REGEX)
+
+        for parser in available_parsers(*parsers):
+            soup = self.soup(markup, parser)
+            # print(soup)
+
+            ids = []
+            for el in selector.select(soup):
+                print('TAG: ', el.name)
+                ids.append(el.attrs['id'])
+            self.assertEqual(sorted(ids), sorted(expected_ids))
+
 
 def available_parsers(*parsers):
     """Filter a list of parsers, down to the available ones.

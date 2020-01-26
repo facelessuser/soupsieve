@@ -114,8 +114,10 @@ VALUE_WITH_REGEX = r'''
 # Attribute value comparison. `!=` is handled special as it is non-standard.
 ATTR = r'''
 (?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*(?P<value>{value})(?:{ws}+(?P<case>[is]))?)?{ws}*\]
+'''.format(ws=WSC, value=VALUE)
+ATTR_REGEX = r'''
+(?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*(?P<value>{value})(?:{ws}+(?P<case>[is]))?)?{ws}*\]
 '''.format(ws=WSC, value=VALUE_WITH_REGEX)
-# '''.format(ws=WSC, value=VALUE)
 
 # Selector patterns
 # IDs (`#id`)
@@ -134,7 +136,7 @@ PAT_ATTR = r'\[{ws}*(?P<attr_ns>(?:{ident}|\*)?\|)?(?P<attr_name>{ident}){attr}'
     ws=WSC, ident=IDENTIFIER, attr=ATTR
 )
 PAT_ATTR_REGEX = r'\[{ws}*(?P<attr_ns>(?:{ident}|{regex}|\*)?\|)?(?P<attr_name>{ident}|{regex}){attr}'.format(
-    ws=WSC, ident=IDENTIFIER, attr=ATTR, regex=REGEXP_IDENTIFIER
+    ws=WSC, ident=IDENTIFIER, attr=ATTR_REGEX, regex=REGEXP_IDENTIFIER
 )
 # Pseudo class (`:pseudo-class`, `:pseudo-class(`)
 PAT_PSEUDO_CLASS = r'(?P<name>:{ident})(?P<open>\({ws}*)?'.format(ws=WSC, ident=IDENTIFIER)
@@ -168,8 +170,10 @@ PAT_PSEUDO_DIR = r'{name}(?P<dir>ltr|rtl){ws}*\)'.format(name=PAT_PSEUDO_CLASS_S
 PAT_COMBINE = r'{wsc}*?(?P<relation>[,+>~]|{ws}(?![,+>~])){wsc}*'.format(ws=WS, wsc=WSC)
 # Extra: Contains (`:contains(text)`)
 PAT_PSEUDO_CONTAINS = r'{name}(?P<values>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'.format(
+    name=PAT_PSEUDO_CLASS_SPECIAL, ws=WSC, value=VALUE
+)
+PAT_PSEUDO_CONTAINS_REGEX = r'{name}(?P<values>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'.format(
     name=PAT_PSEUDO_CLASS_SPECIAL, ws=WSC, value=VALUE_WITH_REGEX
-    # name=PAT_PSEUDO_CLASS_SPECIAL, ws=WSC, value=VALUE
 )
 
 # Regular expressions
@@ -326,6 +330,28 @@ class SelectorPattern(object):
         return self.re_pattern.match(selector, index)
 
 
+class SelectorRegexPattern(object):
+    """Selector pattern."""
+
+    def __init__(self, name, patterns):
+        """Initialize."""
+
+        self.name = name
+        self.re_pattern = re.compile(patterns[0], re.I | re.X | re.U)
+        self.re_pattern_regex = re.compile(patterns[1], re.I | re.X | re.U)
+
+    def get_name(self):
+        """Get name."""
+
+        return self.name
+
+    def match(self, selector, index, flags):
+        """Match the selector."""
+
+        use_regex = flags & util.REGEX
+        return self.re_pattern_regex.match(selector, index) if use_regex else self.re_pattern.match(selector, index)
+
+
 class SpecialPseudoPattern(SelectorPattern):
     """Selector pattern."""
 
@@ -333,6 +359,7 @@ class SpecialPseudoPattern(SelectorPattern):
         """Initialize."""
 
         self.patterns = {}
+        self.last_flags = 0
         for p in patterns:
             name = p[0]
             pattern = p[3](name, p[2])
@@ -439,7 +466,12 @@ class CSSParser(object):
         SelectorPattern("pseudo_close", PAT_PSEUDO_CLOSE),
         SpecialPseudoPattern(
             (
-                ("pseudo_contains", (':contains',), PAT_PSEUDO_CONTAINS, SelectorPattern),
+                (
+                    "pseudo_contains",
+                    (':contains',),
+                    (PAT_PSEUDO_CONTAINS, PAT_PSEUDO_CONTAINS_REGEX),
+                    SelectorRegexPattern
+                ),
                 ("pseudo_nth_child", (':nth-child', ':nth-last-child'), PAT_PSEUDO_NTH_CHILD, SelectorPattern),
                 ("pseudo_nth_type", (':nth-of-type', ':nth-last-of-type'), PAT_PSEUDO_NTH_TYPE, SelectorPattern),
                 ("pseudo_lang", (':lang',), PAT_PSEUDO_LANG, SelectorPattern),
@@ -450,10 +482,10 @@ class CSSParser(object):
         SelectorPattern("pseudo_class", PAT_PSEUDO_CLASS),
         SelectorPattern("pseudo_element", PAT_PSEUDO_ELEMENT),
         SelectorPattern("at_rule", PAT_AT_RULE),
-        SelectorPattern("id", PAT_ID_REGEX),
-        SelectorPattern("class", PAT_CLASS_REGEX),
-        SelectorPattern("tag", PAT_TAG_REGEX),
-        SelectorPattern("attribute", PAT_ATTR_REGEX),
+        SelectorRegexPattern("id", (PAT_ID, PAT_ID_REGEX)),
+        SelectorRegexPattern("class", (PAT_CLASS, PAT_CLASS_REGEX)),
+        SelectorRegexPattern("tag", (PAT_TAG, PAT_TAG_REGEX)),
+        SelectorRegexPattern("attribute", (PAT_ATTR, PAT_ATTR_REGEX)),
         SelectorPattern("combine", PAT_COMBINE)
     )
 

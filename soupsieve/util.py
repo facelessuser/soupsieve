@@ -6,6 +6,7 @@ import re
 MODULE = os.path.dirname(__file__)
 
 DEBUG = 0x00001
+REGEX = 0x00002
 
 RE_PATTERN_LINE_SPLIT = re.compile(r'(?:\r\n|(?!\r\n)[\n\r])|$')
 

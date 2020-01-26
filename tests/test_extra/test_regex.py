@@ -18,7 +18,7 @@ class TestRegexContains(util.TestCase):
     def test_contains_regex(self):
         """Test contains with regex."""
 
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP,
             r'body span:contains(/t\w+/)',
             ['2'],
@@ -28,7 +28,7 @@ class TestRegexContains(util.TestCase):
     def test_contains_regex_no_match(self):
         """Test contains that does not match regex."""
 
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP,
             r'body span:contains(/T\w+/)',
             [],
@@ -38,7 +38,7 @@ class TestRegexContains(util.TestCase):
     def test_contains_regex_flags(self):
         """Test contains using regex flags."""
 
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP,
             r'body span:contains(/(?i)T\w+/)',
             ['2'],
@@ -78,7 +78,7 @@ class TestRegexAttribute(util.TestCase):
     def test_attribute_begins_regex(self):
         """Test attribute whose value begins with the specified value."""
 
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP,
             r"[class^=/h[e]re/]",
             ["0"],
@@ -88,7 +88,7 @@ class TestRegexAttribute(util.TestCase):
     def test_attribute_end_regex(self):
         """Test attribute whose value ends with the specified value."""
 
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP,
             r"[class$=/w[or]+ds/]",
             ["0"],
@@ -111,7 +111,7 @@ class TestRegexAttribute(util.TestCase):
         </div>
         """
 
-        self.assert_selector(
+        self.assert_regex_selector(
             markup,
             r"[class*=/w[or]+ds/]",
             ["0", "3", "pre"],
@@ -121,7 +121,7 @@ class TestRegexAttribute(util.TestCase):
     def test_attribute_equal_regex(self):
         """Test attribute equals a value."""
 
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP_LANG,
             r"[lang=/e.*?s/]",
             ["0"],
@@ -131,7 +131,7 @@ class TestRegexAttribute(util.TestCase):
     def test_attribute_start_dash_regex(self):
         """Test attribute whose dash separated value starts with the specified value."""
 
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP_LANG,
             r"[lang|=/e./]",
             ["0"],
@@ -141,7 +141,7 @@ class TestRegexAttribute(util.TestCase):
     def test_attribute_start_dash_regex_fail(self):
         """Test attribute whose dash separated value starts with the specified value."""
 
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP_LANG,
             r"[lang|=/E./]",
             [],
@@ -151,7 +151,7 @@ class TestRegexAttribute(util.TestCase):
     def test_attribute_start_dash_regex_flags(self):
         """Test attribute whose dash separated value starts with the specified value."""
 
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP_LANG,
             r"[lang|=/(?i)E./]",
             ["0"],
@@ -159,7 +159,7 @@ class TestRegexAttribute(util.TestCase):
         )
 
         # Attribute style case selection
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP_LANG,
             r"[lang|=/E./ i]",
             ["0"],
@@ -181,7 +181,7 @@ class TestRegexClass(util.TestCase):
     def test_class(self):
         """Test class."""
 
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP,
             r"./fo{2}/",
             ["1"],
@@ -201,7 +201,7 @@ class TestRegexClass(util.TestCase):
         </div>
         """
 
-        self.assert_selector(
+        self.assert_regex_selector(
             markup,
             "a./fo{2}/./b.*/",
             ["4"],
@@ -223,7 +223,7 @@ class TestRegexId(util.TestCase):
     def test_id(self):
         """Test ID."""
 
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP,
             r"#/u.*/",
             ["unique"],
@@ -237,7 +237,7 @@ class TestRegexType(util.TestCase):
     def test_basic_type(self):
         """Test type."""
 
-        self.assert_selector(
+        self.assert_regex_selector(
             """
             <html>
             <head></head>
@@ -331,7 +331,7 @@ class TestRegexNamespace(util.TestCase):
     def test_namespace_regex(self):
         """Test namespace."""
 
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP,
             r"/fo{2}/|title",
             ["3"],
@@ -342,7 +342,7 @@ class TestRegexNamespace(util.TestCase):
             flags=util.XML
         )
 
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP,
             r"/(?:foo|bar)/|title",
             ["3", "4"],
@@ -357,7 +357,7 @@ class TestRegexNamespace(util.TestCase):
         """Test that namespaces are always case sensitive."""
 
         # These won't match
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP,
             r"/FO{2}/|title",
             [],
@@ -369,7 +369,7 @@ class TestRegexNamespace(util.TestCase):
         )
 
         # These won't match
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP,
             r"/(?i)FO{2}/|title",
             ["3"],
@@ -383,7 +383,7 @@ class TestRegexNamespace(util.TestCase):
     def test_attribute_namespace_xml(self):
         """Test attribute namespace in XML."""
 
-        self.assert_selector(
+        self.assert_regex_selector(
             self.wrap_xlink(self.MARKUP_ATTR),
             r'[/x.*/|href*=forw],[/x.*/|href="images/sprites.svg#icon-redo"]',
             ['1', '2'],
@@ -411,7 +411,7 @@ class TestRegexAttributeName(util.TestCase):
     def test_attribute_begins(self):
         """Test attribute whose value begins with the specified value."""
 
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP,
             r"[/clas{2}/^=here]",
             ["0"],
@@ -421,7 +421,7 @@ class TestRegexAttributeName(util.TestCase):
     def test_attribute_begins_wild(self):
         """Test attribute whose value begins with the specified value."""
 
-        self.assert_selector(
+        self.assert_regex_selector(
             self.MARKUP,
             r"[/.*/^=here]",
             ["0"],

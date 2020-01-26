@@ -29,10 +29,10 @@ from .__meta__ import __version__, __version_info__  # noqa: F401
 from . import css_parser as cp
 from . import css_match as cm
 from . import css_types as ct
-from .util import DEBUG, SelectorSyntaxError  # noqa: F401
+from .util import DEBUG, REGEX, SelectorSyntaxError  # noqa: F401
 
 __all__ = (
-    'DEBUG', 'SelectorSyntaxError', 'SoupSieve',
+    'DEBUG', 'REGEX', 'SelectorSyntaxError', 'SoupSieve',
     'closest', 'compile', 'filter', 'iselect',
     'match', 'select', 'select_one'
 )
