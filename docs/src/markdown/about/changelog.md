@@ -3,6 +3,7 @@
 ## 2.0.0
 
 - **NEW**: `SelectorSyntaxError` is derived from `Exception` not `SyntaxError`.
+- **NEW**: Remove deprecated `comments` and `icomments` from the API.
 - **NEW**: Drop support for EOL Python versions (Python 2 and Python < 3.5).
 
 ## 1.9.5

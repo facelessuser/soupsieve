@@ -157,33 +157,6 @@ and flags.
 [<p class="a">Cat</p>, <p class="c">Mouse</p>]
 ```
 
-## `soupsieve.comments()`
-
-```py3
-def comments(tag, limit=0, flags=0, **kwargs):
-    """Get comments only."""
-```
-
-The `comments` function can be used to extract all comments from a document or document tag. It will return comments
-from the given tag down through all of its children.  You can limit how many comments are returned with `limit`.
-
-`comments` accepts a `Tag`/`BeautifulSoup` object, a `limit`, and flags.
-
-!!! warning "Deprecated in 1.9.0"
-    `comments` is deprecated so Soup Sieve can focus on only CSS selectors. `comments` will be removed in version 2.0.
-
-## `soupsieve.icomments()`
-
-```py3
-def icomments(node, limit=0, flags=0, **kwargs):
-    """Get comments only."""
-```
-
-`icomments` is exactly like `comments` except that it returns a generator instead of a list.
-
-!!! warning "Deprecated in 1.9.0"
-    `icomments` is deprecated so Soup Sieve can focus on only CSS selectors. `comments` will be removed in version 2.0.
-
 ## `soupsieve.escape()`
 
 ```py3
@@ -232,12 +205,6 @@ class SoupSieve:
 
     def filter(self, iterable):
         """Filter."""
-
-    def comments(self, tag, limit=0):
-        """Get comments only."""
-
-    def icomments(self, tag, limit=0):
-        """Iterate comments only."""
 
     def select_one(self, tag):
         """Select a single tag."""
