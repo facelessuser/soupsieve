@@ -127,7 +127,7 @@ class TestCase(unittest.TestCase):
         parsers = self.get_parsers(flags)
 
         print('----Running Selector Test----')
-        selector = self.compile_pattern(selectors, namespaces, custom, sv.REGEX)
+        selector = self.compile_pattern(selectors, namespaces, custom, sv.RE)
 
         for parser in available_parsers(*parsers):
             soup = self.soup(markup, parser)

@@ -351,7 +351,7 @@ class SelectorRegexPattern(object):
     def match(self, selector, index, flags):
         """Match the selector."""
 
-        use_regex = flags & util.REGEX
+        use_regex = flags & util.RE
         return self.re_pattern_regex.match(selector, index) if use_regex else self.re_pattern.match(selector, index)
 
 
