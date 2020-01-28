@@ -5,6 +5,7 @@
 - **NEW**: `SelectorSyntaxError` is derived from `Exception` not `SyntaxError`.
 - **NEW**: Remove deprecated `comments` and `icomments` from the API.
 - **NEW**: Drop support for EOL Python versions (Python 2 and Python < 3.5).
+- **FIX**: Corner case with splitting namespace and tag name that that have an escaped `|`.
 
 ## 1.9.5
 
