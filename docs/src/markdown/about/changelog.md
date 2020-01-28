@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.6
+
+- **FIX**: Corner case with splitting namespace and tag name that that have an escaped `|`.
+
 ## 1.9.5
 
 - **FIX**: `:placeholder-shown` should not match if the element has content that overrides the placeholder.
