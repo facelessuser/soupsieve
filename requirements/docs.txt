@@ -1,2 +1,2 @@
-mkdocs-material>=2.2.5
+mkdocs_pymdownx_material_extras>=1.0b1
 pyspelling

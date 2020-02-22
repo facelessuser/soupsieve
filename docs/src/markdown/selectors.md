@@ -133,25 +133,27 @@ If a default namespace is defined in the [namespace dictionary](./api.md#namespa
 [namespace](#namespace-selectors) is explicitly defined, it will be assumed that the element must be in the default
 namespace.
 
-```css tab="Syntax"
-element
-```
+=== "Syntax"
+    ```css
+    element
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-...   <div>Here is some text.</div>
-...   <div>Here is some more text.</div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('div'))
-[<div>Here is some text.</div>, <div>Here is some more text.</div>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ...   <div>Here is some text.</div>
+    ...   <div>Here is some more text.</div>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('div'))
+    [<div>Here is some text.</div>, <div>Here is some more text.</div>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/Type_selectors
@@ -160,36 +162,38 @@ element
 
 The Universal selector (`*`) matches elements of any type.
 
-```css tab="Syntax"
-*
-```
+=== "Syntax"
+    ```css
+    *
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-...    <p>Here is some text.</p>
-...    <div>Here is some more text.</div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('*'))
-[<html><head></head>
-<body>
-   <div>Here is some text.</div>
-   <div>Here is some more text.</div>
-
-
-</body></html>, <head></head>, <body>
-   <div>Here is some text.</div>
-   <div>Here is some more text.</div>
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ...    <p>Here is some text.</p>
+    ...    <div>Here is some more text.</div>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('*'))
+    [<html><head></head>
+    <body>
+       <div>Here is some text.</div>
+       <div>Here is some more text.</div>
 
 
-</body>, <div>Here is some text.</div>, <div>Here is some more text.</div>]
-```
+    </body></html>, <head></head>, <body>
+       <div>Here is some text.</div>
+       <div>Here is some more text.</div>
+
+
+    </body>, <div>Here is some text.</div>, <div>Here is some more text.</div>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/Universal_selectors
@@ -198,25 +202,27 @@ The Universal selector (`*`) matches elements of any type.
 
 The ID selector matches an element based on its `id` attribute. The ID must match exactly.
 
-```css tab="Syntax"
-#id
-```
+=== "Syntax"
+    ```css
+    #id
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-...    <div id="some-id">Here is some text.</div>
-...    <div>Here is some more text.</div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('#some-id'))
-[<div id="some-id">Here is some text.</div>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ...    <div id="some-id">Here is some text.</div>
+    ...    <div>Here is some more text.</div>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('#some-id'))
+    [<div id="some-id">Here is some text.</div>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/ID_selectors
@@ -230,25 +236,27 @@ The ID selector matches an element based on its `id` attribute. The ID must matc
 The class selector matches an element based on the values contained in the `class` attribute. The `class` attribute is
 treated as a whitespace separated list, where each item is a **class**.
 
-```css tab="Syntax"
-.class
-```
+=== "Syntax"
+    ```css
+    .class
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-...    <div class="some-class">Here is some text.</div>
-...    <div>Here is some more text.</div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('.some-class'))
-[<div class="some-class">Here is some text.</div>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ...    <div class="some-class">Here is some text.</div>
+    ...    <div>Here is some more text.</div>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('.some-class'))
+    [<div class="some-class">Here is some text.</div>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/Class_selectors
@@ -269,230 +277,246 @@ contains whitespace or special characters, you should quote them with either sin
 : 
     Represents elements with an attribute named **attribute**.
 
-    ```css tab="Syntax"
-    [attr]
-    ```
+    === "Syntax"
+        ```css
+        [attr]
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('[href]'))
-    [<a href="#internal">Internal link</a>, <a href="http://example.com">Example link</a>, <a href="#InSensitive">Insensitive internal link</a>, <a href="http://example.org">Example org link</a>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ... <ul>
+        ...   <li><a href="#internal">Internal link</a></li>
+        ...   <li><a href="http://example.com">Example link</a></li>
+        ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
+        ...   <li><a href="http://example.org">Example org link</a></li>
+        ... </ul>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('[href]'))
+        [<a href="#internal">Internal link</a>, <a href="http://example.com">Example link</a>, <a href="#InSensitive">Insensitive internal link</a>, <a href="http://example.org">Example org link</a>]
+        ```
 
 `[attribute=value]`
 : 
     Represents elements with an attribute named **attribute** that also has a value of **value**.
 
-    ```css tab="Syntax"
-    [attr=value]
-    [attr="value"]
-    ```
+    === "Syntax"
+        ```css
+        [attr=value]
+        [attr="value"]
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('[href="#internal"]'))
-    [<a href="#internal">Internal link</a>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ... <ul>
+        ...   <li><a href="#internal">Internal link</a></li>
+        ...   <li><a href="http://example.com">Example link</a></li>
+        ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
+        ...   <li><a href="http://example.org">Example org link</a></li>
+        ... </ul>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('[href="#internal"]'))
+        [<a href="#internal">Internal link</a>]
+        ```
 
 `[attribute~=value]`
 : 
     Represents elements with an attribute named **attribute** whose value is a space separated list which contains
     **value**.
 
-    ```css tab="Syntax"
-    [attr~=value]
-    [attr~="value"]
-    ```
+    === "Syntax"
+        ```css
+        [attr~=value]
+        [attr~="value"]
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal" class="class1 class2 class3">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('[class~=class2]'))
-    [<a class="class1 class2 class3" href="#internal">Internal link</a>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ... <ul>
+        ...   <li><a href="#internal" class="class1 class2 class3">Internal link</a></li>
+        ...   <li><a href="http://example.com">Example link</a></li>
+        ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
+        ...   <li><a href="http://example.org">Example org link</a></li>
+        ... </ul>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('[class~=class2]'))
+        [<a class="class1 class2 class3" href="#internal">Internal link</a>]
+        ```
 
 `[attribute|=value]`
 : 
     Represents elements with an attribute named **attribute** whose value is a dash separated list that starts with
     **value**.
 
-    ```css tab="Syntax"
-    [attr|=value]
-    [attr|="value"]
-    ```
+    === "Syntax"
+        ```css
+        [attr|=value]
+        [attr|="value"]
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <div lang="en">Some text</div>
-    ... <div lang="en-US">Some more text</div>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('a[href!="#internal"]'))
-    [<div lang="en">Some text</div>, <div lang="en-US">Some more text</div>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ... <div lang="en">Some text</div>
+        ... <div lang="en-US">Some more text</div>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('a[href!="#internal"]'))
+        [<div lang="en">Some text</div>, <div lang="en-US">Some more text</div>]
+        ```
 
 `[attribute^=value]`
 : 
     Represents elements with an attribute named **attribute** whose value starts with **value**.
 
-    ```css tab="Syntax"
-    [attr^=value]
-    [attr^="value"]
-    ```
+    === "Syntax"
+        ```css
+        [attr^=value]
+        [attr^="value"]
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('[href^=http]'))
-    [<a href="http://example.com">Example link</a>, <a href="http://example.org">Example org link</a>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ... <ul>
+        ...   <li><a href="#internal">Internal link</a></li>
+        ...   <li><a href="http://example.com">Example link</a></li>
+        ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
+        ...   <li><a href="http://example.org">Example org link</a></li>
+        ... </ul>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('[href^=http]'))
+        [<a href="http://example.com">Example link</a>, <a href="http://example.org">Example org link</a>]
+        ```
 
 `[attribute$=value]`
 : 
     Represents elements with an attribute named **attribute** whose value ends with **value**.
 
-    ```css tab="Syntax"
-    [attr$=value]
-    [attr$="value"]
-    ```
+    === "Syntax"
+        ```css
+        [attr$=value]
+        [attr$="value"]
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('[href$=org]'))
-    [<a href="http://example.org">Example org link</a>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ... <ul>
+        ...   <li><a href="#internal">Internal link</a></li>
+        ...   <li><a href="http://example.com">Example link</a></li>
+        ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
+        ...   <li><a href="http://example.org">Example org link</a></li>
+        ... </ul>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('[href$=org]'))
+        [<a href="http://example.org">Example org link</a>]
+        ```
 
 `[attribute*=value]`
 : 
     Represents elements with an attribute named **attribute** whose value containing the substring **value**.
 
-    ```css tab="Syntax"
-    [attr*=value]
-    [attr*="value"]
-    ```
+    === "Syntax"
+        ```css
+        [attr*=value]
+        [attr*="value"]
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('[href*="example"]'))
-    [<a href="http://example.com">Example link</a>, <a href="http://example.org">Example org link</a>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ... <ul>
+        ...   <li><a href="#internal">Internal link</a></li>
+        ...   <li><a href="http://example.com">Example link</a></li>
+        ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
+        ...   <li><a href="http://example.org">Example org link</a></li>
+        ... </ul>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('[href*="example"]'))
+        [<a href="http://example.com">Example link</a>, <a href="http://example.org">Example org link</a>]
+        ```
 
 `[attribute!=value]`<span class="star badge"></span>
 : 
     Equivalent to `#!css :not([attribute=value])`.
 
-    ```css tab="Syntax"
-    [attr!=value]
-    [attr!="value"]
-    ```
+    === "Syntax"
+        ```css
+        [attr!=value]
+        [attr!="value"]
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('a[href!="#internal"]'))
-    [<a href="http://example.com">Example link</a>, <a href="#InSensitive">Insensitive internal link</a>, <a href="http://example.org">Example org link</a>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ... <ul>
+        ...   <li><a href="#internal">Internal link</a></li>
+        ...   <li><a href="http://example.com">Example link</a></li>
+        ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
+        ...   <li><a href="http://example.org">Example org link</a></li>
+        ... </ul>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('a[href!="#internal"]'))
+        [<a href="http://example.com">Example link</a>, <a href="#InSensitive">Insensitive internal link</a>, <a href="http://example.org">Example org link</a>]
+        ```
 
 `[attribute operator value i]`<span class="lab badge"></span>
 : 
@@ -500,62 +524,66 @@ contains whitespace or special characters, you should quote them with either sin
     **value** *without* case sensitivity. In general, attribute comparison is insensitive in normal HTML, but not XML.
     `i` is most useful in XML documents.
 
-    ```css tab="Syntax"
-    [attr=value i]
-    [attr="value" i]
-    ```
+    === "Syntax"
+        ```css
+        [attr=value i]
+        [attr="value" i]
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('[href="#INTERNAL" i]'))
-    [<a href="#internal">Internal link</a>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ... <ul>
+        ...   <li><a href="#internal">Internal link</a></li>
+        ...   <li><a href="http://example.com">Example link</a></li>
+        ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
+        ...   <li><a href="http://example.org">Example org link</a></li>
+        ... </ul>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('[href="#INTERNAL" i]'))
+        [<a href="#internal">Internal link</a>]
+        ```
 
 `[attribute operator value s]` <span class="lab badge"></span>
 : 
     Represents elements with an attribute named **attribute** and whose value, when the **operator** is applied, matches
     **value** *with* case sensitivity.
 
-    ```css tab="Syntax"
-    [attr=value s]
-    [attr="value" s]
-    ```
+    === "Syntax"
+        ```css
+        [attr=value s]
+        [attr="value" s]
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('[href="#INTERNAL" s]'))
-    []
-    >>> print(soup.select('[href="#internal" s]'))
-    [<a href="#internal">Internal link</a>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ... <ul>
+        ...   <li><a href="#internal">Internal link</a></li>
+        ...   <li><a href="http://example.com">Example link</a></li>
+        ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
+        ...   <li><a href="http://example.org">Example org link</a></li>
+        ... </ul>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('[href="#INTERNAL" s]'))
+        []
+        >>> print(soup.select('[href="#internal" s]'))
+        [<a href="#internal">Internal link</a>]
+        ```
 
 ### Namespace Selectors
 
@@ -581,44 +609,46 @@ but attributes usually do not have a namespace unless one is explicitly defined 
 Namespaces can be used with attribute selectors as well except that when `[|attribute`] is used, it is equivalent to
 `[attribute]`.
 
-```css tab="Syntax"
-ns|element
-ns|*
-*|*
-*|element
-|element
-[ns|attr]
-[*|attr]
-[|attr]
-```
+=== "Syntax"
+    ```css
+    ns|element
+    ns|*
+    *|*
+    *|element
+    |element
+    [ns|attr]
+    [*|attr]
+    [|attr]
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <h1>SVG Example</h1>
-... <p><a href="http://facelessuser.github.io/soupsieve/">Soup Sieve Docs</a></p>
-... 
-... <svg viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg">
-...   <a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>
-... </svg>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('svg|a', namespaces={'svg': 'http://www.w3.org/2000/svg'}))
-[<a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>]  
->>> print(soup.select('a', namespaces={'svg': 'http://www.w3.org/2000/svg'}))
-[<a href="http://facelessuser.github.io/soupsieve/">Soup Sieve Docs</a>, <a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>]
->>> print(soup.select('a', namespaces={'': 'http://www.w3.org/1999/xhtml', 'svg': 'http://www.w3.org/2000/svg'}))
-[<a href="http://facelessuser.github.io/soupsieve/">Soup Sieve Docs</a>]
->>> print(soup.select('[xlink|href]', namespaces={'xlink': 'http://www.w3.org/1999/xlink'}))
-[<a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>]
->>> print(soup.select('[|href]', namespaces={'xlink': 'http://www.w3.org/1999/xlink'}))
-[<a href="http://facelessuser.github.io/soupsieve/">Soup Sieve Docs</a>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <h1>SVG Example</h1>
+    ... <p><a href="http://facelessuser.github.io/soupsieve/">Soup Sieve Docs</a></p>
+    ... 
+    ... <svg viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg">
+    ...   <a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>
+    ... </svg>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('svg|a', namespaces={'svg': 'http://www.w3.org/2000/svg'}))
+    [<a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>]  
+    >>> print(soup.select('a', namespaces={'svg': 'http://www.w3.org/2000/svg'}))
+    [<a href="http://facelessuser.github.io/soupsieve/">Soup Sieve Docs</a>, <a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>]
+    >>> print(soup.select('a', namespaces={'': 'http://www.w3.org/1999/xhtml', 'svg': 'http://www.w3.org/2000/svg'}))
+    [<a href="http://facelessuser.github.io/soupsieve/">Soup Sieve Docs</a>]
+    >>> print(soup.select('[xlink|href]', namespaces={'xlink': 'http://www.w3.org/1999/xlink'}))
+    [<a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>]
+    >>> print(soup.select('[|href]', namespaces={'xlink': 'http://www.w3.org/1999/xlink'}))
+    [<a href="http://facelessuser.github.io/soupsieve/">Soup Sieve Docs</a>]
+    ```
 
 ## Combinators and Selector Lists
 
@@ -629,50 +659,54 @@ CSS employs a number of tokens in order to represent lists or to provide relatio
 Selector lists use the comma (`,`) to join multiple selectors in a list. When presented with a selector list, any
 selector in the list that matches an element will return that element.
 
-```css tab="Syntax"
-element1, element2
-```
+=== "Syntax"
+    ```css
+    element1, element2
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <h1>Title</h1>
-... <p>Paragraph</p>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('h1, p'))
-[<h1>Title</h1>, <p>Paragraph</p>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <h1>Title</h1>
+    ... <p>Paragraph</p>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('h1, p'))
+    [<h1>Title</h1>, <p>Paragraph</p>]
+    ```
 
 ### Descendant Combinator
 
 Descendant combinators combine two selectors with whitespace (<code> </code>) in order to signify that the second
 element is matched if it has an ancestor that matches the first element.
 
-```css tab="Syntax"
-parent descendant
-```
+=== "Syntax"
+    ```css
+    parent descendant
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <div><p>Paragraph 1</p></div>
-... <div><p>Paragraph 2</p></div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('body p'))
-[<p>Paragraph 1</p>, <p>Paragraph 2</p>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <div><p>Paragraph 1</p></div>
+    ... <div><p>Paragraph 2</p></div>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('body p'))
+    [<p>Paragraph 1</p>, <p>Paragraph 2</p>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/Descendant_combinator
@@ -682,25 +716,27 @@ parent descendant
 Child combinators combine two selectors with `>` in order to signify that the second element is matched if it has a
 parent that matches the first element.
 
-```css tab="Syntax"
-parent > child
-```
+=== "Syntax"
+    ```css
+    parent > child
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <div><p>Paragraph 1</p></div>
-... <div><ul><li><p>Paragraph 2</p></li></ul></div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('div > p'))
-[<p>Paragraph 1</p>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <div><p>Paragraph 1</p></div>
+    ... <div><ul><li><p>Paragraph 2</p></li></ul></div>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('div > p'))
+    [<p>Paragraph 1</p>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/Child_combinator
@@ -710,26 +746,28 @@ parent > child
 General sibling combinators combine two selectors with `~` in order to signify that the second element is matched if it
 has a sibling that precedes it that matches the first element.
 
-```css tab="Syntax"
-prevsibling ~ sibling
-```
+=== "Syntax"
+    ```css
+    prevsibling ~ sibling
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <h1>Title</h1>
-... <p>Paragraph 1</p>
-... <p>Paragraph 2</p>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('h1 ~ p'))
-[<p>Paragraph 1</p>, <p>Paragraph 2</p>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <h1>Title</h1>
+    ... <p>Paragraph 1</p>
+    ... <p>Paragraph 2</p>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('h1 ~ p'))
+    [<p>Paragraph 1</p>, <p>Paragraph 2</p>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/General_sibling_combinator
@@ -739,27 +777,28 @@ prevsibling ~ sibling
 Adjacent sibling combinators combine two selectors with `+` in order to signify that the second element is matched if it
 has an adjacent sibling that precedes it that matches the first element.
 
+=== "Syntax"
+    ```css
+    prevsibling + nextsibling
+    ```
 
-```css tab="Syntax"
-prevsibling + nextsibling
-```
-
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <h1>Title</h1>
-... <p>Paragraph 1</p>
-... <p>Paragraph 2</p>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('h1 ~ p'))
-[<p>Paragraph 1</p>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <h1>Title</h1>
+    ... <p>Paragraph 1</p>
+    ... <p>Paragraph 2</p>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('h1 ~ p'))
+    [<p>Paragraph 1</p>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/Adjacent_sibling_combinator
@@ -777,24 +816,26 @@ implement as they might not stick around.
 Selects every `#!html <a>`, `#!html <area>`, or `#!html <link>` element that has an `href` attribute, independent of
 whether it has been visited.
 
-```css tab="Syntax"
-:any-link
-```
+=== "Syntax"
+    ```css
+    :any-link
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <p>A link to <a href="http://example.com">click</a></p>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select(':any-link'))
-[<a href="http://example.com">click</a>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <p>A link to <a href="http://example.com">click</a></p>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select(':any-link'))
+    [<a href="http://example.com">click</a>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:any-link
@@ -804,38 +845,40 @@ whether it has been visited.
 Selects any `#!html <input type="radio"/>`, `#!html <input type="checkbox"/>`, or `#!html <option>` element (in a
 `#!html <select>` element) that is checked or toggled to an on state.
 
-```css tab="Syntax"
-:checked
-```
+=== "Syntax"
+    ```css
+    :checked
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... 
-... <div>
-...   <input type="radio" name="my-input" id="yes" checked>
-...   <label for="yes">Yes</label>
-... 
-...   <input type="radio" name="my-input" id="no">
-...   <label for="no">No</label>
-... </div>
-... 
-... <select name="my-select" id="fruit">
-...   <option id="1" value="opt1">Apples</option>
-...   <option id="2" value="opt2" selected>Grapes</option>
-...   <option id="3" value="opt3">Pears</option>
-... </select>
-... 
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select(':checked'))
-[<input checked="" id="yes" name="my-input" type="radio"/>, <option id="2" selected="" value="opt2">Grapes</option>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... 
+    ... <div>
+    ...   <input type="radio" name="my-input" id="yes" checked>
+    ...   <label for="yes">Yes</label>
+    ... 
+    ...   <input type="radio" name="my-input" id="no">
+    ...   <label for="no">No</label>
+    ... </div>
+    ... 
+    ... <select name="my-select" id="fruit">
+    ...   <option id="1" value="opt1">Apples</option>
+    ...   <option id="2" value="opt2" selected>Grapes</option>
+    ...   <option id="3" value="opt3">Pears</option>
+    ... </select>
+    ... 
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select(':checked'))
+    [<input checked="" id="yes" name="my-input" type="radio"/>, <option id="2" selected="" value="opt2">Grapes</option>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:checked
@@ -853,73 +896,77 @@ in the comma separated list to be considered matching.
     `:contains()` is an expensive operation as it scans all the text nodes of an element under consideration, which
     includes all descendants. Using highly specific selectors can reduce how often it is evaluated.
 
-```css tab="Syntax"
-:contains(text)
-:contains("This text", "or this text")
-```
+=== "Syntax"
+    ```css
+    :contains(text)
+    :contains("This text", "or this text")
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-...   <div>Here is <span>some text</span>.</div>
-...   <div>Here is some more text.</div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('div:contains("some text")'))
-[<div>Here is <span>some text</span>.</div>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ...   <div>Here is <span>some text</span>.</div>
+    ...   <div>Here is some more text.</div>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('div:contains("some text")'))
+    [<div>Here is <span>some text</span>.</div>]
+    ```
 
 ### `:default`<span class="html5 badge"></span><span class="lab badge"></span> {:#:default}
 
 Selects any form element that is the default among a group of related elements, including: `#!html <button>`,
 `#!html <input type="checkbox">`, `#!html <input type="radio">`, `#!html <option>` elements.
 
-```css tab="Syntax"
-:default
-```
+=== "Syntax"
+    ```css
+    :default
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <form>
-... 
-... <input type="radio" name="season" id="spring">
-... <label for="spring">Spring</label>
-... 
-... <input type="radio" name="season" id="summer" checked>
-... <label for="summer">Summer</label>
-... 
-... <input type="radio" name="season" id="fall">
-... <label for="fall">Fall</label>
-... 
-... <input type="radio" name="season" id="winter">
-... <label for="winter">Winter</label>
-... 
-... <select id="pet-select">
-...     <option value="">--Please choose an option--</option>
-...     <option id="dog" value="dog">Dog</option>
-...     <option id="cat" value="cat">Cat</option>
-...     <option id="hamster" value="hamster" selected>Hamster</option>
-...     <option id="parrot" value="parrot">Parrot</option>
-...     <option id="spider" value="spider">Spider</option>
-...     <option id="goldfish" value="goldfish">Goldfish</option>
-... </select>
-... </form>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select(':default'))
-[<input checked="" id="summer" name="season" type="radio"/>, <option id="hamster" selected="" value="hamster">Hamster</option>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <form>
+    ... 
+    ... <input type="radio" name="season" id="spring">
+    ... <label for="spring">Spring</label>
+    ... 
+    ... <input type="radio" name="season" id="summer" checked>
+    ... <label for="summer">Summer</label>
+    ... 
+    ... <input type="radio" name="season" id="fall">
+    ... <label for="fall">Fall</label>
+    ... 
+    ... <input type="radio" name="season" id="winter">
+    ... <label for="winter">Winter</label>
+    ... 
+    ... <select id="pet-select">
+    ...     <option value="">--Please choose an option--</option>
+    ...     <option id="dog" value="dog">Dog</option>
+    ...     <option id="cat" value="cat">Cat</option>
+    ...     <option id="hamster" value="hamster" selected>Hamster</option>
+    ...     <option id="parrot" value="parrot">Parrot</option>
+    ...     <option id="spider" value="spider">Spider</option>
+    ...     <option id="goldfish" value="goldfish">Goldfish</option>
+    ... </select>
+    ... </form>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select(':default'))
+    [<input checked="" id="summer" name="season" type="radio"/>, <option id="hamster" selected="" value="hamster">Hamster</option>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:default
@@ -931,25 +978,27 @@ hyphens) that have been properly added to the custom element registry. Since ele
 element registry in Beautiful Soup, this will select all elements that are not custom tags. `:defined` is a HTML
 specific selector, so it doesn't apply to XML.
 
-```css tab="Syntax"
-:defined
-```
+=== "Syntax"
+    ```css
+    :defined
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <custom-element text="Custom element example text"></custom-element>
-... <p>Standard paragraph example text</p>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('body > *:defined'))
-[<p>Standard paragraph example text</p>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <custom-element text="Custom element example text"></custom-element>
+    ... <p>Standard paragraph example text</p>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('body > *:defined'))
+    [<p>Standard paragraph example text</p>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:defined
@@ -959,27 +1008,29 @@ specific selector, so it doesn't apply to XML.
 Selects elements based on text directionality. Accepts either `ltr` or `rtl` for "left to right" and "right to left"
 respectively.
 
-```css tab="Syntax"
-:dir(ltr)
-```
+=== "Syntax"
+    ```css
+    :dir(ltr)
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <div>
-... <span dir="auto">זאת השפה העברית</span>
-... <span dir="ltr">Text</span>
-... </div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select(':dir(rtl)'))
-[<span dir="auto">זאת השפה העברית</span>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <div>
+    ... <span dir="auto">זאת השפה העברית</span>
+    ... <span dir="ltr">Text</span>
+    ... </div>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select(':dir(rtl)'))
+    [<span dir="auto">זאת השפה העברית</span>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:dir
@@ -988,41 +1039,43 @@ respectively.
 
 Selects any element that is disabled.
 
-```css tab="Syntax"
-:disabled
-```
+=== "Syntax"
+    ```css
+    :disabled
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <form action="#">
-...   <fieldset id="shipping">
-...     <legend>Shipping address</legend>
-...     <input type="text" placeholder="Name">
-...     <input type="text" placeholder="Address">
-...     <input type="text" placeholder="Zip Code">
-...   </fieldset>
-...   <br>
-...   <fieldset id="billing">
-...     <legend>Billing address</legend>
-...     <label for="billing-checkbox">Same as shipping address:</label>
-...     <input type="checkbox" id="billing-checkbox" checked>
-...     <br>
-...     <input type="text" placeholder="Name" disabled>
-...     <input type="text" placeholder="Address" disabled>
-...     <input type="text" placeholder="Zip Code" disabled>
-...   </fieldset>
-... </form>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('input:disabled'))
-[<input disabled="" placeholder="Name" type="text"/>, <input disabled="" placeholder="Address" type="text"/>, <input disabled="" placeholder="Zip Code" type="text"/>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <form action="#">
+    ...   <fieldset id="shipping">
+    ...     <legend>Shipping address</legend>
+    ...     <input type="text" placeholder="Name">
+    ...     <input type="text" placeholder="Address">
+    ...     <input type="text" placeholder="Zip Code">
+    ...   </fieldset>
+    ...   <br>
+    ...   <fieldset id="billing">
+    ...     <legend>Billing address</legend>
+    ...     <label for="billing-checkbox">Same as shipping address:</label>
+    ...     <input type="checkbox" id="billing-checkbox" checked>
+    ...     <br>
+    ...     <input type="text" placeholder="Name" disabled>
+    ...     <input type="text" placeholder="Address" disabled>
+    ...     <input type="text" placeholder="Zip Code" disabled>
+    ...   </fieldset>
+    ... </form>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('input:disabled'))
+    [<input disabled="" placeholder="Name" type="text"/>, <input disabled="" placeholder="Address" type="text"/>, <input disabled="" placeholder="Zip Code" type="text"/>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:disabled
@@ -1031,11 +1084,13 @@ Selects any element that is disabled.
 
 Selects elements that have no children and no text (whitespace is ignored).
 
-```css tab="Syntax"
-:empty
-```
+=== "Syntax"
+    ```css
+    :empty
+    ```
 
-```pycon3 tab="Usage"
+=== "Usage"
+```pycon3
 >>> from bs4 import BeautifulSoup as bs
 >>> html = """
 ... <html>
@@ -1059,41 +1114,43 @@ Selects elements that have no children and no text (whitespace is ignored).
 
 Selects any element that is enabled.
 
-```css tab="Syntax"
-:enabled
-```
+=== "Syntax"
+    ```css
+    :enabled
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <form action="#">
-...   <fieldset id="shipping">
-...     <legend>Shipping address</legend>
-...     <input type="text" placeholder="Name">
-...     <input type="text" placeholder="Address">
-...     <input type="text" placeholder="Zip Code">
-...   </fieldset>
-...   <br>
-...   <fieldset id="billing">
-...     <legend>Billing address</legend>
-...     <label for="billing-checkbox">Same as shipping address:</label>
-...     <input type="checkbox" id="billing-checkbox" checked>
-...     <br>
-...     <input type="text" placeholder="Name" disabled>
-...     <input type="text" placeholder="Address" disabled>
-...     <input type="text" placeholder="Zip Code" disabled>
-...   </fieldset>
-... </form>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('input:enabled'))
-[<input placeholder="Name" type="text"/>, <input placeholder="Address" type="text"/>, <input placeholder="Zip Code" type="text"/>, <input checked="" id="billing-checkbox" type="checkbox"/>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <form action="#">
+    ...   <fieldset id="shipping">
+    ...     <legend>Shipping address</legend>
+    ...     <input type="text" placeholder="Name">
+    ...     <input type="text" placeholder="Address">
+    ...     <input type="text" placeholder="Zip Code">
+    ...   </fieldset>
+    ...   <br>
+    ...   <fieldset id="billing">
+    ...     <legend>Billing address</legend>
+    ...     <label for="billing-checkbox">Same as shipping address:</label>
+    ...     <input type="checkbox" id="billing-checkbox" checked>
+    ...     <br>
+    ...     <input type="text" placeholder="Name" disabled>
+    ...     <input type="text" placeholder="Address" disabled>
+    ...     <input type="text" placeholder="Zip Code" disabled>
+    ...   </fieldset>
+    ... </form>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('input:enabled'))
+    [<input placeholder="Name" type="text"/>, <input placeholder="Address" type="text"/>, <input placeholder="Zip Code" type="text"/>, <input checked="" id="billing-checkbox" type="checkbox"/>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:enabled
@@ -1102,29 +1159,31 @@ Selects any element that is enabled.
 
 Selects the first child in a group of sibling elements.
 
-```css tab="Syntax"
-:first-child
-```
+=== "Syntax"
+    ```css
+    :first-child
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <p id="0"></p>
-... <p id="1"></p>
-... <p id="2"></p>
-... <p id="3"></p>
-... <p id="4"></p>
-... <p id="5"></p>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('p:first-child'))
-[<p id="0"></p>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <p id="0"></p>
+    ... <p id="1"></p>
+    ... <p id="2"></p>
+    ... <p id="3"></p>
+    ... <p id="4"></p>
+    ... <p id="5"></p>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('p:first-child'))
+    [<p id="0"></p>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:first-child
@@ -1133,35 +1192,37 @@ Selects the first child in a group of sibling elements.
 
 Selects the first child of a given type in a group of sibling elements.
 
-```css tab="Syntax"
-element:first-of-type
-```
+=== "Syntax"
+    ```css
+    element:first-of-type
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <p id="0"></p>
-... <p id="1"></p>
-... <span id="2"></span>
-... <span id="3"></span>
-... <span id="4"></span>
-... <span id="5"></span>
-... <span id="6"></span>
-... <p id="7"></p>
-... <p id="8"></p>
-... <p id="9"></p>
-... <p id="10"></p>
-... <span id="11"></span>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('span:first-of-type'))
-[<span id="2"></span>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <p id="0"></p>
+    ... <p id="1"></p>
+    ... <span id="2"></span>
+    ... <span id="3"></span>
+    ... <span id="4"></span>
+    ... <span id="5"></span>
+    ... <span id="6"></span>
+    ... <p id="7"></p>
+    ... <p id="8"></p>
+    ... <p id="9"></p>
+    ... <p id="10"></p>
+    ... <span id="11"></span>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('span:first-of-type'))
+    [<span id="2"></span>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:first-of-type
@@ -1174,29 +1235,31 @@ given element), match at least one element.
 While the level 4 specifications state that [compound](#compound-selector) selectors are supported, complex selectors
 are planned for level 5 CSS selectors. Soup Sieve supports [complex](#complex-selector) selectors.
 
-```css tab="Syntax"
-:has(selector)
-:has(> selector)
-:has(~ selector)
-:has(+ selector)
-:has(selector1, > selector2, ~ selector3, + selector4)
-```
+=== "Syntax"
+    ```css
+    :has(selector)
+    :has(> selector)
+    :has(~ selector)
+    :has(+ selector)
+    :has(selector1, > selector2, ~ selector3, + selector4)
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <div><p>Test <span>paragraph</span></p></div>
-... <div><p class="class">Another test paragraph</p></div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('div:has(span, > .class)'))
-[<div><p>Test <span>paragraph</span></p></div>, <div><p class="class">Another test paragraph</p></div>]  
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <div><p>Test <span>paragraph</span></p></div>
+    ... <div><p class="class">Another test paragraph</p></div>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('div:has(span, > .class)'))
+    [<div><p>Test <span>paragraph</span></p></div>, <div><p class="class">Another test paragraph</p></div>]  
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:has
@@ -1205,25 +1268,27 @@ are planned for level 5 CSS selectors. Soup Sieve supports [complex](#complex-se
 
 Selects all `#!html <input>` elements whose values are in range according to their `type`, `min`, and `max` attributes.
 
-```css tab="Syntax"
-:in-range
-```
+=== "Syntax"
+    ```css
+    :in-range
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <input id="0" type="month" min="1980-02" max="2004-08" value="1999-05">
-... <input id="7" type="month" min="1980-02" max="2004-08" value="1979-02">
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select(':in-range'))
-[<input id="0" max="2004-08" min="1980-02" type="month" value="1999-05"/>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <input id="0" type="month" min="1980-02" max="2004-08" value="1999-05">
+    ... <input id="7" type="month" min="1980-02" max="2004-08" value="1979-02">
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select(':in-range'))
+    [<input id="0" max="2004-08" min="1980-02" type="month" value="1999-05"/>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:in-range
@@ -1239,49 +1304,51 @@ An element is considered indeterminate if:
 selected.
 - The element is of type `#!html <progress>` with no value.
 
-```css tab="Syntax"
-:indeterminate
-```
+=== "Syntax"
+    ```css
+    :indeterminate
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <input type="checkbox" id="checkbox1" indeterminate>
-... <label for="checkbox1">I like cats.</label>
-... 
-... <input type="checkbox" id="checkbox2">
-... <label for="checkbox2">I like dogs.</label>
-... 
-... <form>
-...     <input type="radio" name="test" id="radio1">
-...     <label for="radio1">Yes</label>
-... 
-...     <input type="radio" name="test" id="radio2">
-...     <label for="radio2">No</label>
-... 
-...     <input type="radio" name="test" id="radio3">
-...     <label for="radio3">Maybe</label>
-... </form>
-... <form>
-...     <input type="radio" name="another" id="radio4">
-...     <label for="radio4">Red</label>
-... 
-...     <input type="radio" name="another" id="radio5" checked>
-...     <label for="radio5">Green</label>
-... 
-...     <input type="radio" name="another" id="radio6">
-...     <label for="radio6">Blue</label>
-... </form>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select(':indeterminate'))
-[<input id="checkbox1" indeterminate="" type="checkbox"/>, <input id="radio1" name="test" type="radio"/>, <input id="radio2" name="test" type="radio"/>, <input id="radio3" name="test" type="radio"/>] 
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <input type="checkbox" id="checkbox1" indeterminate>
+    ... <label for="checkbox1">I like cats.</label>
+    ... 
+    ... <input type="checkbox" id="checkbox2">
+    ... <label for="checkbox2">I like dogs.</label>
+    ... 
+    ... <form>
+    ...     <input type="radio" name="test" id="radio1">
+    ...     <label for="radio1">Yes</label>
+    ... 
+    ...     <input type="radio" name="test" id="radio2">
+    ...     <label for="radio2">No</label>
+    ... 
+    ...     <input type="radio" name="test" id="radio3">
+    ...     <label for="radio3">Maybe</label>
+    ... </form>
+    ... <form>
+    ...     <input type="radio" name="another" id="radio4">
+    ...     <label for="radio4">Red</label>
+    ... 
+    ...     <input type="radio" name="another" id="radio5" checked>
+    ...     <label for="radio5">Green</label>
+    ... 
+    ...     <input type="radio" name="another" id="radio6">
+    ...     <label for="radio6">Blue</label>
+    ... </form>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select(':indeterminate'))
+    [<input id="checkbox1" indeterminate="" type="checkbox"/>, <input id="radio1" name="test" type="radio"/>, <input id="radio2" name="test" type="radio"/>, <input id="radio3" name="test" type="radio"/>] 
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate
@@ -1297,25 +1364,27 @@ While the level 4 specifications state that [compound](#compound-selector) selec
 (Safari) support complex selectors which are planned for level 5 CSS selectors. Soup Sieve also supports
 [complex](#complex-selector) selectors.
 
-```css tab="Syntax"
-:is(selector1, selector2)
-```
+=== "Syntax"
+    ```css
+    :is(selector1, selector2)
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <p id="0">Some text <span id="1"> in a paragraph</span>.
-... <a id="2" href="http://google.com">Link.</a></p>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('[id]:is(a, span)'))
-[<span id="1"> in a paragraph</span>, <a href="http://google.com" id="2">Link.</a>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <p id="0">Some text <span id="1"> in a paragraph</span>.
+    ... <a id="2" href="http://google.com">Link.</a></p>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('[id]:is(a, span)'))
+    [<span id="1"> in a paragraph</span>, <a href="http://google.com" id="2">Link.</a>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:is
@@ -1327,39 +1396,41 @@ Level 3 CSS
     Selects an element whose associated language matches the provided **language** or whose language starts with the
     provided **language** followed by a `-`. Language is determined by the rules of the document type.
 
-    ```css tab="Syntax"
-    :lang(language)
-    ```
+    === "Syntax"
+        ```css
+        :lang(language)
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <div lang="de-DE">
-    ...     <p id="1"></p>
-    ... </div>
-    ... <div lang="de-DE-1996">
-    ...     <p id="2"></p>
-    ... </div>
-    ... <div lang="de-Latn-DE">
-    ...     <p id="3"></p>
-    ... </div>
-    ... <div lang="de-Latf-DE">
-    ...     <p id="4"></p>
-    ... </div>
-    ... <div lang="de-Latn-DE-1996">
-    ...     <p id="5"></p>
-    ... </div>
-    ... <p id="6" lang="de-DE"></p>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('p:lang(de)'))
-    [<p id="1"></p>, <p id="2"></p>, <p id="3"></p>, <p id="4"></p>, <p id="5"></p>, <p id="6" lang="de-DE"></p>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ... <div lang="de-DE">
+        ...     <p id="1"></p>
+        ... </div>
+        ... <div lang="de-DE-1996">
+        ...     <p id="2"></p>
+        ... </div>
+        ... <div lang="de-Latn-DE">
+        ...     <p id="3"></p>
+        ... </div>
+        ... <div lang="de-Latf-DE">
+        ...     <p id="4"></p>
+        ... </div>
+        ... <div lang="de-Latn-DE-1996">
+        ...     <p id="5"></p>
+        ... </div>
+        ... <p id="6" lang="de-DE"></p>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('p:lang(de)'))
+        [<p id="1"></p>, <p id="2"></p>, <p id="3"></p>, <p id="4"></p>, <p id="5"></p>, <p id="6" lang="de-DE"></p>]
+        ```
 
 Level 4 CSS<span class="lab badge"></span>
 : 
@@ -1371,39 +1442,41 @@ Level 4 CSS<span class="lab badge"></span>
     beginning of the language. If desired an explicit wildcard between subtags can be used, but since implicit wildcard
     matching already takes place between subtags, it is not needed: `de-*-DE` would be the same as just using `de-DE`.
 
-    ```css tab="Syntax"
-    :lang('*-language', language2)
-    ```
+    === "Syntax"
+        ```css
+        :lang('*-language', language2)
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <div lang="de-DE">
-    ...     <p id="1"></p>
-    ... </div>
-    ... <div lang="en">
-    ...     <p id="2"></p>
-    ... </div>
-    ... <div lang="de-Latn-DE">
-    ...     <p id="3"></p>
-    ... </div>
-    ... <div lang="de-Latf-DE">
-    ...     <p id="4"></p>
-    ... </div>
-    ... <div lang="en-US">
-    ...     <p id="5"></p>
-    ... </div>
-    ... <p id="6" lang="de-DE"></p>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('p:lang(de-DE, "*-US")'))
-    [<p id="1"></p>, <p id="3"></p>, <p id="4"></p>, <p id="5"></p>, <p id="6" lang="de-DE"></p>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ... <div lang="de-DE">
+        ...     <p id="1"></p>
+        ... </div>
+        ... <div lang="en">
+        ...     <p id="2"></p>
+        ... </div>
+        ... <div lang="de-Latn-DE">
+        ...     <p id="3"></p>
+        ... </div>
+        ... <div lang="de-Latf-DE">
+        ...     <p id="4"></p>
+        ... </div>
+        ... <div lang="en-US">
+        ...     <p id="5"></p>
+        ... </div>
+        ... <p id="6" lang="de-DE"></p>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('p:lang(de-DE, "*-US")'))
+        [<p id="1"></p>, <p id="3"></p>, <p id="4"></p>, <p id="5"></p>, <p id="6" lang="de-DE"></p>]
+        ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:lang
@@ -1412,29 +1485,31 @@ Level 4 CSS<span class="lab badge"></span>
 
 Selects the last element among a group of sibling elements.
 
-```css tab="Syntax"
-:last-child
-```
+=== "Syntax"
+    ```css
+    :last-child
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <p id="0"></p>
-... <p id="1"></p>
-... <p id="2"></p>
-... <p id="3"></p>
-... <p id="4"></p>
-... <p id="5"></p>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('p:last-child'))
-[<p id="5"></p>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <p id="0"></p>
+    ... <p id="1"></p>
+    ... <p id="2"></p>
+    ... <p id="3"></p>
+    ... <p id="4"></p>
+    ... <p id="5"></p>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('p:last-child'))
+    [<p id="5"></p>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:last-child
@@ -1443,35 +1518,37 @@ Selects the last element among a group of sibling elements.
 
 Selects the last child of a given type in a group of sibling elements.
 
-```css tab="Syntax"
-element:last-of-type
-```
+=== "Syntax"
+    ```css
+    element:last-of-type
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <p id="0"></p>
-... <p id="1"></p>
-... <span id="2"></span>
-... <span id="3"></span>
-... <span id="4"></span>
-... <span id="5"></span>
-... <span id="6"></span>
-... <p id="7"></p>
-... <p id="8"></p>
-... <p id="9"></p>
-... <p id="10"></p>
-... <span id="11"></span>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('span:last-of-type'))
-[<span id="11"></span>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <p id="0"></p>
+    ... <p id="1"></p>
+    ... <span id="2"></span>
+    ... <span id="3"></span>
+    ... <span id="4"></span>
+    ... <span id="5"></span>
+    ... <span id="6"></span>
+    ... <p id="7"></p>
+    ... <p id="8"></p>
+    ... <p id="9"></p>
+    ... <p id="10"></p>
+    ... <span id="11"></span>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('span:last-of-type'))
+    [<span id="11"></span>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:last-of-type
@@ -1484,24 +1561,26 @@ yet been visited.
 Since Beautiful Soup does not have *visited* states, this will match all links, essentially making the behavior the same
 as `:any-link`.
 
-```css tab="Syntax"
-:link
-```
+=== "Syntax"
+    ```css
+    :link
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <p>A link to <a href="http://example.com">click</a></p>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select(':link'))
-[<a href="http://example.com">click</a>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <p>A link to <a href="http://example.com">click</a></p>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select(':link'))
+    [<a href="http://example.com">click</a>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:link
@@ -1513,25 +1592,27 @@ Level 3 CSS
     Selects all elements that do not match the selector. The level 3 CSS specification states that `:not()` only
     supports simple selectors.
 
-    ```css tab="Syntax"
-    :not(simple-selector)
-    ```
+    === "Syntax"
+        ```css
+        :not(simple-selector)
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ...    <div>Here is some text.</div>
-    ...    <div>Here is some more text.</div>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('div:not(:contains(more))'))
-    [<div>Here is some text.</div>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ...    <div>Here is some text.</div>
+        ...    <div>Here is some more text.</div>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('div:not(:contains(more))'))
+        [<div>Here is some text.</div>]
+        ```
 
 Level 4+ CSS<span class="lab badge"></span>
 : 
@@ -1539,25 +1620,27 @@ Level 4+ CSS<span class="lab badge"></span>
     state that [compound](#compound-selector) selectors are supported, some browsers (Safari) support complex selectors
     which are planned for level 5 CSS selectors. Soup Sieve also supports [complex](#complex-selector) selectors.
 
-    ```css tab="Syntax"
-    :not(compound.selector, complex > selector)
-    ```
+    === "Syntax"
+        ```css
+        :not(compound.selector, complex > selector)
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ...    <div>Here is some text.</div>
-    ...    <div>Here is some more text.</div>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('*:not(html, head, body)'))
-    [<div>Here is some text.</div>, <div>Here is some more text.</div>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ...    <div>Here is some text.</div>
+        ...    <div>Here is some more text.</div>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('*:not(html, head, body)'))
+        [<div>Here is some text.</div>, <div>Here is some more text.</div>]
+        ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:not
@@ -1575,38 +1658,40 @@ Level 3 CSS
     - Patterns in the form `an+b` selects elements based on their position in a group of siblings, for every positive
       integer or zero value of `n`. The index of the first element is `1`. The values `a` and `b` must both be integers.
 
-    ```css tab="Syntax"
-    :nth-child(even)
-    :nth-child(odd)
-    :nth-child(2)
-    :nth-child(2n+2)
-    ```
+    === "Syntax"
+        ```css
+        :nth-child(even)
+        :nth-child(odd)
+        :nth-child(2)
+        :nth-child(2n+2)
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <p id="0"></p>
-    ... <p id="1"></p>
-    ... <p id="2"></p>
-    ... <p id="3"></p>
-    ... <p id="4"></p>
-    ... <p id="5"></p>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('p:nth-child(even)'))
-    [<p id="1"></p>, <p id="3"></p>, <p id="5"></p>]
-    >>> print(soup.select('p:nth-child(odd)'))
-    [<p id="0"></p>, <p id="2"></p>, <p id="4"></p>]
-    >>> print(soup.select('p:nth-child(2)'))
-    [<p id="1"></p>]
-    >>> print(soup.select('p:nth-child(-n+3)'))
-    [<p id="0"></p>, <p id="1"></p>, <p id="2"></p>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ... <p id="0"></p>
+        ... <p id="1"></p>
+        ... <p id="2"></p>
+        ... <p id="3"></p>
+        ... <p id="4"></p>
+        ... <p id="5"></p>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('p:nth-child(even)'))
+        [<p id="1"></p>, <p id="3"></p>, <p id="5"></p>]
+        >>> print(soup.select('p:nth-child(odd)'))
+        [<p id="0"></p>, <p id="2"></p>, <p id="4"></p>]
+        >>> print(soup.select('p:nth-child(2)'))
+        [<p id="1"></p>]
+        >>> print(soup.select('p:nth-child(-n+3)'))
+        [<p id="0"></p>, <p id="1"></p>, <p id="2"></p>]
+        ```
 
 Level 4+ CSS<span class="lab badge"></span>
 : 
@@ -1625,29 +1710,31 @@ Level 4+ CSS<span class="lab badge"></span>
     While the level 4 specifications state that [compound](#compound-selector) selectors are supported, complex
     selectors are planned for level 5 CSS selectors. Soup Sieve supports [complex](#complex-selector) selectors.
 
-    ```css tab="Syntax"
-    :nth-child(2 of img)
-    ```
+    === "Syntax"
+        ```css
+        :nth-child(2 of img)
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <p id="0"></p>
-    ... <p id="1"></p>
-    ... <p id="2"></p>
-    ... <p id="3"></p>
-    ... <p id="4"></p>
-    ... <p id="5"></p>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('*:nth-child(-n+3 of [id])'))
-    [<p id="0"></p>, <p id="1"></p>, <p id="2"></p>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ... <p id="0"></p>
+        ... <p id="1"></p>
+        ... <p id="2"></p>
+        ... <p id="3"></p>
+        ... <p id="4"></p>
+        ... <p id="5"></p>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('*:nth-child(-n+3 of [id])'))
+        [<p id="0"></p>, <p id="1"></p>, <p id="2"></p>]
+        ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child
@@ -1665,38 +1752,40 @@ Level 3 CSS
       siblings, for every positive integer or zero value of `n`. The index of the first element is `1`. The values `a`
       and `b` must both be integers.
 
-    ```css tab="Syntax"
-    :nth-last-child(even)
-    :nth-last-child(odd)
-    :nth-last-child(2)
-    :nth-last-child(2n+2)
-    ```
+    === "Syntax"
+        ```css
+        :nth-last-child(even)
+        :nth-last-child(odd)
+        :nth-last-child(2)
+        :nth-last-child(2n+2)
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <p id="0"></p>
-    ... <p id="1"></p>
-    ... <p id="2"></p>
-    ... <p id="3"></p>
-    ... <p id="4"></p>
-    ... <p id="5"></p>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('p:nth-last-child(even)'))
-    [<p id="0"></p>, <p id="2"></p>, <p id="4"></p>]
-    >>> print(soup.select('p:nth-last-child(odd)'))
-    [<p id="1"></p>, <p id="3"></p>, <p id="5"></p>]
-    >>> print(soup.select('p:nth-last-child(2)'))
-    [<p id="4"></p>]
-    >>> print(soup.select('p:nth-last-child(-n+3)'))
-    [<p id="3"></p>, <p id="4"></p>, <p id="5"></p>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ... <p id="0"></p>
+        ... <p id="1"></p>
+        ... <p id="2"></p>
+        ... <p id="3"></p>
+        ... <p id="4"></p>
+        ... <p id="5"></p>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('p:nth-last-child(even)'))
+        [<p id="0"></p>, <p id="2"></p>, <p id="4"></p>]
+        >>> print(soup.select('p:nth-last-child(odd)'))
+        [<p id="1"></p>, <p id="3"></p>, <p id="5"></p>]
+        >>> print(soup.select('p:nth-last-child(2)'))
+        [<p id="4"></p>]
+        >>> print(soup.select('p:nth-last-child(-n+3)'))
+        [<p id="3"></p>, <p id="4"></p>, <p id="5"></p>]
+        ```
 
 Level 4+ CSS<span class="lab badge"></span>
 : 
@@ -1715,29 +1804,31 @@ Level 4+ CSS<span class="lab badge"></span>
     While the level 4 specifications state that [compound](#compound-selector) selectors are supported, complex
     selectors are planned for level 5 CSS selectors. Soup Sieve supports [complex](#complex-selector) selectors.
 
-    ```css tab="Syntax"
-    :nth-last-child(2 of img)
-    ```
+    === "Syntax"
+        ```css
+        :nth-last-child(2 of img)
+        ```
 
-    ```pycon3 tab="Usage"
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <p id="0"></p>
-    ... <p id="1"></p>
-    ... <p id="2"></p>
-    ... <p id="3"></p>
-    ... <p id="4"></p>
-    ... <p id="5"></p>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('*:nth-last-child(-n+3 of [id])'))
-    [<p id="3"></p>, <p id="4"></p>, <p id="5"></p>]
-    ```
+    === "Usage"
+        ```pycon3
+        >>> from bs4 import BeautifulSoup as bs
+        >>> html = """
+        ... <html>
+        ... <head></head>
+        ... <body>
+        ... <p id="0"></p>
+        ... <p id="1"></p>
+        ... <p id="2"></p>
+        ... <p id="3"></p>
+        ... <p id="4"></p>
+        ... <p id="5"></p>
+        ... </body>
+        ... </html>
+        ... """
+        >>> soup = bs(html, 'html5lib')
+        >>> print(soup.select('*:nth-last-child(-n+3 of [id])'))
+        [<p id="3"></p>, <p id="4"></p>, <p id="5"></p>]
+        ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-child
@@ -1755,44 +1846,46 @@ end.
   position within that sub-group, for every positive integer or zero value of `n`. The index of the first element is
   `1`. The values `a` and `b` must both be integers. Starting position is counted from the end.
 
-```css tab="Syntax"
-element:nth-last-of-type(even)
-element:nth-last-of-type(odd)
-element:nth-last-of-type(2)
-element:nth-last-of-type(2n+2)
-```
+=== "Syntax"
+    ```css
+    element:nth-last-of-type(even)
+    element:nth-last-of-type(odd)
+    element:nth-last-of-type(2)
+    element:nth-last-of-type(2n+2)
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <p id="0"></p>
-... <p id="1"></p>
-... <span id="2"></span>
-... <span id="3"></span>
-... <span id="4"></span>
-... <span id="5"></span>
-... <span id="6"></span>
-... <p id="7"></p>
-... <p id="8"></p>
-... <p id="9"></p>
-... <p id="10"></p>
-... <span id="11"></span>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('span:nth-last-of-type(even)'))
-[<span id="2"></span>, <span id="4"></span>, <span id="6"></span>]
->>> print(soup.select('span:nth-last-of-type(odd)'))
-[<span id="3"></span>, <span id="5"></span>, <span id="11"></span>]
->>> print(soup.select('p:nth-last-of-type(2)'))
-[<p id="9"></p>]
->>> print(soup.select('p:nth-last-of-type(-n+3)'))
-[<p id="8"></p>, <p id="9"></p>, <p id="10"></p>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <p id="0"></p>
+    ... <p id="1"></p>
+    ... <span id="2"></span>
+    ... <span id="3"></span>
+    ... <span id="4"></span>
+    ... <span id="5"></span>
+    ... <span id="6"></span>
+    ... <p id="7"></p>
+    ... <p id="8"></p>
+    ... <p id="9"></p>
+    ... <p id="10"></p>
+    ... <span id="11"></span>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('span:nth-last-of-type(even)'))
+    [<span id="2"></span>, <span id="4"></span>, <span id="6"></span>]
+    >>> print(soup.select('span:nth-last-of-type(odd)'))
+    [<span id="3"></span>, <span id="5"></span>, <span id="11"></span>]
+    >>> print(soup.select('p:nth-last-of-type(2)'))
+    [<p id="9"></p>]
+    >>> print(soup.select('p:nth-last-of-type(-n+3)'))
+    [<p id="8"></p>, <p id="9"></p>, <p id="10"></p>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-of-type
@@ -1809,44 +1902,46 @@ element:nth-last-of-type(2n+2)
   position within that sub-group, for every positive integer or zero value of `n`. The index of the first element is
   `1`. The values `a` and `b` must both be integers.
 
-```css tab="Syntax"
-element:nth-of-type(even)
-element:nth-of-type(odd)
-element:nth-of-type(2)
-element:nth-of-type(2n+2)
-```
+=== "Syntax"
+    ```css
+    element:nth-of-type(even)
+    element:nth-of-type(odd)
+    element:nth-of-type(2)
+    element:nth-of-type(2n+2)
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <p id="0"></p>
-... <p id="1"></p>
-... <span id="2"></span>
-... <span id="3"></span>
-... <span id="4"></span>
-... <span id="5"></span>
-... <span id="6"></span>
-... <p id="7"></p>
-... <p id="8"></p>
-... <p id="9"></p>
-... <p id="10"></p>
-... <span id="11"></span>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('span:nth-of-type(even)'))
-[<span id="3"></span>, <span id="5"></span>, <span id="11"></span>]
->>> print(soup.select('span:nth-of-type(odd)'))
-[<span id="2"></span>, <span id="4"></span>, <span id="6"></span>]
->>> print(soup.select('p:nth-of-type(2)'))
-[<p id="1"></p>]
->>> print(soup.select('p:nth-of-type(-n+3)'))
-[<p id="0"></p>, <p id="1"></p>, <p id="7"></p>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <p id="0"></p>
+    ... <p id="1"></p>
+    ... <span id="2"></span>
+    ... <span id="3"></span>
+    ... <span id="4"></span>
+    ... <span id="5"></span>
+    ... <span id="6"></span>
+    ... <p id="7"></p>
+    ... <p id="8"></p>
+    ... <p id="9"></p>
+    ... <p id="10"></p>
+    ... <span id="11"></span>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('span:nth-of-type(even)'))
+    [<span id="3"></span>, <span id="5"></span>, <span id="11"></span>]
+    >>> print(soup.select('span:nth-of-type(odd)'))
+    [<span id="2"></span>, <span id="4"></span>, <span id="6"></span>]
+    >>> print(soup.select('p:nth-of-type(2)'))
+    [<p id="1"></p>]
+    >>> print(soup.select('p:nth-of-type(-n+3)'))
+    [<p id="0"></p>, <p id="1"></p>, <p id="7"></p>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type
@@ -1855,34 +1950,36 @@ element:nth-of-type(2n+2)
 
 Selects element without any siblings.
 
-```css tab="Syntax"
-:only-child
-```
+=== "Syntax"
+    ```css
+    :only-child
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <div>
-...     <p id="0"></p>
-...     <p id="1"></p>
-...     <p id="2"></p>
-...     <p id="3"></p>
-...     <p id="4"></p>
-...     <p id="5"></p>
-... </div>
-... <div>
-...     <p id="6"></p>
-... </div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('p:only-child'))
-[<p id="6"></p>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <div>
+    ...     <p id="0"></p>
+    ...     <p id="1"></p>
+    ...     <p id="2"></p>
+    ...     <p id="3"></p>
+    ...     <p id="4"></p>
+    ...     <p id="5"></p>
+    ... </div>
+    ... <div>
+    ...     <p id="6"></p>
+    ... </div>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('p:only-child'))
+    [<p id="6"></p>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:only-child
@@ -1891,30 +1988,32 @@ Selects element without any siblings.
 
 Selects element without any siblings that matches a given type.
 
-```css tab="Syntax"
-element:only-of-type
-```
+=== "Syntax"
+    ```css
+    element:only-of-type
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <p id="0"></p>
-... <p id="1"></p>
-... <span id="2"></span>
-... <p id="3"></p>
-... <p id="4"></p>
-... <p id="5"></p>
-... <p id="6"></p>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('span:only-of-type'))
-[<span id="2"></span>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <p id="0"></p>
+    ... <p id="1"></p>
+    ... <span id="2"></span>
+    ... <p id="3"></p>
+    ... <p id="4"></p>
+    ... <p id="5"></p>
+    ... <p id="6"></p>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('span:only-of-type'))
+    [<span id="2"></span>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:only-of-type
@@ -1924,32 +2023,34 @@ element:only-of-type
 Selects any `#!html <input>`, `#!html <select>`, or `#!html <textarea>` element that does not have the `required`
 attribute set on it.
 
-```css tab="Syntax"
-:optional
-```
+=== "Syntax"
+    ```css
+    :optional
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <form>
-... <input type="name" required>
-... <input type="checkbox" required>
-... <input type="email">
-... <textarea name="name" cols="30" rows="10" required></textarea>
-... <select name="nm" required>
-...     <!-- options -->
-... </select>
-... </form>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select(':optional'))
-[<input type="email"/>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <form>
+    ... <input type="name" required>
+    ... <input type="checkbox" required>
+    ... <input type="email">
+    ... <textarea name="name" cols="30" rows="10" required></textarea>
+    ... <select name="nm" required>
+    ...     <!-- options -->
+    ... </select>
+    ... </form>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select(':optional'))
+    [<input type="email"/>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:optional
@@ -1959,25 +2060,27 @@ attribute set on it.
 Selects all `#!html <input>` elements whose values are out of range according to their `type`, `min`, and `max`
 attributes.
 
-```css tab="Syntax"
-:out-of-range
-```
+=== "Syntax"
+    ```css
+    :out-of-range
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <input id="0" type="month" min="1980-02" max="2004-08" value="1999-05">
-... <input id="7" type="month" min="1980-02" max="2004-08" value="1979-02">
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select(':out-of-range'))
-[<input id="7" max="2004-08" min="1980-02" type="month" value="1979-02"/>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <input id="0" type="month" min="1980-02" max="2004-08" value="1999-05">
+    ... <input id="7" type="month" min="1980-02" max="2004-08" value="1979-02">
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select(':out-of-range'))
+    [<input id="7" max="2004-08" min="1980-02" type="month" value="1979-02"/>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:out-of-range
@@ -1987,25 +2090,27 @@ attributes.
 Selects any `#!html <input>` or `#!html <textarea>` element that is currently displaying placeholder text via the
 `placeholder` attribute.
 
-```css tab="Syntax"
-:placeholder-shown
-```
+=== "Syntax"
+    ```css
+    :placeholder-shown
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <input id="0" placeholder="This is some text">
-... <textarea id="1" placeholder="This is some text"></textarea>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select(':placeholder-shown'))
-[<input id="0" placeholder="This is some text"/>, <textarea id="1" placeholder="This is some text"></textarea>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <input id="0" placeholder="This is some text">
+    ... <textarea id="1" placeholder="This is some text"></textarea>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select(':placeholder-shown'))
+    [<input id="0" placeholder="This is some text"/>, <textarea id="1" placeholder="This is some text"></textarea>]
+    ```
 
 !!! note "Parser Differences"
     In general, when an input has a placeholder, but the element also has valid content, the placeholder is not shown.
@@ -2026,34 +2131,35 @@ Selects any `#!html <input>` or `#!html <textarea>` element that is currently di
 Selects elements (such as `#!html <input>` or `#!html <textarea>`) that are *not* editable by the user. This does not
 just apply to form elements with `readonly` set, but it applies to **any** element that cannot be edited by the user.
 
+=== "Syntax"
+    ```css
+    :read-only
+    ```
 
-```css tab="Syntax"
-:read-only
-```
-
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... 
-... <input id="0">
-... <input id="1" disabled>
-... <input id="2" type="number" readonly>
-... 
-... <textarea id="3"></textarea>
-... 
-... <p id="4">Not editable</p>
-... <p id="5" contenteditable="true">Editable text</p>
-... 
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('body :read-only'))
-[<input disabled="" id="1"/>, <input id="2" readonly="" type="number"/>, <p id="4">Not editable</p>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... 
+    ... <input id="0">
+    ... <input id="1" disabled>
+    ... <input id="2" type="number" readonly>
+    ... 
+    ... <textarea id="3"></textarea>
+    ... 
+    ... <p id="4">Not editable</p>
+    ... <p id="5" contenteditable="true">Editable text</p>
+    ... 
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('body :read-only'))
+    [<input disabled="" id="1"/>, <input id="2" readonly="" type="number"/>, <p id="4">Not editable</p>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:read-only
@@ -2064,33 +2170,35 @@ Selects elements (such as `#!html <input>` or `#!html <textarea>`) that are edit
 apply to form elements as it applies to **any** element that can be edited by the user, such as a `#!html <p>` element
 with `contenteditable` set on it.
 
-```css tab="Syntax"
-:read-only
-```
+=== "Syntax"
+    ```css
+    :read-only
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... 
-... <input id="0">
-... <input id="1" disabled>
-... <input id="2" type="number" readonly>
-... 
-... <textarea id="3"></textarea>
-... 
-... <p id="4">Not editable</p>
-... <p id="5" contenteditable="true">Editable text</p>
-... 
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('body :read-write'))
-[<input id="0"/>, <textarea id="3"></textarea>, <p contenteditable="true" id="5">Editable text</p>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... 
+    ... <input id="0">
+    ... <input id="1" disabled>
+    ... <input id="2" type="number" readonly>
+    ... 
+    ... <textarea id="3"></textarea>
+    ... 
+    ... <p id="4">Not editable</p>
+    ... <p id="5" contenteditable="true">Editable text</p>
+    ... 
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('body :read-write'))
+    [<input id="0"/>, <textarea id="3"></textarea>, <p contenteditable="true" id="5">Editable text</p>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:read-write
@@ -2100,34 +2208,36 @@ with `contenteditable` set on it.
 Selects any `#!html <input>`, `#!html <select>`, or `#!html <textarea>` element that has the `required` attribute set on
 it.
 
-```css tab="Syntax"
-:required
-```
+=== "Syntax"
+    ```css
+    :required
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <form>
-... <input type="name" required>
-... <input type="checkbox" required>
-... <input type="email">
-... <textarea name="name" cols="30" rows="10" required></textarea>
-... <select name="nm" required>
-...     <!-- options -->
-... </select>
-... </form>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select(':required'))
-[<input required="" type="name"/>, <input required="" type="checkbox"/>, <textarea cols="30" name="name" required="" rows="10"></textarea>, <select name="nm" required="">
-    <!-- options -->
-</select>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <form>
+    ... <input type="name" required>
+    ... <input type="checkbox" required>
+    ... <input type="email">
+    ... <textarea name="name" cols="30" rows="10" required></textarea>
+    ... <select name="nm" required>
+    ...     <!-- options -->
+    ... </select>
+    ... </form>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select(':required'))
+    [<input required="" type="name"/>, <input required="" type="checkbox"/>, <textarea cols="30" name="name" required="" rows="10"></textarea>, <select name="nm" required="">
+        <!-- options -->
+    </select>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:required
@@ -2136,31 +2246,33 @@ it.
 
 Selects the root element of a document tree.
 
-```css tab="Syntax"
-:root
-```
+=== "Syntax"
+    ```css
+    :root
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-...    <div>Here is some text.</div>
-...    <div>Here is some more text.</div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select(':root'))
-[<html><head></head>
-<body>
-    <div>Here is some text.</div>
-    <div>Here is some more text.</div>
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ...    <div>Here is some text.</div>
+    ...    <div>Here is some more text.</div>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select(':root'))
+    [<html><head></head>
+    <body>
+        <div>Here is some text.</div>
+        <div>Here is some more text.</div>
 
 
-</body></html>]
-```
+    </body></html>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:root
@@ -2172,25 +2284,27 @@ using `:scope` on a div (`#!py3 sv.select(':scope > p', soup.div)`) `:scope` wou
 no others. If called on the Beautiful Soup object which represents the entire document, it would simply select
 [`:root`](#:root).
 
-```css tab="Syntax"
-:scope
-```
+=== "Syntax"
+    ```css
+    :scope
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-...    <div>Here is some text.</div>
-...    <div>Here is some more text.</div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select_one('body').select(':scope > div'))
-[<div>Here is some text.</div>, <div>Here is some more text.</div>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ...    <div>Here is some text.</div>
+    ...    <div>Here is some more text.</div>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select_one('body').select(':scope > div'))
+    [<div>Here is some text.</div>, <div>Here is some more text.</div>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:scope
@@ -2206,25 +2320,27 @@ While the level 4 specifications state that [compound](#compound-selector) selec
 (Safari) support complex selectors which are planned for level 5 CSS selectors. Soup Sieve also supports
 [complex](#complex-selector) selectors.
 
-```css tab="Syntax"
-:where(selector1, selector2)
-```
+=== "Syntax"
+    ```css
+    :where(selector1, selector2)
+    ```
 
-```pycon3 tab="Usage"
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <p id="0">Some text <span id="1"> in a paragraph</span>.
-... <a id="2" href="http://google.com">Link.</a></p>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('[id]:where(a, span)'))
-[<span id="1"> in a paragraph</span>, <a href="http://google.com" id="2">Link.</a>]
-```
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <p id="0">Some text <span id="1"> in a paragraph</span>.
+    ... <a id="2" href="http://google.com">Link.</a></p>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('[id]:where(a, span)'))
+    [<span id="1"> in a paragraph</span>, <a href="http://google.com" id="2">Link.</a>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:where
@@ -2240,61 +2356,68 @@ be removed.
 
 Selects active elements.
 
-```css tab="Syntax"
-:active
-```
+=== "Syntax"
+    ```css
+    :active
+    ```
 
 ### `:current`<span class="html5 badge"></span><span class="lab badge"></span> {:#:current}
 
 `:current` selects the element, or an ancestor of the element, that is currently being displayed. The functional form of
 `:current()` takes a compound selector list.
 
-```css tab="Syntax"
-:current
-:current(selector1, selector2)
+=== "Syntax"
+    ```css
+    :current
+    :current(selector1, selector2)
 ```
 
 ### `:focus`<span class="html5 badge"></span> {:#:focus}
 
 Represents an an element that has received focus.
 
-```css tab="Syntax"
-:focus
-```
+=== "Syntax"
+    ```css
+    :focus
+    ```
 
 ### `:focus-visible`<span class="html5 badge"></span><span class="lab badge"></span> {:#:focus-visible}
 
 Selects an element that matches `:focus` and the user agent determines that the focus should be made evident on the
 element.
 
-```css tab="Syntax"
-:focus-visible
-```
+=== "Syntax"
+    ```css
+    :focus-visible
+    ```
 
 ### `:focus-within`<span class="html5 badge"></span><span class="lab badge"></span> {:#:focus-within}
 
 Selects an element that has received focus or contains an element that has received focus.
 
-```css tab="Syntax"
-:focus-within
-```
+=== "Syntax"
+    ```css
+    :focus-within
+    ```
 
 ### `:future`<span class="html5 badge"></span><span class="lab badge"></span> {:#:future}
 
 Selects an element that is defined to occur entirely after a `:current` element.
 
-```css tab="Syntax"
-:future
-```
+=== "Syntax"
+    ```css
+    :future
+    ```
 
 ### `:host`<span class="html5 badge"></span><span class="lab badge"></span> {:#host}
 
 `:host` selects the element hosting a shadow tree. While the function form of `:host()` takes a complex selector list
 and matches the shadow host only if it matches one of the selectors in the list.
 
-```css tab="Syntax"
-:host
-:host(selector1, selector2)
+=== "Syntax"
+    ```css
+    :host
+    :host(selector1, selector2)
 ```
 
 ### `:host-context()`<span class="html5 badge"></span><span class="lab badge"></span> {:#:host-context}
@@ -2302,84 +2425,94 @@ and matches the shadow host only if it matches one of the selectors in the list.
 Selects the element hosting shadow tree, but only if one of the element's ancestors match a selector in the selector
 list.
 
-```css tab="Syntax"
-:host-context(parent descendant)
-```
+=== "Syntax"
+    ```css
+    :host-context(parent descendant)
+    ```
 
 ### `:hover`<span class="html5 badge"></span> {:#:hover}
 
 Selects an element when the user interacts with it by hovering over it with a pointing device.
 
-```css tab="Syntax"
-:hover
-```
+=== "Syntax"
+    ```css
+    :hover
+    ```
 
 ### `:local-link`<span class="html5 badge"></span><span class="lab badge"></span> {:#:local-link}
 
 Selects link (every `#!html <a>`, `#!html <link>`, and `#!html <area>` element with an `href` attribute) elements whose
 absolute URL matches the element’s own document URL.
 
-```css tab="Syntax"
-:local-link
-```
+=== "Syntax"
+    ```css
+    :local-link
+    ```
 
 ### `:past`<span class="html5 badge"></span><span class="lab badge"></span> {:#:past}
 
 Selects an element that is defined to occur entirely prior to a `:current` element.
 
-```css tab="Syntax"
-:past
-```
+=== "Syntax"
+    ```css
+    :past
+    ```
 
 ### `:paused`<span class="html5 badge"></span><span class="lab badge"></span> {:#:paused}
 
 Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and is
 currently "paused".
 
-```css tab="Syntax"
-:paused
-```
+=== "Syntax"
+    ```css
+    :paused
+    ```
 
 ### `:playing`<span class="html5 badge"></span><span class="lab badge"></span> {:#:playing}
 
 Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and is
-currently “playing”.
+currently "playing".
 
-```css tab="Syntax"
-:playing
-```
+=== "Syntax"
+    ```css
+    :playing
+    ```
 
 ### `:target`<span class="html5 badge"></span> {:#:target}
 
 Selects a unique element (the target element) with an id matching the URL's fragment.
 
-```css tab="Syntax"
-:target
-```
+=== "Syntax"
+    ```css
+    :target
+    ```
 
 ### `:target-within`<span class="html5 badge"></span><span class="lab badge"></span> {:#:target-within}
 
 Selects a unique element with an id matching the URL's fragment or an element which contains the element.
 
-```css tab="Syntax"
-:target-within
-```
+=== "Syntax"
+    ```css
+    :target-within
+    ```
 
 ### `:user-invalid`<span class="html5 badge"></span><span class="lab badge"></span> {:#:user-invalid}
 
 Selects an element with incorrect input, but only after the user has significantly interacted with it.
 
-```css tab="Syntax"
-:user-invalid
-```
+=== "Syntax"
+    ```css
+    :user-invalid
+    ```
 
 ### `:visited`<span class="html5 badge"></span> {:#:visited}
 
 Selects links that have already been visited.
 
-```css tab="Syntax"
-:visited
-```
+=== "Syntax"
+    ```css
+    :visited
+    ```
 
 --8<--
 selector_styles.txt
