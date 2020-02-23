@@ -1,34 +1,32 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Setup Soup Sieve."""
-
 from setuptools import setup, find_packages
 import os
-import imp
 
 
 def get_version():
     """Get version and version_info without importing the entire module."""
 
-    path = os.path.join(os.path.dirname(__file__), 'soupsieve')
-    fp, pathname, desc = imp.find_module('__meta__', [path])
-    try:
-        meta = imp.load_module('__meta__', fp, pathname, desc)
-        return meta.__version__, meta.__version_info__._get_dev_status()
-    finally:
-        fp.close()
+    import importlib.util
+
+    path = os.path.join(os.path.dirname(__file__), 'soupsieve', '__meta__.py')
+    spec = importlib.util.spec_from_file_location("__meta__", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    vi = module.__version_info__
+    return vi._get_canonical(), vi._get_dev_status()
 
 
-def get_requirements():
-    """Get the dependencies."""
+def get_requirements(req):
+    """Load list of dependencies."""
 
-    with open("requirements/project.txt") as f:
-        requirements = []
-        for line in f.readlines():
-            line = line.strip()
-            if line and not line.startswith('#'):
-                requirements.append(line)
-    return requirements
+    install_requires = []
+    with open(req) as f:
+        for line in f:
+            if not line.startswith("#"):
+                install_requires.append(line.strip())
+    return install_requires
 
 
 def get_description():
@@ -53,7 +51,7 @@ setup(
     author_email='Isaac.Muse@gmail.com',
     url='https://github.com/facelessuser/soupsieve',
     packages=find_packages(exclude=['test*', 'tools']),
-    install_requires=get_requirements(),
+    install_requires=get_requirements("requirements/project.txt"),
     license='MIT License',
     classifiers=[
         'Development Status :: %s' % DEVSTATUS,
