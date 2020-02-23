@@ -2370,7 +2370,7 @@ Selects active elements.
     ```css
     :current
     :current(selector1, selector2)
-```
+    ```
 
 ### `:focus`<span class="html5 badge"></span> {:#:focus}
 
@@ -2418,7 +2418,7 @@ and matches the shadow host only if it matches one of the selectors in the list.
     ```css
     :host
     :host(selector1, selector2)
-```
+    ```
 
 ### `:host-context()`<span class="html5 badge"></span><span class="lab badge"></span> {:#:host-context}
 
