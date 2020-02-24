@@ -1,3 +1,3 @@
-mkdocs_pymdownx_material_extras>=1.0b1
+mkdocs_pymdownx_material_extras>=1.0b2
 mkdocs-git-revision-date-localized-plugin
 pyspelling
