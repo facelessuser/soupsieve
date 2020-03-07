@@ -45,7 +45,7 @@
     
     
     
-      <link rel="stylesheet" href="../assets/pymdownx-extras/extra-4177b12573.css">
+      <link rel="stylesheet" href="../assets/pymdownx-extras/extra-821c6c252c.css">
     
     
       
@@ -517,14 +517,14 @@
                   <a href="https://github.com/facelessuser/soupsieve/tree/master/docs/src/markdown/differences.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="beautiful-soup-differences">Beautiful Soup Differences<a class="headerlink" href="#beautiful-soup-differences" title="Permanent link"></a></h1>
+                <h1 id="beautiful-soup-differences">Beautiful Soup Differences<a class="headerlink" href="#beautiful-soup-differences" title="Permanent link"></a></h1>
 <p>Soup Sieve is the official CSS "select" implementation of Beautiful Soup 4.7.0+. While the inclusion of Soup Sieve fixes
 many issues and greatly expands CSS support in Beautiful Soup, it does introduce some differences which may surprise
 some who've become accustom to the old "select" implementation.</p>
 <p>Beautiful Soup's old select method had numerous limitations and quirks that do not align with the actual CSS
 specifications. Most are insignificant, but there are a couple differences that people over the years had come to rely
 on. Soup Sieve, which aims to follow the CSS specification closely, does not support these differences.</p>
-<h2 id="attribute-values">Attribute Values<a class="headerlink" href="#attribute-values" title="Permanent link"></a></h2>
+<h2 id="attribute-values">Attribute Values<a class="headerlink" href="#attribute-values" title="Permanent link"></a></h2>
 <p>Beautiful Soup was very relaxed when it came to attribute values in selectors: <code class="codehilite"><span class="o">[</span><span class="nt">attribute</span><span class="o">=</span><span class="nt">value</span><span class="o">]</span></code>. Beautiful
 Soup would allow almost anything for a valid unquoted value. Soup Sieve, on the other hand, follows the CSS
 specification and requires that a value be a valid identifier, or it must be quoted. If you get an error complaining
@@ -542,7 +542,7 @@ about a malformed attribute, you may need to quote the value.</p>
 <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;[attr=</span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="n">soupsieve</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">))</span>
 </code></pre></div>
 
-<h2 id="css-identifiers">CSS Identifiers<a class="headerlink" href="#css-identifiers" title="Permanent link"></a></h2>
+<h2 id="css-identifiers">CSS Identifiers<a class="headerlink" href="#css-identifiers" title="Permanent link"></a></h2>
 <p>Since Soup Sieve follows the CSS specification, class names, id names, tag names, etc. must be valid identifiers. Since
 identifiers, according to the CSS specification, cannot <em>start</em> with a number, some users may find that their old class,
 id, or tag name selectors that started with numbers will not work. To specify such selectors, you'll have to use CSS
@@ -559,7 +559,7 @@ escapes.</p>
 <div class="codehilite"><pre><span></span><code><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;.class2&#39;</span><span class="p">)</span>
 </code></pre></div>
 
-<h2 id="relative-selectors">Relative Selectors<a class="headerlink" href="#relative-selectors" title="Permanent link"></a></h2>
+<h2 id="relative-selectors">Relative Selectors<a class="headerlink" href="#relative-selectors" title="Permanent link"></a></h2>
 <p>Whether on purpose or on accident, Beautiful Soup used to allow relative selectors:</p>
 <div class="codehilite"><pre><span></span><code><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;&gt; div&#39;</span><span class="p">)</span>
 </code></pre></div>
@@ -592,7 +592,7 @@ browsers, the following JavaScript example would treats <code>:scope</code> as t
 
 <p>While this will generally give you what is expected for the relative, descendant selectors, this will not work for
 sibling selectors, and the reasons why are covered in more details in <a href="#out-of-scope-selectors">Out of Scope Selectors</a>.</p>
-<h2 id="out-of-scope-selectors">Out of Scope Selectors<a class="headerlink" href="#out-of-scope-selectors" title="Permanent link"></a></h2>
+<h2 id="out-of-scope-selectors">Out of Scope Selectors<a class="headerlink" href="#out-of-scope-selectors" title="Permanent link"></a></h2>
 <p>In a browser, when requesting a selector via <code>querySelectorAll</code>, the element that <code>querySelectorAll</code> is called on is
 the <em>scoped</em> element. So in the following example, <code>el</code> is the <em>scoped</em> element.</p>
 <div class="codehilite"><pre><span></span><code><span class="nx">el</span><span class="p">.</span><span class="nx">querySelectorAll</span><span class="p">(</span><span class="s1">&#39;.class&#39;</span><span class="p">)</span>
@@ -621,7 +621,7 @@ that behaves, as close as possible, to what people familiar with CSS selectors a
 </code></pre></div>
 
 <p>This is by design and is in align with the behavior exhibited in all web browsers.</p>
-<h2 id="selected-element-order">Selected Element Order<a class="headerlink" href="#selected-element-order" title="Permanent link"></a></h2>
+<h2 id="selected-element-order">Selected Element Order<a class="headerlink" href="#selected-element-order" title="Permanent link"></a></h2>
 <p>Another quirk of Beautiful Soup's old implementation was that it returned the HTML nodes in the order of how the
 selectors were defined. For instance, Beautiful Soup, if given the pattern <code class="codehilite"><span class="nt">article</span><span class="o">,</span> <span class="nt">body</span></code> would first return
 <code class="codehilite"><span class="p">&lt;</span><span class="nt">article</span><span class="p">&gt;</span></code> and then <code class="codehilite"><span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span></code>.</p>

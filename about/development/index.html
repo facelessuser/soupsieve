@@ -45,7 +45,7 @@
     
     
     
-      <link rel="stylesheet" href="../../assets/pymdownx-extras/extra-4177b12573.css">
+      <link rel="stylesheet" href="../../assets/pymdownx-extras/extra-821c6c252c.css">
     
     
       
@@ -709,8 +709,8 @@
                   <a href="https://github.com/facelessuser/soupsieve/tree/master/docs/src/markdown/about/development.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="development">Development<a class="headerlink" href="#development" title="Permanent link"></a></h1>
-<h2 id="project-layout">Project Layout<a class="headerlink" href="#project-layout" title="Permanent link"></a></h2>
+                <h1 id="development">Development<a class="headerlink" href="#development" title="Permanent link"></a></h1>
+<h2 id="project-layout">Project Layout<a class="headerlink" href="#project-layout" title="Permanent link"></a></h2>
 <p>There are a number of files for build, test, and continuous integration in the root of the project, but in general, the
 project is broken up like so.</p>
 <div class="codehilite"><pre><span></span><code>├── docs
@@ -752,7 +752,7 @@ project is broken up like so.</p>
 </tr>
 </tbody>
 </table>
-<h2 id="coding-standards">Coding Standards<a class="headerlink" href="#coding-standards" title="Permanent link"></a></h2>
+<h2 id="coding-standards">Coding Standards<a class="headerlink" href="#coding-standards" title="Permanent link"></a></h2>
 <p>When writing code, the code should roughly conform to PEP8 and PEP257 suggestions.  The project utilizes the Flake8
 linter (with some additional plugins) to ensure code conforms (give or take some of the rules).  When in doubt, follow
 the formatting hints of existing code when adding files or modifying existing files.  Listed below are the modules used:</p>
@@ -764,7 +764,7 @@ the formatting hints of existing code when adding files or modifying existing fi
 <li><a class="magiclink magiclink-github magiclink-repository" href="https://github.com/gforcada/flake8-builtins" title="GitHub Repository: gforcada/flake8-builtins">gforcada/flake8-builtins</a></li>
 </ul>
 <p>Usually this can be automated with Tox (assuming it is installed): <code>tox -e lint</code>.</p>
-<h2 id="building-and-editing-documents">Building and Editing Documents<a class="headerlink" href="#building-and-editing-documents" title="Permanent link"></a></h2>
+<h2 id="building-and-editing-documents">Building and Editing Documents<a class="headerlink" href="#building-and-editing-documents" title="Permanent link"></a></h2>
 <p>Documents are in Markdown (with with some additional syntax provided by extensions) and are converted to HTML via Python
 Markdown. If you would like to build and preview the documentation, you must have these packages installed:</p>
 <ul>
@@ -779,7 +779,7 @@ and have your browser preview update live.</p>
 <div class="codehilite"><pre><span></span><code>mkdocs serve
 </code></pre></div>
 
-<h2 id="spell-checking-documents">Spell Checking Documents<a class="headerlink" href="#spell-checking-documents" title="Permanent link"></a></h2>
+<h2 id="spell-checking-documents">Spell Checking Documents<a class="headerlink" href="#spell-checking-documents" title="Permanent link"></a></h2>
 <p>Spell checking is performed via <a class="magiclink magiclink-github magiclink-repository" href="https://github.com/facelessuser/pyspelling" title="GitHub Repository: facelessuser/pyspelling">facelessuser/pyspelling</a>.</p>
 <p>During validation we build the docs and spell check various files in the project. <a href="https://github.com/GNUAspell/aspell">Aspell</a> must be installed and
 in the path.  Currently this project uses one of the more recent versions of Aspell.  It is not expected that everyone
@@ -798,13 +798,13 @@ run the following command from the root of the project.</p>
 
 <p>It should print out the files with the misspelled words if any are found.  If you find it prints words that are not
 misspelled, you can add them in <code>docs/src/dictionary/en-custom.text</code>.</p>
-<h2 id="validation-tests">Validation Tests<a class="headerlink" href="#validation-tests" title="Permanent link"></a></h2>
+<h2 id="validation-tests">Validation Tests<a class="headerlink" href="#validation-tests" title="Permanent link"></a></h2>
 <p>In order to preserve good code health, a test suite has been put together with pytest (<a class="magiclink magiclink-github magiclink-repository" href="https://github.com/pytest-dev/pytest" title="GitHub Repository: pytest-dev/pytest">pytest-dev/pytest</a>).  To run
 these tests, you can use the following command:</p>
 <div class="codehilite"><pre><span></span><code>py.test
 </code></pre></div>
 
-<h3 id="running-validation-with-tox">Running Validation With Tox<a class="headerlink" href="#running-validation-with-tox" title="Permanent link"></a></h3>
+<h3 id="running-validation-with-tox">Running Validation With Tox<a class="headerlink" href="#running-validation-with-tox" title="Permanent link"></a></h3>
 <p>Tox (<a class="magiclink magiclink-github magiclink-repository" href="https://github.com/tox-dev/tox" title="GitHub Repository: tox-dev/tox">tox-dev/tox</a>) is a great way to run the validation tests, spelling checks, and linting in virtual environments so
 as not to mess with your current working environment. Tox will use the specified Python version for the given
 environment and create a virtual environment and install all the needed requirements (minus Aspell).  You could also
@@ -832,7 +832,7 @@ minor version.</p>
 <div class="codehilite"><pre><span></span><code>tox -e documents
 </code></pre></div>
 
-<h2 id="code-coverage">Code Coverage<a class="headerlink" href="#code-coverage" title="Permanent link"></a></h2>
+<h2 id="code-coverage">Code Coverage<a class="headerlink" href="#code-coverage" title="Permanent link"></a></h2>
 <p>When running the validation tests through Tox, it is setup to track code coverage via the Coverage
 (<a class="magiclink magiclink-bitbucket magiclink-repository" href="https://bitbucket.org/ned/coveragepy" title="Bitbucket Repository: ned/coveragepy">ned/coveragepy</a>) module.  Coverage is run on each <code>pyxx</code> environment.  If you've made changes to the code,
 you can clear the old coverage data:</p>
@@ -843,7 +843,7 @@ you can clear the old coverage data:</p>
 output for each file in <code>.tox/pyXX/tmp</code>.  You can use these to see areas that are not covered/exercised yet with
 testing.</p>
 <p>You can checkout <code>tox.ini</code> to see how this is accomplished.</p>
-<h2 id="code-documentation">Code Documentation<a class="headerlink" href="#code-documentation" title="Permanent link"></a></h2>
+<h2 id="code-documentation">Code Documentation<a class="headerlink" href="#code-documentation" title="Permanent link"></a></h2>
 <p>The Soup Sieve module is laid out in the following structure:</p>
 <div class="codehilite"><pre><span></span><code>soupseive
 ├── __init__.py
@@ -888,7 +888,7 @@ testing.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="compiled-css-selector-structure">Compiled CSS Selector Structure<a class="headerlink" href="#compiled-css-selector-structure" title="Permanent link"></a></h3>
+<h3 id="compiled-css-selector-structure">Compiled CSS Selector Structure<a class="headerlink" href="#compiled-css-selector-structure" title="Permanent link"></a></h3>
 <p>When a CSS selector string is given to Soup Sieve, it is run through the <code>CSSParser</code> class.  <code>CSSParser</code> will return a
 <code>SelectorList</code> class. This class is sent to the <code>SoupSieve</code> class as a parameter along with things like <code>namespace</code> and
 <code>flags</code>. One of the most important things to understand when contributing is the structure of the <code>SelectorList</code> class.</p>
@@ -905,11 +905,11 @@ will be a <code>SelectorList</code> with one <code>Selector</code>. The <code cl
 object that may chain other <code>SelectorLists</code> objects depending on the complexity of the compound selector. If you provide
 a selector list, then you will get multiple <code>Selector</code> objects (one for each compound selector in the list) which in
 turn may chain other <code>Selector</code> objects.</p>
-<h3 id="selectorlist"><code>SelectorList</code><a class="headerlink" href="#selectorlist" title="Permanent link"></a></h3>
+<h3 id="selectorlist"><code>SelectorList</code><a class="headerlink" href="#selectorlist" title="Permanent link"></a></h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">SelectorList</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Selector list.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectors</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(),</span> <span class="n">is_not</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectors</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(),</span> <span class="n">is_not</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialize.&quot;&quot;&quot;</span>
 </code></pre></div>
 
@@ -935,11 +935,11 @@ turn may chain other <code>Selector</code> objects.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="selector"><code>Selector</code><a class="headerlink" href="#selector" title="Permanent link"></a></h3>
+<h3 id="selector"><code>Selector</code><a class="headerlink" href="#selector" title="Permanent link"></a></h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">Selector</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Selector.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">nth</span><span class="p">,</span> <span class="n">selectors</span><span class="p">,</span> <span class="n">relation</span><span class="p">,</span>
         <span class="n">rel_type</span><span class="p">,</span> <span class="n">contains</span><span class="p">,</span> <span class="n">lang</span><span class="p">,</span> <span class="n">flags</span>
     <span class="p">):</span>
@@ -1026,20 +1026,20 @@ turn may chain other <code>Selector</code> objects.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="selectornull"><code>SelectorNull</code><a class="headerlink" href="#selectornull" title="Permanent link"></a></h3>
+<h3 id="selectornull"><code>SelectorNull</code><a class="headerlink" href="#selectornull" title="Permanent link"></a></h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">SelectorNull</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Null Selector.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialize.&quot;&quot;&quot;</span>
 </code></pre></div>
 
 <p>The null selector is like <code>Selector</code>, but it matches nothing.</p>
-<h3 id="selectortag"><code>SelectorTag</code><a class="headerlink" href="#selectortag" title="Permanent link"></a></h3>
+<h3 id="selectortag"><code>SelectorTag</code><a class="headerlink" href="#selectortag" title="Permanent link"></a></h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">SelectorTag</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Selector tag.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialize.&quot;&quot;&quot;</span>
 </code></pre></div>
 
@@ -1061,11 +1061,11 @@ turn may chain other <code>Selector</code> objects.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="selectorattribute"><code>SelectorAttribute</code><a class="headerlink" href="#selectorattribute" title="Permanent link"></a></h3>
+<h3 id="selectorattribute"><code>SelectorAttribute</code><a class="headerlink" href="#selectorattribute" title="Permanent link"></a></h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">SelectorAttribute</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Selector attribute rule.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">xml_type_pattern</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">xml_type_pattern</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialize.&quot;&quot;&quot;</span>
 </code></pre></div>
 
@@ -1095,11 +1095,11 @@ turn may chain other <code>Selector</code> objects.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="selectorcontains"><code>SelectorContains</code><a class="headerlink" href="#selectorcontains" title="Permanent link"></a></h3>
+<h3 id="selectorcontains"><code>SelectorContains</code><a class="headerlink" href="#selectorcontains" title="Permanent link"></a></h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">SelectorContains</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Selector contains rule.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialize.&quot;&quot;&quot;</span>
 </code></pre></div>
 
@@ -1117,11 +1117,11 @@ turn may chain other <code>Selector</code> objects.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="selectornth"><code>SelectorNth</code><a class="headerlink" href="#selectornth" title="Permanent link"></a></h3>
+<h3 id="selectornth"><code>SelectorNth</code><a class="headerlink" href="#selectornth" title="Permanent link"></a></h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">SelectorNth</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Selector nth type.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">of_type</span><span class="p">,</span> <span class="n">last</span><span class="p">,</span> <span class="n">selectors</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">of_type</span><span class="p">,</span> <span class="n">last</span><span class="p">,</span> <span class="n">selectors</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialize.&quot;&quot;&quot;</span>
 </code></pre></div>
 
@@ -1159,11 +1159,11 @@ turn may chain other <code>Selector</code> objects.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="selectorlang"><code>SelectorLang</code><a class="headerlink" href="#selectorlang" title="Permanent link"></a></h3>
+<h3 id="selectorlang"><code>SelectorLang</code><a class="headerlink" href="#selectorlang" title="Permanent link"></a></h3>
 <div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">SelectorLang</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Selector language rules.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">languages</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">languages</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialize.&quot;&quot;&quot;</span>
 </code></pre></div>
 

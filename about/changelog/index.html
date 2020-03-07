@@ -45,7 +45,7 @@
     
     
     
-      <link rel="stylesheet" href="../../assets/pymdownx-extras/extra-4177b12573.css">
+      <link rel="stylesheet" href="../../assets/pymdownx-extras/extra-821c6c252c.css">
     
     
       
@@ -909,39 +909,39 @@
                   <a href="https://github.com/facelessuser/soupsieve/tree/master/docs/src/markdown/about/changelog.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link"></a></h1>
-<h2 id="200">2.0.0<a class="headerlink" href="#200" title="Permanent link"></a></h2>
+                <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link"></a></h1>
+<h2 id="200">2.0.0<a class="headerlink" href="#200" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: <code>SelectorSyntaxError</code> is derived from <code>Exception</code> not <code>SyntaxError</code>.</li>
 <li><strong>NEW</strong>: Remove deprecated <code>comments</code> and <code>icomments</code> from the API.</li>
 <li><strong>NEW</strong>: Drop support for EOL Python versions (Python 2 and Python &lt; 3.5).</li>
 <li><strong>FIX</strong>: Corner case with splitting namespace and tag name that that have an escaped <code>|</code>.</li>
 </ul>
-<h2 id="195">1.9.5<a class="headerlink" href="#195" title="Permanent link"></a></h2>
+<h2 id="195">1.9.5<a class="headerlink" href="#195" title="Permanent link"></a></h2>
 <ul>
 <li><strong>FIX</strong>: <code>:placeholder-shown</code> should not match if the element has content that overrides the placeholder.</li>
 </ul>
-<h2 id="194">1.9.4<a class="headerlink" href="#194" title="Permanent link"></a></h2>
+<h2 id="194">1.9.4<a class="headerlink" href="#194" title="Permanent link"></a></h2>
 <ul>
 <li><strong>FIX</strong>: <code>:checked</code> rule was too strict with <code>option</code> elements. The specification for <code>:checked</code> does not require an
   <code>option</code> element to be under a <code>select</code> element.</li>
 <li><strong>FIX</strong>: Fix level 4 <code>:lang()</code> wildcard match handling with singletons. Implicit wildcard matching should not
   match any singleton. Explicit wildcard matching (<code>*</code> in the language range: <code>*-US</code>) is allowed to match singletons.</li>
 </ul>
-<h2 id="193">1.9.3<a class="headerlink" href="#193" title="Permanent link"></a></h2>
+<h2 id="193">1.9.3<a class="headerlink" href="#193" title="Permanent link"></a></h2>
 <ul>
 <li><strong>FIX</strong>: <code>[attr!=value]</code> pattern was mistakenly using <code>:not([attr|=value])</code> logic instead of <code>:not([attr=value])</code>.</li>
 <li><strong>FIX</strong>: Remove undocumented <code>_QUIRKS</code> mode flag. Beautiful Soup was meant to use it to help with transition to Soup
   Sieve, but never released with it. Help with transition at this point is no longer needed.</li>
 </ul>
-<h2 id="192">1.9.2<a class="headerlink" href="#192" title="Permanent link"></a></h2>
+<h2 id="192">1.9.2<a class="headerlink" href="#192" title="Permanent link"></a></h2>
 <ul>
 <li><strong>FIX</strong>: Shortcut last descendant calculation if possible for performance.</li>
 <li><strong>FIX</strong>: Fix issue where <code>Doctype</code> strings can be mistaken for a normal text node in some cases.</li>
 <li><strong>FIX</strong>: A top level tag is not a <code>:root</code> tag if it has sibling text nodes or tag nodes. This is an issue that mostly
   manifests when using <code>html.parser</code> as the parser will allow multiple root nodes.</li>
 </ul>
-<h2 id="191">1.9.1<a class="headerlink" href="#191" title="Permanent link"></a></h2>
+<h2 id="191">1.9.1<a class="headerlink" href="#191" title="Permanent link"></a></h2>
 <ul>
 <li><strong>FIX</strong>: <code>:root</code>, <code>:contains()</code>, <code>:default</code>, <code>:indeterminate</code>, <code>:lang()</code>, and <code>:dir()</code> will properly account for HTML
   <code>iframe</code> elements in their logic when selecting or matching an element. Their logic will be restricted to the document
@@ -950,7 +950,7 @@
   not provide namespaces will assume the XHTML namespace).</li>
 <li><strong>FIX</strong>: Ensure that all pseudo-class names are case insensitive and allow CSS escapes.</li>
 </ul>
-<h2 id="190">1.9.0<a class="headerlink" href="#190" title="Permanent link"></a></h2>
+<h2 id="190">1.9.0<a class="headerlink" href="#190" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: Allow <code>:contains()</code> to accept a list of text to search for. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/115" title="GitHub Issue: facelessuser/soupsieve#115">#115</a>)</li>
 <li><strong>NEW</strong>: Add new <code>escape</code> function for escaping CSS identifiers. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/125" title="GitHub Issue: facelessuser/soupsieve#125">#125</a>)</li>
@@ -965,7 +965,7 @@
   but as there is no case where we could resolve such a string and still have a valid selector, string handling remains
   the same. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/128" title="GitHub Issue: facelessuser/soupsieve#128">#128</a>)</li>
 </ul>
-<h2 id="180">1.8.0<a class="headerlink" href="#180" title="Permanent link"></a></h2>
+<h2 id="180">1.8.0<a class="headerlink" href="#180" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: Add custom selector support. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/92" title="GitHub Issue: facelessuser/soupsieve#92">#92</a>)(<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/108" title="GitHub Issue: facelessuser/soupsieve#108">#108</a>)</li>
 <li><strong>FIX</strong>: Small tweak to CSS identifier pattern to ensure it matches the CSS specification exactly. Specifically, you
@@ -977,13 +977,13 @@
 <li><strong>FIX</strong>: Bad CSS syntax now raises a <code>SelectorSyntaxError</code>, which is still currently derived from <code>SyntaxError</code>, but
   will most likely be derived from <code>Exception</code> in the future.</li>
 </ul>
-<h2 id="173">1.7.3<a class="headerlink" href="#173" title="Permanent link"></a></h2>
+<h2 id="173">1.7.3<a class="headerlink" href="#173" title="Permanent link"></a></h2>
 <ul>
 <li><strong>FIX</strong>: Fix regression with tag names in regards to case sensitivity, and ensure there are tests to prevent breakage
   in the future.</li>
 <li><strong>FIX</strong>: XHTML should always be case sensitive like XML.</li>
 </ul>
-<h2 id="172">1.7.2<a class="headerlink" href="#172" title="Permanent link"></a></h2>
+<h2 id="172">1.7.2<a class="headerlink" href="#172" title="Permanent link"></a></h2>
 <ul>
 <li><strong>FIX</strong>: Fix HTML detection <code>type</code> selector.</li>
 <li><strong>FIX</strong>: Fixes for <code>:enabled</code> and <code>:disabled</code>.</li>
@@ -992,12 +992,12 @@
   period with newest Beautiful Soup. In the future, these quirks will raise an exception as Soup Sieve requires
   selectors to follow the CSS specification.</li>
 </ul>
-<h2 id="171">1.7.1<a class="headerlink" href="#171" title="Permanent link"></a></h2>
+<h2 id="171">1.7.1<a class="headerlink" href="#171" title="Permanent link"></a></h2>
 <ul>
 <li><strong>FIX</strong>: Fix issue with <code>:has()</code> selector where a leading combinator can only be provided in the first selector in a
   relative selector list.</li>
 </ul>
-<h2 id="170">1.7.0<a class="headerlink" href="#170" title="Permanent link"></a></h2>
+<h2 id="170">1.7.0<a class="headerlink" href="#170" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: Add support for <code>:in-range</code> and <code>:out-of-range</code> selectors. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/60" title="GitHub Issue: facelessuser/soupsieve#60">#60</a>)</li>
 <li><strong>NEW</strong>: Add support for <code>:defined</code> selector. (<a class="magiclink magiclink-github magiclink-issue" href="https://github.com/facelessuser/soupsieve/issues/76" title="GitHub Issue: facelessuser/soupsieve#76">#76</a>)</li>
@@ -1008,28 +1008,28 @@
 <li><strong>FIX</strong>: Split whitespace attribute lists by all whitespace characters, not just space.</li>
 <li><strong>FIX</strong>: <code>:nth-*</code> patterns were converting numbers to base 16 when they should have been converting to base 10.</li>
 </ul>
-<h2 id="162">1.6.2<a class="headerlink" href="#162" title="Permanent link"></a></h2>
+<h2 id="162">1.6.2<a class="headerlink" href="#162" title="Permanent link"></a></h2>
 <ul>
 <li><strong>FIX</strong>: Fix pattern compile issues on Python &lt; 2.7.4.</li>
 <li><strong>FIX</strong>: Don't use <code>\d</code> in Unicode <code>Re</code> patterns as they will contain characters outside the range of <code>[0-9]</code>.</li>
 </ul>
-<h2 id="161">1.6.1<a class="headerlink" href="#161" title="Permanent link"></a></h2>
+<h2 id="161">1.6.1<a class="headerlink" href="#161" title="Permanent link"></a></h2>
 <ul>
 <li><strong>FIX</strong>: Fix warning about not importing <code>Mapping</code> from <code>collections.abc</code>.</li>
 </ul>
-<h2 id="160">1.6.0<a class="headerlink" href="#160" title="Permanent link"></a></h2>
+<h2 id="160">1.6.0<a class="headerlink" href="#160" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: Add <code>closest</code> method to the API that matches closest ancestor.</li>
 <li><strong>FIX</strong>: Add missing <code>select_one</code> reference to module's <code>__all__</code>.</li>
 </ul>
-<h2 id="150">1.5.0<a class="headerlink" href="#150" title="Permanent link"></a></h2>
+<h2 id="150">1.5.0<a class="headerlink" href="#150" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: Add <code>select_one</code> method like Beautiful Soup has.</li>
 <li><strong>NEW</strong>: Add <code>:dir()</code> selector (HTML only).</li>
 <li><strong>FIX</strong>: Fix issues when handling HTML fragments (elements without a <code>BeautifulSoup</code> object as a parent).</li>
 <li><strong>FIX</strong>: Fix internal <code>nth</code> range check.</li>
 </ul>
-<h2 id="140">1.4.0<a class="headerlink" href="#140" title="Permanent link"></a></h2>
+<h2 id="140">1.4.0<a class="headerlink" href="#140" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: Throw <code>NotImplementedError</code> for at-rules: <code>@page</code>, etc.</li>
 <li><strong>NEW</strong>: Match nothing for <code>:host</code>, <code>:host()</code>, and <code>:host-context()</code>.</li>
@@ -1037,11 +1037,11 @@
 <li><strong>NEW</strong>: Selector patterns can be annotated with CSS comments.</li>
 <li><strong>FIX</strong>: <code>\r</code>, <code>\n</code>, and <code>\f</code> cannot be escaped with <code>\</code> in CSS. You must use Unicode escapes.</li>
 </ul>
-<h2 id="131">1.3.1<a class="headerlink" href="#131" title="Permanent link"></a></h2>
+<h2 id="131">1.3.1<a class="headerlink" href="#131" title="Permanent link"></a></h2>
 <ul>
 <li><strong>FIX</strong>: Fix issue with undefined namespaces.</li>
 </ul>
-<h2 id="130">1.3.0<a class="headerlink" href="#130" title="Permanent link"></a></h2>
+<h2 id="130">1.3.0<a class="headerlink" href="#130" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: Add support for <code>:scope</code>.</li>
 <li><strong>NEW</strong>: <code>:user-invalid</code>, <code>:playing</code>, <code>:paused</code>, and <code>:local-link</code> will not cause a failure, but all will match
@@ -1050,7 +1050,7 @@
   empty string, it should not match anything.</li>
 <li><strong>FIX</strong>: Precompile internal patterns for pseudo-classes to prevent having to parse them again.</li>
 </ul>
-<h2 id="121">1.2.1<a class="headerlink" href="#121" title="Permanent link"></a></h2>
+<h2 id="121">1.2.1<a class="headerlink" href="#121" title="Permanent link"></a></h2>
 <ul>
 <li><strong>FIX</strong>: More descriptive exceptions. Exceptions will also now mention position in the pattern that is problematic.</li>
 <li><strong>FIX</strong>: <code>filter</code> ignores <code>NavigableString</code> objects in normal iterables and <code>Tag</code> iterables. Basically, it filters all
@@ -1061,12 +1061,12 @@
   the <code>meta</code> tag to prevent searching again during the current select.</li>
 <li><strong>FIX</strong>: If a non <code>BeautifulSoup</code>/<code>Tag</code> object is given to the API to compare against, raise a <code>TypeError</code>.</li>
 </ul>
-<h2 id="120">1.2.0<a class="headerlink" href="#120" title="Permanent link"></a></h2>
+<h2 id="120">1.2.0<a class="headerlink" href="#120" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: Add Python 2.7 support.</li>
 <li><strong>NEW</strong>: Remove old pre 1.0 deprecations.</li>
 </ul>
-<h2 id="110">1.1.0<a class="headerlink" href="#110" title="Permanent link"></a></h2>
+<h2 id="110">1.1.0<a class="headerlink" href="#110" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: Adds support for <code>[attr!=value]</code> which is equivalent to <code>:not([attr=value])</code>.</li>
 <li><strong>NEW</strong>: Add support for <code>:active</code>, <code>:focus</code>, <code>:hover</code>, <code>:visited</code>, <code>:target</code>, <code>:focus-within</code>, <code>:focus-visible</code>,
@@ -1083,23 +1083,23 @@
   namespaces if desired.</li>
 <li><strong>FIX</strong>: Fix exception when <code>[type]</code> is used (with no value).</li>
 </ul>
-<h2 id="102">1.0.2<a class="headerlink" href="#102" title="Permanent link"></a></h2>
+<h2 id="102">1.0.2<a class="headerlink" href="#102" title="Permanent link"></a></h2>
 <ul>
 <li><strong>FIX</strong>: Use proper CSS identifier patterns for tag names, classes, ids, etc. Things like <code>#3</code> or <code>#-3</code> should not
   match and should require <code>#\33</code> or <code>#-\33</code>.</li>
 <li><strong>FIX</strong>: Do not raise <code>NotImplementedError</code> for supported pseudo classes/elements with bad syntax, instead raise
   <code>SyntaxError</code>.</li>
 </ul>
-<h2 id="101">1.0.1<a class="headerlink" href="#101" title="Permanent link"></a></h2>
+<h2 id="101">1.0.1<a class="headerlink" href="#101" title="Permanent link"></a></h2>
 <ul>
 <li><strong>FIX</strong>: When giving a tag to <code>select</code>, it should only return the children of that tag, never the tag itself.</li>
 <li><strong>FIX</strong>: For informational purposes, raise a <code>NotImplementedError</code> when an unsupported pseudo class is used.</li>
 </ul>
-<h2 id="100">1.0.0<a class="headerlink" href="#100" title="Permanent link"></a></h2>
+<h2 id="100">1.0.0<a class="headerlink" href="#100" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: Official 1.0.0 release.</li>
 </ul>
-<h2 id="100b2">1.0.0b2<a class="headerlink" href="#100b2" title="Permanent link"></a></h2>
+<h2 id="100b2">1.0.0b2<a class="headerlink" href="#100b2" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: Drop document flags. Document type can be detected from the Beautiful Soup object directly.</li>
 <li><strong>FIX</strong>: CSS selectors should be evaluated with CSS whitespace rules.</li>
@@ -1108,24 +1108,24 @@
 <li><strong>FIX</strong>: In Beautiful Soup, the document itself is the first tag. Do not match the "document" tag by returning false
   for any tag that doesn't have a parent.</li>
 </ul>
-<h2 id="100b1">1.0.0b1<a class="headerlink" href="#100b1" title="Permanent link"></a></h2>
+<h2 id="100b1">1.0.0b1<a class="headerlink" href="#100b1" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: Add support for non-standard <code>:contains()</code> selector.</li>
 <li><strong>FIX</strong>: Compare pseudo class names case insensitively when matching unexpected cases.</li>
 <li><strong>FIX</strong>: Don't allow attribute case flags when no attribute value is defined.</li>
 </ul>
-<h2 id="060">0.6.0<a class="headerlink" href="#060" title="Permanent link"></a></h2>
+<h2 id="060">0.6.0<a class="headerlink" href="#060" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: <code>mode</code> attribute is now called <code>flags</code> to allow for other options in the future.</li>
 <li><strong>FIX</strong>: More corner cases for <code>nth</code> selectors.</li>
 </ul>
-<h2 id="053">0.5.3<a class="headerlink" href="#053" title="Permanent link"></a></h2>
+<h2 id="053">0.5.3<a class="headerlink" href="#053" title="Permanent link"></a></h2>
 <ul>
 <li><strong>FIX</strong>: Previously, all pseudo classes' selector lists were evaluated as one big group, but now each pseudo classes'
   selector lists are evaluated separately.</li>
 <li><strong>FIX</strong>: CSS selector tokens are not case sensitive.</li>
 </ul>
-<h2 id="052">0.5.2<a class="headerlink" href="#052" title="Permanent link"></a></h2>
+<h2 id="052">0.5.2<a class="headerlink" href="#052" title="Permanent link"></a></h2>
 <ul>
 <li><strong>FIX</strong>: Add missing <code>s</code> flag to attribute selector for forced case sensitivity of attribute values.</li>
 <li><strong>FIX</strong>: Relax attribute pattern matching to allow non-essential whitespace.</li>
@@ -1133,16 +1133,16 @@
 <li><strong>FIX</strong>: <code>type</code> attribute in HTML is handled special. While all other attributes values are case sensitive, <code>type</code> in
   HTML is usually treated special and is insensitive. In XML, this is not the case.</li>
 </ul>
-<h2 id="051">0.5.1<a class="headerlink" href="#051" title="Permanent link"></a></h2>
+<h2 id="051">0.5.1<a class="headerlink" href="#051" title="Permanent link"></a></h2>
 <ul>
 <li><strong>FIX</strong>: Fix namespace check for <code>:nth-of-type</code>.</li>
 </ul>
-<h2 id="050">0.5.0<a class="headerlink" href="#050" title="Permanent link"></a></h2>
+<h2 id="050">0.5.0<a class="headerlink" href="#050" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: Deprecate <code>commentsiter</code> and <code>selectiter</code> in favor of <code>icomments</code> and <code>iselect</code>. Expect removal in version
 1.0.</li>
 </ul>
-<h2 id="040">0.4.0<a class="headerlink" href="#040" title="Permanent link"></a></h2>
+<h2 id="040">0.4.0<a class="headerlink" href="#040" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NEW</strong>: Initial prerelease.</li>
 </ul>

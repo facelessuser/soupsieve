@@ -45,7 +45,7 @@
     
     
     
-      <link rel="stylesheet" href="../assets/pymdownx-extras/extra-4177b12573.css">
+      <link rel="stylesheet" href="../assets/pymdownx-extras/extra-821c6c252c.css">
     
     
       
@@ -641,7 +641,7 @@
                   <a href="https://github.com/facelessuser/soupsieve/tree/master/docs/src/markdown/api.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="api">API<a class="headerlink" href="#api" title="Permanent link"></a></h1>
+                <h1 id="api">API<a class="headerlink" href="#api" title="Permanent link"></a></h1>
 <p>Soup Sieve implements most of the selectors from the stable specification and even many from the latest draft
 specification. Selectors can be used to detect and filter elements. To learn more about which specific selectors are
 implemented, see <a href="../selectors/">CSS Selectors</a>.</p>
@@ -678,8 +678,8 @@ you need <code>type</code> to be sensitive, you can use the <code>s</code> flag:
 </ul>
 <p>While Soup Sieve access is exposed through Beautiful Soup's API, Soup Sieve's API can always be imported and accessed
 directly for more controlled tag selection if needed.</p>
-<h2 id="flags">Flags<a class="headerlink" href="#flags" title="Permanent link"></a></h2>
-<h3 id="soupseivedebug"><code>soupseive.DEBUG</code><a class="headerlink" href="#soupseivedebug" title="Permanent link"></a></h3>
+<h2 id="flags">Flags<a class="headerlink" href="#flags" title="Permanent link"></a></h2>
+<h3 id="soupseivedebug"><code>soupseive.DEBUG</code><a class="headerlink" href="#soupseivedebug" title="Permanent link"></a></h3>
 <p>Print debug output when parsing a selector.</p>
 <div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">soupsieve</span> <span class="k">as</span> <span class="nn">sv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sv</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;p:has(#id) &gt; span.some-class:contains(text)&#39;</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">sv</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
@@ -699,7 +699,7 @@ directly for more controlled tag selection if needed.</p>
 <span class="go">SoupSieve(pattern=&#39;p:has(#id) &gt; span.some-class:contains(text)&#39;, namespaces=None, custom=None, flags=1)</span>
 </code></pre></div>
 
-<h2 id="soupsieveselect_one"><code>soupsieve.select_one()</code><a class="headerlink" href="#soupsieveselect_one" title="Permanent link"></a></h2>
+<h2 id="soupsieveselect_one"><code>soupsieve.select_one()</code><a class="headerlink" href="#soupsieveselect_one" title="Permanent link"></a></h2>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="n">select</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Select the specified tags.&quot;&quot;&quot;</span>
 </code></pre></div>
@@ -713,7 +713,7 @@ dictionary, and <code>flags</code>.</p>
 <span class="go">&lt;p class=&quot;a&quot;&gt;Cat&lt;/p&gt;</span>
 </code></pre></div>
 
-<h2 id="soupsieveselect"><code>soupsieve.select()</code><a class="headerlink" href="#soupsieveselect" title="Permanent link"></a></h2>
+<h2 id="soupsieveselect"><code>soupsieve.select()</code><a class="headerlink" href="#soupsieveselect" title="Permanent link"></a></h2>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="n">select</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Select the specified tags.&quot;&quot;&quot;</span>
 </code></pre></div>
@@ -727,13 +727,13 @@ a <code>limit</code>, and <code>flags</code>.</p>
 <span class="go">[&lt;p class=&quot;a&quot;&gt;Cat&lt;/p&gt;, &lt;p class=&quot;b&quot;&gt;Dog&lt;/p&gt;, &lt;p class=&quot;c&quot;&gt;Mouse&lt;/p&gt;]</span>
 </code></pre></div>
 
-<h2 id="soupsieveiselect"><code>soupsieve.iselect()</code><a class="headerlink" href="#soupsieveiselect" title="Permanent link"></a></h2>
+<h2 id="soupsieveiselect"><code>soupsieve.iselect()</code><a class="headerlink" href="#soupsieveiselect" title="Permanent link"></a></h2>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">iselect</span><span class="p">(</span><span class="n">select</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Select the specified tags.&quot;&quot;&quot;</span>
 </code></pre></div>
 
 <p><code>iselect</code> is exactly like <code>select</code> except that it returns a generator instead of a list.</p>
-<h2 id="soupsieveclosest"><code>soupsieve.closest()</code><a class="headerlink" href="#soupsieveclosest" title="Permanent link"></a></h2>
+<h2 id="soupsieveclosest"><code>soupsieve.closest()</code><a class="headerlink" href="#soupsieveclosest" title="Permanent link"></a></h2>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">closest</span><span class="p">(</span><span class="n">select</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Match closest ancestor to the provided tag.&quot;&quot;&quot;</span>
 </code></pre></div>
@@ -742,7 +742,7 @@ a <code>limit</code>, and <code>flags</code>.</p>
 ancestor of the tag or the tag itself.</p>
 <p><code>closest</code> accepts a CSS selector string, a <code>Tag</code>/<code>BeautifulSoup</code> object, an optional <a href="#namespaces">namespace</a>
 dictionary, and <code>flags</code>.</p>
-<h2 id="soupsievematch"><code>soupsieve.match()</code><a class="headerlink" href="#soupsievematch" title="Permanent link"></a></h2>
+<h2 id="soupsievematch"><code>soupsieve.match()</code><a class="headerlink" href="#soupsievematch" title="Permanent link"></a></h2>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="n">select</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Match node.&quot;&quot;&quot;</span>
 </code></pre></div>
@@ -757,7 +757,7 @@ and flags.</p>
 <span class="go">False</span>
 </code></pre></div>
 
-<h2 id="soupsievefilter"><code>soupsieve.filter()</code><a class="headerlink" href="#soupsievefilter" title="Permanent link"></a></h2>
+<h2 id="soupsievefilter"><code>soupsieve.filter()</code><a class="headerlink" href="#soupsievefilter" title="Permanent link"></a></h2>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="n">select</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Filter list of nodes.&quot;&quot;&quot;</span>
 </code></pre></div>
@@ -770,7 +770,7 @@ and flags.</p>
 <span class="go">[&lt;p class=&quot;a&quot;&gt;Cat&lt;/p&gt;, &lt;p class=&quot;c&quot;&gt;Mouse&lt;/p&gt;]</span>
 </code></pre></div>
 
-<h2 id="soupsieveescape"><code>soupsieve.escape()</code><a class="headerlink" href="#soupsieveescape" title="Permanent link"></a></h2>
+<h2 id="soupsieveescape"><code>soupsieve.escape()</code><a class="headerlink" href="#soupsieveescape" title="Permanent link"></a></h2>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">escape</span><span class="p">(</span><span class="n">ident</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Escape CSS identifier.&quot;&quot;&quot;</span>
 </code></pre></div>
@@ -793,7 +793,7 @@ would normally cause an identifier to be invalid.</p>
 <p class="admonition-title">New in 1.9.0</p>
 <p><code>escape</code> is a new API function added in 1.9.0.</p>
 </div>
-<h2 id="soupsievecompile"><code>soupsieve.compile()</code><a class="headerlink" href="#soupsievecompile" title="Permanent link"></a></h2>
+<h2 id="soupsievecompile"><code>soupsieve.compile()</code><a class="headerlink" href="#soupsievecompile" title="Permanent link"></a></h2>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">namespaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Compile CSS pattern.&quot;&quot;&quot;</span>
 </code></pre></div>
@@ -822,10 +822,10 @@ selector functions available via the module without the need to specify the sele
         <span class="sd">&quot;&quot;&quot;Iterate the specified tags.&quot;&quot;&quot;</span>
 </code></pre></div>
 
-<h2 id="soupsievepurge"><code>soupsieve.purge()</code><a class="headerlink" href="#soupsievepurge" title="Permanent link"></a></h2>
+<h2 id="soupsievepurge"><code>soupsieve.purge()</code><a class="headerlink" href="#soupsievepurge" title="Permanent link"></a></h2>
 <p>Soup Sieve caches compiled patterns for performance. If for whatever reason, you need to purge the cache, simply call
 <code>purge</code>.</p>
-<h2 id="custom-selectors">Custom Selectors<a class="headerlink" href="#custom-selectors" title="Permanent link"></a></h2>
+<h2 id="custom-selectors">Custom Selectors<a class="headerlink" href="#custom-selectors" title="Permanent link"></a></h2>
 <p>The custom selector feature is loosely inspired by the <code>css-extensions</code> <a href="https://drafts.csswg.org/css-extensions-1/">proposal</a>. In its current
 form, Soup Sieve allows assigning a complex selector to a custom pseudo-class name. The pseudo-class name must start
 with <code>:--</code> to avoid conflicts with any future pseudo-classes.</p>
@@ -875,7 +875,7 @@ has child elements, we will call the selector <code>:--parent</code>. Then we wi
 <div class="codehilite"><pre><span></span><code>[&lt;p id=&quot;4&quot;&gt;&lt;span&gt;child&lt;/span&gt;&lt;/p&gt;]
 </code></pre></div>
 
-<h2 id="namespaces">Namespaces<a class="headerlink" href="#namespaces" title="Permanent link"></a></h2>
+<h2 id="namespaces">Namespaces<a class="headerlink" href="#namespaces" title="Permanent link"></a></h2>
 <p>Many of Soup Sieve's selector functions take an optional namespace dictionary. Namespaces, just like CSS, must be
 defined for Soup Sieve to evaluate <code>ns|tag</code> type selectors. This is analogous to CSS's namespace at-rule:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">@</span><span class="k">namespace</span> <span class="nt">url</span><span class="o">(</span><span class="s2">&quot;http://www.w3.org/1999/xhtml&quot;</span><span class="o">)</span><span class="p">;</span>

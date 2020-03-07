@@ -45,7 +45,7 @@
     
     
     
-      <link rel="stylesheet" href="../assets/pymdownx-extras/extra-4177b12573.css">
+      <link rel="stylesheet" href="../assets/pymdownx-extras/extra-821c6c252c.css">
     
     
       
@@ -1557,8 +1557,8 @@
                   <a href="https://github.com/facelessuser/soupsieve/tree/master/docs/src/markdown/selectors.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="css-selectors">CSS Selectors<a class="headerlink" href="#css-selectors" title="Permanent link"></a></h1>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link"></a></h2>
+                <h1 id="css-selectors">CSS Selectors<a class="headerlink" href="#css-selectors" title="Permanent link"></a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link"></a></h2>
 <p>The CSS selectors are based off of the CSS specification and includes not only stable selectors, but may also include
 selectors currently under development from the draft specifications. Primarily support has been added for selectors that
 were feasible to implement and most likely to get practical use. In addition to the selectors in the specification,
@@ -1628,27 +1628,27 @@ selectors and experimental behavioral changes.</dd>
 <dd>The HTML Living Standard document. Defines semantics regarding HTML.</dd>
 </dl>
 </div>
-<h2 id="selector-terminology">Selector Terminology<a class="headerlink" href="#selector-terminology" title="Permanent link"></a></h2>
+<h2 id="selector-terminology">Selector Terminology<a class="headerlink" href="#selector-terminology" title="Permanent link"></a></h2>
 <p>Certain terminology is used throughout this document when describing selectors. In order to fully understand the syntax
 a selector may implement, it is important to understand a couple of key terms.</p>
-<h3 id="selector">Selector<a class="headerlink" href="#selector" title="Permanent link"></a></h3>
+<h3 id="selector">Selector<a class="headerlink" href="#selector" title="Permanent link"></a></h3>
 <p>Selector is used to describe any selector whether it is a <a href="#simple-selector">simple</a>, <a href="#compound-selector">compound</a>, or
 <a href="#complex-selector">complex</a> selector.</p>
-<h3 id="simple-selector">Simple Selector<a class="headerlink" href="#simple-selector" title="Permanent link"></a></h3>
+<h3 id="simple-selector">Simple Selector<a class="headerlink" href="#simple-selector" title="Permanent link"></a></h3>
 <p>A simple selector represents a single condition on an element. It can be a <a href="#type-selectors">type selector</a>,
 <a href="#universal-selectors">universal selector</a>, <a href="#id-selectors">ID selector</a>, <a href="#class-selectors">class selector</a>,
 <a href="#attribute-selectors">attribute selector</a>, or <a href="#pseudo-classes">pseudo class selector</a>.</p>
-<h3 id="compound-selector">Compound Selector<a class="headerlink" href="#compound-selector" title="Permanent link"></a></h3>
+<h3 id="compound-selector">Compound Selector<a class="headerlink" href="#compound-selector" title="Permanent link"></a></h3>
 <p>A <a href="#compound-selector">compound</a> selector is a sequence of <a href="#simple-selector">simple</a> selectors. They do not contain any
 <a href="#combinators-and-selector-lists">combinators</a>. If a universal or type selector is used, they must come first, and only
 one instance of either a universal or type selector can be used, both cannot be used at the same time.</p>
-<h3 id="complex-selector">Complex Selector<a class="headerlink" href="#complex-selector" title="Permanent link"></a></h3>
+<h3 id="complex-selector">Complex Selector<a class="headerlink" href="#complex-selector" title="Permanent link"></a></h3>
 <p>A complex selector consists of multiple <a href="#simple-selector">simple</a> or <a href="#compound-selector">compound</a> selectors joined
 with <a href="#combinators-and-selector-lists">combinators</a>.</p>
-<h3 id="selector-list">Selector List<a class="headerlink" href="#selector-list" title="Permanent link"></a></h3>
+<h3 id="selector-list">Selector List<a class="headerlink" href="#selector-list" title="Permanent link"></a></h3>
 <p>A selector list is a list of selectors joined with a comma (<code>,</code>). A selector list is used to specify that a match is
 valid if any of the selectors in a list matches.</p>
-<h2 id="escapes">Escapes<a class="headerlink" href="#escapes" title="Permanent link"></a></h2>
+<h2 id="escapes">Escapes<a class="headerlink" href="#escapes" title="Permanent link"></a></h2>
 <p>Soup Sieve selectors support using CSS escapes. So if you need provide Unicode, or non-standard characters, you can use
 CSS style escapes.</p>
 <p>Escapes can be specified with a backslash followed by 1 - 6 hexadecimal digits: <code class="codehilite"><span class="err">\</span><span class="nt">20AC</span></code>, <code class="codehilite"><span class="err">\</span><span class="nt">0020AC</span></code>, etc. If
@@ -1657,8 +1657,8 @@ you need to terminate an escape to avoid it accumulating unintended hexadecimal 
 character: <code class="codehilite"><span class="err">\</span><span class="o">+</span></code> &rarr; <code>+</code>. The one exception is that you cannot escape the form feed, newline, or carriage
 return.</p>
 <p>You can always use Soup Sieve's <a href="../api/#soupsieveescape">escape command</a> to escape identifiers as well.</p>
-<h2 id="basic-selectors">Basic Selectors<a class="headerlink" href="#basic-selectors" title="Permanent link"></a></h2>
-<h3 id="type-selectors">Type Selectors<a class="headerlink" href="#type-selectors" title="Permanent link"></a></h3>
+<h2 id="basic-selectors">Basic Selectors<a class="headerlink" href="#basic-selectors" title="Permanent link"></a></h2>
+<h3 id="type-selectors">Type Selectors<a class="headerlink" href="#type-selectors" title="Permanent link"></a></h3>
 <p>Type selectors match elements by node name.</p>
 <p>If a default namespace is defined in the <a href="../api/#namespaces">namespace dictionary</a>, and no
 <a href="#namespace-selectors">namespace</a> is explicitly defined, it will be assumed that the element must be in the default
@@ -1669,7 +1669,7 @@ namespace.</p>
 
 </div>
 <input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><label for="__tabbed_1_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -1690,7 +1690,7 @@ namespace.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Type_selectors">https://developer.mozilla.org/en-US/docs/Web/CSS/Type_selectors</a></p>
 </div>
-<h3 id="universal-selectors">Universal Selectors<a class="headerlink" href="#universal-selectors" title="Permanent link"></a></h3>
+<h3 id="universal-selectors">Universal Selectors<a class="headerlink" href="#universal-selectors" title="Permanent link"></a></h3>
 <p>The Universal selector (<code>*</code>) matches elements of any type.</p>
 <div class="tabbed-set" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><label for="__tabbed_2_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="o">*</span>
@@ -1698,7 +1698,7 @@ namespace.</p>
 
 </div>
 <input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><label for="__tabbed_2_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -1730,7 +1730,7 @@ namespace.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Universal_selectors">https://developer.mozilla.org/en-US/docs/Web/CSS/Universal_selectors</a></p>
 </div>
-<h3 id="id-selectors">ID Selectors<a class="headerlink" href="#id-selectors" title="Permanent link"></a></h3>
+<h3 id="id-selectors">ID Selectors<a class="headerlink" href="#id-selectors" title="Permanent link"></a></h3>
 <p>The ID selector matches an element based on its <code>id</code> attribute. The ID must match exactly.</p>
 <div class="tabbed-set" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><label for="__tabbed_3_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">#</span><span class="nn">id</span>
@@ -1738,7 +1738,7 @@ namespace.</p>
 
 </div>
 <input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><label for="__tabbed_3_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -1764,7 +1764,7 @@ namespace.</p>
 <p>While the use of the <code>id</code> attribute (in the context of CSS) is a very HTML centric idea, it is supported for XML as
 well because Beautiful Soup supported it before Soup Sieve's existence.</p>
 </div>
-<h3 id="class-selectors">Class Selectors<a class="headerlink" href="#class-selectors" title="Permanent link"></a></h3>
+<h3 id="class-selectors">Class Selectors<a class="headerlink" href="#class-selectors" title="Permanent link"></a></h3>
 <p>The class selector matches an element based on the values contained in the <code>class</code> attribute. The <code>class</code> attribute is
 treated as a whitespace separated list, where each item is a <strong>class</strong>.</p>
 <div class="tabbed-set" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><label for="__tabbed_4_1">Syntax</label><div class="tabbed-content">
@@ -1773,7 +1773,7 @@ treated as a whitespace separated list, where each item is a <strong>class</stro
 
 </div>
 <input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><label for="__tabbed_4_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -1799,7 +1799,7 @@ treated as a whitespace separated list, where each item is a <strong>class</stro
 <p>While the use of the <code>class</code> attribute (in the context of CSS) is a very HTML centric idea, it is supported for XML
 as well because Beautiful Soup supported it before Soup Sieve's existence.</p>
 </div>
-<h3 id="attribute-selectors">Attribute Selectors<a class="headerlink" href="#attribute-selectors" title="Permanent link"></a></h3>
+<h3 id="attribute-selectors">Attribute Selectors<a class="headerlink" href="#attribute-selectors" title="Permanent link"></a></h3>
 <p>The attribute selector matches an element based on its attributes. When specifying a value of an attribute, if it
 contains whitespace or special characters, you should quote them with either single or double quotes.</p>
 <div class="admonition tip">
@@ -1816,7 +1816,7 @@ contains whitespace or special characters, you should quote them with either sin
 
 </div>
 <input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><label for="__tabbed_5_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -1848,7 +1848,7 @@ contains whitespace or special characters, you should quote them with either sin
 
 </div>
 <input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><label for="__tabbed_6_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -1881,7 +1881,7 @@ contains whitespace or special characters, you should quote them with either sin
 
 </div>
 <input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><label for="__tabbed_7_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -1914,7 +1914,7 @@ contains whitespace or special characters, you should quote them with either sin
 
 </div>
 <input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><label for="__tabbed_8_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -1942,7 +1942,7 @@ contains whitespace or special characters, you should quote them with either sin
 
 </div>
 <input id="__tabbed_9_2" name="__tabbed_9" type="radio" /><label for="__tabbed_9_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -1974,7 +1974,7 @@ contains whitespace or special characters, you should quote them with either sin
 
 </div>
 <input id="__tabbed_10_2" name="__tabbed_10" type="radio" /><label for="__tabbed_10_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2006,7 +2006,7 @@ contains whitespace or special characters, you should quote them with either sin
 
 </div>
 <input id="__tabbed_11_2" name="__tabbed_11" type="radio" /><label for="__tabbed_11_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2038,7 +2038,7 @@ contains whitespace or special characters, you should quote them with either sin
 
 </div>
 <input id="__tabbed_12_2" name="__tabbed_12" type="radio" /><label for="__tabbed_12_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2072,7 +2072,7 @@ contains whitespace or special characters, you should quote them with either sin
 
 </div>
 <input id="__tabbed_13_2" name="__tabbed_13" type="radio" /><label for="__tabbed_13_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2105,7 +2105,7 @@ contains whitespace or special characters, you should quote them with either sin
 
 </div>
 <input id="__tabbed_14_2" name="__tabbed_14" type="radio" /><label for="__tabbed_14_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2130,7 +2130,7 @@ contains whitespace or special characters, you should quote them with either sin
 </div>
 </dd>
 </dl>
-<h3 id="namespace-selectors">Namespace Selectors<a class="headerlink" href="#namespace-selectors" title="Permanent link"></a></h3>
+<h3 id="namespace-selectors">Namespace Selectors<a class="headerlink" href="#namespace-selectors" title="Permanent link"></a></h3>
 <p>Namespace selectors are used in conjunction with type and universal selectors as well as attribute names in attribute
 selectors. They are specified by declaring the namespace and the selector separated with <code>|</code>: <code>namespace|selector</code>.
 <code>namespace</code>, in this context, is the prefix defined via the <a href="../api/#namespaces">namespace dictionary</a>. The prefix
@@ -2161,7 +2161,7 @@ but attributes usually do not have a namespace unless one is explicitly defined 
 
 </div>
 <input id="__tabbed_15_2" name="__tabbed_15" type="radio" /><label for="__tabbed_15_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2190,9 +2190,9 @@ but attributes usually do not have a namespace unless one is explicitly defined 
 
 </div>
 </div>
-<h2 id="combinators-and-selector-lists">Combinators and Selector Lists<a class="headerlink" href="#combinators-and-selector-lists" title="Permanent link"></a></h2>
+<h2 id="combinators-and-selector-lists">Combinators and Selector Lists<a class="headerlink" href="#combinators-and-selector-lists" title="Permanent link"></a></h2>
 <p>CSS employs a number of tokens in order to represent lists or to provide relational context between two selectors.</p>
-<h3 id="selector-lists">Selector Lists<a class="headerlink" href="#selector-lists" title="Permanent link"></a></h3>
+<h3 id="selector-lists">Selector Lists<a class="headerlink" href="#selector-lists" title="Permanent link"></a></h3>
 <p>Selector lists use the comma (<code>,</code>) to join multiple selectors in a list. When presented with a selector list, any
 selector in the list that matches an element will return that element.</p>
 <div class="tabbed-set" data-tabs="16:2"><input checked="checked" id="__tabbed_16_1" name="__tabbed_16" type="radio" /><label for="__tabbed_16_1">Syntax</label><div class="tabbed-content">
@@ -2201,7 +2201,7 @@ selector in the list that matches an element will return that element.</p>
 
 </div>
 <input id="__tabbed_16_2" name="__tabbed_16" type="radio" /><label for="__tabbed_16_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2218,7 +2218,7 @@ selector in the list that matches an element will return that element.</p>
 
 </div>
 </div>
-<h3 id="descendant-combinator">Descendant Combinator<a class="headerlink" href="#descendant-combinator" title="Permanent link"></a></h3>
+<h3 id="descendant-combinator">Descendant Combinator<a class="headerlink" href="#descendant-combinator" title="Permanent link"></a></h3>
 <p>Descendant combinators combine two selectors with whitespace (<code> </code>) in order to signify that the second
 element is matched if it has an ancestor that matches the first element.</p>
 <div class="tabbed-set" data-tabs="17:2"><input checked="checked" id="__tabbed_17_1" name="__tabbed_17" type="radio" /><label for="__tabbed_17_1">Syntax</label><div class="tabbed-content">
@@ -2227,7 +2227,7 @@ element is matched if it has an ancestor that matches the first element.</p>
 
 </div>
 <input id="__tabbed_17_2" name="__tabbed_17" type="radio" /><label for="__tabbed_17_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2248,7 +2248,7 @@ element is matched if it has an ancestor that matches the first element.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Descendant_combinator">https://developer.mozilla.org/en-US/docs/Web/CSS/Descendant_combinator</a></p>
 </div>
-<h3 id="child-combinator">Child combinator<a class="headerlink" href="#child-combinator" title="Permanent link"></a></h3>
+<h3 id="child-combinator">Child combinator<a class="headerlink" href="#child-combinator" title="Permanent link"></a></h3>
 <p>Child combinators combine two selectors with <code>&gt;</code> in order to signify that the second element is matched if it has a
 parent that matches the first element.</p>
 <div class="tabbed-set" data-tabs="18:2"><input checked="checked" id="__tabbed_18_1" name="__tabbed_18" type="radio" /><label for="__tabbed_18_1">Syntax</label><div class="tabbed-content">
@@ -2257,7 +2257,7 @@ parent that matches the first element.</p>
 
 </div>
 <input id="__tabbed_18_2" name="__tabbed_18" type="radio" /><label for="__tabbed_18_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2278,7 +2278,7 @@ parent that matches the first element.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Child_combinator">https://developer.mozilla.org/en-US/docs/Web/CSS/Child_combinator</a></p>
 </div>
-<h3 id="general-sibling-combinator">General sibling combinator<a class="headerlink" href="#general-sibling-combinator" title="Permanent link"></a></h3>
+<h3 id="general-sibling-combinator">General sibling combinator<a class="headerlink" href="#general-sibling-combinator" title="Permanent link"></a></h3>
 <p>General sibling combinators combine two selectors with <code>~</code> in order to signify that the second element is matched if it
 has a sibling that precedes it that matches the first element.</p>
 <div class="tabbed-set" data-tabs="19:2"><input checked="checked" id="__tabbed_19_1" name="__tabbed_19" type="radio" /><label for="__tabbed_19_1">Syntax</label><div class="tabbed-content">
@@ -2287,7 +2287,7 @@ has a sibling that precedes it that matches the first element.</p>
 
 </div>
 <input id="__tabbed_19_2" name="__tabbed_19" type="radio" /><label for="__tabbed_19_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2309,7 +2309,7 @@ has a sibling that precedes it that matches the first element.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/General_sibling_combinator">https://developer.mozilla.org/en-US/docs/Web/CSS/General_sibling_combinator</a></p>
 </div>
-<h3 id="adjacent-sibling-combinator">Adjacent sibling combinator<a class="headerlink" href="#adjacent-sibling-combinator" title="Permanent link"></a></h3>
+<h3 id="adjacent-sibling-combinator">Adjacent sibling combinator<a class="headerlink" href="#adjacent-sibling-combinator" title="Permanent link"></a></h3>
 <p>Adjacent sibling combinators combine two selectors with <code>+</code> in order to signify that the second element is matched if it
 has an adjacent sibling that precedes it that matches the first element.</p>
 <div class="tabbed-set" data-tabs="20:2"><input checked="checked" id="__tabbed_20_1" name="__tabbed_20" type="radio" /><label for="__tabbed_20_1">Syntax</label><div class="tabbed-content">
@@ -2318,7 +2318,7 @@ has an adjacent sibling that precedes it that matches the first element.</p>
 
 </div>
 <input id="__tabbed_20_2" name="__tabbed_20" type="radio" /><label for="__tabbed_20_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2340,13 +2340,13 @@ has an adjacent sibling that precedes it that matches the first element.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Adjacent_sibling_combinator">https://developer.mozilla.org/en-US/docs/Web/CSS/Adjacent_sibling_combinator</a></p>
 </div>
-<h2 id="pseudo-classes">Pseudo-Classes<a class="headerlink" href="#pseudo-classes" title="Permanent link"></a></h2>
+<h2 id="pseudo-classes">Pseudo-Classes<a class="headerlink" href="#pseudo-classes" title="Permanent link"></a></h2>
 <p>These are pseudo classes that are either fully or partially supported. Partial support is usually due to limitations of
 not being in a live, browser environment. Pseudo classes that cannot be implemented are found under
 <a href="#non-applicable-pseudo-classes">Non-Applicable Pseudo Classes</a>. Any selectors that are not found here or under the
 non-applicable either are under consideration, have not yet been evaluated, or are too new and viewed as a risk to
 implement as they might not stick around.</p>
-<h3 id=":any-link"><code>:any-link</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:any-link" title="Permanent link"></a></h3>
+<h3 id=":any-link"><code>:any-link</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:any-link" title="Permanent link"></a></h3>
 <p>Selects every <code class="codehilite"><span class="p">&lt;</span><span class="nt">a</span><span class="p">&gt;</span></code>, <code class="codehilite"><span class="p">&lt;</span><span class="nt">area</span><span class="p">&gt;</span></code>, or <code class="codehilite"><span class="p">&lt;</span><span class="nt">link</span><span class="p">&gt;</span></code> element that has an <code>href</code> attribute, independent of
 whether it has been visited.</p>
 <div class="tabbed-set" data-tabs="21:2"><input checked="checked" id="__tabbed_21_1" name="__tabbed_21" type="radio" /><label for="__tabbed_21_1">Syntax</label><div class="tabbed-content">
@@ -2355,7 +2355,7 @@ whether it has been visited.</p>
 
 </div>
 <input id="__tabbed_21_2" name="__tabbed_21" type="radio" /><label for="__tabbed_21_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2375,7 +2375,7 @@ whether it has been visited.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:any-link">https://developer.mozilla.org/en-US/docs/Web/CSS/:any-link</a></p>
 </div>
-<h3 id=":checked"><code>:checked</code><span class="html5 badge"></span><a class="headerlink" href="#:checked" title="Permanent link"></a></h3>
+<h3 id=":checked"><code>:checked</code><span class="html5 badge"></span><a class="headerlink" href="#:checked" title="Permanent link"></a></h3>
 <p>Selects any <code class="codehilite"><span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;radio&quot;</span><span class="p">/&gt;</span></code>, <code class="codehilite"><span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;checkbox&quot;</span><span class="p">/&gt;</span></code>, or <code class="codehilite"><span class="p">&lt;</span><span class="nt">option</span><span class="p">&gt;</span></code> element (in a
 <code class="codehilite"><span class="p">&lt;</span><span class="nt">select</span><span class="p">&gt;</span></code> element) that is checked or toggled to an on state.</p>
 <div class="tabbed-set" data-tabs="22:2"><input checked="checked" id="__tabbed_22_1" name="__tabbed_22" type="radio" /><label for="__tabbed_22_1">Syntax</label><div class="tabbed-content">
@@ -2384,7 +2384,7 @@ whether it has been visited.</p>
 
 </div>
 <input id="__tabbed_22_2" name="__tabbed_22" type="radio" /><label for="__tabbed_22_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2418,7 +2418,7 @@ whether it has been visited.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:checked">https://developer.mozilla.org/en-US/docs/Web/CSS/:checked</a></p>
 </div>
-<h3 id=":contains"><code>:contains()</code><span class="star badge"></span><a class="headerlink" href="#:contains" title="Permanent link"></a></h3>
+<h3 id=":contains"><code>:contains()</code><span class="star badge"></span><a class="headerlink" href="#:contains" title="Permanent link"></a></h3>
 <p>Selects elements that contain the provided text. Text can be found in either itself, or its descendants.</p>
 <p>Contains was originally included in a <a href="https://www.w3.org/TR/2001/CR-css3-selectors-20011113/#content-selectors">CSS early draft</a>, but was, in the end, dropped from the draft.
 Soup Sieve implements it how it was originally proposed in the draft with the addition that <code>:contains()</code> can accept
@@ -2436,7 +2436,7 @@ includes all descendants. Using highly specific selectors can reduce how often i
 
 </div>
 <input id="__tabbed_23_2" name="__tabbed_23" type="radio" /><label for="__tabbed_23_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2453,7 +2453,7 @@ includes all descendants. Using highly specific selectors can reduce how often i
 
 </div>
 </div>
-<h3 id=":default"><code>:default</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:default" title="Permanent link"></a></h3>
+<h3 id=":default"><code>:default</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:default" title="Permanent link"></a></h3>
 <p>Selects any form element that is the default among a group of related elements, including: <code class="codehilite"><span class="p">&lt;</span><span class="nt">button</span><span class="p">&gt;</span></code>,
 <code class="codehilite"><span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;checkbox&quot;</span><span class="p">&gt;</span></code>, <code class="codehilite"><span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;radio&quot;</span><span class="p">&gt;</span></code>, <code class="codehilite"><span class="p">&lt;</span><span class="nt">option</span><span class="p">&gt;</span></code> elements.</p>
 <div class="tabbed-set" data-tabs="24:2"><input checked="checked" id="__tabbed_24_1" name="__tabbed_24" type="radio" /><label for="__tabbed_24_1">Syntax</label><div class="tabbed-content">
@@ -2462,7 +2462,7 @@ includes all descendants. Using highly specific selectors can reduce how often i
 
 </div>
 <input id="__tabbed_24_2" name="__tabbed_24" type="radio" /><label for="__tabbed_24_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2505,7 +2505,7 @@ includes all descendants. Using highly specific selectors can reduce how often i
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:default">https://developer.mozilla.org/en-US/docs/Web/CSS/:default</a></p>
 </div>
-<h3 id=":defined"><code>:defined</code><span class="html5 badge"></span></span><span class="lab badge"></span><a class="headerlink" href="#:defined" title="Permanent link"></a></h3>
+<h3 id=":defined"><code>:defined</code><span class="html5 badge"></span></span><span class="lab badge"></span><a class="headerlink" href="#:defined" title="Permanent link"></a></h3>
 <p>In a browser environment, this represents <em>defined</em> elements (names without hyphens) and custom elements (names with
 hyphens) that have been properly added to the custom element registry. Since elements cannot be added to a custom
 element registry in Beautiful Soup, this will select all elements that are not custom tags. <code>:defined</code> is a HTML
@@ -2516,7 +2516,7 @@ specific selector, so it doesn't apply to XML.</p>
 
 </div>
 <input id="__tabbed_25_2" name="__tabbed_25" type="radio" /><label for="__tabbed_25_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2537,7 +2537,7 @@ specific selector, so it doesn't apply to XML.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:defined">https://developer.mozilla.org/en-US/docs/Web/CSS/:defined</a></p>
 </div>
-<h3 id=":dir"><code>:dir()</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:dir" title="Permanent link"></a></h3>
+<h3 id=":dir"><code>:dir()</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:dir" title="Permanent link"></a></h3>
 <p>Selects elements based on text directionality. Accepts either <code>ltr</code> or <code>rtl</code> for "left to right" and "right to left"
 respectively.</p>
 <div class="tabbed-set" data-tabs="26:2"><input checked="checked" id="__tabbed_26_1" name="__tabbed_26" type="radio" /><label for="__tabbed_26_1">Syntax</label><div class="tabbed-content">
@@ -2546,7 +2546,7 @@ respectively.</p>
 
 </div>
 <input id="__tabbed_26_2" name="__tabbed_26" type="radio" /><label for="__tabbed_26_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2569,7 +2569,7 @@ respectively.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:dir">https://developer.mozilla.org/en-US/docs/Web/CSS/:dir</a></p>
 </div>
-<h3 id=":disabled"><code>:disabled</code><span class="html5 badge"></span><a class="headerlink" href="#:disabled" title="Permanent link"></a></h3>
+<h3 id=":disabled"><code>:disabled</code><span class="html5 badge"></span><a class="headerlink" href="#:disabled" title="Permanent link"></a></h3>
 <p>Selects any element that is disabled.</p>
 <div class="tabbed-set" data-tabs="27:2"><input checked="checked" id="__tabbed_27_1" name="__tabbed_27" type="radio" /><label for="__tabbed_27_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">disabled</span>
@@ -2577,7 +2577,7 @@ respectively.</p>
 
 </div>
 <input id="__tabbed_27_2" name="__tabbed_27" type="radio" /><label for="__tabbed_27_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2614,7 +2614,7 @@ respectively.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:disabled">https://developer.mozilla.org/en-US/docs/Web/CSS/:disabled</a></p>
 </div>
-<h3 id=":empty"><code>:empty</code><span class="lab badge"></span><a class="headerlink" href="#:empty" title="Permanent link"></a></h3>
+<h3 id=":empty"><code>:empty</code><span class="lab badge"></span><a class="headerlink" href="#:empty" title="Permanent link"></a></h3>
 <p>Selects elements that have no children and no text (whitespace is ignored).</p>
 <div class="tabbed-set" data-tabs="28:2"><input checked="checked" id="__tabbed_28_1" name="__tabbed_28" type="radio" /><label for="__tabbed_28_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">empty</span>
@@ -2623,7 +2623,7 @@ respectively.</p>
 </div>
 <input id="__tabbed_28_2" name="__tabbed_28" type="radio" /><label for="__tabbed_28_2">Usage</label><div class="tabbed-content"></div>
 </div>
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2643,7 +2643,7 @@ respectively.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:empty">https://developer.mozilla.org/en-US/docs/Web/CSS/:empty</a></p>
 </div>
-<h3 id=":enabled"><code>:enabled</code><span class="html5 badge"></span><a class="headerlink" href="#:enabled" title="Permanent link"></a></h3>
+<h3 id=":enabled"><code>:enabled</code><span class="html5 badge"></span><a class="headerlink" href="#:enabled" title="Permanent link"></a></h3>
 <p>Selects any element that is enabled.</p>
 <div class="tabbed-set" data-tabs="29:2"><input checked="checked" id="__tabbed_29_1" name="__tabbed_29" type="radio" /><label for="__tabbed_29_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">enabled</span>
@@ -2651,7 +2651,7 @@ respectively.</p>
 
 </div>
 <input id="__tabbed_29_2" name="__tabbed_29" type="radio" /><label for="__tabbed_29_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2688,7 +2688,7 @@ respectively.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:enabled">https://developer.mozilla.org/en-US/docs/Web/CSS/:enabled</a></p>
 </div>
-<h3 id=":first-child"><code>:first-child</code><a class="headerlink" href="#:first-child" title="Permanent link"></a></h3>
+<h3 id=":first-child"><code>:first-child</code><a class="headerlink" href="#:first-child" title="Permanent link"></a></h3>
 <p>Selects the first child in a group of sibling elements.</p>
 <div class="tabbed-set" data-tabs="30:2"><input checked="checked" id="__tabbed_30_1" name="__tabbed_30" type="radio" /><label for="__tabbed_30_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">first-child</span>
@@ -2696,7 +2696,7 @@ respectively.</p>
 
 </div>
 <input id="__tabbed_30_2" name="__tabbed_30" type="radio" /><label for="__tabbed_30_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2721,7 +2721,7 @@ respectively.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:first-child">https://developer.mozilla.org/en-US/docs/Web/CSS/:first-child</a></p>
 </div>
-<h3 id=":first-of-type"><code>:first-of-type</code><a class="headerlink" href="#:first-of-type" title="Permanent link"></a></h3>
+<h3 id=":first-of-type"><code>:first-of-type</code><a class="headerlink" href="#:first-of-type" title="Permanent link"></a></h3>
 <p>Selects the first child of a given type in a group of sibling elements.</p>
 <div class="tabbed-set" data-tabs="31:2"><input checked="checked" id="__tabbed_31_1" name="__tabbed_31" type="radio" /><label for="__tabbed_31_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="nt">element</span><span class="p">:</span><span class="nd">first-of-type</span>
@@ -2729,7 +2729,7 @@ respectively.</p>
 
 </div>
 <input id="__tabbed_31_2" name="__tabbed_31" type="radio" /><label for="__tabbed_31_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2760,7 +2760,7 @@ respectively.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:first-of-type">https://developer.mozilla.org/en-US/docs/Web/CSS/:first-of-type</a></p>
 </div>
-<h3 id="has"><code>:has()</code><span class="lab badge"></span><a class="headerlink" href="#has" title="Permanent link"></a></h3>
+<h3 id="has"><code>:has()</code><span class="lab badge"></span><a class="headerlink" href="#has" title="Permanent link"></a></h3>
 <p>Selects an element if any of the relative selectors passed as parameters (which are relative to the <code>:scope</code> of the
 given element), match at least one element.</p>
 <p>While the level 4 specifications state that <a href="#compound-selector">compound</a> selectors are supported, complex selectors
@@ -2775,7 +2775,7 @@ are planned for level 5 CSS selectors. Soup Sieve supports <a href="#complex-sel
 
 </div>
 <input id="__tabbed_32_2" name="__tabbed_32" type="radio" /><label for="__tabbed_32_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2796,7 +2796,7 @@ are planned for level 5 CSS selectors. Soup Sieve supports <a href="#complex-sel
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has">https://developer.mozilla.org/en-US/docs/Web/CSS/:has</a></p>
 </div>
-<h3 id=":in-range"><code>:in-range</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:in-range" title="Permanent link"></a></h3>
+<h3 id=":in-range"><code>:in-range</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:in-range" title="Permanent link"></a></h3>
 <p>Selects all <code class="codehilite"><span class="p">&lt;</span><span class="nt">input</span><span class="p">&gt;</span></code> elements whose values are in range according to their <code>type</code>, <code>min</code>, and <code>max</code> attributes.</p>
 <div class="tabbed-set" data-tabs="33:2"><input checked="checked" id="__tabbed_33_1" name="__tabbed_33" type="radio" /><label for="__tabbed_33_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">in-range</span>
@@ -2804,7 +2804,7 @@ are planned for level 5 CSS selectors. Soup Sieve supports <a href="#complex-sel
 
 </div>
 <input id="__tabbed_33_2" name="__tabbed_33" type="radio" /><label for="__tabbed_33_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2825,7 +2825,7 @@ are planned for level 5 CSS selectors. Soup Sieve supports <a href="#complex-sel
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:in-range">https://developer.mozilla.org/en-US/docs/Web/CSS/:in-range</a></p>
 </div>
-<h3 id=":indeterminate"><code>:indeterminate</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:indeterminate" title="Permanent link"></a></h3>
+<h3 id=":indeterminate"><code>:indeterminate</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:indeterminate" title="Permanent link"></a></h3>
 <p>Selects all form elements whose are in an indeterminate state.</p>
 <p>An element is considered indeterminate if:</p>
 <ul>
@@ -2840,7 +2840,7 @@ selected.</li>
 
 </div>
 <input id="__tabbed_34_2" name="__tabbed_34" type="radio" /><label for="__tabbed_34_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2885,7 +2885,7 @@ selected.</li>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate">https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate</a></p>
 </div>
-<h3 id=":is"><code>:is()</code><span class="lab badge"></span><a class="headerlink" href="#:is" title="Permanent link"></a></h3>
+<h3 id=":is"><code>:is()</code><span class="lab badge"></span><a class="headerlink" href="#:is" title="Permanent link"></a></h3>
 <p>Selects an element, but only if it matches at least one selector in the selector list.</p>
 <p>The alias <code>:matches()</code> is also supported as it was the original name for the selector, and some browsers support it.
 It is strongly encouraged to use <code>:is()</code> instead as support for <code>:matches()</code> may be dropped in the future.</p>
@@ -2898,7 +2898,7 @@ It is strongly encouraged to use <code>:is()</code> instead as support for <code
 
 </div>
 <input id="__tabbed_35_2" name="__tabbed_35" type="radio" /><label for="__tabbed_35_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2919,7 +2919,7 @@ It is strongly encouraged to use <code>:is()</code> instead as support for <code
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:is">https://developer.mozilla.org/en-US/docs/Web/CSS/:is</a></p>
 </div>
-<h3 id=":lang"><code>:lang()</code><a class="headerlink" href="#:lang" title="Permanent link"></a></h3>
+<h3 id=":lang"><code>:lang()</code><a class="headerlink" href="#:lang" title="Permanent link"></a></h3>
 <dl>
 <dt>Level 3 CSS</dt>
 <dd>
@@ -2931,7 +2931,7 @@ provided <strong>language</strong> followed by a <code>-</code>. Language is det
 
 </div>
 <input id="__tabbed_36_2" name="__tabbed_36" type="radio" /><label for="__tabbed_36_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -2978,7 +2978,7 @@ matching already takes place between subtags, it is not needed: <code>de-*-DE</c
 
 </div>
 <input id="__tabbed_37_2" name="__tabbed_37" type="radio" /><label for="__tabbed_37_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3015,7 +3015,7 @@ matching already takes place between subtags, it is not needed: <code>de-*-DE</c
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:lang">https://developer.mozilla.org/en-US/docs/Web/CSS/:lang</a></p>
 </div>
-<h3 id=":last-child"><code>:last-child</code><a class="headerlink" href="#:last-child" title="Permanent link"></a></h3>
+<h3 id=":last-child"><code>:last-child</code><a class="headerlink" href="#:last-child" title="Permanent link"></a></h3>
 <p>Selects the last element among a group of sibling elements.</p>
 <div class="tabbed-set" data-tabs="38:2"><input checked="checked" id="__tabbed_38_1" name="__tabbed_38" type="radio" /><label for="__tabbed_38_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">last-child</span>
@@ -3023,7 +3023,7 @@ matching already takes place between subtags, it is not needed: <code>de-*-DE</c
 
 </div>
 <input id="__tabbed_38_2" name="__tabbed_38" type="radio" /><label for="__tabbed_38_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3048,7 +3048,7 @@ matching already takes place between subtags, it is not needed: <code>de-*-DE</c
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:last-child">https://developer.mozilla.org/en-US/docs/Web/CSS/:last-child</a></p>
 </div>
-<h3 id=":last-of-type"><code>:last-of-type</code><a class="headerlink" href="#:last-of-type" title="Permanent link"></a></h3>
+<h3 id=":last-of-type"><code>:last-of-type</code><a class="headerlink" href="#:last-of-type" title="Permanent link"></a></h3>
 <p>Selects the last child of a given type in a group of sibling elements.</p>
 <div class="tabbed-set" data-tabs="39:2"><input checked="checked" id="__tabbed_39_1" name="__tabbed_39" type="radio" /><label for="__tabbed_39_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="nt">element</span><span class="p">:</span><span class="nd">last-of-type</span>
@@ -3056,7 +3056,7 @@ matching already takes place between subtags, it is not needed: <code>de-*-DE</c
 
 </div>
 <input id="__tabbed_39_2" name="__tabbed_39" type="radio" /><label for="__tabbed_39_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3087,7 +3087,7 @@ matching already takes place between subtags, it is not needed: <code>de-*-DE</c
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:last-of-type">https://developer.mozilla.org/en-US/docs/Web/CSS/:last-of-type</a></p>
 </div>
-<h3 id=":link"><code>:link</code><span class="html5 badge"></span><a class="headerlink" href="#:link" title="Permanent link"></a></h3>
+<h3 id=":link"><code>:link</code><span class="html5 badge"></span><a class="headerlink" href="#:link" title="Permanent link"></a></h3>
 <p>Selects a link (every <code class="codehilite"><span class="p">&lt;</span><span class="nt">a</span><span class="p">&gt;</span></code>, <code class="codehilite"><span class="p">&lt;</span><span class="nt">link</span><span class="p">&gt;</span></code>, and <code class="codehilite"><span class="p">&lt;</span><span class="nt">area</span><span class="p">&gt;</span></code> element with an <code>href</code> attribute) that has not
 yet been visited.</p>
 <p>Since Beautiful Soup does not have <em>visited</em> states, this will match all links, essentially making the behavior the same
@@ -3098,7 +3098,7 @@ as <code>:any-link</code>.</p>
 
 </div>
 <input id="__tabbed_40_2" name="__tabbed_40" type="radio" /><label for="__tabbed_40_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3118,7 +3118,7 @@ as <code>:any-link</code>.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:link">https://developer.mozilla.org/en-US/docs/Web/CSS/:link</a></p>
 </div>
-<h3 id=":not"><code>:not()</code><a class="headerlink" href="#:not" title="Permanent link"></a></h3>
+<h3 id=":not"><code>:not()</code><a class="headerlink" href="#:not" title="Permanent link"></a></h3>
 <dl>
 <dt>Level 3 CSS</dt>
 <dd>
@@ -3130,7 +3130,7 @@ supports simple selectors.</p>
 
 </div>
 <input id="__tabbed_41_2" name="__tabbed_41" type="radio" /><label for="__tabbed_41_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3159,7 +3159,7 @@ which are planned for level 5 CSS selectors. Soup Sieve also supports <a href="#
 
 </div>
 <input id="__tabbed_42_2" name="__tabbed_42" type="radio" /><label for="__tabbed_42_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3182,7 +3182,7 @@ which are planned for level 5 CSS selectors. Soup Sieve also supports <a href="#
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:not">https://developer.mozilla.org/en-US/docs/Web/CSS/:not</a></p>
 </div>
-<h3 id=":nth-child"><code>:nth-child()</code><a class="headerlink" href="#:nth-child" title="Permanent link"></a></h3>
+<h3 id=":nth-child"><code>:nth-child()</code><a class="headerlink" href="#:nth-child" title="Permanent link"></a></h3>
 <p><code>:nth-child()</code> matches elements based on their position in a group of siblings.</p>
 <dl>
 <dt>Level 3 CSS</dt>
@@ -3206,7 +3206,7 @@ which are planned for level 5 CSS selectors. Soup Sieve also supports <a href="#
 
 </div>
 <input id="__tabbed_43_2" name="__tabbed_43" type="radio" /><label for="__tabbed_43_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3253,7 +3253,7 @@ selectors are planned for level 5 CSS selectors. Soup Sieve supports <a href="#c
 
 </div>
 <input id="__tabbed_44_2" name="__tabbed_44" type="radio" /><label for="__tabbed_44_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3280,7 +3280,7 @@ selectors are planned for level 5 CSS selectors. Soup Sieve supports <a href="#c
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child">https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child</a></p>
 </div>
-<h3 id=":nth-last-child"><code>:nth-last-child()</code><a class="headerlink" href="#:nth-last-child" title="Permanent link"></a></h3>
+<h3 id=":nth-last-child"><code>:nth-last-child()</code><a class="headerlink" href="#:nth-last-child" title="Permanent link"></a></h3>
 <p><code>:nth-last-child()</code> matches elements based on their position in a group of siblings, counting from the end.</p>
 <dl>
 <dt>Level 3 CSS</dt>
@@ -3305,7 +3305,7 @@ selectors are planned for level 5 CSS selectors. Soup Sieve supports <a href="#c
 
 </div>
 <input id="__tabbed_45_2" name="__tabbed_45" type="radio" /><label for="__tabbed_45_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3352,7 +3352,7 @@ selectors are planned for level 5 CSS selectors. Soup Sieve supports <a href="#c
 
 </div>
 <input id="__tabbed_46_2" name="__tabbed_46" type="radio" /><label for="__tabbed_46_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3379,7 +3379,7 @@ selectors are planned for level 5 CSS selectors. Soup Sieve supports <a href="#c
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-child">https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-child</a></p>
 </div>
-<h3 id=":nth-last-of-type"><code>:nth-last-of-type()</code><a class="headerlink" href="#:nth-last-of-type" title="Permanent link"></a></h3>
+<h3 id=":nth-last-of-type"><code>:nth-last-of-type()</code><a class="headerlink" href="#:nth-last-of-type" title="Permanent link"></a></h3>
 <p><code>:nth-of-type()</code> matches elements of a given type, based on their position among a group of siblings, counting from the
 end.</p>
 <ul>
@@ -3403,7 +3403,7 @@ end.</p>
 
 </div>
 <input id="__tabbed_47_2" name="__tabbed_47" type="radio" /><label for="__tabbed_47_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3440,7 +3440,7 @@ end.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-of-type">https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-of-type</a></p>
 </div>
-<h3 id=":nth-of-type"><code>:nth-of-type()</code><a class="headerlink" href="#:nth-of-type" title="Permanent link"></a></h3>
+<h3 id=":nth-of-type"><code>:nth-of-type()</code><a class="headerlink" href="#:nth-of-type" title="Permanent link"></a></h3>
 <p><code>:nth-of-type()</code> matches elements of a given type, based on their position among a group of siblings.</p>
 <ul>
 <li>
@@ -3463,7 +3463,7 @@ end.</p>
 
 </div>
 <input id="__tabbed_48_2" name="__tabbed_48" type="radio" /><label for="__tabbed_48_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3500,7 +3500,7 @@ end.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type">https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type</a></p>
 </div>
-<h3 id=":only-child"><code>:only-child</code><a class="headerlink" href="#:only-child" title="Permanent link"></a></h3>
+<h3 id=":only-child"><code>:only-child</code><a class="headerlink" href="#:only-child" title="Permanent link"></a></h3>
 <p>Selects element without any siblings.</p>
 <div class="tabbed-set" data-tabs="49:2"><input checked="checked" id="__tabbed_49_1" name="__tabbed_49" type="radio" /><label for="__tabbed_49_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">only-child</span>
@@ -3508,7 +3508,7 @@ end.</p>
 
 </div>
 <input id="__tabbed_49_2" name="__tabbed_49" type="radio" /><label for="__tabbed_49_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3538,7 +3538,7 @@ end.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:only-child">https://developer.mozilla.org/en-US/docs/Web/CSS/:only-child</a></p>
 </div>
-<h3 id=":only-of-type"><code>:only-of-type</code><a class="headerlink" href="#:only-of-type" title="Permanent link"></a></h3>
+<h3 id=":only-of-type"><code>:only-of-type</code><a class="headerlink" href="#:only-of-type" title="Permanent link"></a></h3>
 <p>Selects element without any siblings that matches a given type.</p>
 <div class="tabbed-set" data-tabs="50:2"><input checked="checked" id="__tabbed_50_1" name="__tabbed_50" type="radio" /><label for="__tabbed_50_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="nt">element</span><span class="p">:</span><span class="nd">only-of-type</span>
@@ -3546,7 +3546,7 @@ end.</p>
 
 </div>
 <input id="__tabbed_50_2" name="__tabbed_50" type="radio" /><label for="__tabbed_50_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3572,7 +3572,7 @@ end.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:only-of-type">https://developer.mozilla.org/en-US/docs/Web/CSS/:only-of-type</a></p>
 </div>
-<h3 id=":optional"><code>:optional</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:optional" title="Permanent link"></a></h3>
+<h3 id=":optional"><code>:optional</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:optional" title="Permanent link"></a></h3>
 <p>Selects any <code class="codehilite"><span class="p">&lt;</span><span class="nt">input</span><span class="p">&gt;</span></code>, <code class="codehilite"><span class="p">&lt;</span><span class="nt">select</span><span class="p">&gt;</span></code>, or <code class="codehilite"><span class="p">&lt;</span><span class="nt">textarea</span><span class="p">&gt;</span></code> element that does not have the <code>required</code>
 attribute set on it.</p>
 <div class="tabbed-set" data-tabs="51:2"><input checked="checked" id="__tabbed_51_1" name="__tabbed_51" type="radio" /><label for="__tabbed_51_1">Syntax</label><div class="tabbed-content">
@@ -3581,7 +3581,7 @@ attribute set on it.</p>
 
 </div>
 <input id="__tabbed_51_2" name="__tabbed_51" type="radio" /><label for="__tabbed_51_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3609,7 +3609,7 @@ attribute set on it.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:optional">https://developer.mozilla.org/en-US/docs/Web/CSS/:optional</a></p>
 </div>
-<h3 id=":out-of-range"><code>:out-of-range</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:out-of-range" title="Permanent link"></a></h3>
+<h3 id=":out-of-range"><code>:out-of-range</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:out-of-range" title="Permanent link"></a></h3>
 <p>Selects all <code class="codehilite"><span class="p">&lt;</span><span class="nt">input</span><span class="p">&gt;</span></code> elements whose values are out of range according to their <code>type</code>, <code>min</code>, and <code>max</code>
 attributes.</p>
 <div class="tabbed-set" data-tabs="52:2"><input checked="checked" id="__tabbed_52_1" name="__tabbed_52" type="radio" /><label for="__tabbed_52_1">Syntax</label><div class="tabbed-content">
@@ -3618,7 +3618,7 @@ attributes.</p>
 
 </div>
 <input id="__tabbed_52_2" name="__tabbed_52" type="radio" /><label for="__tabbed_52_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3639,7 +3639,7 @@ attributes.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:out-of-range">https://developer.mozilla.org/en-US/docs/Web/CSS/:out-of-range</a></p>
 </div>
-<h3 id=":placeholder-shown"><code>:placeholder-shown</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:placeholder-shown" title="Permanent link"></a></h3>
+<h3 id=":placeholder-shown"><code>:placeholder-shown</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:placeholder-shown" title="Permanent link"></a></h3>
 <p>Selects any <code class="codehilite"><span class="p">&lt;</span><span class="nt">input</span><span class="p">&gt;</span></code> or <code class="codehilite"><span class="p">&lt;</span><span class="nt">textarea</span><span class="p">&gt;</span></code> element that is currently displaying placeholder text via the
 <code>placeholder</code> attribute.</p>
 <div class="tabbed-set" data-tabs="53:2"><input checked="checked" id="__tabbed_53_1" name="__tabbed_53" type="radio" /><label for="__tabbed_53_1">Syntax</label><div class="tabbed-content">
@@ -3648,7 +3648,7 @@ attributes.</p>
 
 </div>
 <input id="__tabbed_53_2" name="__tabbed_53" type="radio" /><label for="__tabbed_53_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3680,7 +3680,7 @@ it can't account for the quirks of the parsers in this case without introducing 
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:placeholder-shown">https://developer.mozilla.org/en-US/docs/Web/CSS/:placeholder-shown</a></p>
 </div>
-<h3 id=":read-only"><code>:read-only</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:read-only" title="Permanent link"></a></h3>
+<h3 id=":read-only"><code>:read-only</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:read-only" title="Permanent link"></a></h3>
 <p>Selects elements (such as <code class="codehilite"><span class="p">&lt;</span><span class="nt">input</span><span class="p">&gt;</span></code> or <code class="codehilite"><span class="p">&lt;</span><span class="nt">textarea</span><span class="p">&gt;</span></code>) that are <em>not</em> editable by the user. This does not
 just apply to form elements with <code>readonly</code> set, but it applies to <strong>any</strong> element that cannot be edited by the user.</p>
 <div class="tabbed-set" data-tabs="54:2"><input checked="checked" id="__tabbed_54_1" name="__tabbed_54" type="radio" /><label for="__tabbed_54_1">Syntax</label><div class="tabbed-content">
@@ -3689,7 +3689,7 @@ just apply to form elements with <code>readonly</code> set, but it applies to <s
 
 </div>
 <input id="__tabbed_54_2" name="__tabbed_54" type="radio" /><label for="__tabbed_54_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3718,7 +3718,7 @@ just apply to form elements with <code>readonly</code> set, but it applies to <s
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:read-only">https://developer.mozilla.org/en-US/docs/Web/CSS/:read-only</a></p>
 </div>
-<h3 id=":read-write"><code>:read-write</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:read-write" title="Permanent link"></a></h3>
+<h3 id=":read-write"><code>:read-write</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:read-write" title="Permanent link"></a></h3>
 <p>Selects elements (such as <code class="codehilite"><span class="p">&lt;</span><span class="nt">input</span><span class="p">&gt;</span></code> or <code class="codehilite"><span class="p">&lt;</span><span class="nt">textarea</span><span class="p">&gt;</span></code>) that are editable by the user. This does not just
 apply to form elements as it applies to <strong>any</strong> element that can be edited by the user, such as a <code class="codehilite"><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span></code> element
 with <code>contenteditable</code> set on it.</p>
@@ -3728,7 +3728,7 @@ with <code>contenteditable</code> set on it.</p>
 
 </div>
 <input id="__tabbed_55_2" name="__tabbed_55" type="radio" /><label for="__tabbed_55_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3757,7 +3757,7 @@ with <code>contenteditable</code> set on it.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:read-write">https://developer.mozilla.org/en-US/docs/Web/CSS/:read-write</a></p>
 </div>
-<h3 id=":required"><code>:required</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:required" title="Permanent link"></a></h3>
+<h3 id=":required"><code>:required</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:required" title="Permanent link"></a></h3>
 <p>Selects any <code class="codehilite"><span class="p">&lt;</span><span class="nt">input</span><span class="p">&gt;</span></code>, <code class="codehilite"><span class="p">&lt;</span><span class="nt">select</span><span class="p">&gt;</span></code>, or <code class="codehilite"><span class="p">&lt;</span><span class="nt">textarea</span><span class="p">&gt;</span></code> element that has the <code>required</code> attribute set on
 it.</p>
 <div class="tabbed-set" data-tabs="56:2"><input checked="checked" id="__tabbed_56_1" name="__tabbed_56" type="radio" /><label for="__tabbed_56_1">Syntax</label><div class="tabbed-content">
@@ -3766,7 +3766,7 @@ it.</p>
 
 </div>
 <input id="__tabbed_56_2" name="__tabbed_56" type="radio" /><label for="__tabbed_56_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3796,7 +3796,7 @@ it.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:required">https://developer.mozilla.org/en-US/docs/Web/CSS/:required</a></p>
 </div>
-<h3 id=":root"><code>:root</code><a class="headerlink" href="#:root" title="Permanent link"></a></h3>
+<h3 id=":root"><code>:root</code><a class="headerlink" href="#:root" title="Permanent link"></a></h3>
 <p>Selects the root element of a document tree.</p>
 <div class="tabbed-set" data-tabs="57:2"><input checked="checked" id="__tabbed_57_1" name="__tabbed_57" type="radio" /><label for="__tabbed_57_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">root</span>
@@ -3804,7 +3804,7 @@ it.</p>
 
 </div>
 <input id="__tabbed_57_2" name="__tabbed_57" type="radio" /><label for="__tabbed_57_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3831,7 +3831,7 @@ it.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:root">https://developer.mozilla.org/en-US/docs/Web/CSS/:root</a></p>
 </div>
-<h3 id=":scope"><code>:scope</code><span class="lab badge"></span><a class="headerlink" href="#:scope" title="Permanent link"></a></h3>
+<h3 id=":scope"><code>:scope</code><span class="lab badge"></span><a class="headerlink" href="#:scope" title="Permanent link"></a></h3>
 <p><code>:scope</code> represents the the element a <code>match</code>, <code>select</code>, or <code>filter</code> is being called on. If we were, for instance,
 using <code>:scope</code> on a div (<code class="codehilite"><span class="n">sv</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;:scope &gt; p&#39;</span><span class="p">,</span> <span class="n">soup</span><span class="o">.</span><span class="n">div</span><span class="p">)</span></code>) <code>:scope</code> would represent <strong>that</strong> div element, and
 no others. If called on the Beautiful Soup object which represents the entire document, it would simply select
@@ -3842,7 +3842,7 @@ no others. If called on the Beautiful Soup object which represents the entire do
 
 </div>
 <input id="__tabbed_58_2" name="__tabbed_58" type="radio" /><label for="__tabbed_58_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3863,7 +3863,7 @@ no others. If called on the Beautiful Soup object which represents the entire do
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:scope">https://developer.mozilla.org/en-US/docs/Web/CSS/:scope</a></p>
 </div>
-<h3 id=":where"><code>:where()</code><span class="lab badge"></span><a class="headerlink" href="#:where" title="Permanent link"></a></h3>
+<h3 id=":where"><code>:where()</code><span class="lab badge"></span><a class="headerlink" href="#:where" title="Permanent link"></a></h3>
 <p>Selects an element, but only if it matches at least one selector in the selector list. In browsers, this also has zero
 specificity, but this only has relevance in a browser environment where you have multiple CSS styles, and specificity is
 used to see which applies. Beautiful Soup and Soup Sieve don't care about specificity so <code>:where()</code> is essentially just
@@ -3877,7 +3877,7 @@ an alias for <code>:is()</code>.</p>
 
 </div>
 <input id="__tabbed_59_2" name="__tabbed_59" type="radio" /><label for="__tabbed_59_2">Usage</label><div class="tabbed-content">
-<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="gp">... </span><span class="s2">&lt;html&gt;</span>
 <span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
@@ -3898,12 +3898,12 @@ an alias for <code>:is()</code>.</p>
 <p class="admonition-title">Additional Reading</p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:where">https://developer.mozilla.org/en-US/docs/Web/CSS/:where</a></p>
 </div>
-<h2 id="non-applicable-pseudo-classes">Non-Applicable Pseudo Classes<a class="headerlink" href="#non-applicable-pseudo-classes" title="Permanent link"></a></h2>
+<h2 id="non-applicable-pseudo-classes">Non-Applicable Pseudo Classes<a class="headerlink" href="#non-applicable-pseudo-classes" title="Permanent link"></a></h2>
 <p>These pseudo classes are recognized by the parser, and have been identified as not being applicable in a Beautiful Soup
 environment. While the pseudo-classes will parse correctly, they will not match anything. This is because they cannot be
 implemented outside a live, browser environment. If at any time these are dropped from the CSS spec, they will simply
 be removed.</p>
-<h3 id=":active"><code>:active</code><span class="html5 badge"></span><a class="headerlink" href="#:active" title="Permanent link"></a></h3>
+<h3 id=":active"><code>:active</code><span class="html5 badge"></span><a class="headerlink" href="#:active" title="Permanent link"></a></h3>
 <p>Selects active elements.</p>
 <div class="tabbed-set" data-tabs="60:1"><input checked="checked" id="__tabbed_60_1" name="__tabbed_60" type="radio" /><label for="__tabbed_60_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">active</span>
@@ -3911,7 +3911,7 @@ be removed.</p>
 
 </div>
 </div>
-<h3 id=":current"><code>:current</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:current" title="Permanent link"></a></h3>
+<h3 id=":current"><code>:current</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:current" title="Permanent link"></a></h3>
 <p><code>:current</code> selects the element, or an ancestor of the element, that is currently being displayed. The functional form of
 <code>:current()</code> takes a compound selector list.</p>
 <div class="tabbed-set" data-tabs="61:1"><input checked="checked" id="__tabbed_61_1" name="__tabbed_61" type="radio" /><label for="__tabbed_61_1">Syntax</label><div class="tabbed-content">
@@ -3921,7 +3921,7 @@ be removed.</p>
 
 </div>
 </div>
-<h3 id=":focus"><code>:focus</code><span class="html5 badge"></span><a class="headerlink" href="#:focus" title="Permanent link"></a></h3>
+<h3 id=":focus"><code>:focus</code><span class="html5 badge"></span><a class="headerlink" href="#:focus" title="Permanent link"></a></h3>
 <p>Represents an an element that has received focus.</p>
 <div class="tabbed-set" data-tabs="62:1"><input checked="checked" id="__tabbed_62_1" name="__tabbed_62" type="radio" /><label for="__tabbed_62_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">focus</span>
@@ -3929,7 +3929,7 @@ be removed.</p>
 
 </div>
 </div>
-<h3 id=":focus-visible"><code>:focus-visible</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:focus-visible" title="Permanent link"></a></h3>
+<h3 id=":focus-visible"><code>:focus-visible</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:focus-visible" title="Permanent link"></a></h3>
 <p>Selects an element that matches <code>:focus</code> and the user agent determines that the focus should be made evident on the
 element.</p>
 <div class="tabbed-set" data-tabs="63:1"><input checked="checked" id="__tabbed_63_1" name="__tabbed_63" type="radio" /><label for="__tabbed_63_1">Syntax</label><div class="tabbed-content">
@@ -3938,7 +3938,7 @@ element.</p>
 
 </div>
 </div>
-<h3 id=":focus-within"><code>:focus-within</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:focus-within" title="Permanent link"></a></h3>
+<h3 id=":focus-within"><code>:focus-within</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:focus-within" title="Permanent link"></a></h3>
 <p>Selects an element that has received focus or contains an element that has received focus.</p>
 <div class="tabbed-set" data-tabs="64:1"><input checked="checked" id="__tabbed_64_1" name="__tabbed_64" type="radio" /><label for="__tabbed_64_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">focus-within</span>
@@ -3946,7 +3946,7 @@ element.</p>
 
 </div>
 </div>
-<h3 id=":future"><code>:future</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:future" title="Permanent link"></a></h3>
+<h3 id=":future"><code>:future</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:future" title="Permanent link"></a></h3>
 <p>Selects an element that is defined to occur entirely after a <code>:current</code> element.</p>
 <div class="tabbed-set" data-tabs="65:1"><input checked="checked" id="__tabbed_65_1" name="__tabbed_65" type="radio" /><label for="__tabbed_65_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">future</span>
@@ -3954,7 +3954,7 @@ element.</p>
 
 </div>
 </div>
-<h3 id="host"><code>:host</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#host" title="Permanent link"></a></h3>
+<h3 id="host"><code>:host</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#host" title="Permanent link"></a></h3>
 <p><code>:host</code> selects the element hosting a shadow tree. While the function form of <code>:host()</code> takes a complex selector list
 and matches the shadow host only if it matches one of the selectors in the list.</p>
 <div class="tabbed-set" data-tabs="66:1"><input checked="checked" id="__tabbed_66_1" name="__tabbed_66" type="radio" /><label for="__tabbed_66_1">Syntax</label><div class="tabbed-content">
@@ -3964,7 +3964,7 @@ and matches the shadow host only if it matches one of the selectors in the list.
 
 </div>
 </div>
-<h3 id=":host-context"><code>:host-context()</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:host-context" title="Permanent link"></a></h3>
+<h3 id=":host-context"><code>:host-context()</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:host-context" title="Permanent link"></a></h3>
 <p>Selects the element hosting shadow tree, but only if one of the element's ancestors match a selector in the selector
 list.</p>
 <div class="tabbed-set" data-tabs="67:1"><input checked="checked" id="__tabbed_67_1" name="__tabbed_67" type="radio" /><label for="__tabbed_67_1">Syntax</label><div class="tabbed-content">
@@ -3973,7 +3973,7 @@ list.</p>
 
 </div>
 </div>
-<h3 id=":hover"><code>:hover</code><span class="html5 badge"></span><a class="headerlink" href="#:hover" title="Permanent link"></a></h3>
+<h3 id=":hover"><code>:hover</code><span class="html5 badge"></span><a class="headerlink" href="#:hover" title="Permanent link"></a></h3>
 <p>Selects an element when the user interacts with it by hovering over it with a pointing device.</p>
 <div class="tabbed-set" data-tabs="68:1"><input checked="checked" id="__tabbed_68_1" name="__tabbed_68" type="radio" /><label for="__tabbed_68_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">hover</span>
@@ -3981,7 +3981,7 @@ list.</p>
 
 </div>
 </div>
-<h3 id=":local-link"><code>:local-link</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:local-link" title="Permanent link"></a></h3>
+<h3 id=":local-link"><code>:local-link</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:local-link" title="Permanent link"></a></h3>
 <p>Selects link (every <code class="codehilite"><span class="p">&lt;</span><span class="nt">a</span><span class="p">&gt;</span></code>, <code class="codehilite"><span class="p">&lt;</span><span class="nt">link</span><span class="p">&gt;</span></code>, and <code class="codehilite"><span class="p">&lt;</span><span class="nt">area</span><span class="p">&gt;</span></code> element with an <code>href</code> attribute) elements whose
 absolute URL matches the element’s own document URL.</p>
 <div class="tabbed-set" data-tabs="69:1"><input checked="checked" id="__tabbed_69_1" name="__tabbed_69" type="radio" /><label for="__tabbed_69_1">Syntax</label><div class="tabbed-content">
@@ -3990,7 +3990,7 @@ absolute URL matches the element’s own document URL.</p>
 
 </div>
 </div>
-<h3 id=":past"><code>:past</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:past" title="Permanent link"></a></h3>
+<h3 id=":past"><code>:past</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:past" title="Permanent link"></a></h3>
 <p>Selects an element that is defined to occur entirely prior to a <code>:current</code> element.</p>
 <div class="tabbed-set" data-tabs="70:1"><input checked="checked" id="__tabbed_70_1" name="__tabbed_70" type="radio" /><label for="__tabbed_70_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">past</span>
@@ -3998,7 +3998,7 @@ absolute URL matches the element’s own document URL.</p>
 
 </div>
 </div>
-<h3 id=":paused"><code>:paused</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:paused" title="Permanent link"></a></h3>
+<h3 id=":paused"><code>:paused</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:paused" title="Permanent link"></a></h3>
 <p>Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and is
 currently "paused".</p>
 <div class="tabbed-set" data-tabs="71:1"><input checked="checked" id="__tabbed_71_1" name="__tabbed_71" type="radio" /><label for="__tabbed_71_1">Syntax</label><div class="tabbed-content">
@@ -4007,7 +4007,7 @@ currently "paused".</p>
 
 </div>
 </div>
-<h3 id=":playing"><code>:playing</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:playing" title="Permanent link"></a></h3>
+<h3 id=":playing"><code>:playing</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:playing" title="Permanent link"></a></h3>
 <p>Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and is
 currently "playing".</p>
 <div class="tabbed-set" data-tabs="72:1"><input checked="checked" id="__tabbed_72_1" name="__tabbed_72" type="radio" /><label for="__tabbed_72_1">Syntax</label><div class="tabbed-content">
@@ -4016,7 +4016,7 @@ currently "playing".</p>
 
 </div>
 </div>
-<h3 id=":target"><code>:target</code><span class="html5 badge"></span><a class="headerlink" href="#:target" title="Permanent link"></a></h3>
+<h3 id=":target"><code>:target</code><span class="html5 badge"></span><a class="headerlink" href="#:target" title="Permanent link"></a></h3>
 <p>Selects a unique element (the target element) with an id matching the URL's fragment.</p>
 <div class="tabbed-set" data-tabs="73:1"><input checked="checked" id="__tabbed_73_1" name="__tabbed_73" type="radio" /><label for="__tabbed_73_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">target</span>
@@ -4024,7 +4024,7 @@ currently "playing".</p>
 
 </div>
 </div>
-<h3 id=":target-within"><code>:target-within</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:target-within" title="Permanent link"></a></h3>
+<h3 id=":target-within"><code>:target-within</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:target-within" title="Permanent link"></a></h3>
 <p>Selects a unique element with an id matching the URL's fragment or an element which contains the element.</p>
 <div class="tabbed-set" data-tabs="74:1"><input checked="checked" id="__tabbed_74_1" name="__tabbed_74" type="radio" /><label for="__tabbed_74_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">target-within</span>
@@ -4032,7 +4032,7 @@ currently "playing".</p>
 
 </div>
 </div>
-<h3 id=":user-invalid"><code>:user-invalid</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:user-invalid" title="Permanent link"></a></h3>
+<h3 id=":user-invalid"><code>:user-invalid</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:user-invalid" title="Permanent link"></a></h3>
 <p>Selects an element with incorrect input, but only after the user has significantly interacted with it.</p>
 <div class="tabbed-set" data-tabs="75:1"><input checked="checked" id="__tabbed_75_1" name="__tabbed_75" type="radio" /><label for="__tabbed_75_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">user-invalid</span>
@@ -4040,7 +4040,7 @@ currently "playing".</p>
 
 </div>
 </div>
-<h3 id=":visited"><code>:visited</code><span class="html5 badge"></span><a class="headerlink" href="#:visited" title="Permanent link"></a></h3>
+<h3 id=":visited"><code>:visited</code><span class="html5 badge"></span><a class="headerlink" href="#:visited" title="Permanent link"></a></h3>
 <p>Selects links that have already been visited.</p>
 <div class="tabbed-set" data-tabs="76:1"><input checked="checked" id="__tabbed_76_1" name="__tabbed_76" type="radio" /><label for="__tabbed_76_1">Syntax</label><div class="tabbed-content">
 <div class="codehilite"><pre><span></span><code><span class="p">:</span><span class="nd">visited</span>
@@ -4049,16 +4049,23 @@ currently "playing".</p>
 </div>
 </div>
 <style>
+html {
+  --svg-beaker: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' id='beaker'%3E%3Cpath d='M3,3V5A2,2 0 0,1 5,7V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V7A2,2 0 0,1 21,5V3H3M7,9H10V10H7V9M7,11H10V12H7V11M10,16H7V15H10V16M12,14H7V13H12V14M12,8H7V7H12V8Z' /%3E%3C/svg%3E");
+  --svg-html5: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath d='M0 32l34.9 395.8L191.5 480l157.6-52.2L384 32H0zm308.2 127.9H124.4l4.1 49.4h175.6l-13.6 148.4-97.9 27v.3h-1.1l-98.7-27.3-6-75.8h47.7L138 320l53.5 14.5 53.7-14.5 6-62.2H84.3L71.5 112.2h241.1l-4.4 47.7z'/%3E%3C/svg%3E");
+  --svg-star: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' id='star'%3E%3Cpath d='M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z' /%3E%3C/svg%3E");
+}
 span.lab::after,
 span.html5::after,
-span.null::after,
 span.star::after {
   position: relative;
   display: inline-block;
-  font: normal normal normal 16px/1 FontAwesome;
-  -moz-osx-font-smoothing: initial;
-  -webkit-font-smoothing: initial;
-  font-weight: 400;
+  width: 1em;
+  height: 1em;
+  padding-right: 1em;
+  background-size: 1em;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  content: "\a0";
 }
 
 .badge {
@@ -4066,23 +4073,21 @@ span.star::after {
 }
 
 span.lab::after {
-  color: purple;
-  content: '\f0c3';
+  background-color: purple;
+  -webkit-mask-image: var(--svg-beaker);
+  mask-image: var(--svg-beaker);
 }
 
 span.html5::after {
-  color: orange;
-  content: '\f13b';
-}
-
-span.null::after {
-  color: red;
-  content: '\f071'
+  background-color: orange;
+  -webkit-mask-image: var(--svg-html5);
+  mask-image: var(--svg-html5);
 }
 
 span.star::after {
-   color: green;
-   content: '\f005'
+  background-color: green;
+  -webkit-mask-image: var(--svg-star);
+  mask-image: var(--svg-star);
 }
 </style>
                 
