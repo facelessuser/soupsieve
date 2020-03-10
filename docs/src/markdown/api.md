@@ -62,7 +62,7 @@ SoupSieve(pattern='p:has(#id) > span.some-class:contains(text)', namespaces=None
 ## `soupsieve.select_one()`
 
 ```py3
-def select(select, tag, namespaces=None, flags=0, **kwargs):
+def select_one(select, tag, namespaces=None, flags=0, **kwargs):
     """Select the specified tags."""
 ```
 
