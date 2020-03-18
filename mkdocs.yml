@@ -14,13 +14,11 @@ theme:
   palette:
     primary: blue
     accent: blue
-  logo:
-    icon: description
   font:
     text: Roboto
     code: Roboto Mono
-  feature:
-    tabs: true
+  features:
+    - tabs
 
 nav:
   - Usage:
@@ -90,8 +88,10 @@ markdown_extensions:
 
 extra:
   social:
-    - icon: brands/github
+    - icon: fontawesome/brands/github
       link: https://github.com/facelessuser
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/XBnPUZF
 
 plugins:
   - search
