@@ -2,6 +2,7 @@
 
 ## 1.9.6
 
+- **FIX**: Prune dead code.
 - **FIX**: Corner case with splitting namespace and tag name that that have an escaped `|`.
 
 ## 1.9.5
