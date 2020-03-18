@@ -1,7 +1,6 @@
 """Utility."""
 from functools import wraps
 import warnings
-import os
 import re
 
 DEBUG = 0x00001
