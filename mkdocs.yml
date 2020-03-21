@@ -12,8 +12,8 @@ docs_dir: docs/src/markdown
 theme:
   name: material
   palette:
-    primary: blue
-    accent: blue
+    primary: purple
+    accent: purple
   font:
     text: Roboto
     code: Roboto Mono
@@ -24,9 +24,14 @@ nav:
   - Usage:
     - Soup Sieve: index.md
     - API: api.md
-    - CSS Selectors: selectors.md
     - F.A.Q.: faq.md
     - Beautiful Soup Differences: differences.md
+  - CSS Selectors:
+    - General Details: selectors/index.md
+    - Basic Selectors: selectors/basic.md
+    - Combinators and Lists: selectors/combinators.md
+    - Pseudo Classes: selectors/pseudo-classes.md
+    - Non-Applicable Pseudo Classes: selectors/unsupported.md
   - About:
     - Contributing &amp; Support: about/contributing.md
     - Development: about/development.md
@@ -45,10 +50,9 @@ markdown_extensions:
   - markdown.extensions.def_list:
   - markdown.extensions.tables:
   - markdown.extensions.abbr:
-  - pymdownx.extrarawhtml:
+  - markdown.extensions.md_in_html:
   - pymdownx.superfences:
   - pymdownx.highlight:
-      css_class: codehilite
       extend_pygments_lang:
         - name: php-inline
           lang: php

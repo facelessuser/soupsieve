@@ -18,24 +18,30 @@ span.star::after {
   content: "\a0";
 }
 
+span.big-icon::after {
+  width: 3em;
+  height: 3em;
+  background-size: 3em;
+}
+
 .badge {
   float: right;
 }
 
 span.lab::after {
-  background-color: purple;
+  background-color: hsl(265, 89%, 78%);
   -webkit-mask-image: var(--svg-beaker);
   mask-image: var(--svg-beaker);
 }
 
 span.html5::after {
-  background-color: orange;
+  background-color: hsl(31, 100%, 71%);
   -webkit-mask-image: var(--svg-html5);
   mask-image: var(--svg-html5);
 }
 
 span.star::after {
-  background-color: green;
+  background-color: hsl(135, 94%, 65%);
   -webkit-mask-image: var(--svg-star);
   mask-image: var(--svg-star);
 }

@@ -24,12 +24,13 @@ documents. For this reason, it seems to be more helpful to allow selector combin
 
 Soup Sieve isn't entirely unaware of `iframe` elements though. In Soup Sieve 1.9.1, it was noticed that some
 pseudo-classes behaved in unexpected ways without awareness to `iframes`, this was fixed in 1.9.1. Pseudo-classes such
-as [`:default`](./selectors.md#:default), [`:indeterminate`](./selectors.md#:indeterminate), [`:dir()`](
-./selectors.md#:dir), [`:lang()`](./selectors.md#:lang), [`:root`](./selectors.md#:root), and [`:contains()`](
-./selectors.md#:contains) where given awareness of `iframes` to ensure they behaved properly and returned the expected
-elements. This doesn't mean that `select` won't return elements in `iframes`, but it won't allow something like
-`:default` to select a `button` in an `iframe` whose parent `form` is outside the `iframe`. Or better put, a default
-`button` will be evaluated in the context of the document it is in.
+as [`:default`](./selectors/pseudo-classes.md#:default), [`:indeterminate`](./selectors/pseudo-classes.md#:indeterminate),
+[`:dir()`](./selectors/pseudo-classes.md#:dir), [`:lang()`](./selectors/pseudo-classes.md#:lang),
+[`:root`](./selectors/pseudo-classes.md#:root), and [`:contains()`](./selectors/pseudo-classes.md#:contains) where
+given awareness of `iframes` to ensure they behaved properly and returned the expected elements. This doesn't mean that
+`select` won't return elements in `iframes`, but it won't allow something like `:default` to select a `button` in an
+`iframe` whose parent `form` is outside the `iframe`. Or better put, a default `button` will be evaluated in the context
+of the document it is in.
 
 With all of this said, if your selectors have issues with `iframes`, it is most likely because `iframes` are handled
 differently by different parsers. `html.parser` will usually parse `iframe` elements as it sees them. `lxml` parser will

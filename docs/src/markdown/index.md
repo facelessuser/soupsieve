@@ -24,7 +24,7 @@ do not match anything. Some of the supported selectors are:
 - `#!css :not(element.class, element2.class)`
 - `#!css :is(element.class, element2.class)`
 - `#!css parent:has(> child)`
-- and [many more](./selectors.md)
+- and [many more](./selectors/index.md)
 
 ## Installation
 
