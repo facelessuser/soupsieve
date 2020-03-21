@@ -1,0 +1,2802 @@
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A modern CSS selector library for Beautiful Soup.">
+      
+      
+        <link rel="canonical" href="https://facelessuser.github.io/soupsieve/selectors/pseudo-classes/">
+      
+      
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1, mkdocs-material-5.0.0rc2">
+    
+    
+      
+        <title>Pseudo Classes - Soup Sieve</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.97c3fac0.min.css">
+      
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.31180ff2.min.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#ab47bc">
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../../assets/pymdownx-extras/extra-cdbd1b995a.css">
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="purple" data-md-color-accent="purple">
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    
+      
+      <a href="#pseudo-classes" class="md-skip" data-md-component="skip">
+        Skip to content
+      </a>
+    
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <a href="https://facelessuser.github.io/soupsieve" title="Soup Sieve" aria-label="Soup Sieve" class="md-header-nav__button md-logo">
+      
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,8A3,3 0 0,0 15,5A3,3 0 0,0 12,2A3,3 0 0,0 9,5A3,3 0 0,0 12,8M12,11.54C9.64,9.35 6.5,8 3,8V19C6.5,19 9.64,20.35 12,22.54C14.36,20.35 17.5,19 21,19V8C17.5,8 14.36,9.35 12,11.54Z" /></svg>
+      
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" /></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      <div class="md-header-nav__ellipsis md-ellipsis">
+        
+          <span class="md-header-nav__topic">
+            Soup Sieve
+          </span>
+          <span class="md-header-nav__topic">
+            
+              Pseudo Classes
+            
+          </span>
+        
+      </div>
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" /></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" /></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="reset" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header-nav__source">
+        
+<a href="https://github.com/facelessuser/soupsieve/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+          
+
+  
+
+<nav class="md-tabs md-tabs--active" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../.." class="md-tabs__link">
+          Usage
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../" class="md-tabs__link md-tabs__link--active">
+          CSS Selectors
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../../about/contributing/" class="md-tabs__link">
+          About
+        </a>
+      
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://facelessuser.github.io/soupsieve" title="Soup Sieve" aria-label="Soup Sieve" class="md-nav__button md-logo">
+      
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,8A3,3 0 0,0 15,5A3,3 0 0,0 12,2A3,3 0 0,0 9,5A3,3 0 0,0 12,8M12,11.54C9.64,9.35 6.5,8 3,8V19C6.5,19 9.64,20.35 12,22.54C14.36,20.35 17.5,19 21,19V8C17.5,8 14.36,9.35 12,11.54Z" /></svg>
+      
+    </a>
+    Soup Sieve
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/facelessuser/soupsieve/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1">
+    
+    <label class="md-nav__link" for="nav-1">
+      Usage
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>
+      </span>
+    </label>
+    <nav class="md-nav" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" /></svg>
+        </span>
+        Usage
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Soup Sieve" class="md-nav__link">
+      Soup Sieve
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../api/" title="API" class="md-nav__link">
+      API
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../faq/" title="F.A.Q." class="md-nav__link">
+      F.A.Q.
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../differences/" title="Beautiful Soup Differences" class="md-nav__link">
+      Beautiful Soup Differences
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      CSS Selectors
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>
+      </span>
+    </label>
+    <nav class="md-nav" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" /></svg>
+        </span>
+        CSS Selectors
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../" title="General Details" class="md-nav__link">
+      General Details
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../basic/" title="Basic Selectors" class="md-nav__link">
+      Basic Selectors
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../combinators/" title="Combinators and Lists" class="md-nav__link">
+      Combinators and Lists
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Pseudo Classes
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3,9H17V7H3V9M3,13H17V11H3V13M3,17H17V15H3V17M19,17H21V15H19V17M19,7V9H21V7H19M19,13H21V11H19V13Z" /></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="Pseudo Classes" class="md-nav__link md-nav__link--active">
+      Pseudo Classes
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" /></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:any-link" class="md-nav__link">
+    :any-link
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:checked" class="md-nav__link">
+    :checked
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:contains" class="md-nav__link">
+    :contains()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:default" class="md-nav__link">
+    :default
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:defined" class="md-nav__link">
+    :defined
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:dir" class="md-nav__link">
+    :dir()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:disabled" class="md-nav__link">
+    :disabled
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:empty" class="md-nav__link">
+    :empty
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:enabled" class="md-nav__link">
+    :enabled
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:first-child" class="md-nav__link">
+    :first-child
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:first-of-type" class="md-nav__link">
+    :first-of-type
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#has" class="md-nav__link">
+    :has()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:in-range" class="md-nav__link">
+    :in-range
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:indeterminate" class="md-nav__link">
+    :indeterminate
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:is" class="md-nav__link">
+    :is()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:lang" class="md-nav__link">
+    :lang()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:last-child" class="md-nav__link">
+    :last-child
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:last-of-type" class="md-nav__link">
+    :last-of-type
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:link" class="md-nav__link">
+    :link
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:not" class="md-nav__link">
+    :not()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:nth-child" class="md-nav__link">
+    :nth-child()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:nth-last-child" class="md-nav__link">
+    :nth-last-child()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:nth-last-of-type" class="md-nav__link">
+    :nth-last-of-type()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:nth-of-type" class="md-nav__link">
+    :nth-of-type()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:only-child" class="md-nav__link">
+    :only-child
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:only-of-type" class="md-nav__link">
+    :only-of-type
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:optional" class="md-nav__link">
+    :optional
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:out-of-range" class="md-nav__link">
+    :out-of-range
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:placeholder-shown" class="md-nav__link">
+    :placeholder-shown
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:read-only" class="md-nav__link">
+    :read-only
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:read-write" class="md-nav__link">
+    :read-write
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:required" class="md-nav__link">
+    :required
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:root" class="md-nav__link">
+    :root
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:scope" class="md-nav__link">
+    :scope
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:where" class="md-nav__link">
+    :where()
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../unsupported/" title="Non-Applicable Pseudo Classes" class="md-nav__link">
+      Non-Applicable Pseudo Classes
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      About
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>
+      </span>
+    </label>
+    <nav class="md-nav" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" /></svg>
+        </span>
+        About
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/contributing/" title="Contributing & Support" class="md-nav__link">
+      Contributing &amp; Support
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/development/" title="Development" class="md-nav__link">
+      Development
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/changelog/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../about/license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" /></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:any-link" class="md-nav__link">
+    :any-link
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:checked" class="md-nav__link">
+    :checked
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:contains" class="md-nav__link">
+    :contains()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:default" class="md-nav__link">
+    :default
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:defined" class="md-nav__link">
+    :defined
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:dir" class="md-nav__link">
+    :dir()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:disabled" class="md-nav__link">
+    :disabled
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:empty" class="md-nav__link">
+    :empty
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:enabled" class="md-nav__link">
+    :enabled
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:first-child" class="md-nav__link">
+    :first-child
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:first-of-type" class="md-nav__link">
+    :first-of-type
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#has" class="md-nav__link">
+    :has()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:in-range" class="md-nav__link">
+    :in-range
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:indeterminate" class="md-nav__link">
+    :indeterminate
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:is" class="md-nav__link">
+    :is()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:lang" class="md-nav__link">
+    :lang()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:last-child" class="md-nav__link">
+    :last-child
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:last-of-type" class="md-nav__link">
+    :last-of-type
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:link" class="md-nav__link">
+    :link
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:not" class="md-nav__link">
+    :not()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:nth-child" class="md-nav__link">
+    :nth-child()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:nth-last-child" class="md-nav__link">
+    :nth-last-child()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:nth-last-of-type" class="md-nav__link">
+    :nth-last-of-type()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:nth-of-type" class="md-nav__link">
+    :nth-of-type()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:only-child" class="md-nav__link">
+    :only-child
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:only-of-type" class="md-nav__link">
+    :only-of-type
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:optional" class="md-nav__link">
+    :optional
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:out-of-range" class="md-nav__link">
+    :out-of-range
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:placeholder-shown" class="md-nav__link">
+    :placeholder-shown
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:read-only" class="md-nav__link">
+    :read-only
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:read-write" class="md-nav__link">
+    :read-write
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:required" class="md-nav__link">
+    :required
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:root" class="md-nav__link">
+    :root
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:scope" class="md-nav__link">
+    :scope
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#:where" class="md-nav__link">
+    :where()
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/facelessuser/soupsieve/tree/master/docs/src/markdown/selectors/pseudo-classes.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" /></svg>
+                  </a>
+                
+                
+                  
+                
+                
+                <h1 id="pseudo-classes">Pseudo-Classes<a class="headerlink" href="#pseudo-classes" title="Permanent link"></a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link"></a></h2>
+<p>These are pseudo classes that are either fully or partially supported. Partial support is usually due to limitations of
+not being in a live, browser environment. Pseudo classes that cannot be implemented are found under
+<a href="./unsupported.md/#non-applicable-pseudo-classes">Non-Applicable Pseudo Classes</a>. Any selectors that are not found here or under the
+non-applicable either are under consideration, have not yet been evaluated, or are too new and viewed as a risk to
+implement as they might not stick around.</p>
+<h2 id=":any-link"><code>:any-link</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:any-link" title="Permanent link"></a></h2>
+<p>Selects every <code class="highlight"><span class="p">&lt;</span><span class="nt">a</span><span class="p">&gt;</span></code>, <code class="highlight"><span class="p">&lt;</span><span class="nt">area</span><span class="p">&gt;</span></code>, or <code class="highlight"><span class="p">&lt;</span><span class="nt">link</span><span class="p">&gt;</span></code> element that has an <code>href</code> attribute, independent of
+whether it has been visited.</p>
+<div class="tabbed-set" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><label for="__tabbed_1_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">any-link</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><label for="__tabbed_1_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p&gt;A link to &lt;a href=&quot;http://example.com&quot;&gt;click&lt;/a&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;:any-link&#39;</span><span class="p">))</span>
+<span class="go">[&lt;a href=&quot;http://example.com&quot;&gt;click&lt;/a&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:any-link">https://developer.mozilla.org/en-US/docs/Web/CSS/:any-link</a></p>
+</div>
+<h2 id=":checked"><code>:checked</code><span class="html5 badge"></span><a class="headerlink" href="#:checked" title="Permanent link"></a></h2>
+<p>Selects any <code class="highlight"><span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;radio&quot;</span><span class="p">/&gt;</span></code>, <code class="highlight"><span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;checkbox&quot;</span><span class="p">/&gt;</span></code>, or <code class="highlight"><span class="p">&lt;</span><span class="nt">option</span><span class="p">&gt;</span></code> element (in a
+<code class="highlight"><span class="p">&lt;</span><span class="nt">select</span><span class="p">&gt;</span></code> element) that is checked or toggled to an on state.</p>
+<div class="tabbed-set" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><label for="__tabbed_2_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">checked</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><label for="__tabbed_2_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;div&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;input type=&quot;radio&quot; name=&quot;my-input&quot; id=&quot;yes&quot; checked&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;label for=&quot;yes&quot;&gt;Yes&lt;/label&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">  &lt;input type=&quot;radio&quot; name=&quot;my-input&quot; id=&quot;no&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;label for=&quot;no&quot;&gt;No&lt;/label&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;select name=&quot;my-select&quot; id=&quot;fruit&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;option id=&quot;1&quot; value=&quot;opt1&quot;&gt;Apples&lt;/option&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;option id=&quot;2&quot; value=&quot;opt2&quot; selected&gt;Grapes&lt;/option&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;option id=&quot;3&quot; value=&quot;opt3&quot;&gt;Pears&lt;/option&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/select&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;:checked&#39;</span><span class="p">))</span>
+<span class="go">[&lt;input checked=&quot;&quot; id=&quot;yes&quot; name=&quot;my-input&quot; type=&quot;radio&quot;/&gt;, &lt;option id=&quot;2&quot; selected=&quot;&quot; value=&quot;opt2&quot;&gt;Grapes&lt;/option&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:checked">https://developer.mozilla.org/en-US/docs/Web/CSS/:checked</a></p>
+</div>
+<h2 id=":contains"><code>:contains()</code><span class="star badge"></span><a class="headerlink" href="#:contains" title="Permanent link"></a></h2>
+<p>Selects elements that contain the provided text. Text can be found in either itself, or its descendants.</p>
+<p>Contains was originally included in a <a href="https://www.w3.org/TR/2001/CR-css3-selectors-20011113/#content-selectors">CSS early draft</a>, but was, in the end, dropped from the draft.
+Soup Sieve implements it how it was originally proposed in the draft with the addition that <code>:contains()</code> can accept
+either a single value, or a comma separated list of values. An element needs only to match at least one of the items
+in the comma separated list to be considered matching.</p>
+<div class="admonition warning">
+<p class="admonition-title">Contains</p>
+<p><code>:contains()</code> is an expensive operation as it scans all the text nodes of an element under consideration, which
+includes all descendants. Using highly specific selectors can reduce how often it is evaluated.</p>
+</div>
+<div class="tabbed-set" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><label for="__tabbed_3_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">contains</span><span class="o">(</span><span class="nt">text</span><span class="o">)</span>
+<span class="p">:</span><span class="nd">contains</span><span class="o">(</span><span class="s2">&quot;This text&quot;</span><span class="o">,</span> <span class="s2">&quot;or this text&quot;</span><span class="o">)</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><label for="__tabbed_3_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;div&gt;Here is &lt;span&gt;some text&lt;/span&gt;.&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;div&gt;Here is some more text.&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;div:contains(&quot;some text&quot;)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;div&gt;Here is &lt;span&gt;some text&lt;/span&gt;.&lt;/div&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<h2 id=":default"><code>:default</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:default" title="Permanent link"></a></h2>
+<p>Selects any form element that is the default among a group of related elements, including: <code class="highlight"><span class="p">&lt;</span><span class="nt">button</span><span class="p">&gt;</span></code>,
+<code class="highlight"><span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;checkbox&quot;</span><span class="p">&gt;</span></code>, <code class="highlight"><span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;radio&quot;</span><span class="p">&gt;</span></code>, <code class="highlight"><span class="p">&lt;</span><span class="nt">option</span><span class="p">&gt;</span></code> elements.</p>
+<div class="tabbed-set" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><label for="__tabbed_4_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">default</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><label for="__tabbed_4_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;form&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;input type=&quot;radio&quot; name=&quot;season&quot; id=&quot;spring&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;label for=&quot;spring&quot;&gt;Spring&lt;/label&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;input type=&quot;radio&quot; name=&quot;season&quot; id=&quot;summer&quot; checked&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;label for=&quot;summer&quot;&gt;Summer&lt;/label&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;input type=&quot;radio&quot; name=&quot;season&quot; id=&quot;fall&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;label for=&quot;fall&quot;&gt;Fall&lt;/label&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;input type=&quot;radio&quot; name=&quot;season&quot; id=&quot;winter&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;label for=&quot;winter&quot;&gt;Winter&lt;/label&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;select id=&quot;pet-select&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;option value=&quot;&quot;&gt;--Please choose an option--&lt;/option&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;option id=&quot;dog&quot; value=&quot;dog&quot;&gt;Dog&lt;/option&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;option id=&quot;cat&quot; value=&quot;cat&quot;&gt;Cat&lt;/option&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;option id=&quot;hamster&quot; value=&quot;hamster&quot; selected&gt;Hamster&lt;/option&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;option id=&quot;parrot&quot; value=&quot;parrot&quot;&gt;Parrot&lt;/option&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;option id=&quot;spider&quot; value=&quot;spider&quot;&gt;Spider&lt;/option&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;option id=&quot;goldfish&quot; value=&quot;goldfish&quot;&gt;Goldfish&lt;/option&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/select&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/form&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;:default&#39;</span><span class="p">))</span>
+<span class="go">[&lt;input checked=&quot;&quot; id=&quot;summer&quot; name=&quot;season&quot; type=&quot;radio&quot;/&gt;, &lt;option id=&quot;hamster&quot; selected=&quot;&quot; value=&quot;hamster&quot;&gt;Hamster&lt;/option&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:default">https://developer.mozilla.org/en-US/docs/Web/CSS/:default</a></p>
+</div>
+<h2 id=":defined"><code>:defined</code><span class="html5 badge"></span></span><span class="lab badge"></span><a class="headerlink" href="#:defined" title="Permanent link"></a></h2>
+<p>In a browser environment, this represents <em>defined</em> elements (names without hyphens) and custom elements (names with
+hyphens) that have been properly added to the custom element registry. Since elements cannot be added to a custom
+element registry in Beautiful Soup, this will select all elements that are not custom tags. <code>:defined</code> is a HTML
+specific selector, so it doesn't apply to XML.</p>
+<div class="tabbed-set" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><label for="__tabbed_5_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">defined</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><label for="__tabbed_5_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;custom-element text=&quot;Custom element example text&quot;&gt;&lt;/custom-element&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p&gt;Standard paragraph example text&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;body &gt; *:defined&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p&gt;Standard paragraph example text&lt;/p&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:defined">https://developer.mozilla.org/en-US/docs/Web/CSS/:defined</a></p>
+</div>
+<h2 id=":dir"><code>:dir()</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:dir" title="Permanent link"></a></h2>
+<p>Selects elements based on text directionality. Accepts either <code>ltr</code> or <code>rtl</code> for "left to right" and "right to left"
+respectively.</p>
+<div class="tabbed-set" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><label for="__tabbed_6_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">dir</span><span class="o">(</span><span class="nt">ltr</span><span class="o">)</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><label for="__tabbed_6_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span dir=&quot;auto&quot;&gt;זאת השפה העברית&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span dir=&quot;ltr&quot;&gt;Text&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;:dir(rtl)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;span dir=&quot;auto&quot;&gt;זאת השפה העברית&lt;/span&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:dir">https://developer.mozilla.org/en-US/docs/Web/CSS/:dir</a></p>
+</div>
+<h2 id=":disabled"><code>:disabled</code><span class="html5 badge"></span><a class="headerlink" href="#:disabled" title="Permanent link"></a></h2>
+<p>Selects any element that is disabled.</p>
+<div class="tabbed-set" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><label for="__tabbed_7_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">disabled</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><label for="__tabbed_7_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;form action=&quot;#&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;fieldset id=&quot;shipping&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;legend&gt;Shipping address&lt;/legend&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;text&quot; placeholder=&quot;Name&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;text&quot; placeholder=&quot;Address&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;text&quot; placeholder=&quot;Zip Code&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;/fieldset&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;br&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;fieldset id=&quot;billing&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;legend&gt;Billing address&lt;/legend&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;label for=&quot;billing-checkbox&quot;&gt;Same as shipping address:&lt;/label&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;checkbox&quot; id=&quot;billing-checkbox&quot; checked&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;br&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;text&quot; placeholder=&quot;Name&quot; disabled&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;text&quot; placeholder=&quot;Address&quot; disabled&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;text&quot; placeholder=&quot;Zip Code&quot; disabled&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;/fieldset&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/form&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;input:disabled&#39;</span><span class="p">))</span>
+<span class="go">[&lt;input disabled=&quot;&quot; placeholder=&quot;Name&quot; type=&quot;text&quot;/&gt;, &lt;input disabled=&quot;&quot; placeholder=&quot;Address&quot; type=&quot;text&quot;/&gt;, &lt;input disabled=&quot;&quot; placeholder=&quot;Zip Code&quot; type=&quot;text&quot;/&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:disabled">https://developer.mozilla.org/en-US/docs/Web/CSS/:disabled</a></p>
+</div>
+<h2 id=":empty"><code>:empty</code><span class="lab badge"></span><a class="headerlink" href="#:empty" title="Permanent link"></a></h2>
+<p>Selects elements that have no children and no text (whitespace is ignored).</p>
+<div class="tabbed-set" data-tabs="8:2"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><label for="__tabbed_8_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">empty</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><label for="__tabbed_8_2">Usage</label><div class="tabbed-content"></div>
+</div>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span&gt; &lt;!-- comment --&gt; &lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span&gt;&lt;span&gt;    &lt;/span&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;body :empty&#39;</span><span class="p">))</span>
+<span class="go">[&lt;span&gt; &lt;!-- comment --&gt; &lt;/span&gt;, &lt;span&gt;&lt;/span&gt;, &lt;span&gt;    &lt;/span&gt;]</span>
+</code></pre></div>
+
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:empty">https://developer.mozilla.org/en-US/docs/Web/CSS/:empty</a></p>
+</div>
+<h2 id=":enabled"><code>:enabled</code><span class="html5 badge"></span><a class="headerlink" href="#:enabled" title="Permanent link"></a></h2>
+<p>Selects any element that is enabled.</p>
+<div class="tabbed-set" data-tabs="9:2"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><label for="__tabbed_9_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">enabled</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_9_2" name="__tabbed_9" type="radio" /><label for="__tabbed_9_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;form action=&quot;#&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;fieldset id=&quot;shipping&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;legend&gt;Shipping address&lt;/legend&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;text&quot; placeholder=&quot;Name&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;text&quot; placeholder=&quot;Address&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;text&quot; placeholder=&quot;Zip Code&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;/fieldset&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;br&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;fieldset id=&quot;billing&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;legend&gt;Billing address&lt;/legend&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;label for=&quot;billing-checkbox&quot;&gt;Same as shipping address:&lt;/label&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;checkbox&quot; id=&quot;billing-checkbox&quot; checked&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;br&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;text&quot; placeholder=&quot;Name&quot; disabled&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;text&quot; placeholder=&quot;Address&quot; disabled&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;text&quot; placeholder=&quot;Zip Code&quot; disabled&gt;</span>
+<span class="gp">... </span><span class="s2">  &lt;/fieldset&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/form&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;input:enabled&#39;</span><span class="p">))</span>
+<span class="go">[&lt;input placeholder=&quot;Name&quot; type=&quot;text&quot;/&gt;, &lt;input placeholder=&quot;Address&quot; type=&quot;text&quot;/&gt;, &lt;input placeholder=&quot;Zip Code&quot; type=&quot;text&quot;/&gt;, &lt;input checked=&quot;&quot; id=&quot;billing-checkbox&quot; type=&quot;checkbox&quot;/&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:enabled">https://developer.mozilla.org/en-US/docs/Web/CSS/:enabled</a></p>
+</div>
+<h2 id=":first-child"><code>:first-child</code><a class="headerlink" href="#:first-child" title="Permanent link"></a></h2>
+<p>Selects the first child in a group of sibling elements.</p>
+<div class="tabbed-set" data-tabs="10:2"><input checked="checked" id="__tabbed_10_1" name="__tabbed_10" type="radio" /><label for="__tabbed_10_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">first-child</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_10_2" name="__tabbed_10" type="radio" /><label for="__tabbed_10_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;0&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;1&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;2&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;3&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;4&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;5&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;p:first-child&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;0&quot;&gt;&lt;/p&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:first-child">https://developer.mozilla.org/en-US/docs/Web/CSS/:first-child</a></p>
+</div>
+<h2 id=":first-of-type"><code>:first-of-type</code><a class="headerlink" href="#:first-of-type" title="Permanent link"></a></h2>
+<p>Selects the first child of a given type in a group of sibling elements.</p>
+<div class="tabbed-set" data-tabs="11:2"><input checked="checked" id="__tabbed_11_1" name="__tabbed_11" type="radio" /><label for="__tabbed_11_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="nt">element</span><span class="p">:</span><span class="nd">first-of-type</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_11_2" name="__tabbed_11" type="radio" /><label for="__tabbed_11_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;0&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;1&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;2&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;3&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;4&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;5&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;6&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;7&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;8&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;9&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;10&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;11&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;span:first-of-type&#39;</span><span class="p">))</span>
+<span class="go">[&lt;span id=&quot;2&quot;&gt;&lt;/span&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:first-of-type">https://developer.mozilla.org/en-US/docs/Web/CSS/:first-of-type</a></p>
+</div>
+<h2 id="has"><code>:has()</code><span class="lab badge"></span><a class="headerlink" href="#has" title="Permanent link"></a></h2>
+<p>Selects an element if any of the relative selectors passed as parameters (which are relative to the <code>:scope</code> of the
+given element), match at least one element.</p>
+<p>While the level 4 specifications state that <a href="#compound-selector">compound</a> selectors are supported, complex selectors
+are planned for level 5 CSS selectors. Soup Sieve supports <a href="#complex-selector">complex</a> selectors.</p>
+<div class="tabbed-set" data-tabs="12:2"><input checked="checked" id="__tabbed_12_1" name="__tabbed_12" type="radio" /><label for="__tabbed_12_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">has</span><span class="o">(</span><span class="nt">selector</span><span class="o">)</span>
+<span class="p">:</span><span class="nd">has</span><span class="o">(&gt;</span> <span class="nt">selector</span><span class="o">)</span>
+<span class="p">:</span><span class="nd">has</span><span class="o">(~</span> <span class="nt">selector</span><span class="o">)</span>
+<span class="p">:</span><span class="nd">has</span><span class="o">(+</span> <span class="nt">selector</span><span class="o">)</span>
+<span class="p">:</span><span class="nd">has</span><span class="o">(</span><span class="nt">selector1</span><span class="o">,</span> <span class="o">&gt;</span> <span class="nt">selector2</span><span class="o">,</span> <span class="o">~</span> <span class="nt">selector3</span><span class="o">,</span> <span class="o">+</span> <span class="nt">selector4</span><span class="o">)</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_12_2" name="__tabbed_12" type="radio" /><label for="__tabbed_12_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;div&gt;&lt;p&gt;Test &lt;span&gt;paragraph&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;div&gt;&lt;p class=&quot;class&quot;&gt;Another test paragraph&lt;/p&gt;&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;div:has(span, &gt; .class)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;div&gt;&lt;p&gt;Test &lt;span&gt;paragraph&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;, &lt;div&gt;&lt;p class=&quot;class&quot;&gt;Another test paragraph&lt;/p&gt;&lt;/div&gt;]  </span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has">https://developer.mozilla.org/en-US/docs/Web/CSS/:has</a></p>
+</div>
+<h2 id=":in-range"><code>:in-range</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:in-range" title="Permanent link"></a></h2>
+<p>Selects all <code class="highlight"><span class="p">&lt;</span><span class="nt">input</span><span class="p">&gt;</span></code> elements whose values are in range according to their <code>type</code>, <code>min</code>, and <code>max</code> attributes.</p>
+<div class="tabbed-set" data-tabs="13:2"><input checked="checked" id="__tabbed_13_1" name="__tabbed_13" type="radio" /><label for="__tabbed_13_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">in-range</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_13_2" name="__tabbed_13" type="radio" /><label for="__tabbed_13_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;input id=&quot;0&quot; type=&quot;month&quot; min=&quot;1980-02&quot; max=&quot;2004-08&quot; value=&quot;1999-05&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;input id=&quot;7&quot; type=&quot;month&quot; min=&quot;1980-02&quot; max=&quot;2004-08&quot; value=&quot;1979-02&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;:in-range&#39;</span><span class="p">))</span>
+<span class="go">[&lt;input id=&quot;0&quot; max=&quot;2004-08&quot; min=&quot;1980-02&quot; type=&quot;month&quot; value=&quot;1999-05&quot;/&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:in-range">https://developer.mozilla.org/en-US/docs/Web/CSS/:in-range</a></p>
+</div>
+<h2 id=":indeterminate"><code>:indeterminate</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:indeterminate" title="Permanent link"></a></h2>
+<p>Selects all form elements whose are in an indeterminate state.</p>
+<p>An element is considered indeterminate if:</p>
+<ul>
+<li>The element is of type <code class="highlight"><span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;checkbox&quot;</span><span class="p">/&gt;</span></code> and the <code>indeterminate</code> attribute is set.</li>
+<li>The element is of type <code class="highlight"><span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;radio&quot;</span><span class="p">/&gt;</span></code> and all other radio controls with the same name are not
+selected.</li>
+<li>The element is of type <code class="highlight"><span class="p">&lt;</span><span class="nt">progress</span><span class="p">&gt;</span></code> with no value.</li>
+</ul>
+<div class="tabbed-set" data-tabs="14:2"><input checked="checked" id="__tabbed_14_1" name="__tabbed_14" type="radio" /><label for="__tabbed_14_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">indeterminate</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_14_2" name="__tabbed_14" type="radio" /><label for="__tabbed_14_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;input type=&quot;checkbox&quot; id=&quot;checkbox1&quot; indeterminate&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;label for=&quot;checkbox1&quot;&gt;I like cats.&lt;/label&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;input type=&quot;checkbox&quot; id=&quot;checkbox2&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;label for=&quot;checkbox2&quot;&gt;I like dogs.&lt;/label&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;form&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;radio&quot; name=&quot;test&quot; id=&quot;radio1&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;label for=&quot;radio1&quot;&gt;Yes&lt;/label&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;radio&quot; name=&quot;test&quot; id=&quot;radio2&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;label for=&quot;radio2&quot;&gt;No&lt;/label&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;radio&quot; name=&quot;test&quot; id=&quot;radio3&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;label for=&quot;radio3&quot;&gt;Maybe&lt;/label&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/form&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;form&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;radio&quot; name=&quot;another&quot; id=&quot;radio4&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;label for=&quot;radio4&quot;&gt;Red&lt;/label&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;radio&quot; name=&quot;another&quot; id=&quot;radio5&quot; checked&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;label for=&quot;radio5&quot;&gt;Green&lt;/label&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">    &lt;input type=&quot;radio&quot; name=&quot;another&quot; id=&quot;radio6&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;label for=&quot;radio6&quot;&gt;Blue&lt;/label&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/form&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;:indeterminate&#39;</span><span class="p">))</span>
+<span class="go">[&lt;input id=&quot;checkbox1&quot; indeterminate=&quot;&quot; type=&quot;checkbox&quot;/&gt;, &lt;input id=&quot;radio1&quot; name=&quot;test&quot; type=&quot;radio&quot;/&gt;, &lt;input id=&quot;radio2&quot; name=&quot;test&quot; type=&quot;radio&quot;/&gt;, &lt;input id=&quot;radio3&quot; name=&quot;test&quot; type=&quot;radio&quot;/&gt;] </span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate">https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate</a></p>
+</div>
+<h2 id=":is"><code>:is()</code><span class="lab badge"></span><a class="headerlink" href="#:is" title="Permanent link"></a></h2>
+<p>Selects an element, but only if it matches at least one selector in the selector list.</p>
+<p>The alias <code>:matches()</code> is also supported as it was the original name for the selector, and some browsers support it.
+It is strongly encouraged to use <code>:is()</code> instead as support for <code>:matches()</code> may be dropped in the future.</p>
+<p>While the level 4 specifications state that <a href="#compound-selector">compound</a> selectors are supported, some browsers
+(Safari) support complex selectors which are planned for level 5 CSS selectors. Soup Sieve also supports
+<a href="#complex-selector">complex</a> selectors.</p>
+<div class="tabbed-set" data-tabs="15:2"><input checked="checked" id="__tabbed_15_1" name="__tabbed_15" type="radio" /><label for="__tabbed_15_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">is</span><span class="o">(</span><span class="nt">selector1</span><span class="o">,</span> <span class="nt">selector2</span><span class="o">)</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_15_2" name="__tabbed_15" type="radio" /><label for="__tabbed_15_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;0&quot;&gt;Some text &lt;span id=&quot;1&quot;&gt; in a paragraph&lt;/span&gt;.</span>
+<span class="gp">... </span><span class="s2">&lt;a id=&quot;2&quot; href=&quot;http://google.com&quot;&gt;Link.&lt;/a&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;[id]:is(a, span)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;span id=&quot;1&quot;&gt; in a paragraph&lt;/span&gt;, &lt;a href=&quot;http://google.com&quot; id=&quot;2&quot;&gt;Link.&lt;/a&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:is">https://developer.mozilla.org/en-US/docs/Web/CSS/:is</a></p>
+</div>
+<h2 id=":lang"><code>:lang()</code><a class="headerlink" href="#:lang" title="Permanent link"></a></h2>
+<dl>
+<dt>Level 3 CSS</dt>
+<dd>
+<p>Selects an element whose associated language matches the provided <strong>language</strong> or whose language starts with the
+provided <strong>language</strong> followed by a <code>-</code>. Language is determined by the rules of the document type.</p>
+<div class="tabbed-set" data-tabs="16:2"><input checked="checked" id="__tabbed_16_1" name="__tabbed_16" type="radio" /><label for="__tabbed_16_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">lang</span><span class="o">(</span><span class="nt">language</span><span class="o">)</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_16_2" name="__tabbed_16" type="radio" /><label for="__tabbed_16_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;div lang=&quot;de-DE&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;p id=&quot;1&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;div lang=&quot;de-DE-1996&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;p id=&quot;2&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;div lang=&quot;de-Latn-DE&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;p id=&quot;3&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;div lang=&quot;de-Latf-DE&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;p id=&quot;4&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;div lang=&quot;de-Latn-DE-1996&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;p id=&quot;5&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;6&quot; lang=&quot;de-DE&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;p:lang(de)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;1&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;2&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;3&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;4&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;5&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;6&quot; lang=&quot;de-DE&quot;&gt;&lt;/p&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+</dd>
+<dt>Level 4 CSS<span class="lab badge"></span></dt>
+<dd>
+<p>The level 4 CSS specifications adds the ability to define multiple language tags using a comma separated list. The
+specifications also allow for BCP 47 language ranges as described in <a href="https://tools.ietf.org/html/rfc4647">RFC4647</a>
+for extended filtering. This enables implicit wildcard matching between subtags. For instance, <code>:lang(de-DE)</code> will
+match all of <code>de-DE</code>, <code>de-DE-1996</code>, <code>de-Latn-DE</code>, <code>de-Latf-DE</code>, and <code>de-Latn-DE-1996</code>. Implicit wildcard matching
+will not take place at the beginning on the primary language tag, <code>*</code> must be used to force wildcard matching at the
+beginning of the language. If desired an explicit wildcard between subtags can be used, but since implicit wildcard
+matching already takes place between subtags, it is not needed: <code>de-*-DE</code> would be the same as just using <code>de-DE</code>.</p>
+<div class="tabbed-set" data-tabs="17:2"><input checked="checked" id="__tabbed_17_1" name="__tabbed_17" type="radio" /><label for="__tabbed_17_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">lang</span><span class="o">(</span><span class="s1">&#39;*-language&#39;</span><span class="o">,</span> <span class="nt">language2</span><span class="o">)</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_17_2" name="__tabbed_17" type="radio" /><label for="__tabbed_17_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;div lang=&quot;de-DE&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;p id=&quot;1&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;div lang=&quot;en&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;p id=&quot;2&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;div lang=&quot;de-Latn-DE&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;p id=&quot;3&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;div lang=&quot;de-Latf-DE&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;p id=&quot;4&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;div lang=&quot;en-US&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;p id=&quot;5&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;6&quot; lang=&quot;de-DE&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;p:lang(de-DE, &quot;*-US&quot;)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;1&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;3&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;4&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;5&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;6&quot; lang=&quot;de-DE&quot;&gt;&lt;/p&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+</dd>
+</dl>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:lang">https://developer.mozilla.org/en-US/docs/Web/CSS/:lang</a></p>
+</div>
+<h2 id=":last-child"><code>:last-child</code><a class="headerlink" href="#:last-child" title="Permanent link"></a></h2>
+<p>Selects the last element among a group of sibling elements.</p>
+<div class="tabbed-set" data-tabs="18:2"><input checked="checked" id="__tabbed_18_1" name="__tabbed_18" type="radio" /><label for="__tabbed_18_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">last-child</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_18_2" name="__tabbed_18" type="radio" /><label for="__tabbed_18_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;0&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;1&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;2&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;3&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;4&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;5&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;p:last-child&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;5&quot;&gt;&lt;/p&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:last-child">https://developer.mozilla.org/en-US/docs/Web/CSS/:last-child</a></p>
+</div>
+<h2 id=":last-of-type"><code>:last-of-type</code><a class="headerlink" href="#:last-of-type" title="Permanent link"></a></h2>
+<p>Selects the last child of a given type in a group of sibling elements.</p>
+<div class="tabbed-set" data-tabs="19:2"><input checked="checked" id="__tabbed_19_1" name="__tabbed_19" type="radio" /><label for="__tabbed_19_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="nt">element</span><span class="p">:</span><span class="nd">last-of-type</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_19_2" name="__tabbed_19" type="radio" /><label for="__tabbed_19_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;0&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;1&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;2&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;3&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;4&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;5&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;6&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;7&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;8&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;9&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;10&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;11&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;span:last-of-type&#39;</span><span class="p">))</span>
+<span class="go">[&lt;span id=&quot;11&quot;&gt;&lt;/span&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:last-of-type">https://developer.mozilla.org/en-US/docs/Web/CSS/:last-of-type</a></p>
+</div>
+<h2 id=":link"><code>:link</code><span class="html5 badge"></span><a class="headerlink" href="#:link" title="Permanent link"></a></h2>
+<p>Selects a link (every <code class="highlight"><span class="p">&lt;</span><span class="nt">a</span><span class="p">&gt;</span></code>, <code class="highlight"><span class="p">&lt;</span><span class="nt">link</span><span class="p">&gt;</span></code>, and <code class="highlight"><span class="p">&lt;</span><span class="nt">area</span><span class="p">&gt;</span></code> element with an <code>href</code> attribute) that has not
+yet been visited.</p>
+<p>Since Beautiful Soup does not have <em>visited</em> states, this will match all links, essentially making the behavior the same
+as <code>:any-link</code>.</p>
+<div class="tabbed-set" data-tabs="20:2"><input checked="checked" id="__tabbed_20_1" name="__tabbed_20" type="radio" /><label for="__tabbed_20_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">link</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_20_2" name="__tabbed_20" type="radio" /><label for="__tabbed_20_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p&gt;A link to &lt;a href=&quot;http://example.com&quot;&gt;click&lt;/a&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;:link&#39;</span><span class="p">))</span>
+<span class="go">[&lt;a href=&quot;http://example.com&quot;&gt;click&lt;/a&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:link">https://developer.mozilla.org/en-US/docs/Web/CSS/:link</a></p>
+</div>
+<h2 id=":not"><code>:not()</code><a class="headerlink" href="#:not" title="Permanent link"></a></h2>
+<dl>
+<dt>Level 3 CSS</dt>
+<dd>
+<p>Selects all elements that do not match the selector. The level 3 CSS specification states that <code>:not()</code> only
+supports simple selectors.</p>
+<div class="tabbed-set" data-tabs="21:2"><input checked="checked" id="__tabbed_21_1" name="__tabbed_21" type="radio" /><label for="__tabbed_21_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">not</span><span class="o">(</span><span class="nt">simple-selector</span><span class="o">)</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_21_2" name="__tabbed_21" type="radio" /><label for="__tabbed_21_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">   &lt;div&gt;Here is some text.&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">   &lt;div&gt;Here is some more text.&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;div:not(:contains(more))&#39;</span><span class="p">))</span>
+<span class="go">[&lt;div&gt;Here is some text.&lt;/div&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+</dd>
+<dt>Level 4+ CSS<span class="lab badge"></span></dt>
+<dd>
+<p>Selects all elements that do not match any of the selectors in the selector list. While the level 4 specifications
+state that <a href="#compound-selector">compound</a> selectors are supported, some browsers (Safari) support complex selectors
+which are planned for level 5 CSS selectors. Soup Sieve also supports <a href="#complex-selector">complex</a> selectors.</p>
+<div class="tabbed-set" data-tabs="22:2"><input checked="checked" id="__tabbed_22_1" name="__tabbed_22" type="radio" /><label for="__tabbed_22_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">not</span><span class="o">(</span><span class="nt">compound</span><span class="p">.</span><span class="nc">selector</span><span class="o">,</span> <span class="nt">complex</span> <span class="o">&gt;</span> <span class="nt">selector</span><span class="o">)</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_22_2" name="__tabbed_22" type="radio" /><label for="__tabbed_22_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">   &lt;div&gt;Here is some text.&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">   &lt;div&gt;Here is some more text.&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;*:not(html, head, body)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;div&gt;Here is some text.&lt;/div&gt;, &lt;div&gt;Here is some more text.&lt;/div&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+</dd>
+</dl>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:not">https://developer.mozilla.org/en-US/docs/Web/CSS/:not</a></p>
+</div>
+<h2 id=":nth-child"><code>:nth-child()</code><a class="headerlink" href="#:nth-child" title="Permanent link"></a></h2>
+<p><code>:nth-child()</code> matches elements based on their position in a group of siblings.</p>
+<dl>
+<dt>Level 3 CSS</dt>
+<dd>
+<ul>
+<li>
+<p>The keywords <code>even</code> and <code>odd</code>  will respectively select elements whose position is either even or odd amongst a
+  group of siblings.</p>
+</li>
+<li>
+<p>Patterns in the form <code>an+b</code> selects elements based on their position in a group of siblings, for every positive
+  integer or zero value of <code>n</code>. The index of the first element is <code>1</code>. The values <code>a</code> and <code>b</code> must both be integers.</p>
+</li>
+</ul>
+<div class="tabbed-set" data-tabs="23:2"><input checked="checked" id="__tabbed_23_1" name="__tabbed_23" type="radio" /><label for="__tabbed_23_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">nth-child</span><span class="o">(</span><span class="nt">even</span><span class="o">)</span>
+<span class="p">:</span><span class="nd">nth-child</span><span class="o">(</span><span class="nt">odd</span><span class="o">)</span>
+<span class="p">:</span><span class="nd">nth-child</span><span class="o">(</span><span class="nt">2</span><span class="o">)</span>
+<span class="p">:</span><span class="nd">nth-child</span><span class="o">(</span><span class="nt">2n</span><span class="o">+</span><span class="nt">2</span><span class="o">)</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_23_2" name="__tabbed_23" type="radio" /><label for="__tabbed_23_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;0&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;1&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;2&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;3&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;4&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;5&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;p:nth-child(even)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;1&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;3&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;5&quot;&gt;&lt;/p&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;p:nth-child(odd)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;0&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;2&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;4&quot;&gt;&lt;/p&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;p:nth-child(2)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;1&quot;&gt;&lt;/p&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;p:nth-child(-n+3)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;0&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;1&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;2&quot;&gt;&lt;/p&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+</dd>
+<dt>Level 4+ CSS<span class="lab badge"></span></dt>
+<dd>
+<p>Level 4 CSS adds the additional pattern in the form <code>an+b of S</code> where <code>S</code> represents a selector list. <code>an+b</code> can
+also be substituted with <code>even</code> or <code>odd</code>.</p>
+<p>Wen using the pattern <code>an+b of S</code>, the pattern will select elements from a sub-group of sibling elements that all
+match the selector list (<code>[of S]?</code>), based on their position within that sub-group, using the pattern <code>an+b</code>, for
+every positive integer or zero value of <code>n</code>. The index of the first element is <code>1</code>. The values <code>a</code> and <code>b</code> must both
+be integers.</p>
+<p>Essentially, <code class="highlight"><span class="nt">img</span><span class="p">:</span><span class="nd">nth-of-type</span><span class="o">(</span><span class="nt">2</span><span class="o">)</span></code> would be equivalent to <code class="highlight"><span class="p">:</span><span class="nd">nth-child</span><span class="o">(</span><span class="nt">2</span> <span class="nt">of</span> <span class="nt">img</span><span class="o">)</span></code>. The advantage of using
+<code>:nth-child(an+b [of S]?)</code> over <code>:nth-of-type</code> is that <code>:nth-of-type</code> is restricted to types, while
+<code>:nth-child(an+b [of S]?)</code> can use <a href="#complex-selector">complex</a> selectors.</p>
+<p>While the level 4 specifications state that <a href="#compound-selector">compound</a> selectors are supported, complex
+selectors are planned for level 5 CSS selectors. Soup Sieve supports <a href="#complex-selector">complex</a> selectors.</p>
+<div class="tabbed-set" data-tabs="24:2"><input checked="checked" id="__tabbed_24_1" name="__tabbed_24" type="radio" /><label for="__tabbed_24_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">nth-child</span><span class="o">(</span><span class="nt">2</span> <span class="nt">of</span> <span class="nt">img</span><span class="o">)</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_24_2" name="__tabbed_24" type="radio" /><label for="__tabbed_24_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;0&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;1&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;2&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;3&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;4&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;5&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;*:nth-child(-n+3 of [id])&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;0&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;1&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;2&quot;&gt;&lt;/p&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+</dd>
+</dl>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child">https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child</a></p>
+</div>
+<h2 id=":nth-last-child"><code>:nth-last-child()</code><a class="headerlink" href="#:nth-last-child" title="Permanent link"></a></h2>
+<p><code>:nth-last-child()</code> matches elements based on their position in a group of siblings, counting from the end.</p>
+<dl>
+<dt>Level 3 CSS</dt>
+<dd>
+<ul>
+<li>
+<p>Counting from the end, the keywords <code>even</code> and <code>odd</code>  will respectively select elements whose position is either
+  even or odd amongst a group of siblings.</p>
+</li>
+<li>
+<p>Counting from the end, patterns in the form <code>an+b</code> selects elements based on their position in a group of
+  siblings, for every positive integer or zero value of <code>n</code>. The index of the first element is <code>1</code>. The values <code>a</code>
+  and <code>b</code> must both be integers.</p>
+</li>
+</ul>
+<div class="tabbed-set" data-tabs="25:2"><input checked="checked" id="__tabbed_25_1" name="__tabbed_25" type="radio" /><label for="__tabbed_25_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">nth-last-child</span><span class="o">(</span><span class="nt">even</span><span class="o">)</span>
+<span class="p">:</span><span class="nd">nth-last-child</span><span class="o">(</span><span class="nt">odd</span><span class="o">)</span>
+<span class="p">:</span><span class="nd">nth-last-child</span><span class="o">(</span><span class="nt">2</span><span class="o">)</span>
+<span class="p">:</span><span class="nd">nth-last-child</span><span class="o">(</span><span class="nt">2n</span><span class="o">+</span><span class="nt">2</span><span class="o">)</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_25_2" name="__tabbed_25" type="radio" /><label for="__tabbed_25_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;0&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;1&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;2&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;3&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;4&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;5&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;p:nth-last-child(even)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;0&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;2&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;4&quot;&gt;&lt;/p&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;p:nth-last-child(odd)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;1&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;3&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;5&quot;&gt;&lt;/p&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;p:nth-last-child(2)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;4&quot;&gt;&lt;/p&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;p:nth-last-child(-n+3)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;3&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;4&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;5&quot;&gt;&lt;/p&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+</dd>
+<dt>Level 4+ CSS<span class="lab badge"></span></dt>
+<dd>
+<p>Level 4 CSS adds the additional pattern in the form <code>an+b of S</code> where <code>S</code> represents a selector list. <code>an+b</code> can
+also be substituted with <code>even</code> or <code>odd</code>.</p>
+<p>Wen using the pattern <code>an+b of S</code>, the pattern will select elements from a sub-group of sibling elements that all
+match the selector list (<code>[of S]?</code>), based on their position within that sub-group, using the pattern <code>an+b</code>, for
+every positive integer or zero value of <code>n</code>. The index of the first element is <code>1</code>. The values <code>a</code> and <code>b</code> must both
+be integers. Elements will be counted from the end.</p>
+<p>Essentially, <code class="highlight"><span class="nt">img</span><span class="p">:</span><span class="nd">nth-last-of-type</span><span class="o">(</span><span class="nt">2</span><span class="o">)</span></code> would be equivalent to <code class="highlight"><span class="p">:</span><span class="nd">nth-last-child</span><span class="o">(</span><span class="nt">2</span> <span class="nt">of</span> <span class="nt">img</span><span class="o">)</span></code>. The advantage
+of using <code>:nth-last-child(an+b [of S]?)</code> over <code>:nth-last-of-type</code> is that <code>:nth-last-of-type</code> is restricted to
+types, while <code>:nth-last-child(an+b [of S]?)</code> can use <a href="#complex-selector">complex</a> selectors.</p>
+<p>While the level 4 specifications state that <a href="#compound-selector">compound</a> selectors are supported, complex
+selectors are planned for level 5 CSS selectors. Soup Sieve supports <a href="#complex-selector">complex</a> selectors.</p>
+<div class="tabbed-set" data-tabs="26:2"><input checked="checked" id="__tabbed_26_1" name="__tabbed_26" type="radio" /><label for="__tabbed_26_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">nth-last-child</span><span class="o">(</span><span class="nt">2</span> <span class="nt">of</span> <span class="nt">img</span><span class="o">)</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_26_2" name="__tabbed_26" type="radio" /><label for="__tabbed_26_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;0&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;1&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;2&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;3&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;4&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;5&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;*:nth-last-child(-n+3 of [id])&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;3&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;4&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;5&quot;&gt;&lt;/p&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+</dd>
+</dl>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-child">https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-child</a></p>
+</div>
+<h2 id=":nth-last-of-type"><code>:nth-last-of-type()</code><a class="headerlink" href="#:nth-last-of-type" title="Permanent link"></a></h2>
+<p><code>:nth-of-type()</code> matches elements of a given type, based on their position among a group of siblings, counting from the
+end.</p>
+<ul>
+<li>
+<p>The keywords <code>even</code> and <code>odd</code>, and will respectively select elements, from a sub-group of
+  sibling elements that all match the given type, whose position is either even or odd amongst that sub-group of
+  siblings. Starting position is counted from the end.</p>
+</li>
+<li>
+<p>Patterns in the form <code>an+b</code> select from a sub-group of sibling elements that all match the given type, based on their
+  position within that sub-group, for every positive integer or zero value of <code>n</code>. The index of the first element is
+  <code>1</code>. The values <code>a</code> and <code>b</code> must both be integers. Starting position is counted from the end.</p>
+</li>
+</ul>
+<div class="tabbed-set" data-tabs="27:2"><input checked="checked" id="__tabbed_27_1" name="__tabbed_27" type="radio" /><label for="__tabbed_27_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="nt">element</span><span class="p">:</span><span class="nd">nth-last-of-type</span><span class="o">(</span><span class="nt">even</span><span class="o">)</span>
+<span class="nt">element</span><span class="p">:</span><span class="nd">nth-last-of-type</span><span class="o">(</span><span class="nt">odd</span><span class="o">)</span>
+<span class="nt">element</span><span class="p">:</span><span class="nd">nth-last-of-type</span><span class="o">(</span><span class="nt">2</span><span class="o">)</span>
+<span class="nt">element</span><span class="p">:</span><span class="nd">nth-last-of-type</span><span class="o">(</span><span class="nt">2n</span><span class="o">+</span><span class="nt">2</span><span class="o">)</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_27_2" name="__tabbed_27" type="radio" /><label for="__tabbed_27_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;0&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;1&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;2&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;3&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;4&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;5&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;6&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;7&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;8&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;9&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;10&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;11&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;span:nth-last-of-type(even)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;span id=&quot;2&quot;&gt;&lt;/span&gt;, &lt;span id=&quot;4&quot;&gt;&lt;/span&gt;, &lt;span id=&quot;6&quot;&gt;&lt;/span&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;span:nth-last-of-type(odd)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;span id=&quot;3&quot;&gt;&lt;/span&gt;, &lt;span id=&quot;5&quot;&gt;&lt;/span&gt;, &lt;span id=&quot;11&quot;&gt;&lt;/span&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;p:nth-last-of-type(2)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;9&quot;&gt;&lt;/p&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;p:nth-last-of-type(-n+3)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;8&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;9&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;10&quot;&gt;&lt;/p&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-of-type">https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-of-type</a></p>
+</div>
+<h2 id=":nth-of-type"><code>:nth-of-type()</code><a class="headerlink" href="#:nth-of-type" title="Permanent link"></a></h2>
+<p><code>:nth-of-type()</code> matches elements of a given type, based on their position among a group of siblings.</p>
+<ul>
+<li>
+<p>The keywords <code>even</code> and <code>odd</code>, and will respectively select elements, from a sub-group of
+  sibling elements that all match the given type, whose position is either even or odd amongst that sub-group of
+  siblings.</p>
+</li>
+<li>
+<p>Patterns in the form <code>an+b</code> select from a sub-group of sibling elements that all match the given type, based on their
+  position within that sub-group, for every positive integer or zero value of <code>n</code>. The index of the first element is
+  <code>1</code>. The values <code>a</code> and <code>b</code> must both be integers.</p>
+</li>
+</ul>
+<div class="tabbed-set" data-tabs="28:2"><input checked="checked" id="__tabbed_28_1" name="__tabbed_28" type="radio" /><label for="__tabbed_28_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="nt">element</span><span class="p">:</span><span class="nd">nth-of-type</span><span class="o">(</span><span class="nt">even</span><span class="o">)</span>
+<span class="nt">element</span><span class="p">:</span><span class="nd">nth-of-type</span><span class="o">(</span><span class="nt">odd</span><span class="o">)</span>
+<span class="nt">element</span><span class="p">:</span><span class="nd">nth-of-type</span><span class="o">(</span><span class="nt">2</span><span class="o">)</span>
+<span class="nt">element</span><span class="p">:</span><span class="nd">nth-of-type</span><span class="o">(</span><span class="nt">2n</span><span class="o">+</span><span class="nt">2</span><span class="o">)</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_28_2" name="__tabbed_28" type="radio" /><label for="__tabbed_28_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;0&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;1&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;2&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;3&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;4&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;5&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;6&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;7&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;8&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;9&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;10&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;11&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;span:nth-of-type(even)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;span id=&quot;3&quot;&gt;&lt;/span&gt;, &lt;span id=&quot;5&quot;&gt;&lt;/span&gt;, &lt;span id=&quot;11&quot;&gt;&lt;/span&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;span:nth-of-type(odd)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;span id=&quot;2&quot;&gt;&lt;/span&gt;, &lt;span id=&quot;4&quot;&gt;&lt;/span&gt;, &lt;span id=&quot;6&quot;&gt;&lt;/span&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;p:nth-of-type(2)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;1&quot;&gt;&lt;/p&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;p:nth-of-type(-n+3)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;0&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;1&quot;&gt;&lt;/p&gt;, &lt;p id=&quot;7&quot;&gt;&lt;/p&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type">https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type</a></p>
+</div>
+<h2 id=":only-child"><code>:only-child</code><a class="headerlink" href="#:only-child" title="Permanent link"></a></h2>
+<p>Selects element without any siblings.</p>
+<div class="tabbed-set" data-tabs="29:2"><input checked="checked" id="__tabbed_29_1" name="__tabbed_29" type="radio" /><label for="__tabbed_29_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">only-child</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_29_2" name="__tabbed_29" type="radio" /><label for="__tabbed_29_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;div&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;p id=&quot;0&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;p id=&quot;1&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;p id=&quot;2&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;p id=&quot;3&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;p id=&quot;4&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;p id=&quot;5&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;div&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;p id=&quot;6&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;p:only-child&#39;</span><span class="p">))</span>
+<span class="go">[&lt;p id=&quot;6&quot;&gt;&lt;/p&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:only-child">https://developer.mozilla.org/en-US/docs/Web/CSS/:only-child</a></p>
+</div>
+<h2 id=":only-of-type"><code>:only-of-type</code><a class="headerlink" href="#:only-of-type" title="Permanent link"></a></h2>
+<p>Selects element without any siblings that matches a given type.</p>
+<div class="tabbed-set" data-tabs="30:2"><input checked="checked" id="__tabbed_30_1" name="__tabbed_30" type="radio" /><label for="__tabbed_30_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="nt">element</span><span class="p">:</span><span class="nd">only-of-type</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_30_2" name="__tabbed_30" type="radio" /><label for="__tabbed_30_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;0&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;1&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;span id=&quot;2&quot;&gt;&lt;/span&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;3&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;4&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;5&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;6&quot;&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;span:only-of-type&#39;</span><span class="p">))</span>
+<span class="go">[&lt;span id=&quot;2&quot;&gt;&lt;/span&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:only-of-type">https://developer.mozilla.org/en-US/docs/Web/CSS/:only-of-type</a></p>
+</div>
+<h2 id=":optional"><code>:optional</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:optional" title="Permanent link"></a></h2>
+<p>Selects any <code class="highlight"><span class="p">&lt;</span><span class="nt">input</span><span class="p">&gt;</span></code>, <code class="highlight"><span class="p">&lt;</span><span class="nt">select</span><span class="p">&gt;</span></code>, or <code class="highlight"><span class="p">&lt;</span><span class="nt">textarea</span><span class="p">&gt;</span></code> element that does not have the <code>required</code>
+attribute set on it.</p>
+<div class="tabbed-set" data-tabs="31:2"><input checked="checked" id="__tabbed_31_1" name="__tabbed_31" type="radio" /><label for="__tabbed_31_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">optional</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_31_2" name="__tabbed_31" type="radio" /><label for="__tabbed_31_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;form&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;input type=&quot;name&quot; required&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;input type=&quot;checkbox&quot; required&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;input type=&quot;email&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;textarea name=&quot;name&quot; cols=&quot;30&quot; rows=&quot;10&quot; required&gt;&lt;/textarea&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;select name=&quot;nm&quot; required&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;!-- options --&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/select&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/form&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;:optional&#39;</span><span class="p">))</span>
+<span class="go">[&lt;input type=&quot;email&quot;/&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:optional">https://developer.mozilla.org/en-US/docs/Web/CSS/:optional</a></p>
+</div>
+<h2 id=":out-of-range"><code>:out-of-range</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:out-of-range" title="Permanent link"></a></h2>
+<p>Selects all <code class="highlight"><span class="p">&lt;</span><span class="nt">input</span><span class="p">&gt;</span></code> elements whose values are out of range according to their <code>type</code>, <code>min</code>, and <code>max</code>
+attributes.</p>
+<div class="tabbed-set" data-tabs="32:2"><input checked="checked" id="__tabbed_32_1" name="__tabbed_32" type="radio" /><label for="__tabbed_32_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">out-of-range</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_32_2" name="__tabbed_32" type="radio" /><label for="__tabbed_32_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;input id=&quot;0&quot; type=&quot;month&quot; min=&quot;1980-02&quot; max=&quot;2004-08&quot; value=&quot;1999-05&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;input id=&quot;7&quot; type=&quot;month&quot; min=&quot;1980-02&quot; max=&quot;2004-08&quot; value=&quot;1979-02&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;:out-of-range&#39;</span><span class="p">))</span>
+<span class="go">[&lt;input id=&quot;7&quot; max=&quot;2004-08&quot; min=&quot;1980-02&quot; type=&quot;month&quot; value=&quot;1979-02&quot;/&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:out-of-range">https://developer.mozilla.org/en-US/docs/Web/CSS/:out-of-range</a></p>
+</div>
+<h2 id=":placeholder-shown"><code>:placeholder-shown</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:placeholder-shown" title="Permanent link"></a></h2>
+<p>Selects any <code class="highlight"><span class="p">&lt;</span><span class="nt">input</span><span class="p">&gt;</span></code> or <code class="highlight"><span class="p">&lt;</span><span class="nt">textarea</span><span class="p">&gt;</span></code> element that is currently displaying placeholder text via the
+<code>placeholder</code> attribute.</p>
+<div class="tabbed-set" data-tabs="33:2"><input checked="checked" id="__tabbed_33_1" name="__tabbed_33" type="radio" /><label for="__tabbed_33_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">placeholder-shown</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_33_2" name="__tabbed_33" type="radio" /><label for="__tabbed_33_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;input id=&quot;0&quot; placeholder=&quot;This is some text&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;textarea id=&quot;1&quot; placeholder=&quot;This is some text&quot;&gt;&lt;/textarea&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;:placeholder-shown&#39;</span><span class="p">))</span>
+<span class="go">[&lt;input id=&quot;0&quot; placeholder=&quot;This is some text&quot;/&gt;, &lt;textarea id=&quot;1&quot; placeholder=&quot;This is some text&quot;&gt;&lt;/textarea&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Parser Differences</p>
+<p>In general, when an input has a placeholder, but the element also has valid content, the placeholder is not shown.
+For instance, when a <code>textarea</code> has actual text associated with the element, the placeholder is overridden with the
+actual content. A <code>textarea</code> is allowed no more than a single newline to be considered as having no content
+(carriage returns don't count).</p>
+<p><code>html5lib</code> will strip out carriage returns, but <code>lxml</code> and <code>html.parser</code> will not. This will cause a difference
+between the parsers when dealing with Windows style line endings and <code>textareas</code>. <code>html5lib</code> seems to follow
+<em>closest</em> to what real browsers do. Soup Sieve is simply following the specification as best it can. Unfortunately,
+it can't account for the quirks of the parsers in this case without introducing other issues.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:placeholder-shown">https://developer.mozilla.org/en-US/docs/Web/CSS/:placeholder-shown</a></p>
+</div>
+<h2 id=":read-only"><code>:read-only</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:read-only" title="Permanent link"></a></h2>
+<p>Selects elements (such as <code class="highlight"><span class="p">&lt;</span><span class="nt">input</span><span class="p">&gt;</span></code> or <code class="highlight"><span class="p">&lt;</span><span class="nt">textarea</span><span class="p">&gt;</span></code>) that are <em>not</em> editable by the user. This does not
+just apply to form elements with <code>readonly</code> set, but it applies to <strong>any</strong> element that cannot be edited by the user.</p>
+<div class="tabbed-set" data-tabs="34:2"><input checked="checked" id="__tabbed_34_1" name="__tabbed_34" type="radio" /><label for="__tabbed_34_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">read-only</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_34_2" name="__tabbed_34" type="radio" /><label for="__tabbed_34_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;input id=&quot;0&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;input id=&quot;1&quot; disabled&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;input id=&quot;2&quot; type=&quot;number&quot; readonly&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;textarea id=&quot;3&quot;&gt;&lt;/textarea&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;4&quot;&gt;Not editable&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;5&quot; contenteditable=&quot;true&quot;&gt;Editable text&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;body :read-only&#39;</span><span class="p">))</span>
+<span class="go">[&lt;input disabled=&quot;&quot; id=&quot;1&quot;/&gt;, &lt;input id=&quot;2&quot; readonly=&quot;&quot; type=&quot;number&quot;/&gt;, &lt;p id=&quot;4&quot;&gt;Not editable&lt;/p&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:read-only">https://developer.mozilla.org/en-US/docs/Web/CSS/:read-only</a></p>
+</div>
+<h2 id=":read-write"><code>:read-write</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:read-write" title="Permanent link"></a></h2>
+<p>Selects elements (such as <code class="highlight"><span class="p">&lt;</span><span class="nt">input</span><span class="p">&gt;</span></code> or <code class="highlight"><span class="p">&lt;</span><span class="nt">textarea</span><span class="p">&gt;</span></code>) that are editable by the user. This does not just
+apply to form elements as it applies to <strong>any</strong> element that can be edited by the user, such as a <code class="highlight"><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span></code> element
+with <code>contenteditable</code> set on it.</p>
+<div class="tabbed-set" data-tabs="35:2"><input checked="checked" id="__tabbed_35_1" name="__tabbed_35" type="radio" /><label for="__tabbed_35_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">read-only</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_35_2" name="__tabbed_35" type="radio" /><label for="__tabbed_35_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;input id=&quot;0&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;input id=&quot;1&quot; disabled&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;input id=&quot;2&quot; type=&quot;number&quot; readonly&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;textarea id=&quot;3&quot;&gt;&lt;/textarea&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;4&quot;&gt;Not editable&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;5&quot; contenteditable=&quot;true&quot;&gt;Editable text&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2"></span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;body :read-write&#39;</span><span class="p">))</span>
+<span class="go">[&lt;input id=&quot;0&quot;/&gt;, &lt;textarea id=&quot;3&quot;&gt;&lt;/textarea&gt;, &lt;p contenteditable=&quot;true&quot; id=&quot;5&quot;&gt;Editable text&lt;/p&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:read-write">https://developer.mozilla.org/en-US/docs/Web/CSS/:read-write</a></p>
+</div>
+<h2 id=":required"><code>:required</code><span class="html5 badge"></span><span class="lab badge"></span><a class="headerlink" href="#:required" title="Permanent link"></a></h2>
+<p>Selects any <code class="highlight"><span class="p">&lt;</span><span class="nt">input</span><span class="p">&gt;</span></code>, <code class="highlight"><span class="p">&lt;</span><span class="nt">select</span><span class="p">&gt;</span></code>, or <code class="highlight"><span class="p">&lt;</span><span class="nt">textarea</span><span class="p">&gt;</span></code> element that has the <code>required</code> attribute set on
+it.</p>
+<div class="tabbed-set" data-tabs="36:2"><input checked="checked" id="__tabbed_36_1" name="__tabbed_36" type="radio" /><label for="__tabbed_36_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">required</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_36_2" name="__tabbed_36" type="radio" /><label for="__tabbed_36_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;form&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;input type=&quot;name&quot; required&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;input type=&quot;checkbox&quot; required&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;input type=&quot;email&quot;&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;textarea name=&quot;name&quot; cols=&quot;30&quot; rows=&quot;10&quot; required&gt;&lt;/textarea&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;select name=&quot;nm&quot; required&gt;</span>
+<span class="gp">... </span><span class="s2">    &lt;!-- options --&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/select&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/form&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;:required&#39;</span><span class="p">))</span>
+<span class="go">[&lt;input required=&quot;&quot; type=&quot;name&quot;/&gt;, &lt;input required=&quot;&quot; type=&quot;checkbox&quot;/&gt;, &lt;textarea cols=&quot;30&quot; name=&quot;name&quot; required=&quot;&quot; rows=&quot;10&quot;&gt;&lt;/textarea&gt;, &lt;select name=&quot;nm&quot; required=&quot;&quot;&gt;</span>
+<span class="go">    &lt;!-- options --&gt;</span>
+<span class="go">&lt;/select&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:required">https://developer.mozilla.org/en-US/docs/Web/CSS/:required</a></p>
+</div>
+<h2 id=":root"><code>:root</code><a class="headerlink" href="#:root" title="Permanent link"></a></h2>
+<p>Selects the root element of a document tree.</p>
+<div class="tabbed-set" data-tabs="37:2"><input checked="checked" id="__tabbed_37_1" name="__tabbed_37" type="radio" /><label for="__tabbed_37_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">root</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_37_2" name="__tabbed_37" type="radio" /><label for="__tabbed_37_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">   &lt;div&gt;Here is some text.&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">   &lt;div&gt;Here is some more text.&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;:root&#39;</span><span class="p">))</span>
+<span class="go">[&lt;html&gt;&lt;head&gt;&lt;/head&gt;</span>
+<span class="go">&lt;body&gt;</span>
+<span class="go">    &lt;div&gt;Here is some text.&lt;/div&gt;</span>
+<span class="go">    &lt;div&gt;Here is some more text.&lt;/div&gt;</span>
+
+
+<span class="go">&lt;/body&gt;&lt;/html&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:root">https://developer.mozilla.org/en-US/docs/Web/CSS/:root</a></p>
+</div>
+<h2 id=":scope"><code>:scope</code><span class="lab badge"></span><a class="headerlink" href="#:scope" title="Permanent link"></a></h2>
+<p><code>:scope</code> represents the the element a <code>match</code>, <code>select</code>, or <code>filter</code> is being called on. If we were, for instance,
+using <code>:scope</code> on a div (<code class="highlight"><span class="n">sv</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;:scope &gt; p&#39;</span><span class="p">,</span> <span class="n">soup</span><span class="o">.</span><span class="n">div</span><span class="p">)</span></code>) <code>:scope</code> would represent <strong>that</strong> div element, and
+no others. If called on the Beautiful Soup object which represents the entire document, it would simply select
+<a href="#:root"><code>:root</code></a>.</p>
+<div class="tabbed-set" data-tabs="38:2"><input checked="checked" id="__tabbed_38_1" name="__tabbed_38" type="radio" /><label for="__tabbed_38_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">scope</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_38_2" name="__tabbed_38" type="radio" /><label for="__tabbed_38_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">   &lt;div&gt;Here is some text.&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">   &lt;div&gt;Here is some more text.&lt;/div&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;:scope &gt; div&#39;</span><span class="p">))</span>
+<span class="go">[&lt;div&gt;Here is some text.&lt;/div&gt;, &lt;div&gt;Here is some more text.&lt;/div&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:scope">https://developer.mozilla.org/en-US/docs/Web/CSS/:scope</a></p>
+</div>
+<h2 id=":where"><code>:where()</code><span class="lab badge"></span><a class="headerlink" href="#:where" title="Permanent link"></a></h2>
+<p>Selects an element, but only if it matches at least one selector in the selector list. In browsers, this also has zero
+specificity, but this only has relevance in a browser environment where you have multiple CSS styles, and specificity is
+used to see which applies. Beautiful Soup and Soup Sieve don't care about specificity so <code>:where()</code> is essentially just
+an alias for <code>:is()</code>.</p>
+<p>While the level 4 specifications state that <a href="#compound-selector">compound</a> selectors are supported, some browsers
+(Safari) support complex selectors which are planned for level 5 CSS selectors. Soup Sieve also supports
+<a href="#complex-selector">complex</a> selectors.</p>
+<div class="tabbed-set" data-tabs="39:2"><input checked="checked" id="__tabbed_39_1" name="__tabbed_39" type="radio" /><label for="__tabbed_39_1">Syntax</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="p">:</span><span class="nd">where</span><span class="o">(</span><span class="nt">selector1</span><span class="o">,</span> <span class="nt">selector2</span><span class="o">)</span>
+</code></pre></div>
+
+</div>
+<input id="__tabbed_39_2" name="__tabbed_39" type="radio" /><label for="__tabbed_39_2">Usage</label><div class="tabbed-content">
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">bs4</span> <span class="k">import</span> <span class="n">BeautifulSoup</span> <span class="k">as</span> <span class="n">bs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">... </span><span class="s2">&lt;html&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;head&gt;&lt;/head&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;p id=&quot;0&quot;&gt;Some text &lt;span id=&quot;1&quot;&gt; in a paragraph&lt;/span&gt;.</span>
+<span class="gp">... </span><span class="s2">&lt;a id=&quot;2&quot; href=&quot;http://google.com&quot;&gt;Link.&lt;/a&gt;&lt;/p&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/body&gt;</span>
+<span class="gp">... </span><span class="s2">&lt;/html&gt;</span>
+<span class="gp">... </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soup</span> <span class="o">=</span> <span class="n">bs</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s1">&#39;html5lib&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;[id]:where(a, span)&#39;</span><span class="p">))</span>
+<span class="go">[&lt;span id=&quot;1&quot;&gt; in a paragraph&lt;/span&gt;, &lt;a href=&quot;http://google.com&quot; id=&quot;2&quot;&gt;Link.&lt;/a&gt;]</span>
+</code></pre></div>
+
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Additional Reading</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:where">https://developer.mozilla.org/en-US/docs/Web/CSS/:where</a></p>
+</div>
+<style>
+html {
+  --svg-beaker: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' id='beaker'%3E%3Cpath d='M3,3V5A2,2 0 0,1 5,7V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V7A2,2 0 0,1 21,5V3H3M7,9H10V10H7V9M7,11H10V12H7V11M10,16H7V15H10V16M12,14H7V13H12V14M12,8H7V7H12V8Z' /%3E%3C/svg%3E");
+  --svg-html5: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath d='M0 32l34.9 395.8L191.5 480l157.6-52.2L384 32H0zm308.2 127.9H124.4l4.1 49.4h175.6l-13.6 148.4-97.9 27v.3h-1.1l-98.7-27.3-6-75.8h47.7L138 320l53.5 14.5 53.7-14.5 6-62.2H84.3L71.5 112.2h241.1l-4.4 47.7z'/%3E%3C/svg%3E");
+  --svg-star: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' id='star'%3E%3Cpath d='M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z' /%3E%3C/svg%3E");
+}
+span.lab::after,
+span.html5::after,
+span.star::after {
+  position: relative;
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  padding-right: 1em;
+  background-size: 1em;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  content: "\a0";
+}
+
+span.big-icon::after {
+  width: 3em;
+  height: 3em;
+  background-size: 3em;
+}
+
+.badge {
+  float: right;
+}
+
+span.lab::after {
+  background-color: hsl(265, 89%, 78%);
+  -webkit-mask-image: var(--svg-beaker);
+  mask-image: var(--svg-beaker);
+}
+
+span.html5::after {
+  background-color: hsl(31, 100%, 71%);
+  -webkit-mask-image: var(--svg-html5);
+  mask-image: var(--svg-html5);
+}
+
+span.star::after {
+  background-color: hsl(135, 94%, 65%);
+  -webkit-mask-image: var(--svg-star);
+  mask-image: var(--svg-star);
+}
+</style>
+                
+                  
+                    
+
+<hr>
+<div class="md-source-date">
+  <small>
+    
+      Last update: March 21, 2020
+    
+  </small>
+</div>
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../combinators/" title="Combinators and Lists" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" /></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Combinators and Lists
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../unsupported/" title="Non-Applicable Pseudo Classes" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Non-Applicable Pseudo Classes
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z" /></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2018 - 2020 <a href="https://github.com/facelessuser">Isaac Muse</a>
+<br><span class="md-footer-custom-text">emoji provided free by </span>
+<a href="https://github.com/twitter/twemoji">Twemoji</a>
+
+          </div>
+        
+        powered by
+        <a href="https://www.mkdocs.org" target="_blank" rel="noopener">
+          MkDocs
+        </a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+  <div class="md-footer-social">
+    
+      
+      
+      <a href="https://github.com/facelessuser" target="_blank" rel="noopener" title="github.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+      </a>
+    
+      
+      
+      <a href="https://discord.gg/XBnPUZF" target="_blank" rel="noopener" title="discord.gg" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M297.216 243.2c0 15.616-11.52 28.416-26.112 28.416-14.336 0-26.112-12.8-26.112-28.416s11.52-28.416 26.112-28.416c14.592 0 26.112 12.8 26.112 28.416zm-119.552-28.416c-14.592 0-26.112 12.8-26.112 28.416s11.776 28.416 26.112 28.416c14.592 0 26.112-12.8 26.112-28.416.256-15.616-11.52-28.416-26.112-28.416zM448 52.736V512c-64.494-56.994-43.868-38.128-118.784-107.776l13.568 47.36H52.48C23.552 451.584 0 428.032 0 398.848V52.736C0 23.552 23.552 0 52.48 0h343.04C424.448 0 448 23.552 448 52.736zm-72.96 242.688c0-82.432-36.864-149.248-36.864-149.248-36.864-27.648-71.936-26.88-71.936-26.88l-3.584 4.096c43.52 13.312 63.744 32.512 63.744 32.512-60.811-33.329-132.244-33.335-191.232-7.424-9.472 4.352-15.104 7.424-15.104 7.424s21.248-20.224 67.328-33.536l-2.56-3.072s-35.072-.768-71.936 26.88c0 0-36.864 66.816-36.864 149.248 0 0 21.504 37.12 78.08 38.912 0 0 9.472-11.52 17.152-21.248-32.512-9.728-44.8-30.208-44.8-30.208 3.766 2.636 9.976 6.053 10.496 6.4 43.21 24.198 104.588 32.126 159.744 8.96 8.96-3.328 18.944-8.192 29.44-15.104 0 0-12.8 20.992-46.336 30.464 7.68 9.728 16.896 20.736 16.896 20.736 56.576-1.792 78.336-38.912 78.336-38.912z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script>var __config={}</script>
+    
+    
+      <script src="../../assets/javascripts/vendor.b0b43276.min.js"></script>
+      <script src="../../assets/javascripts/bundle.65293e7c.min.js"></script><script id="__lang" type="application/json">
+        {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}
+      </script>
+      <script>
+        __material = initialize(Object.assign({
+          url: {
+            base: "../..",
+            worker: {
+              search: "../../assets/javascripts/worker/search.784c5235.min.js"
+            }
+          },
+          features: ["tabs"]
+        }, typeof __config !== "undefined" ? __config : {}))
+      </script>
+      
+        <script src="../../assets/pymdownx-extras/extra-52d8c68747.js"></script>
+      
+    
+  </body>
+</html>
