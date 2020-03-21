@@ -12,8 +12,8 @@ docs_dir: docs/src/markdown
 theme:
   name: material
   palette:
-    primary: purple
-    accent: purple
+    primary: drac-purple
+    accent: drac-purple
   font:
     text: Roboto
     code: Roboto Mono
