@@ -13,7 +13,7 @@ you need to terminate an escape to avoid it accumulating unintended hexadecimal 
 character: `#!css \+` --> `+`. The one exception is that you cannot escape the form feed, newline, or carriage
 return.
 
-You can always use Soup Sieve's [escape command](./../api.md#soupsieveescape) to escape identifiers as well.
+You can always use Soup Sieve's [escape command](../api.md#soupsieveescape) to escape identifiers as well.
 
 ## Type Selectors
 

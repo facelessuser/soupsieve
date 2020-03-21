@@ -19,7 +19,7 @@ Currently, Beautiful Soup's `html5lib` parser is the only parser that will retur
 document. If you are using XHTML, you have to use the Beautiful Soup's `lxml-xml` parser (or `xml` for short) to get the
 appropriate namespaces in an XHTML document. In addition to using the correct parser, you must provide a dictionary of
 namespaces to Soup Sieve in order to use namespace selectors. See the documentation on
-[namespaces](./../api.md#namespaces) to learn more.
+[namespaces](../api.md#namespaces) to learn more.
 
 While an effort is made to mimic CSS selector behavior, there may be some differences or quirks, please report issues if
 any are found.
