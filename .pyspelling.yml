@@ -20,7 +20,7 @@ matrix:
       - alt
       ignores:
       - ':is(code, pre, a.magiclink, span.keys)'
-      - ':is(.MathJax_Preview, .md-nav__link, .md-footer-custom-text, .md-source__repository, .headerlink, .md-icon)'
+      - ':is(.MathJax_Preview, .md-nav__link, .md-footer-custom-text, .md-source__repository, .headerlink, .md-icon, .md-footer-social__link)'
   - pyspelling.filters.url:
 
 - name: markdown
