@@ -7,6 +7,13 @@
 - **NEW**: Drop support for EOL Python versions (Python 2 and Python < 3.5).
 - **FIX**: Corner case with splitting namespace and tag name that that have an escaped `|`.
 
+## 1.9.6
+
+!!! note "Last version for Python 2.7"
+
+- **FIX**: Prune dead code.
+- **FIX**: Corner case with splitting namespace and tag name that that have an escaped `|`.
+
 ## 1.9.5
 
 - **FIX**: `:placeholder-shown` should not match if the element has content that overrides the placeholder.

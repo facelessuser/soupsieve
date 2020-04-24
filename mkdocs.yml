@@ -4,9 +4,7 @@ repo_url: https://github.com/facelessuser/soupsieve
 edit_uri: tree/master/docs/src/markdown
 site_description: A modern CSS selector library for Beautiful Soup.
 copyright: |
-  Copyright &copy; 2018 - 2020 <a href="https://github.com/facelessuser">Isaac Muse</a>
-  <br><span class="md-footer-custom-text">emoji provided free by </span>
-  <a href="https://github.com/twitter/twemoji">Twemoji</a>
+  Copyright &copy; 2018 - 2020 <a href="https://github.com/facelessuser"  target="_blank" rel="noopener">Isaac Muse</a>
 
 docs_dir: docs/src/markdown
 theme:
@@ -100,4 +98,6 @@ extra:
 plugins:
   - search
   - git-revision-date-localized
+  - minify:
+      minify_html: true
   - mkdocs_pymdownx_material_extras
