@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1
+
+- **FIX**: Remove unused code.
+
 ## 2.0.0
 
 - **NEW**: `SelectorSyntaxError` is derived from `Exception` not `SyntaxError`.
