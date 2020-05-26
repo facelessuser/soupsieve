@@ -1,5 +1,5 @@
 """Utility."""
-from functools import wraps
+from functools import wraps, lru_cache
 import warnings
 import re
 
@@ -13,6 +13,7 @@ UC_A = ord('A')
 UC_Z = ord('Z')
 
 
+@lru_cache(maxsize=512)
 def lower(string):
     """Lower."""
 
