@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.2
+
+- **FIX**: Import `bs4` globally instead of in local functions as it appears there are no adverse affects due to
+  circular imports as `bs4` does not immediately reference `soupsieve` functions and `soupsieve` does not immediately
+  reference `bs4` functions. This should give a performance boost to functions that had previously included `bs4`
+  locally.
+
 ## 2.0.1
 
 - **FIX**: Remove unused code.
