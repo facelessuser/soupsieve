@@ -9,6 +9,8 @@ copyright: |
 docs_dir: docs/src/markdown
 theme:
   name: material
+  icon:
+    logo: material/book-open-page-variant
   palette:
     primary: drac-purple
     accent: drac-purple

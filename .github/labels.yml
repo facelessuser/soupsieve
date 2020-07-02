@@ -1,10 +1,12 @@
 template: 'facelessuser:master-labels:labels.yml:master'
 
 brace_expansion: true
+minus_negate: false
+extended_glob: true
 
 rules:
   - labels: ['C: infrastructure']
-    patterns: ['*|{tools,requirements,.github}/**|!*.md']
+    patterns: ['*|@(tools|requirements|.github)/**|!*.md']
 
   - labels: ['C: source']
     patterns: ['soupsieve/**']

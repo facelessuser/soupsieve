@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.3
+
+- **FIX**: Officially support Python 3.9.
+
 ## 2.0.2
 
 - **FIX**: Import `bs4` globally instead of in local functions as it appears there are no adverse affects due to

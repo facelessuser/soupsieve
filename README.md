@@ -82,8 +82,8 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 
 [bs4]: https://beautiful-soup-4.readthedocs.io/en/latest/#
 
-[github-ci-image]: https://github.com/facelessuser/soupsieve/workflows/build/badge.svg
-[github-ci-link]: https://github.com/facelessuser/soupsieve/actions?workflow=build
+[github-ci-image]: https://github.com/facelessuser/soupsieve/workflows/build/badge.svg?branch=master&event=push
+[github-ci-link]: https://github.com/facelessuser/soupsieve/actions?query=workflow%3Abuild+branch%3Amaster
 [discord-image]: https://img.shields.io/discord/678289859768745989?logo=discord&logoColor=aaaaaa&color=mediumpurple&labelColor=333333
 [discord-link]:https://discord.gg/XBnPUZF
 [codecov-image]: https://img.shields.io/codecov/c/github/facelessuser/soupsieve/master.svg?logo=codecov&logoColor=aaaaaa&labelColor=333333
