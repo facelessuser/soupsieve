@@ -2,7 +2,7 @@
 
 ## 2.0.3
 
-- **FIX**: Officially support Python 3.9.
+<!-- - **FIX**: Officially support Python 3.9. -->
 
 ## 2.0.2
 

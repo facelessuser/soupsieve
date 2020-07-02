@@ -34,8 +34,7 @@ jobs:
           - tox-env: nohtml5lib
             python-version: 3.8
         exclude:
-          - platform: windows-latest
-            tox-env: py39
+          - tox-env: py39
 
     env:
       TOXENV: ${{ matrix.tox-env }}
