@@ -17,7 +17,7 @@ jobs:
       max-parallel: 4
       matrix:
         platform: [ubuntu-latest, windows-latest]
-        tox-env: [py35, py36, py37, py38, py39, nolxml, nohtml5lib]
+        tox-env: [py35, py36, py37, py38, nolxml, nohtml5lib]
         include:
           - tox-env: py35
             python-version: 3.5
@@ -34,7 +34,8 @@ jobs:
           - tox-env: nohtml5lib
             python-version: 3.8
         exclude:
-          - tox-env: py39
+          - platform: windows-latest
+            tox-env: py39
 
     env:
       TOXENV: ${{ matrix.tox-env }}
