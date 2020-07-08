@@ -21,22 +21,27 @@ jobs:
         include:
           - tox-env: py35
             python-version: 3.5
+            continue-on-error: false
           - tox-env: py36
             python-version: 3.6
+            continue-on-error: false
           - tox-env: py37
             python-version: 3.7
+            continue-on-error: false
           - tox-env: py38
             python-version: 3.8
+            continue-on-error: false
           - tox-env: py39
             python-version: 3.9-dev
+            continue-on-error: true
           - tox-env: nolxml
             python-version: 3.8
+            continue-on-error: false
           - tox-env: nohtml5lib
             python-version: 3.8
+            continue-on-error: false
         exclude:
           - platform: windows-latest
-            tox-env: py39
-          - platform: ubuntu-latest
             tox-env: py39
 
     env:
@@ -62,6 +67,7 @@ jobs:
     - name: Test
       run: |
         python -m tox
+      continue-on-error: ${{ matrix.continue-on-error }}
     - name: Upload Results
       if: success()
       uses: codecov/codecov-action@v1
