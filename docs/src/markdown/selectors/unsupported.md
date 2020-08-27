@@ -7,7 +7,7 @@ environment. While the pseudo-classes will parse correctly, they will not match 
 implemented outside a live, browser environment. If at any time these are dropped from the CSS spec, they will simply
 be removed.
 
-## `:active`<span class="html5 badge"></span> {:#:active}
+## `:active`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:active}
 
 Selects active elements.
 
@@ -16,7 +16,7 @@ Selects active elements.
     :active
     ```
 
-## `:current`<span class="html5 badge"></span><span class="lab badge"></span> {:#:current}
+## `:current`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:current}
 
 `:current` selects the element, or an ancestor of the element, that is currently being displayed. The functional form of
 `:current()` takes a compound selector list.
@@ -27,7 +27,7 @@ Selects active elements.
     :current(selector1, selector2)
     ```
 
-## `:focus`<span class="html5 badge"></span> {:#:focus}
+## `:focus`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:focus}
 
 Represents an an element that has received focus.
 
@@ -36,7 +36,7 @@ Represents an an element that has received focus.
     :focus
     ```
 
-## `:focus-visible`<span class="html5 badge"></span><span class="lab badge"></span> {:#:focus-visible}
+## `:focus-visible`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:focus-visible}
 
 Selects an element that matches `:focus` and the user agent determines that the focus should be made evident on the
 element.
@@ -46,7 +46,7 @@ element.
     :focus-visible
     ```
 
-## `:focus-within`<span class="html5 badge"></span><span class="lab badge"></span> {:#:focus-within}
+## `:focus-within`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:focus-within}
 
 Selects an element that has received focus or contains an element that has received focus.
 
@@ -55,7 +55,7 @@ Selects an element that has received focus or contains an element that has recei
     :focus-within
     ```
 
-## `:future`<span class="html5 badge"></span><span class="lab badge"></span> {:#:future}
+## `:future`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:future}
 
 Selects an element that is defined to occur entirely after a `:current` element.
 
@@ -64,7 +64,7 @@ Selects an element that is defined to occur entirely after a `:current` element.
     :future
     ```
 
-## `:host`<span class="html5 badge"></span><span class="lab badge"></span> {:#host}
+## `:host`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#host}
 
 `:host` selects the element hosting a shadow tree. While the function form of `:host()` takes a complex selector list
 and matches the shadow host only if it matches one of the selectors in the list.
@@ -75,7 +75,7 @@ and matches the shadow host only if it matches one of the selectors in the list.
     :host(selector1, selector2)
     ```
 
-## `:host-context()`<span class="html5 badge"></span><span class="lab badge"></span> {:#:host-context}
+## `:host-context()`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:host-context}
 
 Selects the element hosting shadow tree, but only if one of the element's ancestors match a selector in the selector
 list.
@@ -85,7 +85,7 @@ list.
     :host-context(parent descendant)
     ```
 
-## `:hover`<span class="html5 badge"></span> {:#:hover}
+## `:hover`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:hover}
 
 Selects an element when the user interacts with it by hovering over it with a pointing device.
 
@@ -94,7 +94,7 @@ Selects an element when the user interacts with it by hovering over it with a po
     :hover
     ```
 
-## `:local-link`<span class="html5 badge"></span><span class="lab badge"></span> {:#:local-link}
+## `:local-link`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:local-link}
 
 Selects link (every `#!html <a>`, `#!html <link>`, and `#!html <area>` element with an `href` attribute) elements whose
 absolute URL matches the element’s own document URL.
@@ -104,7 +104,7 @@ absolute URL matches the element’s own document URL.
     :local-link
     ```
 
-## `:past`<span class="html5 badge"></span><span class="lab badge"></span> {:#:past}
+## `:past`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:past}
 
 Selects an element that is defined to occur entirely prior to a `:current` element.
 
@@ -113,7 +113,7 @@ Selects an element that is defined to occur entirely prior to a `:current` eleme
     :past
     ```
 
-## `:paused`<span class="html5 badge"></span><span class="lab badge"></span> {:#:paused}
+## `:paused`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:paused}
 
 Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and is
 currently "paused".
@@ -123,7 +123,7 @@ currently "paused".
     :paused
     ```
 
-## `:playing`<span class="html5 badge"></span><span class="lab badge"></span> {:#:playing}
+## `:playing`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:playing}
 
 Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and is
 currently "playing".
@@ -133,7 +133,7 @@ currently "playing".
     :playing
     ```
 
-## `:target`<span class="html5 badge"></span> {:#:target}
+## `:target`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:target}
 
 Selects a unique element (the target element) with an id matching the URL's fragment.
 
@@ -142,7 +142,7 @@ Selects a unique element (the target element) with an id matching the URL's frag
     :target
     ```
 
-## `:target-within`<span class="html5 badge"></span><span class="lab badge"></span> {:#:target-within}
+## `:target-within`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:target-within}
 
 Selects a unique element with an id matching the URL's fragment or an element which contains the element.
 
@@ -151,7 +151,7 @@ Selects a unique element with an id matching the URL's fragment or an element wh
     :target-within
     ```
 
-## `:user-invalid`<span class="html5 badge"></span><span class="lab badge"></span> {:#:user-invalid}
+## `:user-invalid`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:user-invalid}
 
 Selects an element with incorrect input, but only after the user has significantly interacted with it.
 
@@ -160,7 +160,7 @@ Selects an element with incorrect input, but only after the user has significant
     :user-invalid
     ```
 
-## `:visited`<span class="html5 badge"></span> {:#:visited}
+## `:visited`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:visited}
 
 Selects links that have already been visited.
 

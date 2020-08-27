@@ -377,7 +377,7 @@ contains whitespace or special characters, you should quote them with either sin
         [<a href="http://example.com">Example link</a>, <a href="http://example.org">Example org link</a>]
         ```
 
-`[attribute!=value]`<span class="star badge"></span>
+`[attribute!=value]`:material-star:{: title="Custom" data-md-color-primary="green" .icon}
 : 
     Equivalent to `#!css :not([attribute=value])`.
 
@@ -408,7 +408,7 @@ contains whitespace or special characters, you should quote them with either sin
         [<a href="http://example.com">Example link</a>, <a href="#InSensitive">Insensitive internal link</a>, <a href="http://example.org">Example org link</a>]
         ```
 
-`[attribute operator value i]`<span class="lab badge"></span>
+`[attribute operator value i]`:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon}
 : 
     Represents elements with an attribute named **attribute** and whose value, when the **operator** is applied, matches
     **value** *without* case sensitivity. In general, attribute comparison is insensitive in normal HTML, but not XML.
@@ -441,7 +441,7 @@ contains whitespace or special characters, you should quote them with either sin
         [<a href="#internal">Internal link</a>]
         ```
 
-`[attribute operator value s]` <span class="lab badge"></span>
+`[attribute operator value s]` :material-flask:{: title="Experimental" data-md-color-primary="purple" .icon}
 : 
     Represents elements with an attribute named **attribute** and whose value, when the **operator** is applied, matches
     **value** *with* case sensitivity.

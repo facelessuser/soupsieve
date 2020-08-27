@@ -8,7 +8,7 @@ not being in a live, browser environment. Pseudo classes that cannot be implemen
 non-applicable either are under consideration, have not yet been evaluated, or are too new and viewed as a risk to
 implement as they might not stick around.
 
-## `:any-link`<span class="html5 badge"></span><span class="lab badge"></span> {:#:any-link}
+## `:any-link`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:any-link}
 
 Selects every `#!html <a>`, `#!html <area>`, or `#!html <link>` element that has an `href` attribute, independent of
 whether it has been visited.
@@ -37,7 +37,7 @@ whether it has been visited.
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:any-link
 
-## `:checked`<span class="html5 badge"></span> {:#:checked}
+## `:checked`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:checked}
 
 Selects any `#!html <input type="radio"/>`, `#!html <input type="checkbox"/>`, or `#!html <option>` element (in a
 `#!html <select>` element) that is checked or toggled to an on state.
@@ -80,7 +80,7 @@ Selects any `#!html <input type="radio"/>`, `#!html <input type="checkbox"/>`, o
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:checked
 
-## `:contains()`<span class="star badge"></span> {:#:contains}
+## `:contains()`:material-star:{: title="Custom" data-md-color-primary="green" .icon} {:#:contains}
 
 Selects elements that contain the provided text. Text can be found in either itself, or its descendants.
 
@@ -116,7 +116,7 @@ in the comma separated list to be considered matching.
     [<div>Here is <span>some text</span>.</div>]
     ```
 
-## `:default`<span class="html5 badge"></span><span class="lab badge"></span> {:#:default}
+## `:default`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:default}
 
 Selects any form element that is the default among a group of related elements, including: `#!html <button>`,
 `#!html <input type="checkbox">`, `#!html <input type="radio">`, `#!html <option>` elements.
@@ -168,7 +168,7 @@ Selects any form element that is the default among a group of related elements, 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:default
 
-## `:defined`<span class="html5 badge"></span></span><span class="lab badge"></span> {:#:defined}
+## `:defined`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}</span>:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:defined}
 
 In a browser environment, this represents *defined* elements (names without hyphens) and custom elements (names with
 hyphens) that have been properly added to the custom element registry. Since elements cannot be added to a custom
@@ -200,7 +200,7 @@ specific selector, so it doesn't apply to XML.
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:defined
 
-## `:dir()`<span class="html5 badge"></span><span class="lab badge"></span> {:#:dir}
+## `:dir()`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:dir}
 
 Selects elements based on text directionality. Accepts either `ltr` or `rtl` for "left to right" and "right to left"
 respectively.
@@ -232,7 +232,7 @@ respectively.
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:dir
 
-## `:disabled`<span class="html5 badge"></span> {:#:disabled}
+## `:disabled`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:disabled}
 
 Selects any element that is disabled.
 
@@ -277,7 +277,7 @@ Selects any element that is disabled.
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:disabled
 
-## `:empty`<span class="lab badge"></span> {:#:empty}
+## `:empty`:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:empty}
 
 Selects elements that have no children and no text (whitespace is ignored).
 
@@ -307,7 +307,7 @@ Selects elements that have no children and no text (whitespace is ignored).
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:empty
 
-## `:enabled`<span class="html5 badge"></span> {:#:enabled}
+## `:enabled`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:enabled}
 
 Selects any element that is enabled.
 
@@ -424,7 +424,7 @@ Selects the first child of a given type in a group of sibling elements.
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:first-of-type
 
-## `:has()`<span class="lab badge"></span> {:#has}
+## `:has()`:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#has}
 
 Selects an element if any of the relative selectors passed as parameters (which are relative to the `:scope` of the
 given element), match at least one element.
@@ -461,7 +461,7 @@ are planned for level 5 CSS selectors. Soup Sieve supports [complex](#complex-se
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:has
 
-## `:in-range`<span class="html5 badge"></span><span class="lab badge"></span> {:#:in-range}
+## `:in-range`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:in-range}
 
 Selects all `#!html <input>` elements whose values are in range according to their `type`, `min`, and `max` attributes.
 
@@ -490,7 +490,7 @@ Selects all `#!html <input>` elements whose values are in range according to the
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:in-range
 
-## `:indeterminate`<span class="html5 badge"></span><span class="lab badge"></span> {:#:indeterminate}
+## `:indeterminate`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:indeterminate}
 
 Selects all form elements whose are in an indeterminate state.
 
@@ -550,7 +550,7 @@ selected.
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate
 
-## `:is()`<span class="lab badge"></span> {:#:is}
+## `:is()`:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:is}
 
 Selects an element, but only if it matches at least one selector in the selector list.
 
@@ -629,7 +629,7 @@ Level 3 CSS
         [<p id="1"></p>, <p id="2"></p>, <p id="3"></p>, <p id="4"></p>, <p id="5"></p>, <p id="6" lang="de-DE"></p>]
         ```
 
-Level 4 CSS<span class="lab badge"></span>
+Level 4 CSS:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon}
 : 
     The level 4 CSS specifications adds the ability to define multiple language tags using a comma separated list. The
     specifications also allow for BCP 47 language ranges as described in [RFC4647](https://tools.ietf.org/html/rfc4647)
@@ -750,7 +750,7 @@ Selects the last child of a given type in a group of sibling elements.
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:last-of-type
 
-## `:link`<span class="html5 badge"></span> {:#:link}
+## `:link`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:link}
 
 Selects a link (every `#!html <a>`, `#!html <link>`, and `#!html <area>` element with an `href` attribute) that has not
 yet been visited.
@@ -811,7 +811,7 @@ Level 3 CSS
         [<div>Here is some text.</div>]
         ```
 
-Level 4+ CSS<span class="lab badge"></span>
+Level 4+ CSS:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon}
 : 
     Selects all elements that do not match any of the selectors in the selector list. While the level 4 specifications
     state that [compound](#compound-selector) selectors are supported, some browsers (Safari) support complex selectors
@@ -890,7 +890,7 @@ Level 3 CSS
         [<p id="0"></p>, <p id="1"></p>, <p id="2"></p>]
         ```
 
-Level 4+ CSS<span class="lab badge"></span>
+Level 4+ CSS:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon}
 : 
     Level 4 CSS adds the additional pattern in the form `an+b of S` where `S` represents a selector list. `an+b` can
     also be substituted with `even` or `odd`.
@@ -984,7 +984,7 @@ Level 3 CSS
         [<p id="3"></p>, <p id="4"></p>, <p id="5"></p>]
         ```
 
-Level 4+ CSS<span class="lab badge"></span>
+Level 4+ CSS:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon}
 : 
     Level 4 CSS adds the additional pattern in the form `an+b of S` where `S` represents a selector list. `an+b` can
     also be substituted with `even` or `odd`.
@@ -1215,7 +1215,7 @@ Selects element without any siblings that matches a given type.
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:only-of-type
 
-## `:optional`<span class="html5 badge"></span><span class="lab badge"></span> {:#:optional}
+## `:optional`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:optional}
 
 Selects any `#!html <input>`, `#!html <select>`, or `#!html <textarea>` element that does not have the `required`
 attribute set on it.
@@ -1252,7 +1252,7 @@ attribute set on it.
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:optional
 
-## `:out-of-range`<span class="html5 badge"></span><span class="lab badge"></span> {:#:out-of-range}
+## `:out-of-range`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:out-of-range}
 
 Selects all `#!html <input>` elements whose values are out of range according to their `type`, `min`, and `max`
 attributes.
@@ -1282,7 +1282,7 @@ attributes.
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:out-of-range
 
-## `:placeholder-shown`<span class="html5 badge"></span><span class="lab badge"></span> {:#:placeholder-shown}
+## `:placeholder-shown`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:placeholder-shown}
 
 Selects any `#!html <input>` or `#!html <textarea>` element that is currently displaying placeholder text via the
 `placeholder` attribute.
@@ -1323,7 +1323,7 @@ Selects any `#!html <input>` or `#!html <textarea>` element that is currently di
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:placeholder-shown
 
-## `:read-only`<span class="html5 badge"></span><span class="lab badge"></span> {:#:read-only}
+## `:read-only`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:read-only}
 
 Selects elements (such as `#!html <input>` or `#!html <textarea>`) that are *not* editable by the user. This does not
 just apply to form elements with `readonly` set, but it applies to **any** element that cannot be edited by the user.
@@ -1361,7 +1361,7 @@ just apply to form elements with `readonly` set, but it applies to **any** eleme
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:read-only
 
-## `:read-write`<span class="html5 badge"></span><span class="lab badge"></span> {:#:read-write}
+## `:read-write`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:read-write}
 
 Selects elements (such as `#!html <input>` or `#!html <textarea>`) that are editable by the user. This does not just
 apply to form elements as it applies to **any** element that can be edited by the user, such as a `#!html <p>` element
@@ -1400,7 +1400,7 @@ with `contenteditable` set on it.
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:read-write
 
-## `:required`<span class="html5 badge"></span><span class="lab badge"></span> {:#:required}
+## `:required`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:required}
 
 Selects any `#!html <input>`, `#!html <select>`, or `#!html <textarea>` element that has the `required` attribute set on
 it.
@@ -1474,7 +1474,7 @@ Selects the root element of a document tree.
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:root
 
-## `:scope`<span class="lab badge"></span> {:#:scope}
+## `:scope`:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:scope}
 
 `:scope` represents the the element a `match`, `select`, or `filter` is being called on. If we were, for instance,
 using `:scope` on a div (`#!py3 sv.select(':scope > p', soup.div)`) `:scope` would represent **that** div element, and
@@ -1506,7 +1506,7 @@ no others. If called on the Beautiful Soup object which represents the entire do
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:scope
 
-## `:where()`<span class="lab badge"></span> {:#:where}
+## `:where()`:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:where}
 
 Selects an element, but only if it matches at least one selector in the selector list. In browsers, this also has zero
 specificity, but this only has relevance in a browser environment where you have multiple CSS styles, and specificity is

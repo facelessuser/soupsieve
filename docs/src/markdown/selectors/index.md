@@ -1,6 +1,5 @@
 # General Details
 
-
 ## Implementation Specifics
 
 The CSS selectors are based off of the CSS specification and includes not only stable selectors, but may also include
@@ -29,30 +28,34 @@ any are found.
 <table markdown="1">
 <tr>
     <th>Symbol</th>
+    <th>Name</th>
     <th>Description</th>
 </tr>
 <tr markdown="1">
-<td><span class="html5 big-icon"></span></td>
+<td>:material-language-html5:{: data-md-color-primary="orange" .big-icon}</td>
+<td>HTML</td>
 <td markdown="1">
 Some selectors are very specific to HTML and either have no meaningful representation in XML, or such functionality has
-not been implemented. Selectors that are HTML only will be noted with <span class="html5"></span>,
+not been implemented. Selectors that are HTML only will be noted with :material-language-html5:{: data-md-color-primary="orange"},
 and will match nothing if used in XML.
 </td>
 </tr>
 <tr markdown="1">
-<td><span class="star big-icon"></span></td>
+<td>:material-star:{: data-md-color-primary="green" .big-icon}</td>
+<td>Custom</td>
 <td markdown="1">
 Soup Sieve has implemented a couple non-standard selectors. These can contain useful selectors that were rejected
 from the official CSS specifications, selectors implemented by other systems such as JQuery, or even selectors
 specifically created for Soup Sieve. If a selector is considered non standard, it will be marked with
-<span class="star"></span>.
+:material-star:{: title="Custom" data-md-color-primary="green"}.
 </td>
 </tr>
 <tr markdown="1">
-<td><span class="lab big-icon"></span></td>
+<td>:material-flask:{: title="Experimental" data-md-color-primary="purple" .big-icon}</td>
+<td>Experimental</td>
 <td markdown="1">
 All selectors that are from the current working draft of CSS4 are considered experimental and are marked with
-<span class="lab"></span>. Additionally, if there are other immature selectors, they may be marked as experimental as
+:material-flask:{: title="Experimental" data-md-color-primary="purple"}. Additionally, if there are other immature selectors, they may be marked as experimental as
 well. Experimental may mean we are not entirely sure if our implementation is correct, that things may still be in flux
 as they are part of a working draft, or even both.
 
