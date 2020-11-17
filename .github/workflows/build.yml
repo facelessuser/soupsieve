@@ -32,7 +32,7 @@ jobs:
             python-version: 3.8
             continue-on-error: false
           - tox-env: py39
-            python-version: 3.9-dev
+            python-version: 3.9
             continue-on-error: true
           - tox-env: nolxml
             python-version: 3.8
@@ -40,9 +40,6 @@ jobs:
           - tox-env: nohtml5lib
             python-version: 3.8
             continue-on-error: false
-        exclude:
-          - platform: windows-latest
-            tox-env: py39
 
     env:
       TOXENV: ${{ matrix.tox-env }}
