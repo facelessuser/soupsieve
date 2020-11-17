@@ -32,7 +32,7 @@ any are found.
     <th>Description</th>
 </tr>
 <tr markdown="1">
-<td>:material-language-html5:{: data-md-color-primary="orange" .big-icon}</td>
+<td markdown="1">:material-language-html5:{: data-md-color-primary="orange" .big-icon}</td>
 <td>HTML</td>
 <td markdown="1">
 Some selectors are very specific to HTML and either have no meaningful representation in XML, or such functionality has
@@ -41,7 +41,7 @@ and will match nothing if used in XML.
 </td>
 </tr>
 <tr markdown="1">
-<td>:material-star:{: data-md-color-primary="green" .big-icon}</td>
+<td markdown="1">:material-star:{: data-md-color-primary="green" .big-icon}</td>
 <td>Custom</td>
 <td markdown="1">
 Soup Sieve has implemented a couple non-standard selectors. These can contain useful selectors that were rejected
@@ -51,7 +51,7 @@ specifically created for Soup Sieve. If a selector is considered non standard, i
 </td>
 </tr>
 <tr markdown="1">
-<td>:material-flask:{: title="Experimental" data-md-color-primary="purple" .big-icon}</td>
+<td markdown="1">:material-flask:{: title="Experimental" data-md-color-primary="purple" .big-icon}</td>
 <td>Experimental</td>
 <td markdown="1">
 All selectors that are from the current working draft of CSS4 are considered experimental and are marked with
