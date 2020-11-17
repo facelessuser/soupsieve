@@ -59,6 +59,7 @@ PSEUDO_SIMPLE_NO_MATCH = {
 # Complex pseudo classes that take selector lists
 PSEUDO_COMPLEX = {
     ':contains',
+    ':contains-own',
     ':has',
     ':is',
     ':matches',
@@ -421,7 +422,7 @@ class CSSParser(object):
         SelectorPattern("pseudo_close", PAT_PSEUDO_CLOSE),
         SpecialPseudoPattern(
             (
-                ("pseudo_contains", (':contains',), PAT_PSEUDO_CONTAINS, SelectorPattern),
+                ("pseudo_contains", (':contains', ':contains-own'), PAT_PSEUDO_CONTAINS, SelectorPattern),
                 ("pseudo_nth_child", (':nth-child', ':nth-last-child'), PAT_PSEUDO_NTH_CHILD, SelectorPattern),
                 ("pseudo_nth_type", (':nth-of-type', ':nth-last-of-type'), PAT_PSEUDO_NTH_TYPE, SelectorPattern),
                 ("pseudo_lang", (':lang',), PAT_PSEUDO_LANG, SelectorPattern),
@@ -801,6 +802,11 @@ class CSSParser(object):
         """Parse contains."""
 
         values = m.group('values')
+        mdict = m.groupdict()
+        mdict['name'] = util.lower(css_unescape(mdict['name']))
+        contains_own = False
+        if mdict['name'] == ':contains-own':
+            contains_own = True
         patterns = []
         for token in RE_VALUES.finditer(values):
             if token.group('split'):
@@ -811,7 +817,7 @@ class CSSParser(object):
             else:
                 value = css_unescape(value)
             patterns.append(value)
-        sel.contains.append(ct.SelectorContains(tuple(patterns)))
+        sel.contains.append(ct.SelectorContains(tuple(patterns), contains_own))
         has_selector = True
         return has_selector
 
