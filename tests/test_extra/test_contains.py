@@ -255,13 +255,13 @@ class TestContains(util.TestCase):
         )
 
     def test_contains_with_same_tag_name(self):
-        """Test contains to show the necessity of containsOwn."""
+        """Test contains to show the necessity of contains-own."""
         markup = """
         <body>
         <div id="1">
         A simple test
         <div id="2"> to </div>
-        show the necessity of containsOwn.
+        show the necessity of contains-own.
         </div>
         </body>
         """
@@ -502,13 +502,13 @@ class TestContains(util.TestCase):
         )
 
     def test_contains_own_with_same_tag_name(self):
-        """Test contains-own to show the necessity of containsOwn."""
+        """Test contains-own to show the difference."""
         markup = """
         <body>
         <div id="1">
         A simple test
         <div id="2"> to </div>
-        show the necessity of containsOwn.
+        show the necessity of contains-own.
         </div>
         </body>
         """
