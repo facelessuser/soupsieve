@@ -319,9 +319,7 @@ class _DocumentNav(object):
     def get_own_text(self, el, no_iframe=False):
         """Get Own Text."""
 
-        return ''.join(
-            [node for node in self.get_contents(el, no_iframe=no_iframe) if self.is_content_string(node)]
-        )
+        return [node for node in self.get_contents(el, no_iframe=no_iframe) if self.is_content_string(node)]
 
 
 class Inputs(object):
@@ -956,9 +954,20 @@ class _Match(object):
                     content = self.get_text(el, no_iframe=self.is_html)
             found = False
             for text in contain_list.text:
-                if text in content:
-                    found = True
-                    break
+                if type(content) == str:
+                    if text in content:
+                        found = True
+                        break
+                elif type(content) == list:
+                    inner_found = False
+                    for inner_content in content:
+                        if text in inner_content:
+                            inner_found = True
+                            break
+                    if inner_found:
+                        found = True
+                        break
+
             if not found:
                 match = False
         return match

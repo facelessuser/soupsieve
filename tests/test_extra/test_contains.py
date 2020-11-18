@@ -518,3 +518,17 @@ class TestContains(util.TestCase):
             ['2'],
             flags=util.HTML
         )
+
+    def test_contains_own_with_broken_text(self):
+        """Test contains-own to see how it matches a broken text."""
+        markup = """
+        <body>
+        <div id="1"> A simple test <div id="2"> to </div> show the broken text case. </div>
+        </body>
+        """
+        self.assert_selector(
+            markup,
+            'body div:contains-own("test  show")',
+            [],
+            flags=util.HTML
+        )
