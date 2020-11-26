@@ -316,6 +316,11 @@ class _DocumentNav(object):
             [node for node in self.get_descendants(el, tags=False, no_iframe=no_iframe) if self.is_content_string(node)]
         )
 
+    def get_own_text(self, el, no_iframe=False):
+        """Get Own Text."""
+
+        return [node for node in self.get_contents(el, no_iframe=no_iframe) if self.is_content_string(node)]
+
 
 class Inputs(object):
     """Class for parsing and validating input items."""
@@ -943,12 +948,23 @@ class _Match(object):
         content = None
         for contain_list in contains:
             if content is None:
-                content = self.get_text(el, no_iframe=self.is_html)
+                if contain_list.own:
+                    content = self.get_own_text(el, no_iframe=self.is_html)
+                else:
+                    content = self.get_text(el, no_iframe=self.is_html)
             found = False
             for text in contain_list.text:
-                if text in content:
-                    found = True
-                    break
+                if contain_list.own:
+                    for c in content:
+                        if text in c:
+                            found = True
+                            break
+                    if found:
+                        break
+                else:
+                    if text in content:
+                        found = True
+                        break
             if not found:
                 match = False
         return match

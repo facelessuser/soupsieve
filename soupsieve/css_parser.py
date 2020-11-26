@@ -5,6 +5,7 @@ from . import util
 from . import css_match as cm
 from . import css_types as ct
 from .util import SelectorSyntaxError
+import warnings
 
 UNICODE_REPLACEMENT_CHAR = 0xFFFD
 
@@ -59,6 +60,8 @@ PSEUDO_SIMPLE_NO_MATCH = {
 # Complex pseudo classes that take selector lists
 PSEUDO_COMPLEX = {
     ':contains',
+    ':-soup-contains',
+    ':-soup-contains-own',
     ':has',
     ':is',
     ':matches',
@@ -421,7 +424,12 @@ class CSSParser(object):
         SelectorPattern("pseudo_close", PAT_PSEUDO_CLOSE),
         SpecialPseudoPattern(
             (
-                ("pseudo_contains", (':contains',), PAT_PSEUDO_CONTAINS, SelectorPattern),
+                (
+                    "pseudo_contains",
+                    (':contains', ':-soup-contains', ':-soup-contains-own'),
+                    PAT_PSEUDO_CONTAINS,
+                    SelectorPattern
+                ),
                 ("pseudo_nth_child", (':nth-child', ':nth-last-child'), PAT_PSEUDO_NTH_CHILD, SelectorPattern),
                 ("pseudo_nth_type", (':nth-of-type', ':nth-last-of-type'), PAT_PSEUDO_NTH_TYPE, SelectorPattern),
                 ("pseudo_lang", (':lang',), PAT_PSEUDO_LANG, SelectorPattern),
@@ -800,7 +808,14 @@ class CSSParser(object):
     def parse_pseudo_contains(self, sel, m, has_selector):
         """Parse contains."""
 
-        values = m.group('values')
+        pseudo = util.lower(css_unescape(m.group('name')))
+        if pseudo == ":contains":
+            warnings.warn(
+                "The pseudo class ':contains' is deprecated, ':-soup-contains' should be used moving forward.",
+                FutureWarning
+            )
+        contains_own = pseudo == ":-soup-contains-own"
+        values = css_unescape(m.group('values'))
         patterns = []
         for token in RE_VALUES.finditer(values):
             if token.group('split'):
@@ -811,7 +826,7 @@ class CSSParser(object):
             else:
                 value = css_unescape(value)
             patterns.append(value)
-        sel.contains.append(ct.SelectorContains(tuple(patterns)))
+        sel.contains.append(ct.SelectorContains(tuple(patterns), contains_own))
         has_selector = True
         return has_selector
 
