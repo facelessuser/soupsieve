@@ -80,42 +80,6 @@ Selects any `#!html <input type="radio"/>`, `#!html <input type="checkbox"/>`, o
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:checked
 
-## `:contains()`:material-star:{: title="Custom" data-md-color-primary="green" .icon} {:#:contains}
-
-Selects elements that contain the provided text. Text can be found in either itself, or its descendants.
-
-Contains was originally included in a [CSS early draft][contains-draft], but was, in the end, dropped from the draft.
-Soup Sieve implements it how it was originally proposed in the draft with the addition that `:contains()` can accept
-either a single value, or a comma separated list of values. An element needs only to match at least one of the items
-in the comma separated list to be considered matching.
-
-!!! warning "Contains"
-    `:contains()` is an expensive operation as it scans all the text nodes of an element under consideration, which
-    includes all descendants. Using highly specific selectors can reduce how often it is evaluated.
-
-=== "Syntax"
-    ```css
-    :contains(text)
-    :contains("This text", "or this text")
-    ```
-
-=== "Usage"
-    ```pycon3
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ...   <div>Here is <span>some text</span>.</div>
-    ...   <div>Here is some more text.</div>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('div:contains("some text")'))
-    [<div>Here is <span>some text</span>.</div>]
-    ```
-
 ## `:default`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:default}
 
 Selects any form element that is the default among a group of related elements, including: `#!html <button>`,
@@ -807,7 +771,7 @@ Level 3 CSS
         ... </html>
         ... """
         >>> soup = bs(html, 'html5lib')
-        >>> print(soup.select('div:not(:contains(more))'))
+        >>> print(soup.select('div:not(:-soup-contains(more))'))
         [<div>Here is some text.</div>]
         ```
 
@@ -1541,6 +1505,81 @@ While the level 4 specifications state that [compound](#compound-selector) selec
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:where
+
+## `:-soup-contains()`:material-star:{: title="Custom" data-md-color-primary="green" .icon} {:#:-soup-contains}
+
+Selects elements that contain the provided text. Text can be found in either itself, or its descendants.
+
+Originally, there was a pseudo-class called `:contains()` that was originally included in a [CSS early draft][contains-draft],
+but was dropped from the draft in the end. Soup Sieve implements it how it was originally proposed accept for two
+differences: it is called `:-soup-contains()` instead of `:contains()`, and it can accept either a single value, or a
+comma separated list of values. An element needs only to match at least one of the items in the comma separated list to
+be considered matching.
+
+!!! warning "Rename 2.1"
+    The name `:-soup-contains()` is new in version 2.1. Previously, it was known by `:contains()`. While the alias of
+    `:contains()` is currently allowed, this alias is deprecated moving forward and will be removed in a future version.
+    It is recommended to migrate to the name `:-soup-contains` moving forward.
+
+!!! warning "Expensive Operation"
+    `:-soup-contains()` is an expensive operation as it scans all the text nodes of an element under consideration,
+    which includes all descendants. Using highly specific selectors can reduce how often it is evaluated.
+
+=== "Syntax"
+    ```css
+    :-soup-contains(text)
+    :-soup-contains("This text", "or this text")
+    ```
+
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ...   <div>Here is <span>some text</span>.</div>
+    ...   <div>Here is some more text.</div>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('div:-soup-contains("some text")'))
+    [<div>Here is <span>some text</span>.</div>]
+    ```
+
+## `:-soup-contains-own()`:material-star:{: title="Custom" data-md-color-primary="green" .icon} {:#:-soup-contains-own}
+
+Selects elements that contain the provided text. Text must be found in the target element and not in its descendants. If
+text is broken up with with descendant elements, each text node will be evaluated separately.
+
+Syntax is the same as [`:-soup-contains()`](#:-soup-contains).
+
+=== "Syntax"
+    ```css
+    :-soup-contains-own(text)
+    :-soup-contains-own("This text", "or this text")
+    ```
+
+=== "Usage"
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ...   <div>Here is <span>some text</span>.</div>
+    ...   <div>Here is some more text.</div>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('div:-soup-contains-own("some")'))
+    [<div>Here is some more text.</div>]
+    ```
+
+!!! new "New in 2.1"
+    `:-soup-contains-own()` was added in 2.1.
 
 --8<--
 selector_styles.txt

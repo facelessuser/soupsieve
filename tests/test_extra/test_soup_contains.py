@@ -1,9 +1,11 @@
 """Test contains selectors."""
 from .. import util
+import warnings
+import soupsieve as sv
 
 
-class TestContains(util.TestCase):
-    """Test contains selectors."""
+class TestSoupContains(util.TestCase):
+    """Test soup-contains selectors."""
 
     MARKUP = """
     <body>
@@ -20,7 +22,7 @@ class TestContains(util.TestCase):
 
         self.assert_selector(
             self.MARKUP,
-            'body span:contains(that)',
+            'body span:-soup-contains(that)',
             ['2'],
             flags=util.HTML
         )
@@ -30,7 +32,7 @@ class TestContains(util.TestCase):
 
         self.assert_selector(
             self.MARKUP,
-            'body span:contains(" that ")',
+            'body span:-soup-contains(" that ")',
             ['2'],
             flags=util.HTML
         )
@@ -40,7 +42,7 @@ class TestContains(util.TestCase):
 
         self.assert_selector(
             self.MARKUP,
-            'body :contains( "Testing" )',
+            'body :-soup-contains( "Testing" )',
             ['1'],
             flags=util.HTML
         )
@@ -50,7 +52,7 @@ class TestContains(util.TestCase):
 
         self.assert_selector(
             self.MARKUP,
-            'body :contains("Test\\\ning")',
+            'body :-soup-contains("Test\\\ning")',
             ['1'],
             flags=util.HTML
         )
@@ -60,7 +62,7 @@ class TestContains(util.TestCase):
 
         self.assert_selector(
             self.MARKUP,
-            'body :contains("Test\\\r\ning")',
+            'body :-soup-contains("Test\\\r\ning")',
             ['1'],
             flags=util.HTML
         )
@@ -70,7 +72,7 @@ class TestContains(util.TestCase):
 
         self.assert_selector(
             self.MARKUP,
-            'body span:contains("does not exist", "that")',
+            'body span:-soup-contains("does not exist", "that")',
             ['2'],
             flags=util.HTML
         )
@@ -80,7 +82,7 @@ class TestContains(util.TestCase):
 
         self.assert_selector(
             self.MARKUP,
-            'body span:contains("th"):contains("at")',
+            'body span:-soup-contains("th"):-soup-contains("at")',
             ['2'],
             flags=util.HTML
         )
@@ -90,7 +92,7 @@ class TestContains(util.TestCase):
 
         self.assert_selector(
             self.MARKUP,
-            'body span:not(:contains("does not exist")):contains("that")',
+            'body span:not(:-soup-contains("does not exist")):-soup-contains("that")',
             ['2'],
             flags=util.HTML
         )
@@ -100,7 +102,7 @@ class TestContains(util.TestCase):
 
         self.assert_selector(
             self.MARKUP,
-            'body span:not(:contains("that")):contains("that")',
+            'body span:not(:-soup-contains("that")):-soup-contains("that")',
             [],
             flags=util.HTML
         )
@@ -110,7 +112,7 @@ class TestContains(util.TestCase):
 
         self.assert_selector(
             self.MARKUP,
-            'body :contains(" that ")',
+            'body :-soup-contains(" that ")',
             ['1', '2'],
             flags=util.HTML
         )
@@ -120,7 +122,7 @@ class TestContains(util.TestCase):
 
         self.assert_selector(
             self.MARKUP,
-            'body :contains(bad)',
+            'body :-soup-contains(bad)',
             [],
             flags=util.HTML
         )
@@ -137,7 +139,7 @@ class TestContains(util.TestCase):
 
         self.assert_selector(
             markup,
-            r'body span:contains("\0a that")',
+            r'body span:-soup-contains("\0a that")',
             ['2'],
             flags=util.HTML
         )
@@ -151,7 +153,7 @@ class TestContains(util.TestCase):
 
         self.assert_selector(
             markup,
-            'body *:contains("that")',
+            'body *:-soup-contains("that")',
             ['1'],
             flags=util.HTML
         )
@@ -165,7 +167,7 @@ class TestContains(util.TestCase):
 
         self.assert_selector(
             self.wrap_xhtml(markup),
-            'body *:contains("that")',
+            'body *:-soup-contains("that")',
             ['1', '2'],
             flags=util.XHTML
         )
@@ -179,7 +181,7 @@ class TestContains(util.TestCase):
 
         self.assert_selector(
             markup,
-            '*:contains("that")',
+            '*:-soup-contains("that")',
             ['1', '2'],
             flags=util.XML
         )
@@ -200,21 +202,21 @@ class TestContains(util.TestCase):
 
         self.assert_selector(
             markup,
-            'div:contains("iframe")',
+            'div:-soup-contains("iframe")',
             [],
             flags=util.PYHTML
         )
 
         self.assert_selector(
             markup,
-            'div:contains("text")',
+            'div:-soup-contains("text")',
             ['1'],
             flags=util.PYHTML
         )
 
         self.assert_selector(
             markup,
-            'span:contains("iframe")',
+            'span:-soup-contains("iframe")',
             ['2'],
             flags=util.PYHTML
         )
@@ -235,21 +237,40 @@ class TestContains(util.TestCase):
 
         self.assert_selector(
             markup,
-            'div:contains("iframe")',
+            'div:-soup-contains("iframe")',
             ['1'],
             flags=util.XML
         )
 
         self.assert_selector(
             markup,
-            'div:contains("text")',
+            'div:-soup-contains("text")',
             ['1'],
             flags=util.XML
         )
 
         self.assert_selector(
             markup,
-            'span:contains("iframe")',
+            'span:-soup-contains("iframe")',
             ['2'],
             flags=util.XML
         )
+
+    def test_contains_warn(self):
+        """Test old alias raises a warning."""
+
+        sv.purge()
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+            # Trigger a warning.
+            self.assert_selector(
+                self.MARKUP,
+                'body span:contains(that)',
+                ['2'],
+                flags=util.HTML
+            )
+            # Verify some things
+            self.assertTrue(len(w) == 1)
+            self.assertTrue(issubclass(w[-1].category, FutureWarning))

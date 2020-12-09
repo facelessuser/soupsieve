@@ -421,7 +421,7 @@ class TestSoupSieve(util.TestCase):
         # `SelectorNth`, `SelectorLang`, `SelectorList`, `Namespaces`,
         # `SelectorContains`, and `CustomSelectors`.
         p1 = sv.compile(
-            'p.class#id[id]:nth-child(2):lang(en):focus:contains("text", "other text")',
+            'p.class#id[id]:nth-child(2):lang(en):focus:-soup-contains("text", "other text")',
             {'html': 'http://www.w3.org/TR/html4/'},
             custom={':--header': 'h1, h2, h3, h4, h5, h6'}
         )
@@ -431,7 +431,7 @@ class TestSoupSieve(util.TestCase):
 
         # Test that we pull the same one from cache
         p2 = sv.compile(
-            'p.class#id[id]:nth-child(2):lang(en):focus:contains("text", "other text")',
+            'p.class#id[id]:nth-child(2):lang(en):focus:-soup-contains("text", "other text")',
             {'html': 'http://www.w3.org/TR/html4/'},
             custom={':--header': 'h1, h2, h3, h4, h5, h6'}
         )
@@ -439,7 +439,7 @@ class TestSoupSieve(util.TestCase):
 
         # Test that we compile a new one when providing a different flags
         p3 = sv.compile(
-            'p.class#id[id]:nth-child(2):lang(en):focus:contains("text", "other text")',
+            'p.class#id[id]:nth-child(2):lang(en):focus:-soup-contains("text", "other text")',
             {'html': 'http://www.w3.org/TR/html4/'},
             custom={':--header': 'h1, h2, h3, h4, h5, h6'},
             flags=0x10
