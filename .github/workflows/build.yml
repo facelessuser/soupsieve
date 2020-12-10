@@ -17,11 +17,8 @@ jobs:
       max-parallel: 4
       matrix:
         platform: [ubuntu-latest, windows-latest]
-        tox-env: [py35, py36, py37, py38, py39, nolxml, nohtml5lib]
+        tox-env: [py36, py37, py38, py39, nolxml, nohtml5lib]
         include:
-          - tox-env: py35
-            python-version: 3.5
-            continue-on-error: false
           - tox-env: py36
             python-version: 3.6
             continue-on-error: false
@@ -35,10 +32,10 @@ jobs:
             python-version: 3.9
             continue-on-error: true
           - tox-env: nolxml
-            python-version: 3.8
+            python-version: 3.9
             continue-on-error: false
           - tox-env: nohtml5lib
-            python-version: 3.8
+            python-version: 3.9
             continue-on-error: false
 
     env:
@@ -78,7 +75,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.8]
+        python-version: [3.9]
 
     env:
       TOXENV: lint
@@ -102,7 +99,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.8]
+        python-version: [3.9]
 
     env:
       TOXENV: documents
