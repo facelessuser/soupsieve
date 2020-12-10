@@ -101,7 +101,8 @@ extra:
       link: https://discord.gg/XBnPUZF
 
 plugins:
-  - search
+  - search:
+      separator: '[:\s\-]+'
   - git-revision-date-localized
   - minify:
       minify_html: true
