@@ -4,7 +4,7 @@
 
 - **NEW**: Officially support Python 3.9.
 - **NEW**: Drop official support for Python 3.5.
-- **NEW**: In order avoid conflicts with future CSS specification changes, non-standard pseudo classes will now start
+- **NEW**: In order to avoid conflicts with future CSS specification changes, non-standard pseudo classes will now start
   with the `:-soup-` prefix. As a consequence, `:contains()` will now be known as `:-soup-contains()`, though for a time
   the deprecated form of `:contains()` will still be allowed with a warning that users should migrate over to
   `:-soup-contains()`.
