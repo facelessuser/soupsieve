@@ -1,12 +1,19 @@
-<!-- # Changelog
+# Changelog
 
-## 2.0.2
+## 2.1.0
 
+- **NEW**: Officially support Python 3.9.
+- **NEW**: Drop official support for Python 3.5.
+- **NEW**: In order avoid conflicts with future CSS specification changes, non-standard pseudo classes will now start
+  with the `:-soup-` prefix. As a consequence, `:contains()` will now be known as `:-soup-contains()`, though for a time
+  the deprecated form of `:contains()` will still be allowed with a warning that users should migrate over to
+  `:-soup-contains()`.
+- **NEW**: Added new non-standard pseudo class `:-soup-contains-own()` which operates similar to `:-soup-contains()`
+  except that it only looks at text nodes directly associated with the currently scoped element and not its descendants.
 - **FIX**: Import `bs4` globally instead of in local functions as it appears there are no adverse affects due to
   circular imports as `bs4` does not immediately reference `soupsieve` functions and `soupsieve` does not immediately
   reference `bs4` functions. This should give a performance boost to functions that had previously included `bs4`
-  locally. -->
-<!-- - **FIX**: Officially support Python 3.9. -->
+  locally.
 
 ## 2.0.1
 
