@@ -280,7 +280,7 @@ contains whitespace or special characters, you should quote them with either sin
         ... </html>
         ... """
         >>> soup = bs(html, 'html5lib')
-        >>> print(soup.select('a[href!="#internal"]'))
+        >>> print(soup.select('div[lang|="en"]'))
         [<div lang="en">Some text</div>, <div lang="en-US">Some more text</div>]
         ```
 
