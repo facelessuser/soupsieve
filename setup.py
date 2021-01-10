@@ -42,7 +42,7 @@ VER, DEVSTATUS = get_version()
 setup(
     name='soupsieve',
     version=VER,
-    python_requires=">=3.5",
+    python_requires=">=3.6",
     keywords='CSS HTML XML selector filter query soup',
     description='A modern CSS selector implementation for Beautiful Soup.',
     long_description=get_description(),
