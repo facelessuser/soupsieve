@@ -1063,7 +1063,7 @@ class CSSParser(object):
 
 # CSS pattern for `:link` and `:any-link`
 CSS_LINK = CSSParser(
-    'html|*:is(a, area, link)[href]'
+    'html|*:is(a, area)[href]'
 ).process_selectors(flags=FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:checked`
 CSS_CHECKED = CSSParser(

@@ -10,7 +10,7 @@ implement as they might not stick around.
 
 ## `:any-link`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:any-link}
 
-Selects every `#!html <a>`, `#!html <area>`, or `#!html <link>` element that has an `href` attribute, independent of
+Selects every `#!html <a>`, or `#!html <area>` element that has an `href` attribute, independent of
 whether it has been visited.
 
 === "Syntax"
@@ -36,6 +36,10 @@ whether it has been visited.
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:any-link
+
+!!! new "New in 2.2"
+    The CSS specification recently updated to not include `#!html <link>` in the definition; therefore, Soup Sieve has
+    removed it as well.
 
 ## `:checked`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:checked}
 
@@ -716,7 +720,7 @@ Selects the last child of a given type in a group of sibling elements.
 
 ## `:link`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:link}
 
-Selects a link (every `#!html <a>`, `#!html <link>`, and `#!html <area>` element with an `href` attribute) that has not
+Selects a link (every `#!html <a>` and `#!html <area>` element with an `href` attribute) that has not
 yet been visited.
 
 Since Beautiful Soup does not have *visited* states, this will match all links, essentially making the behavior the same
@@ -729,7 +733,7 @@ as `:any-link`.
 
 === "Usage"
     ```pycon3
-    >>> from bs4 import BeautifulSoup as bs
+    >>> from bs4 import BeautifulSoup as bsx
     >>> html = """
     ... <html>
     ... <head></head>
@@ -745,6 +749,10 @@ as `:any-link`.
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:link
+
+!!! new "New in 2.2"
+    The CSS specification recently updated to not include `#!html <link>` in the definition; therefore, Soup Sieve has
+    removed it as well.
 
 ## `:not()` {:#:not}
 

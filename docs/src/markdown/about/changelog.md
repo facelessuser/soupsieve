@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.0.dev
+
+- **NEW**: `:link` and `:any-link` no longer include `#!html <link>` due to a change in the level 4 selector
+  specification.
+
 ## 2.1.0
 
 - **NEW**: Officially support Python 3.9.

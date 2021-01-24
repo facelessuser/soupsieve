@@ -36,48 +36,24 @@ jobs:
         python -m mkdocs gh-deploy -v --clean --remote-name gh-token
         git push gh-token gh-pages
 
-  wheel:
+  pypi:
     strategy:
       matrix:
-        python-version: [3.9]
+        distribution: [bdist_wheel, sdist]
 
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - uses: actions/setup-python@v1
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.9
       - name: Package
         run: |
           pip install --upgrade setuptools wheel
-          python setup.py bdist_wheel
+          python setup.py ${{ matrix.distribution }}
       - name: Publish
-        uses: pypa/gh-action-pypi-publish@v1.0.0a0
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_TOKEN }}
-
-  sdist:
-    strategy:
-      matrix:
-        python-version: [3.9]
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v1
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Package
-        run: |
-          pip install --upgrade setuptools
-          python setup.py sdist
-      - name: Publish
-        uses: pypa/gh-action-pypi-publish@v1.0.0a0
+        uses: pypa/gh-action-pypi-publish@v1.4.1
         with:
           user: __token__
           password: ${{ secrets.PYPI_TOKEN }}
