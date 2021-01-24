@@ -39,6 +39,7 @@ combinator
 combinators
 deprecations
 deregister
+dev
 directionality
 formatter
 hashable
