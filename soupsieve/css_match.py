@@ -4,6 +4,7 @@ from . import util
 import re
 from .import css_types as ct
 import unicodedata
+from collections.abc import Sequence
 
 import bs4
 
@@ -276,29 +277,61 @@ class _DocumentNav(object):
 
         return getattr(attr_name, 'namespace', None), getattr(attr_name, 'name', None)
 
-    @staticmethod
-    def get_attribute_by_name(el, name, default=None):
+    @classmethod
+    def normalize_value(cls, value):
+        """Normalize the value to be a string or list of strings."""
+
+        # Treat `None` as empty string.
+        if value is None:
+            return ''
+
+        # Pass through strings
+        if (isinstance(value, str)):
+            return value
+
+        # If it's a byte string, convert it to Unicode, treating it as UTF-8.
+        if isinstance(value, bytes):
+            return value.decode("utf8")
+
+        # BeautifulSoup supports sequences of attribute values, so make sure the children are strings.
+        if isinstance(value, Sequence):
+            new_value = []
+            for v in value:
+                if isinstance(v, Sequence):
+                    # This is most certainly a user error and will crash and burn later,
+                    # but to avoid excessive recursion, kick out now.
+                    new_value.append(v)
+                else:
+                    # Convert the child to a string
+                    new_value.append(cls.normalize_value(v))
+            return new_value
+
+        # Try and make anything else a string
+        return str(value)
+
+    @classmethod
+    def get_attribute_by_name(cls, el, name, default=None):
         """Get attribute by name."""
 
         value = default
         if el._is_xml:
             try:
-                value = el.attrs[name]
+                value = cls.normalize_value(el.attrs[name])
             except KeyError:
                 pass
         else:
             for k, v in el.attrs.items():
                 if util.lower(k) == name:
-                    value = v
+                    value = cls.normalize_value(v)
                     break
         return value
 
-    @staticmethod
-    def iter_attributes(el):
+    @classmethod
+    def iter_attributes(cls, el):
         """Iterate attributes."""
 
         for k, v in el.attrs.items():
-            yield k, v
+            yield k, cls.normalize_value(v)
 
     @classmethod
     def get_classes(cls, el):
