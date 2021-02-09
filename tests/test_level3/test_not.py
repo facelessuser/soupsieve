@@ -1,5 +1,6 @@
 """Test not selectors."""
 from .. import util
+from bs4 import BeautifulSoup as BS
 
 
 class TestNot(util.TestCase):
@@ -47,3 +48,10 @@ class TestNot(util.TestCase):
             ["0", "2", "3", "4", "5", "6", "pre"],
             flags=util.HTML
         )
+
+    def test_none_inputs(self):
+        """Test weird inputs."""
+
+        soup = BS('<span foo-"something">text</span>', 'html.parser')
+        soup.span['foo'] = None
+        self.assertEqual(len(soup.select('span:not([foo])')), 0)

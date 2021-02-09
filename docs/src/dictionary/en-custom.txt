@@ -26,6 +26,7 @@ TODO
 Tox
 Twemoji
 URL's
+UTF
 Unescape
 Virtualenv
 WIP
