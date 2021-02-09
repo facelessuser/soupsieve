@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.2.0
+## 2.2
 
 - **NEW**: `:link` and `:any-link` no longer include `#!html <link>` due to a change in the level 4 selector
   specification. This actually yields more sane results.
@@ -8,7 +8,7 @@
   attribute value. Soup Sieve will also now be more forgiving and attempt to match these unexpected values in a sane
   manner by normalizing them before compare. (#212)
 
-## 2.1.0
+## 2.1
 
 - **NEW**: Officially support Python 3.9.
 - **NEW**: Drop official support for Python 3.5.
@@ -27,7 +27,7 @@
 
 - **FIX**: Remove unused code.
 
-## 2.0.0
+## 2.0
 
 - **NEW**: `SelectorSyntaxError` is derived from `Exception` not `SyntaxError`.
 - **NEW**: Remove deprecated `comments` and `icomments` from the API.
@@ -74,7 +74,7 @@
   not provide namespaces will assume the XHTML namespace).
 - **FIX**: Ensure that all pseudo-class names are case insensitive and allow CSS escapes.
 
-## 1.9.0
+## 1.9
 
 - **NEW**: Allow `:contains()` to accept a list of text to search for. (#115)
 - **NEW**: Add new `escape` function for escaping CSS identifiers. (#125)
@@ -89,7 +89,7 @@
   but as there is no case where we could resolve such a string and still have a valid selector, string handling remains
   the same. (#128)
 
-## 1.8.0
+## 1.8
 
 - **NEW**: Add custom selector support. (#92)(#108)
 - **FIX**: Small tweak to CSS identifier pattern to ensure it matches the CSS specification exactly. Specifically, you
@@ -121,7 +121,7 @@
 - **FIX**: Fix issue with `:has()` selector where a leading combinator can only be provided in the first selector in a
   relative selector list.
 
-## 1.7.0
+## 1.7
 
 - **NEW**: Add support for `:in-range` and `:out-of-range` selectors. (#60)
 - **NEW**: Add support for `:defined` selector. (#76)
@@ -141,12 +141,12 @@
 
 - **FIX**: Fix warning about not importing `Mapping` from `collections.abc`.
 
-## 1.6.0
+## 1.6
 
 - **NEW**: Add `closest` method to the API that matches closest ancestor.
 - **FIX**: Add missing `select_one` reference to module's `__all__`.
 
-## 1.5.0
+## 1.5
 
 - **NEW**: Add `select_one` method like Beautiful Soup has.
 - **NEW**: Add `:dir()` selector (HTML only).
@@ -165,7 +165,7 @@
 
 - **FIX**: Fix issue with undefined namespaces.
 
-## 1.3.0
+## 1.3
 
 - **NEW**: Add support for `:scope`.
 - **NEW**: `:user-invalid`, `:playing`, `:paused`, and `:local-link` will not cause a failure, but all will match
@@ -185,12 +185,12 @@
   the `meta` tag to prevent searching again during the current select.
 - **FIX**: If a non `BeautifulSoup`/`Tag` object is given to the API to compare against, raise a `TypeError`.
 
-## 1.2.0
+## 1.2
 
 - **NEW**: Add Python 2.7 support.
 - **NEW**: Remove old pre 1.0 deprecations.
 
-## 1.1.0
+## 1.1
 
 - **NEW**: Adds support for `[attr!=value]` which is equivalent to `:not([attr=value])`.
 - **NEW**: Add support for `:active`, `:focus`, `:hover`, `:visited`, `:target`, `:focus-within`, `:focus-visible`,
@@ -219,7 +219,7 @@
 - **FIX**: When giving a tag to `select`, it should only return the children of that tag, never the tag itself.
 - **FIX**: For informational purposes, raise a `NotImplementedError` when an unsupported pseudo class is used.
 
-## 1.0.0
+## 1.0
 
 - **NEW**: Official 1.0.0 release.
 
@@ -238,7 +238,7 @@
 - **FIX**: Compare pseudo class names case insensitively when matching unexpected cases.
 - **FIX**: Don't allow attribute case flags when no attribute value is defined.
 
-## 0.6.0
+## 0.6
 
 - **NEW**: `mode` attribute is now called `flags` to allow for other options in the future.
 - **FIX**: More corner cases for `nth` selectors.
@@ -261,11 +261,11 @@
 
 - **FIX**: Fix namespace check for `:nth-of-type`.
 
-## 0.5.0
+## 0.5
 
 - **NEW**: Deprecate `commentsiter` and `selectiter` in favor of `icomments` and `iselect`. Expect removal in version
 1.0.
 
-## 0.4.0
+## 0.4
 
 - **NEW**: Initial prerelease.
