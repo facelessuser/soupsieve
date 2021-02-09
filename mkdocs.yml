@@ -23,8 +23,8 @@ theme:
     - navigation.tabs
 
 nav:
-  - Usage:
-    - Soup Sieve: index.md
+  - Home:
+    - Quick Start: index.md
     - API: api.md
     - F.A.Q.: faq.md
     - Beautiful Soup Differences: differences.md
