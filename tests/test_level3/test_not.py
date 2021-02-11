@@ -52,6 +52,6 @@ class TestNot(util.TestCase):
     def test_none_inputs(self):
         """Test weird inputs."""
 
-        soup = BS('<span foo-"something">text</span>', 'html.parser')
+        soup = BS('<span foo="something">text</span>', 'html.parser')
         soup.span['foo'] = None
         self.assertEqual(len(soup.select('span:not([foo])')), 0)
