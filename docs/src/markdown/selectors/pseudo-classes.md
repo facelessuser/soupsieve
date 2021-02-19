@@ -867,7 +867,7 @@ Level 4+ CSS:material-flask:{: title="Experimental" data-md-color-primary="purpl
     Level 4 CSS adds the additional pattern in the form `an+b of S` where `S` represents a selector list. `an+b` can
     also be substituted with `even` or `odd`.
 
-    Wen using the pattern `an+b of S`, the pattern will select elements from a sub-group of sibling elements that all
+    When using the pattern `an+b of S`, the pattern will select elements from a sub-group of sibling elements that all
     match the selector list (`[of S]?`), based on their position within that sub-group, using the pattern `an+b`, for
     every positive integer or zero value of `n`. The index of the first element is `1`. The values `a` and `b` must both
     be integers.
@@ -961,7 +961,7 @@ Level 4+ CSS:material-flask:{: title="Experimental" data-md-color-primary="purpl
     Level 4 CSS adds the additional pattern in the form `an+b of S` where `S` represents a selector list. `an+b` can
     also be substituted with `even` or `odd`.
 
-    Wen using the pattern `an+b of S`, the pattern will select elements from a sub-group of sibling elements that all
+    When using the pattern `an+b of S`, the pattern will select elements from a sub-group of sibling elements that all
     match the selector list (`[of S]?`), based on their position within that sub-group, using the pattern `an+b`, for
     every positive integer or zero value of `n`. The index of the first element is `1`. The values `a` and `b` must both
     be integers. Elements will be counted from the end.
