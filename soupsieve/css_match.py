@@ -1458,6 +1458,233 @@ class CSSMatch(_DocumentNav, _Match):
     """The Beautiful Soup CSS match class."""
 
 
+class CSSStrain():
+    """SoupStrainer function."""
+
+    def __init__(self, selectors, namespaces, flags):
+        """Initialize."""
+
+        self.cached_meta_lang = []
+        self.cached_default_forms = []
+        self.cached_indeterminate_forms = []
+        self.selectors = selectors
+        self.namespaces = {} if namespaces is None else namespaces
+        self.flags = flags
+        self.iframe_restrict = False
+
+        # A document can be both XML and HTML (XHTML)
+        # self.is_xml = self.is_xml_tree(doc)
+        # self.is_html = not self.is_xml or self.has_html_namespace
+        self.is_html = True
+        self.is_xml = False
+
+    def match_subselectors(self, tag, attrs, selectors):
+        """Match selectors."""
+
+        match = True
+        for sel in selectors:
+            if not self.match_selectors(tag, attrs, sel):
+                match = False
+        return match
+
+    def match_id(self, attrs, ids):
+        """Match element's ID."""
+
+        found = True
+        for i in ids:
+            if i != attrs.get('id', ''):
+                found = False
+                break
+        return found
+
+    def match_classes(self, attrs, classes):
+        """Match element's classes."""
+
+        current_classes = self.get_classes(attrs)
+        found = True
+        for c in classes:
+            if c not in current_classes:
+                found = False
+                break
+        return found
+
+    def iter_attributes(self, attrs):
+        """Iterate attributes."""
+
+        for k, v in attrs.items():
+            yield k, _DocumentNav.normalize_value(v)
+
+    def get_classes(self, attrs):
+        """Get classes."""
+
+        classes = attrs.get('class', [])
+        if isinstance(classes, str):
+            classes = RE_NOT_WS.findall(classes)
+        return classes
+
+    def match_attribute_name(self, attrs):
+        """Match attribute name and return value if it exists."""
+
+        for k, v in self.iter_attributes(attrs):
+            if util.lower(attr) != util.lower(k):
+                continue
+            value = v
+            break
+
+        return value
+
+    # def match_namespace(self, el, tag):
+    #     """Match the namespace of the element."""
+
+    #     match = True
+    #     namespace = self.get_tag_ns(el)
+    #     default_namespace = self.namespaces.get('')
+    #     tag_ns = '' if tag.prefix is None else self.namespaces.get(tag.prefix, None)
+    #     # We must match the default namespace if one is not provided
+    #     if tag.prefix is None and (default_namespace is not None and namespace != default_namespace):
+    #         match = False
+    #     # If we specified `|tag`, we must not have a namespace.
+    #     elif (tag.prefix is not None and tag.prefix == '' and namespace):
+    #         match = False
+    #     # Verify prefix matches
+    #     elif (
+    #         tag.prefix and
+    #         tag.prefix != '*' and (tag_ns is None or namespace != tag_ns)
+    #     ):
+    #         match = False
+    #     return match
+
+    def match_attributes(self, attrs, attributes):
+        """Match attributes."""
+
+        match = True
+        if attributes:
+            for a in attributes:
+                value = self.match_attribute_name(attrs, a.attribute)
+                pattern = a.xml_type_pattern if self.is_xml and a.xml_type_pattern else a.pattern
+                if isinstance(value, list):
+                    value = ' '.join(value)
+                if value is None:
+                    match = False
+                    break
+                elif pattern is None:
+                    continue
+                elif pattern.match(value) is None:
+                    match = False
+                    break
+        return match
+
+    def match_tagname(self, tag_name, tag):
+        """Match tag name."""
+
+        name = (util.lower(tag.name) if not self.is_xml and tag.name is not None else tag.name)
+        return not (
+            name is not None and
+            name not in (tag_name, '*')
+        )
+
+    def match_tag(self, tag_name, tag):
+        """Match the tag."""
+
+        match = True
+        if tag is not None:
+            # Verify namespace
+            # if not self.match_namespace(el, tag):
+            #     match = False
+            if not self.match_tagname(tag_name, tag):
+                match = False
+        return match
+
+    def match_selectors(self, tag, attrs, selectors):
+        """Check if element matches one of the selectors."""
+
+        match = False
+        is_not = selectors.is_not
+        is_html = selectors.is_html
+
+        # Internal selector lists that use the HTML flag, will automatically get the `html` namespace.
+        if is_html:
+            namespaces = self.namespaces
+            iframe_restrict = self.iframe_restrict
+            self.namespaces = {'html': NS_XHTML}
+            self.iframe_restrict = True
+
+        if not is_html or self.is_html:
+            for selector in selectors:
+                match = is_not
+                # We have a un-matchable situation (like `:focus` as you can focus an element in this environment)
+                if isinstance(selector, ct.SelectorNull):
+                    continue
+                # Verify tag matches
+                if not self.match_tag(tag, selector.tag):
+                    continue
+                # Verify tag is defined
+                # if selector.flags & ct.SEL_DEFINED and not self.match_defined(el):
+                #     continue
+                # Verify element is root
+                # if selector.flags & ct.SEL_ROOT and not self.match_root(el):
+                #     continue
+                # Verify element is scope
+                # if selector.flags & ct.SEL_SCOPE and not self.match_scope(el):
+                #     continue
+                # Verify element has placeholder shown
+                # if selector.flags & ct.SEL_PLACEHOLDER_SHOWN and not self.match_placeholder_shown(el):
+                #     continue
+                # Verify `nth` matches
+                # if not self.match_nth(el, selector.nth):
+                #     continue
+                # if selector.flags & ct.SEL_EMPTY and not self.match_empty(el):
+                #     continue
+                # Verify id matches
+                if selector.ids and not self.match_id(attrs, selector.ids):
+                    continue
+                # Verify classes match
+                if selector.classes and not self.match_classes(attrs, selector.classes):
+                    continue
+                # Verify attribute(s) match
+                if not self.match_attributes(attrs, selector.attributes):
+                    continue
+                # # Verify ranges
+                # if selector.flags & RANGES and not self.match_range(el, selector.flags & RANGES):
+                #     continue
+                # Verify language patterns
+                # if selector.lang and not self.match_lang(el, selector.lang):
+                #     continue
+                # Verify pseudo selector patterns
+                if selector.selectors and not self.match_subselectors(tag, attrs, selector.selectors):
+                    continue
+                # Verify relationship selectors
+                # if selector.relation and not self.match_relations(el, selector.relation):
+                #     continue
+                # Validate that the current default selector match corresponds to the first submit button in the form
+                # if selector.flags & ct.SEL_DEFAULT and not self.match_default(el):
+                #     continue
+                # Validate that the unset radio button is among radio buttons with the same name in a form that are
+                # also not set.
+                # if selector.flags & ct.SEL_INDETERMINATE and not self.match_indeterminate(el):
+                #     continue
+                # Validate element directionality
+                # if selector.flags & DIR_FLAGS and not self.match_dir(el, selector.flags & DIR_FLAGS):
+                #     continue
+                # Validate that the tag contains the specified text.
+                # if not self.match_contains(el, selector.contains):
+                #     continue
+                match = not is_not
+                break
+
+        # Restore actual namespaces being used for external selector lists
+        if is_html:
+            self.namespaces = namespaces
+            self.iframe_restrict = iframe_restrict
+
+        return match
+
+    def strain(self, tags, attr):
+        """Strain."""
+
+        return self.match_selectors(tags, attr, self.selectors)
+
+
 class SoupSieve(ct.Immutable):
     """Compiled Soup Sieve selector matching object."""
 
@@ -1517,6 +1744,14 @@ class SoupSieve(ct.Immutable):
 
         for el in CSSMatch(self.selectors, tag, self.namespaces, self.flags).select(limit):
             yield el
+
+    def strain(self, tag, attrs=None):
+        """Strain."""
+
+        if attrs is None:
+            attrs = {}
+
+        return CSSStrain(self.selectors, self.namespaces, self.flags).strain(tag, attrs)
 
     def __repr__(self):  # pragma: no cover
         """Representation."""
