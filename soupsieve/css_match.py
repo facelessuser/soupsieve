@@ -1458,25 +1458,38 @@ class CSSMatch(_DocumentNav, _Match):
     """The Beautiful Soup CSS match class."""
 
 
-class CSSStrain():
+class CSSStrain:
     """SoupStrainer function."""
 
-    def __init__(self, selectors, namespaces, flags):
+    def __init__(self, selectors, namespaces, flags=0):
         """Initialize."""
 
-        self.cached_meta_lang = []
-        self.cached_default_forms = []
-        self.cached_indeterminate_forms = []
         self.selectors = selectors
         self.namespaces = {} if namespaces is None else namespaces
+        if flags == 0:
+            flags = util.STRAIN_HTML
         self.flags = flags
-        self.iframe_restrict = False
 
         # A document can be both XML and HTML (XHTML)
-        # self.is_xml = self.is_xml_tree(doc)
-        # self.is_html = not self.is_xml or self.has_html_namespace
-        self.is_html = True
-        self.is_xml = False
+        self.is_html = self.flags & util.STRAIN_HTML or self.flags & util.STRAIN_HTML5
+        self.is_xml = self.flags & util.STRAIN_XML
+        self._support_ns = self.is_xml or self.flags & util.STRAIN_HTML5
+
+    def get_attribute_by_name(self, attrs, name, default=None):
+        """Get attribute by name."""
+
+        value = default
+        if self.is_xml:
+            try:
+                value = _DocumentNav.normalize_value(attrs[name])
+            except KeyError:
+                pass
+        else:
+            for k, v in attrs.items():
+                if util.lower(k) == name:
+                    value = _DocumentNav.normalize_value(v)
+                    break
+        return value
 
     def match_subselectors(self, tag, attrs, selectors):
         """Match selectors."""
@@ -1492,7 +1505,7 @@ class CSSStrain():
 
         found = True
         for i in ids:
-            if i != attrs.get('id', ''):
+            if i != self.get_attribute_by_name(attrs, 'id', ''):
                 found = False
                 break
         return found
@@ -1517,42 +1530,82 @@ class CSSStrain():
     def get_classes(self, attrs):
         """Get classes."""
 
-        classes = attrs.get('class', [])
+        classes = self.get_attribute_by_name(attrs, 'class', [])
         if isinstance(classes, str):
             classes = RE_NOT_WS.findall(classes)
         return classes
 
-    def match_attribute_name(self, attrs):
+    def supports_namespaces(self):
+        """TODO: Support namespaces."""
+
+        return self._support_ns
+
+    def split_namespace(self, name):
+        """TODO: Split namespace."""
+
+        return None, name
+
+    def match_attribute_name(self, attrs, attr, prefix):
         """Match attribute name and return value if it exists."""
 
-        for k, v in self.iter_attributes(attrs):
-            if util.lower(attr) != util.lower(k):
-                continue
-            value = v
-            break
+        value = None
+        if self.supports_namespaces():
+            # TODO: Finish this.
+            value = None
+            # If we have not defined namespaces, we can't very well find them, so don't bother trying.
+            if prefix:
+                if prefix != '*':
+                    ns = prefix
+                else:
+                    return None
+            else:
+                ns = None
 
+            for k, v in self.iter_attributes(attrs):
+
+                # Get attribute parts
+                namespace, name = None, k
+
+                # Can't match a prefix attribute as we haven't specified one to match
+                # Try to match it normally as a whole `p:a` as selector may be trying `p\:a`.
+                if ns is None:
+                    if (self.is_xml and attr == k) or (not self.is_xml and util.lower(attr) == util.lower(k)):
+                        value = v
+                        break
+                    # Coverage is not finding this even though it is executed.
+                    # Adding a print statement before this (and erasing coverage) causes coverage to find the line.
+                    # Ignore the false positive message.
+                    continue  # pragma: no cover
+
+                # We can't match our desired prefix attribute as the attribute doesn't have a prefix
+                if namespace is None or (ns != namespace and prefix != '*'):
+                    continue
+
+                # The attribute doesn't match.
+                if (util.lower(attr) != util.lower(name)) if not self.is_xml else (attr != name):
+                    continue
+
+                value = v
+                break
+        else:
+            for k, v in self.iter_attributes(attrs):
+                if util.lower(attr) != util.lower(k):
+                    continue
+                value = v
+                break
         return value
 
-    # def match_namespace(self, el, tag):
-    #     """Match the namespace of the element."""
+    def match_namespace(self, tag_name, tag):
+        """
+        Match the namespace of the element.
 
-    #     match = True
-    #     namespace = self.get_tag_ns(el)
-    #     default_namespace = self.namespaces.get('')
-    #     tag_ns = '' if tag.prefix is None else self.namespaces.get(tag.prefix, None)
-    #     # We must match the default namespace if one is not provided
-    #     if tag.prefix is None and (default_namespace is not None and namespace != default_namespace):
-    #         match = False
-    #     # If we specified `|tag`, we must not have a namespace.
-    #     elif (tag.prefix is not None and tag.prefix == '' and namespace):
-    #         match = False
-    #     # Verify prefix matches
-    #     elif (
-    #         tag.prefix and
-    #         tag.prefix != '*' and (tag_ns is None or namespace != tag_ns)
-    #     ):
-    #         match = False
-    #     return match
+        If we had the original markup, we could get at the namespace.
+        """
+
+        if not tag.prefix or tag.prefix == '*':
+            return True
+        else:
+            return False
 
     def match_attributes(self, attrs, attributes):
         """Match attributes."""
@@ -1560,7 +1613,7 @@ class CSSStrain():
         match = True
         if attributes:
             for a in attributes:
-                value = self.match_attribute_name(attrs, a.attribute)
+                value = self.match_attribute_name(attrs, a.attribute, a.prefix)
                 pattern = a.xml_type_pattern if self.is_xml and a.xml_type_pattern else a.pattern
                 if isinstance(value, list):
                     value = ' '.join(value)
@@ -1589,8 +1642,8 @@ class CSSStrain():
         match = True
         if tag is not None:
             # Verify namespace
-            # if not self.match_namespace(el, tag):
-            #     match = False
+            if not self.match_namespace(tag_name, tag):
+                match = False
             if not self.match_tagname(tag_name, tag):
                 match = False
         return match
@@ -1628,7 +1681,7 @@ class CSSStrain():
                 if selector.flags & ct.SEL_SCOPE:
                     continue
                 # Verify element has placeholder shown
-                if selector.flags & ct.SEL_PLACEHOLDER_SHOWN and not self.match_placeholder_shown(el):
+                if selector.flags & ct.SEL_PLACEHOLDER_SHOWN:
                     continue
                 # Verify `nth` matches
                 if selector.nth:

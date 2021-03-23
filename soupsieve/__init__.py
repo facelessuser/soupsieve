@@ -29,7 +29,7 @@ from .__meta__ import __version__, __version_info__  # noqa: F401
 from . import css_parser as cp
 from . import css_match as cm
 from . import css_types as ct
-from .util import DEBUG, SelectorSyntaxError  # noqa: F401
+from .util import DEBUG, STRAIN_XML, STRAIN_HTML, STRAIN_HTML5, SelectorSyntaxError  # noqa: F401
 
 __all__ = (
     'DEBUG', 'SelectorSyntaxError', 'SoupSieve',
