@@ -1619,22 +1619,22 @@ class CSSStrain():
                 if not self.match_tag(tag, selector.tag):
                     continue
                 # Verify tag is defined
-                # if selector.flags & ct.SEL_DEFINED and not self.match_defined(el):
-                #     continue
+                if selector.flags & ct.SEL_DEFINED:
+                    continue
                 # Verify element is root
-                # if selector.flags & ct.SEL_ROOT and not self.match_root(el):
-                #     continue
+                if selector.flags & ct.SEL_ROOT:
+                    continue
                 # Verify element is scope
-                # if selector.flags & ct.SEL_SCOPE and not self.match_scope(el):
-                #     continue
+                if selector.flags & ct.SEL_SCOPE:
+                    continue
                 # Verify element has placeholder shown
-                # if selector.flags & ct.SEL_PLACEHOLDER_SHOWN and not self.match_placeholder_shown(el):
-                #     continue
+                if selector.flags & ct.SEL_PLACEHOLDER_SHOWN and not self.match_placeholder_shown(el):
+                    continue
                 # Verify `nth` matches
-                # if not self.match_nth(el, selector.nth):
-                #     continue
-                # if selector.flags & ct.SEL_EMPTY and not self.match_empty(el):
-                #     continue
+                if selector.nth:
+                    continue
+                if selector.flags & ct.SEL_EMPTY:
+                    continue
                 # Verify id matches
                 if selector.ids and not self.match_id(attrs, selector.ids):
                     continue
@@ -1645,30 +1645,30 @@ class CSSStrain():
                 if not self.match_attributes(attrs, selector.attributes):
                     continue
                 # # Verify ranges
-                # if selector.flags & RANGES and not self.match_range(el, selector.flags & RANGES):
-                #     continue
+                if selector.flags & RANGES:
+                    continue
                 # Verify language patterns
-                # if selector.lang and not self.match_lang(el, selector.lang):
-                #     continue
+                if selector.lang:
+                    continue
                 # Verify pseudo selector patterns
                 if selector.selectors and not self.match_subselectors(tag, attrs, selector.selectors):
                     continue
                 # Verify relationship selectors
-                # if selector.relation and not self.match_relations(el, selector.relation):
-                #     continue
+                if selector.relation:
+                    continue
                 # Validate that the current default selector match corresponds to the first submit button in the form
-                # if selector.flags & ct.SEL_DEFAULT and not self.match_default(el):
-                #     continue
+                if selector.flags & ct.SEL_DEFAULT:
+                    continue
                 # Validate that the unset radio button is among radio buttons with the same name in a form that are
                 # also not set.
-                # if selector.flags & ct.SEL_INDETERMINATE and not self.match_indeterminate(el):
-                #     continue
+                if selector.flags & ct.SEL_INDETERMINATE:
+                    continue
                 # Validate element directionality
-                # if selector.flags & DIR_FLAGS and not self.match_dir(el, selector.flags & DIR_FLAGS):
-                #     continue
+                if selector.flags & DIR_FLAGS:
+                    continue
                 # Validate that the tag contains the specified text.
-                # if not self.match_contains(el, selector.contains):
-                #     continue
+                if selector.contains:
+                    continue
                 match = not is_not
                 break
 
