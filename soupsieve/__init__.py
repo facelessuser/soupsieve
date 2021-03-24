@@ -111,7 +111,7 @@ def escape(ident):
     return cp.escape(ident)
 
 
-def strainer(select, document="html", flags=0, **kwargs):
+def strainer(select, document="html", **kwargs):
     """Strainer for `SoupStrainer`."""
 
-    return compile(select, flags=flags, **kwargs).strainer(document)
+    return compile(select, **kwargs).strainer(document)

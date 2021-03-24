@@ -1461,10 +1461,12 @@ class CSSMatch(_DocumentNav, _Match):
 class CSSStrainer:
     """SoupStrainer function."""
 
-    def __init__(self, selectors, document):
+    def __init__(self, selectors, document, namespaces, flags):
         """Initialize."""
 
         self.selectors = selectors
+        self.namespaces = namespaces
+        self.flags = flags
         if document not in ('html', 'xml'):
             raise ValueError("Unkown document type '{}' for CSS Strainer".format(document))
         self.is_html = document == 'html'
@@ -1657,10 +1659,16 @@ class CSSStrainer:
 
         return match
 
-    def strain(self, tags, attr):
+    def strain(self, name, attrs=None):
         """Strain."""
 
-        return self.match_selectors(tags, attr, self.selectors)
+        if isinstance(name, bs4.Tag):
+            return CSSMatch(self.selectors, name, self.namespaces, self.flags).match(name)
+        else:
+            # Tree builder which has limited CSS support
+            tag_name = name
+            tag_attrs = attrs
+            return self.match_selectors(tag_name, tag_attrs, self.selectors)
 
 
 class SoupSieve(ct.Immutable):
@@ -1726,7 +1734,7 @@ class SoupSieve(ct.Immutable):
     def strainer(self, document='html'):
         """Strainer."""
 
-        return CSSStrainer(self.selectors, document).strain
+        return CSSStrainer(self.selectors, document, self.namespaces, self.flags).strain
 
     def __repr__(self):  # pragma: no cover
         """Representation."""
