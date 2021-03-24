@@ -4,9 +4,6 @@ import warnings
 import re
 
 DEBUG = 0x00001
-STRAIN_XML = 0x00002
-STRAIN_HTML = 0x00004
-STRAIN_HTML5 = 0x0008
 
 RE_PATTERN_LINE_SPLIT = re.compile(r'(?:\r\n|(?!\r\n)[\n\r])|$')
 
