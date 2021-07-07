@@ -1,7 +1,7 @@
 site_name: Soup Sieve
 site_url: https://facelessuser.github.io/soupsieve
 repo_url: https://github.com/facelessuser/soupsieve
-edit_uri: tree/master/docs/src/markdown
+edit_uri: tree/main/docs/src/markdown
 site_description: A modern CSS selector library for Beautiful Soup.
 copyright: |
   Copyright &copy; 2018 - 2021 <a href="https://github.com/facelessuser"  target="_blank" rel="noopener">Isaac Muse</a>
