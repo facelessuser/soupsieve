@@ -196,6 +196,7 @@ FLG_OPEN = 0x40
 FLG_IN_RANGE = 0x80
 FLG_OUT_OF_RANGE = 0x100
 FLG_PLACEHOLDER_SHOWN = 0x200
+FLG_FORGIVE = 0x400
 
 # Maximum cached patterns to store
 _MAXCACHE = 500
@@ -715,11 +716,14 @@ class CSSParser(object):
         flags = FLG_PSEUDO | FLG_OPEN
         if name == ':not':
             flags |= FLG_NOT
-        if name == ':has':
-            flags |= FLG_RELATIVE
+        elif name == ':has':
+            flags |= FLG_RELATIVE | FLG_FORGIVE
+        elif name in (':where', ':is'):
+            flags |= FLG_FORGIVE
 
         sel.selectors.append(self.parse_selectors(iselector, index, flags))
         has_selector = True
+
         return has_selector
 
     def parse_has_combinator(self, sel, m, has_selector, selectors, rel_type, index):
@@ -731,12 +735,9 @@ class CSSParser(object):
         if combinator == COMMA_COMBINATOR:
             if not has_selector:
                 # If we've not captured any selector parts, the comma is either at the beginning of the pattern
-                # or following another comma, both of which are unexpected. Commas must split selectors.
-                raise SelectorSyntaxError(
-                    "The combinator '{}' at postion {}, must have a selector before it".format(combinator, index),
-                    self.pattern,
-                    index
-                )
+                # or following another comma, both of which are unexpected. But shouldn't fail the pseudo-class.
+                sel.no_match = True
+
             sel.rel_type = rel_type
             selectors[-1].relations.append(sel)
             rel_type = ":" + WS_COMBINATOR
@@ -757,41 +758,50 @@ class CSSParser(object):
                     self.pattern,
                     index
                 )
+
             # Set the leading combinator for the next selector.
             rel_type = ':' + combinator
-        sel = _Selector()
 
+        sel = _Selector()
         has_selector = False
         return has_selector, sel, rel_type
 
-    def parse_combinator(self, sel, m, has_selector, selectors, relations, is_pseudo, index):
+    def parse_combinator(self, sel, m, has_selector, selectors, relations, is_pseudo, is_forgive, index):
         """Parse combinator tokens."""
 
         combinator = m.group('relation').strip()
         if not combinator:
             combinator = WS_COMBINATOR
         if not has_selector:
-            raise SelectorSyntaxError(
-                "The combinator '{}' at postion {}, must have a selector before it".format(combinator, index),
-                self.pattern,
-                index
-            )
+            if not is_forgive or combinator != COMMA_COMBINATOR:
+                raise SelectorSyntaxError(
+                    "The combinator '{}' at postion {}, must have a selector before it".format(combinator, index),
+                    self.pattern,
+                    index
+                )
 
-        if combinator == COMMA_COMBINATOR:
-            if not sel.tag and not is_pseudo:
-                # Implied `*`
-                sel.tag = ct.SelectorTag('*', None)
-            sel.relations.extend(relations)
-            selectors.append(sel)
-            del relations[:]
+            # If we are in a forgiving pseudo class, just make the selector a "no match"
+            if combinator == COMMA_COMBINATOR:
+                sel.no_match = True
+                del relations[:]
+                selectors.append(sel)
         else:
-            sel.relations.extend(relations)
-            sel.rel_type = combinator
-            del relations[:]
-            relations.append(sel)
-        sel = _Selector()
+            if combinator == COMMA_COMBINATOR:
+                if not sel.tag and not is_pseudo:
+                    # Implied `*`
+                    sel.tag = ct.SelectorTag('*', None)
+                sel.relations.extend(relations)
+                selectors.append(sel)
+                del relations[:]
+            else:
+                sel.relations.extend(relations)
+                sel.rel_type = combinator
+                del relations[:]
+                relations.append(sel)
 
+        sel = _Selector()
         has_selector = False
+
         return has_selector, sel
 
     def parse_class_id(self, sel, m, has_selector):
@@ -862,12 +872,15 @@ class CSSParser(object):
     def parse_selectors(self, iselector, index=0, flags=0):
         """Parse selectors."""
 
+        # Initialize important variables
         sel = _Selector()
         selectors = []
         has_selector = False
         closed = False
         relations = []
         rel_type = ":" + WS_COMBINATOR
+
+        # Setup various flags
         is_open = bool(flags & FLG_OPEN)
         is_pseudo = bool(flags & FLG_PSEUDO)
         is_relative = bool(flags & FLG_RELATIVE)
@@ -878,7 +891,9 @@ class CSSParser(object):
         is_in_range = bool(flags & FLG_IN_RANGE)
         is_out_of_range = bool(flags & FLG_OUT_OF_RANGE)
         is_placeholder_shown = bool(flags & FLG_PLACEHOLDER_SHOWN)
+        is_forgive = bool(flags & FLG_FORGIVE)
 
+        # Print out useful debug stuff
         if self.debug:  # pragma: no cover
             if is_pseudo:
                 print('    is_pseudo: True')
@@ -900,7 +915,10 @@ class CSSParser(object):
                 print('    is_out_of_range: True')
             if is_placeholder_shown:
                 print('    is_placeholder_shown: True')
+            if is_forgive:
+                print('    is_forgive: True')
 
+        # The algorithm for relative selectors require an initial selector in the selector list
         if is_relative:
             selectors.append(_Selector())
 
@@ -929,11 +947,13 @@ class CSSParser(object):
                     is_html = True
                 elif key == 'pseudo_close':
                     if not has_selector:
-                        raise SelectorSyntaxError(
-                            "Expected a selector at postion {}".format(m.start(0)),
-                            self.pattern,
-                            m.start(0)
-                        )
+                        if not is_forgive:
+                            raise SelectorSyntaxError(
+                                "Expected a selector at postion {}".format(m.start(0)),
+                                self.pattern,
+                                m.start(0)
+                            )
+                        sel.no_match = True
                     if is_open:
                         closed = True
                         break
@@ -950,7 +970,7 @@ class CSSParser(object):
                         )
                     else:
                         has_selector, sel = self.parse_combinator(
-                            sel, m, has_selector, selectors, relations, is_pseudo, index
+                            sel, m, has_selector, selectors, relations, is_pseudo, is_forgive, index
                         )
                 elif key == 'attribute':
                     has_selector = self.parse_attribute_selector(sel, m, has_selector)
@@ -969,6 +989,7 @@ class CSSParser(object):
         except StopIteration:
             pass
 
+        # Handle selectors that are not closed
         if is_open and not closed:
             raise SelectorSyntaxError(
                 "Unclosed pseudo-class at position {}".format(index),
@@ -976,6 +997,7 @@ class CSSParser(object):
                 index
             )
 
+        # Cleanup completed selector piece
         if has_selector:
             if not sel.tag and not is_pseudo:
                 # Implied `*`
@@ -987,8 +1009,28 @@ class CSSParser(object):
                 sel.relations.extend(relations)
                 del relations[:]
                 selectors.append(sel)
-        else:
+
+        # Forgive empty slots in pseudo-classes that have lists (and are forgiving)
+        elif is_forgive:
+            if is_relative:
+                # Handle relative selectors pseudo-classes with empty slots like `:has()`
+                if selectors and selectors[-1].rel_type is None and rel_type == ': ':
+                    sel.rel_type = rel_type
+                    sel.no_match = True
+                    selectors[-1].relations.append(sel)
+                    has_selector = True
+            else:
+                # Handle normal pseudo-classes with empty slots
+                if not selectors or not relations:
+                    # Others like `:is()` etc.
+                    sel.no_match = True
+                    del relations[:]
+                    selectors.append(sel)
+                    has_selector = True
+
+        if not has_selector:
             # We will always need to finish a selector when `:has()` is used as it leads with combining.
+            # May apply to others as well.
             raise SelectorSyntaxError(
                 'Expected a selector at position {}'.format(index),
                 self.pattern,
@@ -1009,6 +1051,7 @@ class CSSParser(object):
         if is_placeholder_shown:
             selectors[-1].flags = ct.SEL_PLACEHOLDER_SHOWN
 
+        # Return selector list
         return ct.SelectorList([s.freeze() for s in selectors], is_not, is_html)
 
     def selector_iter(self, pattern):

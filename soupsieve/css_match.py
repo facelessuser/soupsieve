@@ -784,6 +784,9 @@ class _Match(object):
 
         found = False
 
+        if isinstance(relation[0], ct.SelectorNull) or relation[0].rel_type is None:
+            return found
+
         if relation[0].rel_type.startswith(':'):
             found = self.match_future_relations(el, relation)
         else:

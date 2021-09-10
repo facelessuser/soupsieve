@@ -105,6 +105,6 @@ plugins:
   - search:
       separator: '[:\s\-]+'
   - git-revision-date-localized
-  - minify:
-      minify_html: true
+  # - minify:
+  #     minify_html: true
   - mkdocs_pymdownx_material_extras
