@@ -129,20 +129,50 @@ class TestHas(util.TestCase):
             flags=util.HTML
         )
 
+    def test_has_empty(self):
+        """Test has with empty slot due to multiple commas."""
+
+        self.assert_selector(
+            self.MARKUP2,
+            'div:has()',
+            [],
+            flags=util.HTML
+        )
+
+    def test_has_multi_commas(self):
+        """Test has with empty slot due to multiple commas."""
+
+        self.assert_selector(
+            self.MARKUP2,
+            'div:has(> .bbbb, .ffff, , .jjjj)',
+            ['0', '4', '8'],
+            flags=util.HTML
+        )
+
+    def test_has_leading_commas(self):
+        """Test has with empty slot due to leading commas."""
+
+        self.assert_selector(
+            self.MARKUP2,
+            'div:has(, > .bbbb, .ffff, .jjjj)',
+            ['0', '4', '8'],
+            flags=util.HTML
+        )
+
+    def test_has_trailing_commas(self):
+        """Test has with empty slot due to trailing commas."""
+
+        self.assert_selector(
+            self.MARKUP2,
+            'div:has(> .bbbb, .ffff, .jjjj, )',
+            ['0', '4', '8'],
+            flags=util.HTML
+        )
+
     def test_invalid_incomplete_has(self):
         """Test `:has()` fails with just a combinator."""
 
         self.assert_raises(':has(>)', SelectorSyntaxError)
-
-    def test_invalid_has_empty(self):
-        """Test `:has()` fails with empty function parameters."""
-
-        self.assert_raises(':has()', SelectorSyntaxError)
-
-    def test_invalid_has_double_comma(self):
-        """Test `:has()` fails with consecutive commas."""
-
-        self.assert_raises(':has(> has,, a)', SelectorSyntaxError)
 
     def test_invalid_has_double_combinator(self):
         """Test `:has()` fails with consecutive combinators."""
@@ -155,13 +185,3 @@ class TestHas(util.TestCase):
         """Test `:has()` fails with trailing combinator."""
 
         self.assert_raises(':has(> has >)', SelectorSyntaxError)
-
-    def test_invalid_has_trailing_comma(self):
-        """Test `:has()` fails with trailing comma."""
-
-        self.assert_raises(':has(> has,)', SelectorSyntaxError)
-
-    def test_invalid_has_start_comma(self):
-        """Test `:has()` fails with trailing comma."""
-
-        self.assert_raises(':has(, p)', SelectorSyntaxError)

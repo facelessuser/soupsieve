@@ -1,6 +1,7 @@
 """Test not selectors."""
 from .. import util
 from bs4 import BeautifulSoup as BS
+from soupsieve import SelectorSyntaxError
 
 
 class TestNot(util.TestCase):
@@ -55,3 +56,23 @@ class TestNot(util.TestCase):
         soup = BS('<span foo="something">text</span>', 'html.parser')
         soup.span['foo'] = None
         self.assertEqual(len(soup.select('span:not([foo])')), 0)
+
+    def test_invalid_pseudo_empty(self):
+        """Test pseudo class group with empty set."""
+
+        self.assert_raises(':not()', SelectorSyntaxError)
+
+    def test_invalid_pseudo_trailing_comma(self):
+        """Test pseudo class group with trailing comma."""
+
+        self.assert_raises(':not(.class,)', SelectorSyntaxError)
+
+    def test_invalid_pseudo_leading_comma(self):
+        """Test pseudo class group with leading comma."""
+
+        self.assert_raises(':not(,.class)', SelectorSyntaxError)
+
+    def test_invalid_pseudo_multi_comma(self):
+        """Test pseudo class group with multiple commas."""
+
+        self.assert_raises(':not(.this,,.that)', SelectorSyntaxError)

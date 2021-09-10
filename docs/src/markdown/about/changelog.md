@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.3
+
+- **NEW**: `:has()`, `:is()`, and `:where()` now use use a forgiving selector list. While not as forgiving as due to
+  syntax errors as CSS might be, it will forgive such things as empty sets and empty slots due to multiple consecutive
+  commas, leading commas, or trailing commas. Essentially, these pseudo-classes will match all non-empty selectors and
+  ignore empty ones. As the scraping environment is different that a browser environment, it was chosen not to
+  aggressively forgive bad syntax and invalid features to ensure the user is alerted that their program may not perform
+  as expected.
+
 ## 2.2.1
 
 - **FIX**: Fix an issue with namespaces when one of the keys is `self`.

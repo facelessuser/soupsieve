@@ -24,6 +24,46 @@ class TestIs(util.TestCase):
             flags=util.HTML
         )
 
+    def test_is_multi_comma(self):
+        """Test multiple selectors but with an empty slot due to multiple commas."""
+
+        self.assert_selector(
+            self.MARKUP,
+            ":is(span, , a)",
+            ["1", "2"],
+            flags=util.HTML
+        )
+
+    def test_is_leading_comma(self):
+        """Test multiple selectors but with an empty slot due to leading commas."""
+
+        self.assert_selector(
+            self.MARKUP,
+            ":is(, span, a)",
+            ["1", "2"],
+            flags=util.HTML
+        )
+
+    def test_is_trailing_comma(self):
+        """Test multiple selectors but with an empty slot due to trailing commas."""
+
+        self.assert_selector(
+            self.MARKUP,
+            ":is(span, a, )",
+            ["1", "2"],
+            flags=util.HTML
+        )
+
+    def test_is_empty(self):
+        """Test empty `:is()` selector list."""
+
+        self.assert_selector(
+            self.MARKUP,
+            ":is()",
+            [],
+            flags=util.HTML
+        )
+
     def test_nested_is(self):
         """Test multiple nested selectors."""
 
@@ -84,11 +124,6 @@ class TestIs(util.TestCase):
         """Test invalid, orphaned pseudo close."""
 
         self.assert_raises('div)', SelectorSyntaxError)
-
-    def test_invalid_pseudo_dangling_comma(self):
-        """Test pseudo class group with trailing comma."""
-
-        self.assert_raises(':is(div,)', SelectorSyntaxError)
 
     def test_invalid_pseudo_open(self):
         """Test invalid pseudo close."""
