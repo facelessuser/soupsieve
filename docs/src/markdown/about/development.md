@@ -193,6 +193,63 @@ object that may chain other `SelectorLists` objects depending on the complexity 
 a selector list, then you will get multiple `Selector` objects (one for each compound selector in the list) which in
 turn may chain other `Selector` objects.
 
+To view the selector list in in a compiled object for debugging purposes, one can access it via `SoupSieve.selectors`,
+though it is recommended to pretty print them:
+
+```pycon3
+>>> import soupsieve as sv
+>>> sv.compile('this > that.class[name=value]').selectors.pretty()
+SelectorList(
+    selectors=(
+        Selector(
+            tag=SelectorTag(
+                name='that',
+                prefix=None),
+            ids=(),
+            classes=(
+                'class',
+                ),
+            attributes=(
+                SelectorAttribute(
+                    attribute='name',
+                    prefix='',
+                    pattern=re.compile(
+                        '^value$'),
+                    xml_type_pattern=None),
+                ),
+            nth=(),
+            selectors=(),
+            relation=SelectorList(
+                selectors=(
+                    Selector(
+                        tag=SelectorTag(
+                            name='this',
+                            prefix=None),
+                        ids=(),
+                        classes=(),
+                        attributes=(),
+                        nth=(),
+                        selectors=(),
+                        relation=SelectorList(
+                            selectors=(),
+                            is_not=False,
+                            is_html=False),
+                        rel_type='>',
+                        contains=(),
+                        lang=(),
+                        flags=0),
+                    ),
+                is_not=False,
+                is_html=False),
+            rel_type=None,
+            contains=(),
+            lang=(),
+            flags=0),
+        ),
+    is_not=False,
+    is_html=False)
+```
+
 ### `SelectorList`
 
 ```py3

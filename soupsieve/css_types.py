@@ -1,6 +1,7 @@
 """CSS selector structure items."""
 import copyreg
 from collections.abc import Hashable, Mapping
+from .pretty import pretty
 
 __all__ = (
     'Selector',
@@ -80,10 +81,15 @@ class Immutable(object):
         """Representation."""
 
         return "{}({})".format(
-            self.__base__(), ', '.join(["{}={!r}".format(k, getattr(self, k)) for k in self.__slots__[:-1]])
+            self.__class__.__name__, ', '.join(["{}={!r}".format(k, getattr(self, k)) for k in self.__slots__[:-1]])
         )
 
     __str__ = __repr__
+
+    def pretty(self):  # pragma: no cover
+        """Pretty print."""
+
+        print(pretty(self))
 
 
 class ImmutableDict(Mapping):

@@ -8,6 +8,7 @@
   ignore empty ones. As the scraping environment is different that a browser environment, it was chosen not to
   aggressively forgive bad syntax and invalid features to ensure the user is alerted that their program may not perform
   as expected.
+- **NEW**: Add support to output a pretty print format of a compiled `SelectorList` for debug purposes.
 
 ## 2.2.1
 
