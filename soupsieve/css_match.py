@@ -968,6 +968,45 @@ class _Match(object):
                 break
         return is_empty
 
+    def match_in_scope(self, el, scoped_selectors):
+        """Match scoped "in" selectors."""
+
+        match = True
+        in_bounds = False
+        limit = 0
+        start, end = scoped_selectors
+        current = None
+
+        # Find upper bound
+        if len(start):
+            current = el
+            while current is not None:
+                limit += 1
+                if self.match_selectors(current, start):
+                    in_bounds = True
+                    break
+                current = self.get_parent(current)
+
+        # Find lower bound relative to upper bound (if lower exists)
+        if in_bounds:
+            if len(end):
+                limit = limit - 1
+                current = self.get_parent(el)
+                while limit and current is not None:
+                    limit -= 1
+                    # Here we are matching end with the start as the scope
+                    # But we could do it without
+                    if self.match_selectors(current, end):
+                        in_bounds = False
+                        break
+                    current = self.get_parent(current)
+
+        # Check if in bounds
+        if not in_bounds:
+            match = False
+
+        return match
+
     def match_subselectors(self, el, selectors):
         """Match selectors."""
 
@@ -1396,6 +1435,9 @@ class _Match(object):
                     continue
                 # Verify relationship selectors
                 if selector.relation and not self.match_relations(el, selector.relation):
+                    continue
+                # Verify scoped `:in()` selector.
+                if selector.scoped_in and not self.match_in_scope(el, selector.scoped_in):
                     continue
                 # Validate that the current default selector match corresponds to the first submit button in the form
                 if selector.flags & ct.SEL_DEFAULT and not self.match_default(el):

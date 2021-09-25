@@ -64,6 +64,7 @@ PSEUDO_COMPLEX = {
     ':-soup-contains-own',
     ':has',
     ':is',
+    ':in',
     ':matches',
     ':not',
     ':where'
@@ -133,6 +134,8 @@ PAT_PSEUDO_CLASS_SPECIAL = r'(?P<name>:{ident})(?P<open>\({ws}*)'.format(ws=WSC,
 PAT_PSEUDO_CLASS_CUSTOM = r'(?P<name>:(?=--){ident})'.format(ident=IDENTIFIER)
 # Closing pseudo group (`)`)
 PAT_PSEUDO_CLOSE = r'{ws}*\)'.format(ws=WSC)
+# Slash option
+PAT_PSEUDO_SLASH = r'{ws}*/(?!\*)'.format(ws=WSC)
 # Pseudo element (`::pseudo-element`)
 PAT_PSEUDO_ELEMENT = r':{}'.format(PAT_PSEUDO_CLASS)
 # At rule (`@page`, etc.) (not supported)
@@ -197,6 +200,7 @@ FLG_IN_RANGE = 0x80
 FLG_OUT_OF_RANGE = 0x100
 FLG_PLACEHOLDER_SHOWN = 0x200
 FLG_FORGIVE = 0x400
+FLG_IN = 0x800
 
 # Maximum cached patterns to store
 _MAXCACHE = 500
@@ -368,6 +372,7 @@ class _Selector(object):
         self.nth = kwargs.get('nth', [])
         self.selectors = kwargs.get('selectors', [])
         self.relations = kwargs.get('relations', [])
+        self.scoped_in = kwargs.get('scoped_in', None)
         self.rel_type = kwargs.get('rel_type', None)
         self.contains = kwargs.get('contains', [])
         self.lang = kwargs.get('lang', [])
@@ -398,6 +403,7 @@ class _Selector(object):
                 tuple(self.nth),
                 tuple(self.selectors),
                 self._freeze_relations(self.relations),
+                self.scoped_in,
                 self.rel_type,
                 tuple(self.contains),
                 tuple(self.lang),
@@ -409,10 +415,10 @@ class _Selector(object):
 
         return (
             '_Selector(tag={!r}, ids={!r}, classes={!r}, attributes={!r}, nth={!r}, selectors={!r}, '
-            'relations={!r}, rel_type={!r}, contains={!r}, lang={!r}, flags={!r}, no_match={!r})'
+            'relations={!r}, scoped_in={!r}, rel_type={!r}, contains={!r}, lang={!r}, flags={!r}, no_match={!r})'
         ).format(
             self.tag, self.ids, self.classes, self.attributes, self.nth, self.selectors,
-            self.relations, self.rel_type, self.contains, self.lang, self.flags, self.no_match
+            self.relations, self.scoped_in, self.rel_type, self.contains, self.lang, self.flags, self.no_match
         )
 
     __repr__ = __str__
@@ -422,6 +428,7 @@ class CSSParser(object):
     """Parse CSS selectors."""
 
     css_tokens = (
+        SelectorPattern("pseudo_slash", PAT_PSEUDO_SLASH),
         SelectorPattern("pseudo_close", PAT_PSEUDO_CLOSE),
         SpecialPseudoPattern(
             (
@@ -718,10 +725,13 @@ class CSSParser(object):
             flags |= FLG_NOT
         elif name == ':has':
             flags |= FLG_RELATIVE | FLG_FORGIVE
+        elif name == ':in':
+            flags |= FLG_IN | FLG_FORGIVE
         elif name in (':where', ':is'):
             flags |= FLG_FORGIVE
 
         sel.selectors.append(self.parse_selectors(iselector, index, flags))
+
         has_selector = True
 
         return has_selector
@@ -869,11 +879,37 @@ class CSSParser(object):
         has_selector = True
         return has_selector
 
+    def parse_pseudo_in(self, sel, m, has_selector, selectors, relations, index):
+        """Parse pseudo in."""
+
+        if has_selector:
+            # End selector
+            sel.relations.extend(relations)
+            del relations[:]
+            selectors.append(sel)
+        elif has_selector and (not selectors or (relations and relations[-1].rel_type is None)):
+            # Allow empty set or empty slot
+            sel.no_match = True
+            del relations[:]
+            selectors.append(sel)
+        else:
+            raise SelectorSyntaxError(
+                'Expected a selector at position {}'.format(index),
+                self.pattern,
+                index
+            )
+
+        rel_type = ':' + WS_COMBINATOR
+        sel = _Selector()
+        has_selector = True
+        return has_selector, sel, rel_type
+
     def parse_selectors(self, iselector, index=0, flags=0):
         """Parse selectors."""
 
         # Initialize important variables
         sel = _Selector()
+        in_sel = None
         selectors = []
         has_selector = False
         closed = False
@@ -892,6 +928,7 @@ class CSSParser(object):
         is_out_of_range = bool(flags & FLG_OUT_OF_RANGE)
         is_placeholder_shown = bool(flags & FLG_PLACEHOLDER_SHOWN)
         is_forgive = bool(flags & FLG_FORGIVE)
+        is_in = bool(flags & FLG_IN)
 
         # Print out useful debug stuff
         if self.debug:  # pragma: no cover
@@ -917,11 +954,14 @@ class CSSParser(object):
                 print('    is_placeholder_shown: True')
             if is_forgive:
                 print('    is_forgive: True')
+            if is_in:
+                print('    is_in: True')
 
         # The algorithm for relative selectors require an initial selector in the selector list
         if is_relative:
             selectors.append(_Selector())
 
+        # Parse a given selector piece to completion
         try:
             while True:
                 key, m = next(iselector)
@@ -945,6 +985,18 @@ class CSSParser(object):
                     has_selector = self.parse_pseudo_dir(sel, m, has_selector)
                     # Currently only supports HTML
                     is_html = True
+                elif key == 'pseudo_slash':
+                    if not is_in or not is_open or in_sel is not None:
+                        raise SelectorSyntaxError(
+                            "Unexpected slash at postion {}".format(m.start(0)),
+                            self.pattern,
+                            m.start(0)
+                        )
+                    has_selector, sel, rel_type = self.parse_pseudo_in(
+                        sel, m, has_selector, selectors, relations, index
+                    )
+                    in_sel = selectors
+                    selectors = []
                 elif key == 'pseudo_close':
                     if not has_selector:
                         if not is_forgive:
@@ -1005,6 +1057,10 @@ class CSSParser(object):
             if is_relative:
                 sel.rel_type = rel_type
                 selectors[-1].relations.append(sel)
+            elif is_in:
+                has_selector, sel, rel_type = self.parse_pseudo_in(
+                    sel, None, has_selector, selectors, relations, index
+                )
             else:
                 sel.relations.extend(relations)
                 del relations[:]
@@ -1022,10 +1078,16 @@ class CSSParser(object):
             else:
                 # Handle normal pseudo-classes with empty slots
                 if not selectors or not relations:
-                    # Others like `:is()` etc.
-                    sel.no_match = True
-                    del relations[:]
-                    selectors.append(sel)
+                    if is_in:
+                        # Special handling for `:in()`
+                        has_selector, sel, rel_type = self.parse_pseudo_in(
+                            sel, None, has_selector, selectors, relations, index
+                        )
+                    else:
+                        # Others like `:is()` etc.
+                        sel.no_match = True
+                        del relations[:]
+                        selectors.append(sel)
                     has_selector = True
 
         if not has_selector:
@@ -1050,6 +1112,19 @@ class CSSParser(object):
             selectors[-1].flags = ct.SEL_OUT_OF_RANGE
         if is_placeholder_shown:
             selectors[-1].flags = ct.SEL_PLACEHOLDER_SHOWN
+
+        # Special formatting of `:in()`
+        # We create a tuple of two selector lists: upper bound and lower bound
+        if is_in:
+            if in_sel is None:
+                in_sel = selectors
+                selectors = []
+            s = _Selector()
+            s.scoped_in = (
+                ct.SelectorList([s.freeze() for s in in_sel], False, False),
+                ct.SelectorList([s.freeze() for s in selectors], False, False)
+            )
+            selectors = [s]
 
         # Return selector list
         return ct.SelectorList([s.freeze() for s in selectors], is_not, is_html)

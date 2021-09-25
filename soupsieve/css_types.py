@@ -177,12 +177,12 @@ class Selector(Immutable):
 
     __slots__ = (
         'tag', 'ids', 'classes', 'attributes', 'nth', 'selectors',
-        'relation', 'rel_type', 'contains', 'lang', 'flags', '_hash'
+        'relation', 'scoped_in', 'rel_type', 'contains', 'lang', 'flags', '_hash'
     )
 
     def __init__(
         self, tag, ids, classes, attributes, nth, selectors,
-        relation, rel_type, contains, lang, flags
+        relation, scoped_in, rel_type, contains, lang, flags
     ):
         """Initialize."""
 
@@ -194,6 +194,7 @@ class Selector(Immutable):
             nth=nth,
             selectors=selectors,
             relation=relation,
+            scoped_in=scoped_in,
             rel_type=rel_type,
             contains=contains,
             lang=lang,
