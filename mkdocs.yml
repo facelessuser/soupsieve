@@ -22,6 +22,9 @@ theme:
   features:
     - navigation.tabs
     - navigation.top
+    - naviagtion.instant
+  pymdownx:
+    sponsor: "https://github.com/sponsors/facelessuser"
 
 nav:
   - Home:
@@ -43,7 +46,7 @@ nav:
 
 markdown_extensions:
   - markdown.extensions.toc:
-      slugify: !!python/name:pymdownx.slugs.uslugify
+      slugify: !!python/object/apply:pymdownx.slugs.slugify {kwds: {case: lower}}
       permalink: ""
   - markdown.extensions.admonition:
   - markdown.extensions.smarty:
@@ -57,10 +60,6 @@ markdown_extensions:
   - pymdownx.superfences:
   - pymdownx.highlight:
       extend_pygments_lang:
-        - name: php-inline
-          lang: php
-          options:
-            startinline: true
         - name: pycon3
           lang: pycon
           options:
@@ -92,6 +91,7 @@ markdown_extensions:
       separator: "\uff0b"
   - pymdownx.details:
   - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.saneheaders:
 
 extra:
@@ -105,6 +105,6 @@ plugins:
   - search:
       separator: '[:\s\-]+'
   - git-revision-date-localized
-  # - minify:
-  #     minify_html: true
+  - minify:
+      minify_html: true
   - mkdocs_pymdownx_material_extras

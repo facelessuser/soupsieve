@@ -1,4 +1,4 @@
-"""Test that we don't fail the same test cases that Beautiful Soup fails for."""
+"""Test that we don't fail the same test cases that Beautiful Soup used to fail prior to Soup Sieve."""
 from bs4 import BeautifulSoup
 import unittest
 import soupsieve as sv

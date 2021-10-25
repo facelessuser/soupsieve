@@ -66,6 +66,7 @@ SelectorList(
 ```
 """
 import re
+from typing import Any
 
 RE_CLASS = re.compile(r'(?i)[a-z_][_a-z\d\.]+\(')
 RE_PARAM = re.compile(r'(?i)[_a-z][_a-z\d]+=')
@@ -102,7 +103,7 @@ TOKENS = {
 }
 
 
-def pretty(obj):  # pragma: no cover
+def pretty(obj: Any) -> str:  # pragma: no cover
     """Make the object output string pretty."""
 
     sel = str(obj)

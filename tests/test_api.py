@@ -524,6 +524,12 @@ class TestInvalid(util.TestCase):
         with self.assertRaises(TypeError):
             sv.ct.ImmutableDict([[{}, 3]])
 
+    def test_immutable_dict_hashable_value_dict(self):
+        """Test immutable dictionary has a hashable value."""
+
+        with self.assertRaises(TypeError):
+            sv.ct.ImmutableDict({3: {}})
+
     def test_invalid_namespace_type(self):
         """Test invalid namespace type."""
 
