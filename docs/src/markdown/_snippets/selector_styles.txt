@@ -1,6 +1,7 @@
 <style>
 .twemoji.big-icon svg {
   max-height: initial !important;
+  height: 3rem !important;
   width: 3rem !important;
 }
 

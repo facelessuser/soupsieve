@@ -255,22 +255,22 @@ Selects elements that have no children and no text (whitespace is ignored).
     ```
 
 === "Usage"
-```pycon3
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <span> <!-- comment --> </span>
-... <span></span>
-... <span><span>    </span></span>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('body :empty'))
-[<span> <!-- comment --> </span>, <span></span>, <span>    </span>]
-```
+    ```pycon3
+    >>> from bs4 import BeautifulSoup as bs
+    >>> html = """
+    ... <html>
+    ... <head></head>
+    ... <body>
+    ... <span> <!-- comment --> </span>
+    ... <span></span>
+    ... <span><span>    </span></span>
+    ... </body>
+    ... </html>
+    ... """
+    >>> soup = bs(html, 'html5lib')
+    >>> print(soup.select('body :empty'))
+    [<span> <!-- comment --> </span>, <span></span>, <span>    </span>]
+    ```
 
 !!! tip "Additional Reading"
     https://developer.mozilla.org/en-US/docs/Web/CSS/:empty

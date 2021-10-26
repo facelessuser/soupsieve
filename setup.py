@@ -51,6 +51,7 @@ setup(
     author_email='Isaac.Muse@gmail.com',
     url='https://github.com/facelessuser/soupsieve',
     packages=find_packages(exclude=['test*', 'tools']),
+    package_data={"soupsieve": ["py.typed"]},
     install_requires=get_requirements("requirements/project.txt"),
     license='MIT License',
     classifiers=[
@@ -65,6 +66,7 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-        'Topic :: Software Development :: Libraries :: Python Modules'
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Typing :: Typed'
     ]
 )

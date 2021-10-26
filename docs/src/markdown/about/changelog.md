@@ -2,13 +2,14 @@
 
 ## 2.3
 
-- **NEW**: `:has()`, `:is()`, and `:where()` now use use a forgiving selector list. While not as forgiving as due to
-  syntax errors as CSS might be, it will forgive such things as empty sets and empty slots due to multiple consecutive
-  commas, leading commas, or trailing commas. Essentially, these pseudo-classes will match all non-empty selectors and
-  ignore empty ones. As the scraping environment is different that a browser environment, it was chosen not to
-  aggressively forgive bad syntax and invalid features to ensure the user is alerted that their program may not perform
-  as expected.
+- **NEW**: Add static typing.
+- **NEW**: `:has()`, `:is()`, and `:where()` now use use a forgiving selector list. While not as forgiving as CSS might
+  be, it will forgive such things as empty sets and empty slots due to multiple consecutive commas, leading commas, or
+  trailing commas. Essentially, these pseudo-classes will match all non-empty selectors and ignore empty ones. As the
+  scraping environment is different than a browser environment, it was chosen not to aggressively forgive bad syntax and
+  invalid features to ensure the user is alerted that their program may not perform as expected.
 - **NEW**: Add support to output a pretty print format of a compiled `SelectorList` for debug purposes.
+- **FIX**: Some small corner cases discovered with static typing.
 
 ## 2.2.1
 
