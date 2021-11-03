@@ -2,6 +2,7 @@
 
 ## 2.3
 
+- **NEW**: Officially support Python 3.10.
 - **NEW**: Add static typing.
 - **NEW**: `:has()`, `:is()`, and `:where()` now use use a forgiving selector list. While not as forgiving as CSS might
   be, it will forgive such things as empty sets and empty slots due to multiple consecutive commas, leading commas, or
