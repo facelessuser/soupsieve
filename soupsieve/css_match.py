@@ -4,8 +4,9 @@ from . import util
 import re
 from . import css_types as ct
 import unicodedata
-import bs4  # type: ignore[import]
-from typing import Iterator, Iterable, List, Any, Optional, Tuple, Union, Dict, Callable, Sequence, cast
+from typing import Iterator, Iterable, List, Any, Optional, Tuple, Union, Dict, Callable, Sequence, cast, TYPE_CHECKING
+if TYPE_CHECKING:  # pragma: no cover
+    import bs4  # type: ignore[import]
 
 # Empty tag pattern (whitespace okay)
 RE_NOT_EMPTY = re.compile('[^ \t\r\n\f]')
@@ -78,6 +79,8 @@ class _FakeParent:
 class _DocumentNav:
     """Navigate a Beautiful Soup document."""
 
+    import bs4
+
     @classmethod
     def assert_valid_input(cls, tag: Any) -> None:
         """Check if valid input tag or document."""
@@ -86,40 +89,42 @@ class _DocumentNav:
         if not cls.is_tag(tag):
             raise TypeError("Expected a BeautifulSoup 'Tag', but instead recieved type {}".format(type(tag)))
 
-    @staticmethod
-    def is_doc(obj: 'bs4.Tag') -> bool:
+    @classmethod
+    def is_doc(cls, obj: 'bs4.Tag') -> bool:
         """Is `BeautifulSoup` object."""
-        return isinstance(obj, bs4.BeautifulSoup)
+        return isinstance(obj, cls.bs4.BeautifulSoup)
 
-    @staticmethod
-    def is_tag(obj: 'bs4.PageElement') -> bool:
+    @classmethod
+    def is_tag(cls, obj: 'bs4.PageElement') -> bool:
         """Is tag."""
-        return isinstance(obj, bs4.Tag)
+        return isinstance(obj, cls.bs4.Tag)
 
-    @staticmethod
-    def is_declaration(obj: 'bs4.PageElement') -> bool:  # pragma: no cover
+    @classmethod
+    def is_declaration(cls, obj: 'bs4.PageElement') -> bool:  # pragma: no cover
         """Is declaration."""
-        return isinstance(obj, bs4.Declaration)
+        return isinstance(obj, cls.bs4.Declaration)
 
-    @staticmethod
-    def is_cdata(obj: 'bs4.PageElement') -> bool:
+    @classmethod
+    def is_cdata(cls, obj: 'bs4.PageElement') -> bool:
         """Is CDATA."""
-        return isinstance(obj, bs4.CData)
+        return isinstance(obj, cls.bs4.CData)
 
-    @staticmethod
-    def is_processing_instruction(obj: 'bs4.PageElement') -> bool:  # pragma: no cover
+    @classmethod
+    def is_processing_instruction(cls, obj: 'bs4.PageElement') -> bool:  # pragma: no cover
         """Is processing instruction."""
-        return isinstance(obj, bs4.ProcessingInstruction)
+        return isinstance(obj, cls.bs4.ProcessingInstruction)
 
-    @staticmethod
-    def is_navigable_string(obj: 'bs4.PageElement') -> bool:
+    @classmethod
+    def is_navigable_string(cls, obj: 'bs4.PageElement') -> bool:
         """Is navigable string."""
-        return isinstance(obj, bs4.NavigableString)
+        return isinstance(obj, cls.bs4.NavigableString)
 
-    @staticmethod
-    def is_special_string(obj: 'bs4.PageElement') -> bool:
+    @classmethod
+    def is_special_string(cls, obj: 'bs4.PageElement') -> bool:
         """Is special string."""
-        return isinstance(obj, (bs4.Comment, bs4.Declaration, bs4.CData, bs4.ProcessingInstruction, bs4.Doctype))
+        return isinstance(
+            obj, (cls.bs4.Comment, cls.bs4.Declaration, cls.bs4.CData, cls.bs4.ProcessingInstruction, cls.bs4.Doctype)
+        )
 
     @classmethod
     def is_content_string(cls, obj: 'bs4.PageElement') -> bool:
