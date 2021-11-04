@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.1
+
+- **NEW**: Delay imports of `bs4` to work around `conda-forge`'s complaints about circular imports.
+
 ## 2.3
 
 - **NEW**: Officially support Python 3.10.
