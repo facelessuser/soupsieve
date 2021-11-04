@@ -30,8 +30,9 @@ from . import css_parser as cp
 from . import css_match as cm
 from . import css_types as ct
 from .util import DEBUG, SelectorSyntaxError  # noqa: F401
-import bs4  # type: ignore[import]
-from typing import Dict, Optional, Any, List, Iterator, Iterable
+from typing import Dict, Optional, Any, List, Iterator, Iterable, TYPE_CHECKING
+if TYPE_CHECKING:  # pragma: no cover
+    import bs4  # type: ignore[import]
 
 __all__ = (
     'DEBUG', 'SelectorSyntaxError', 'SoupSieve',
