@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.1
+
+- **FIX**: Ensure attribute selectors match tags that have new lines characters in attributes. (#233)
+
 ## 2.3
 
 - **NEW**: Officially support Python 3.10.
