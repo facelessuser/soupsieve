@@ -484,12 +484,12 @@ class CSSParser:
         value = ''
 
         if case:
-            flags = re.I if case == 'i' else 0
+            flags = (re.I if case == 'i' else 0) | re.DOTALL
         elif util.lower(attr) == 'type':
-            flags = re.I
+            flags = re.I | re.DOTALL
             is_type = True
         else:
-            flags = 0
+            flags = re.DOTALL
 
         if op:
             if m.group('value').startswith(('"', "'")):

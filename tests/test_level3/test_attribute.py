@@ -60,3 +60,53 @@ class TestAttribute(util.TestCase):
             ["0", "3", "pre"],
             flags=util.HTML
         )
+
+    def test_attribute_contains_with_newlines(self):
+        """Test attribute `*=` will match with new lines."""
+
+        self.assert_selector(
+            "<p><span id='1' title='foo bar'>foo1</span><span id='2' title='foo\nbar'>foo1</span></p>",
+            "span[title*='bar']",
+            ["1", "2"],
+            flags=util.HTML
+        )
+
+    def test_attribute_starts_with_newlines(self):
+        """Test attribute `^=` will match with new lines."""
+
+        self.assert_selector(
+            "<p><span id='1' title='foo bar'>foo1</span><span id='2' title='foo\nbar'>foo1</span></p>",
+            "span[title^='foo']",
+            ["1", "2"],
+            flags=util.HTML
+        )
+
+    def test_attribute_ends_with_newlines(self):
+        """Test attribute `$=` will match with new lines."""
+
+        self.assert_selector(
+            "<p><span id='1' title='foo bar'>foo1</span><span id='2' title='foo\nbar'>foo1</span></p>",
+            "span[title$='bar']",
+            ["1", "2"],
+            flags=util.HTML
+        )
+
+    def test_attribute_dash_list_with_newlines(self):
+        """Test attribute `|=` will match with new lines."""
+
+        self.assert_selector(
+            "<p><span id='1' title='fo-o bar'>foo1</span><span id='2' title='fo-o\nbar'>foo1</span></p>",
+            "span[title|='fo']",
+            ["1", "2"],
+            flags=util.HTML
+        )
+
+    def test_attribute_space_list_with_newlines(self):
+        """Test attribute `~=` will match with new lines."""
+
+        self.assert_selector(
+            "<p><span id='1' title='foo bar baz'>foo1</span><span id='2' title='foo\nbar baz'>foo1</span></p>",
+            "span[title~='baz']",
+            ["1", "2"],
+            flags=util.HTML
+        )
