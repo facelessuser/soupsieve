@@ -478,7 +478,7 @@ class Inputs:
         return parsed
 
 
-class _Match(_DocumentNav):
+class CSSMatch(_DocumentNav):
     """Perform CSS matching."""
 
     def __init__(
@@ -1493,10 +1493,6 @@ class _Match(_DocumentNav):
         """Match."""
 
         return not self.is_doc(el) and self.is_tag(el) and self.match_selectors(el, self.selectors)
-
-
-class CSSMatch(_Match):
-    """The Beautiful Soup CSS match class."""
 
 
 class SoupSieve(ct.Immutable):
