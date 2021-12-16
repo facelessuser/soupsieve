@@ -68,13 +68,13 @@ class TestSoupContainsOwn(util.TestCase):
         """Test contains CDATA in `lxml` HTML."""
 
         from lxml import etree
-        LIBXML_VER = etree.LIBXML_VERSION
+        libxml_ver = etree.LIBXML_VERSION
 
         markup = """
         <body><div id="1">Testing that <span id="2"><![CDATA[that]]></span>contains works.</div></body>
         """
 
-        results = ['1', '2'] if LIBXML_VER >= (2, 9, 11) else ['1']
+        results = ['1', '2'] if libxml_ver >= (2, 9, 11) else ['1']
         self.assert_selector(
             markup,
             'body *:-soup-contains-own("that")',
