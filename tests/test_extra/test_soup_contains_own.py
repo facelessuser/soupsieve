@@ -35,7 +35,7 @@ class TestSoupContainsOwn(util.TestCase):
             flags=util.HTML
         )
 
-    def test_contains_own_cdata_html(self):
+    def test_contains_own_cdata_html5(self):
         """Test contains CDATA in HTML5."""
 
         markup = """
@@ -46,7 +46,40 @@ class TestSoupContainsOwn(util.TestCase):
             markup,
             'body *:-soup-contains-own("that")',
             ['1'],
-            flags=util.HTML
+            flags=util.HTML5
+        )
+
+    def test_contains_own_cdata_py_html(self):
+        """Test contains CDATA in Python HTML parser."""
+
+        markup = """
+        <body><div id="1">Testing that <span id="2"><![CDATA[that]]></span>contains works.</div></body>
+        """
+
+        self.assert_selector(
+            markup,
+            'body *:-soup-contains-own("that")',
+            ['1'],
+            flags=util.PYHTML
+        )
+
+    @util.skip_no_lxml
+    def test_contains_own_cdata_lxml_html(self):
+        """Test contains CDATA in `lxml` HTML."""
+
+        from lxml import etree
+        LIBXML_VER = etree.LIBXML_VERSION
+
+        markup = """
+        <body><div id="1">Testing that <span id="2"><![CDATA[that]]></span>contains works.</div></body>
+        """
+
+        results = ['1', '2'] if LIBXML_VER >= (2, 9, 11) else ['1']
+        self.assert_selector(
+            markup,
+            'body *:-soup-contains-own("that")',
+            results,
+            flags=util.LXML_HTML
         )
 
     def test_contains_own_cdata_xml(self):
