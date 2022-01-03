@@ -51,7 +51,7 @@ class TestPlaceholderShown(util.TestCase):
         /* Value will override this input */
         <input id="29" type placeholder="This is some text" value="Actual value">
 
-        /* Text area content overides the placeholder
+        /* Text area content overrides the placeholder
         <textarea id="30" placeholder="This is some text">Value</textarea>
         <textarea id="31" placeholder="This is some text">
 
