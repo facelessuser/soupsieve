@@ -17,11 +17,8 @@ jobs:
       max-parallel: 4
       matrix:
         platform: [ubuntu-latest, windows-latest]
-        tox-env: [py36, py37, py38, py39, py310, nolxml, nohtml5lib]
+        tox-env: [py37, py38, py39, py310, nolxml, nohtml5lib]
         include:
-          - tox-env: py36
-            python-version: 3.6
-            continue-on-error: false
           - tox-env: py37
             python-version: 3.7
             continue-on-error: false
