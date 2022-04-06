@@ -1,8 +1,12 @@
 # Changelog
 
+## 2.3.2
+
+- **FIX**: Fix some typos in error messages.
+
 ## 2.3.1
 
-- **FIX**: Ensure attribute selectors match tags that have new lines characters in attributes. (#233)
+- **FIX**: Ensure attribute selectors match tags that have new line characters in attributes. (#233)
 
 ## 2.3
 

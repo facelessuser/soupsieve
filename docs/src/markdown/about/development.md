@@ -391,5 +391,3 @@ class SelectorLang:
 Attribute     | Description
 ------------- | -----------
 `languages`  | A list of regular expression objects that match a language pattern.
-
---8<-- "links.txt"

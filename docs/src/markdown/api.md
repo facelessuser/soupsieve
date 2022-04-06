@@ -314,7 +314,3 @@ Tags do not necessarily have to have a prefix for Soup Sieve to recognize them e
 *should* automatically get the SVG namespace. Depending how namespaces were defined in the document, tags may inherit
 namespaces in some conditions.  Namespace assignment is mainly handled by the parser and exposed through the Beautiful
 Soup API. Soup Sieve uses the Beautiful Soup API to then compare namespaces for supported documents.
-
---8<--
-refs.txt
---8<--

@@ -1,14 +1,69 @@
 [build-system]
 requires = [
-    "setuptools>=42",
-    "wheel"
+    "hatchling>=0.21.1",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "soupsieve"
+description = "A modern CSS selector implementation for Beautiful Soup."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.6"
+authors = [
+    { name = "Isaac Muse", email = "Isaac.Muse@gmail.com" },
+]
+keywords = [
+    "CSS",
+    "HTML",
+    "XML",
+    "selector",
+    "filter",
+    "query",
+    "soup"
+]
+dynamic = [
+    "classifiers",
+    "dependencies",
+    "version",
 ]
 
-build-backend = "setuptools.build_meta"
+[project.urls]
+Homepage = "https://github.com/facelessuser/soupsieve"
+
+[tool.hatch.version]
+source = "code"
+path = "soupsieve/__meta__.py"
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "/soupsieve",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/docs/src/markdown/**/*.md",
+    "/docs/src/markdown/**/*.gif",
+    "/docs/src/markdown/**/*.png",
+    "/docs/src/markdown/dictionary/*.txt",
+    "/docs/theme/**/*.css",
+    "/docs/theme/**/*.js",
+    "/docs/theme/**/*.html",
+    "/requirements/*.txt",
+    "/soupsieve/**/*.py",
+    "/soupsieve/py.typed",
+    "/tests/**/*.py",
+    "/.pyspelling.yml",
+    "/.coveragerc",
+    "/mkdocs.yml",
+    "/tox.ini",
+]
 
 [tool.mypy]
 files = [
-    "soupsieve/*.py"
+    "soupsieve"
 ]
 strict = true
 show_error_codes = true
+
+[tool.hatch.metadata.hooks.custom]

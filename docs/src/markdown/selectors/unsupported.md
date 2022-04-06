@@ -170,6 +170,5 @@ Selects links that have already been visited.
     ```
 
 --8<--
-selector_styles.txt
-refs.txt
+selector_styles.md
 --8<--
