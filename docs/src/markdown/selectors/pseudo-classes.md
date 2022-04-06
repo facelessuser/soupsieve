@@ -400,6 +400,12 @@ given element), match at least one element.
 While the level 4 specifications state that [compound](#compound-selector) selectors are supported, complex selectors
 are planned for level 5 CSS selectors. Soup Sieve supports [complex](#complex-selector) selectors.
 
+In addition to supporting complex selectors, Soup Sieve also supports nested `:has()` which has been excluded from the
+level 4 specifications to help encourage browsers to implement `:has()`. This exclusion helps to reduces complexity and
+improves performance in a live environment. As these performance concerns are not an issue in a scraping environment
+compared to a web browser, Soup Sieve has no intentions on restricting the nesting of `:has()`. Users can always choose
+not to nest `:has()` if there are concerns.
+
 === "Syntax"
     ```css
     :has(selector)
@@ -1590,6 +1596,5 @@ Syntax is the same as [`:-soup-contains()`](#:-soup-contains).
     `:-soup-contains-own()` was added in 2.1.
 
 --8<--
-selector_styles.txt
-refs.txt
+selector_styles.md
 --8<--

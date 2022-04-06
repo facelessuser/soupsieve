@@ -185,7 +185,3 @@ Compiled patterns are cached, so if for any reason you need to clear the cache, 
 ```pycon3
 >>> sv.purge()
 ```
-
---8<--
-refs.txt
---8<--

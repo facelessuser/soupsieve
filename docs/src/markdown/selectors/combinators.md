@@ -152,6 +152,5 @@ has an adjacent sibling that precedes it that matches the first element.
     https://developer.mozilla.org/en-US/docs/Web/CSS/Adjacent_sibling_combinator
 
 --8<--
-selector_styles.txt
-refs.txt
+selector_styles.md
 --8<--

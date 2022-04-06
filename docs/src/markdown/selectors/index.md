@@ -117,6 +117,5 @@ A selector list is a list of selectors joined with a comma (`,`). A selector lis
 valid if any of the selectors in a list matches.
 
 --8<--
-selector_styles.txt
-refs.txt
+selector_styles.md
 --8<--

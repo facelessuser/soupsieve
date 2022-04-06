@@ -541,6 +541,5 @@ Namespaces can be used with attribute selectors as well except that when `[|attr
     ```
 
 --8<--
-selector_styles.txt
-refs.txt
+selector_styles.md
 --8<--
