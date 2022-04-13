@@ -47,6 +47,13 @@ Markdown. If you would like to build and preview the documentation, you must hav
 - @squidfunk/mkdocs-material: a material theme for MkDocs.
 - @facelessuser/pymdown-extensions: this Python Markdown extension bundle.
 
+It is advised that you just install document dependencies with the following as the above list may not include all
+document plugins:
+
+```
+pip install -r requirements/docs.txt
+```
+
 In order to build and preview the documents, just run the command below from the root of the project and you should be
 able to view the documents at `localhost:8000` in your browser. After that, you should be able to update the documents
 and have your browser preview update live.
@@ -117,7 +124,7 @@ for specific versions of Python, you specify the environment with `-e PXY` where
 minor version.
 
 ```
-tox -e py37
+tox -e py310
 ```
 
 To target linting:
@@ -390,4 +397,4 @@ class SelectorLang:
 
 Attribute     | Description
 ------------- | -----------
-`languages`  | A list of regular expression objects that match a language pattern.
+`languages`   | A list of regular expression objects that match a language pattern.
