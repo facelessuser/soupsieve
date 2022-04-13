@@ -35,17 +35,23 @@ pip install beautifulsoup4
 ```
 
 In most cases, assuming you've installed version 4.7.0, that should be all you need to do, but if you've installed via
-some alternative method, and Soup Sieve is not automatically installed for your, you can install it directly:
+some alternative method, and Soup Sieve is not automatically installed, you can install it directly:
 
 ```
 pip install soupsieve
 ```
 
-If you want to manually install it from source, navigate to the root of the project and run
+If you want to manually install it from source, first ensure that [`build`][build] is installed:
 
 ```
-python setup.py build
-python setup.py install
+pip install build
+```
+
+Then navigate to the root of the project and build the wheel and install (replacing `<ver>` with the current version):
+
+```
+python -m build -w
+pip install dist/soupsive-<ver>-py3-none-any.whl
 ```
 
 ## Usage
