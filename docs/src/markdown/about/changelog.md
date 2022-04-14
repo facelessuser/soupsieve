@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.2.post1
+
+- **FIX**: Documentation for installation from source is outdated.
+
 ## 2.3.2
 
 - **FIX**: Fix some typos in error messages.
