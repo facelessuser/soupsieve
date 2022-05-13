@@ -722,7 +722,7 @@ class CSSParser:
         if postfix == '_child':
             if m.group('of'):
                 # Parse the rest of `of S`.
-                nth_sel = self.parse_selectors(iselector, m.end(0), FLG_PSEUDO | FLG_OPEN)
+                nth_sel = self.parse_selectors(iselector, m.end(0), FLG_PSEUDO | FLG_OPEN | FLG_FORGIVE)
             else:
                 # Use default `*|*` for `of S`.
                 nth_sel = CSS_NTH_OF_S_DEFAULT

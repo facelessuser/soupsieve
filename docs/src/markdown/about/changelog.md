@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.0
+
+- **NEW**: `:nth-child()` and `:nth-last-child()` will forgive irregular comma usage.
+
 ## 2.3.2.post1
 
 - **FIX**: Documentation for installation from source is outdated.
