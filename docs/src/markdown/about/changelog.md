@@ -3,6 +3,7 @@
 ## 2.4.0
 
 - **NEW**: `:nth-child()` and `:nth-last-child()` will forgive irregular comma usage.
+- **NEW**: Formally drop Python 3.6.
 
 ## 2.3.2.post1
 
