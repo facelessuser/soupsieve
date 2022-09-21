@@ -25,13 +25,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import annotations
 from .__meta__ import __version__, __version_info__  # noqa: F401
 from . import css_parser as cp
 from . import css_match as cm
 from . import css_types as ct
 from .util import DEBUG, SelectorSyntaxError  # noqa: F401
 import bs4  # type: ignore[import]
-from typing import Dict, Optional, Any, List, Iterator, Iterable
+from typing import Optional, Any, Iterator, Iterable
 
 __all__ = (
     'DEBUG', 'SelectorSyntaxError', 'SoupSieve',
@@ -44,10 +45,10 @@ SoupSieve = cm.SoupSieve
 
 def compile(  # noqa: A001
     pattern: str,
-    namespaces: Optional[Dict[str, str]] = None,
+    namespaces: Optional[dict[str, str]] = None,
     flags: int = 0,
     *,
-    custom: Optional[Dict[str, str]] = None,
+    custom: Optional[dict[str, str]] = None,
     **kwargs: Any
 ) -> cm.SoupSieve:
     """Compile CSS pattern."""
@@ -76,10 +77,10 @@ def purge() -> None:
 def closest(
     select: str,
     tag: 'bs4.Tag',
-    namespaces: Optional[Dict[str, str]] = None,
+    namespaces: Optional[dict[str, str]] = None,
     flags: int = 0,
     *,
-    custom: Optional[Dict[str, str]] = None,
+    custom: Optional[dict[str, str]] = None,
     **kwargs: Any
 ) -> 'bs4.Tag':
     """Match closest ancestor."""
@@ -90,10 +91,10 @@ def closest(
 def match(
     select: str,
     tag: 'bs4.Tag',
-    namespaces: Optional[Dict[str, str]] = None,
+    namespaces: Optional[dict[str, str]] = None,
     flags: int = 0,
     *,
-    custom: Optional[Dict[str, str]] = None,
+    custom: Optional[dict[str, str]] = None,
     **kwargs: Any
 ) -> bool:
     """Match node."""
@@ -104,12 +105,12 @@ def match(
 def filter(  # noqa: A001
     select: str,
     iterable: Iterable['bs4.Tag'],
-    namespaces: Optional[Dict[str, str]] = None,
+    namespaces: Optional[dict[str, str]] = None,
     flags: int = 0,
     *,
-    custom: Optional[Dict[str, str]] = None,
+    custom: Optional[dict[str, str]] = None,
     **kwargs: Any
-) -> List['bs4.Tag']:
+) -> list['bs4.Tag']:
     """Filter list of nodes."""
 
     return compile(select, namespaces, flags, **kwargs).filter(iterable)
@@ -118,10 +119,10 @@ def filter(  # noqa: A001
 def select_one(
     select: str,
     tag: 'bs4.Tag',
-    namespaces: Optional[Dict[str, str]] = None,
+    namespaces: Optional[dict[str, str]] = None,
     flags: int = 0,
     *,
-    custom: Optional[Dict[str, str]] = None,
+    custom: Optional[dict[str, str]] = None,
     **kwargs: Any
 ) -> 'bs4.Tag':
     """Select a single tag."""
@@ -132,13 +133,13 @@ def select_one(
 def select(
     select: str,
     tag: 'bs4.Tag',
-    namespaces: Optional[Dict[str, str]] = None,
+    namespaces: Optional[dict[str, str]] = None,
     limit: int = 0,
     flags: int = 0,
     *,
-    custom: Optional[Dict[str, str]] = None,
+    custom: Optional[dict[str, str]] = None,
     **kwargs: Any
-) -> List['bs4.Tag']:
+) -> list['bs4.Tag']:
     """Select the specified tags."""
 
     return compile(select, namespaces, flags, **kwargs).select(tag, limit)
@@ -147,11 +148,11 @@ def select(
 def iselect(
     select: str,
     tag: 'bs4.Tag',
-    namespaces: Optional[Dict[str, str]] = None,
+    namespaces: Optional[dict[str, str]] = None,
     limit: int = 0,
     flags: int = 0,
     *,
-    custom: Optional[Dict[str, str]] = None,
+    custom: Optional[dict[str, str]] = None,
     **kwargs: Any
 ) -> Iterator['bs4.Tag']:
     """Iterate the specified tags."""
