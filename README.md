@@ -3,6 +3,7 @@
 [![Build][github-ci-image]][github-ci-link]
 [![Coverage Status][codecov-image]][codecov-link]
 [![PyPI Version][pypi-image]][pypi-link]
+[![PyPI Downloads][pypi-down]][pypi-link]
 [![PyPI - Python Version][python-image]][pypi-link]
 ![License][license-image-mit]
 
@@ -96,6 +97,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 [codecov-image]: https://img.shields.io/codecov/c/github/facelessuser/soupsieve/master.svg?logo=codecov&logoColor=aaaaaa&labelColor=333333
 [codecov-link]: https://codecov.io/github/facelessuser/soupsieve
 [pypi-image]: https://img.shields.io/pypi/v/soupsieve.svg?logo=pypi&logoColor=aaaaaa&labelColor=333333
+[pypi-down]: https://img.shields.io/pypi/dm/soupsieve.svg?logo=pypi&logoColor=aaaaaa&labelColor=333333
 [pypi-link]: https://pypi.python.org/pypi/soupsieve
 [python-image]: https://img.shields.io/pypi/pyversions/soupsieve?logo=python&logoColor=aaaaaa&labelColor=333333
 [license-image-mit]: https://img.shields.io/badge/license-MIT-blue.svg?labelColor=333333
