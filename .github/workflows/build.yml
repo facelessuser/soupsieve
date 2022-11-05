@@ -17,7 +17,7 @@ jobs:
       max-parallel: 4
       matrix:
         platform: [ubuntu-latest, windows-latest]
-        tox-env: [py37, py38, py39, py310, nolxml, nohtml5lib]
+        tox-env: [py37, py38, py39, py310, py311, nolxml, nohtml5lib]
         include:
           - tox-env: py37
             python-version: 3.7
@@ -31,11 +31,14 @@ jobs:
           - tox-env: py310
             python-version: '3.10'
             continue-on-error: true
+          - tox-env: py311
+            python-version: '3.11'
+            continue-on-error: true
           - tox-env: nolxml
-            python-version: '3.10'
+            python-version: '3.11'
             continue-on-error: false
           - tox-env: nohtml5lib
-            python-version: '3.10'
+            python-version: '3.11'
             continue-on-error: false
 
     env:
