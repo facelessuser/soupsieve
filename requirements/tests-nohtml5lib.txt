@@ -1,0 +1,6 @@
+pytest
+pytest-cov
+coverage
+lxml
+beautifulsoup4
+mypy
