@@ -96,7 +96,7 @@ In order to preserve good code health, a test suite has been put together with p
 these tests, you can use the following command:
 
 ```
-py.test
+pytest
 ```
 
 ### Running Validation With Tox
