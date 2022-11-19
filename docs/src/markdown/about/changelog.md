@@ -1,6 +1,11 @@
 # Changelog
 
-## 2.4.0
+## 2.5
+
+- **NEW**: Update to support changes related to `:lang()` in the official CSS spec. `:lang("")` should match unspecified
+  languages, e.g. `lang=""`, but not `lang=und`.
+
+## 2.4
 
 - **NEW**: `:nth-child()` and `:nth-last-child()` will forgive irregular comma usage.
 - **NEW**: Formally drop Python 3.6.

@@ -601,13 +601,18 @@ class CSSMatch(_DocumentNav):
         ranges = lang_range.split('-')
         subtags = lang_tag.lower().split('-')
         length = len(ranges)
+        slength = len(subtags)
         rindex = 0
         sindex = 0
         r = ranges[rindex]
         s = subtags[sindex]
 
+        # Empty specified language should match unspecified language attributes
+        if length == 1 and slength == 1 and not r and r == s:
+            return True
+
         # Primary tag needs to match
-        if r != '*' and r != s:
+        if (r != '*' and r != s) or (r == '*' and slength == 1 and not s):
             match = False
 
         rindex += 1
@@ -1184,7 +1189,7 @@ class CSSMatch(_DocumentNav):
                 break
 
         # Use cached meta language.
-        if not found_lang and self.cached_meta_lang:
+        if found_lang is None and self.cached_meta_lang:
             for cache in self.cached_meta_lang:
                 if root is cache[0]:
                     found_lang = cache[1]
@@ -1218,13 +1223,13 @@ class CSSMatch(_DocumentNav):
                                 found_lang = content
                                 self.cached_meta_lang.append((cast(str, root), cast(str, found_lang)))
                                 break
-                    if found_lang:
+                    if found_lang is not None:
                         break
-                if not found_lang:
+                if found_lang is None:
                     self.cached_meta_lang.append((cast(str, root), ''))
 
         # If we determined a language, compare.
-        if found_lang:
+        if found_lang is not None:
             for patterns in langs:
                 match = False
                 for pattern in patterns:
