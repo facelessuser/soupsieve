@@ -155,6 +155,44 @@ class TestLang(util.TestCase):
             flags=util.HTML
         )
 
+    def test_language_und(self):
+        """Test that undefined language can be matched by `*`."""
+
+        markup = """
+        <div id="1" lang=""></div>
+        <div id="2" lang="und"></div>
+        <div id="3" lang=>
+            <div id="4"></div>
+        </div>
+        <div id="5"></div>
+        """
+
+        self.assert_selector(
+            markup,
+            "div:lang('*')",
+            ['2'],
+            flags=util.HTML
+        )
+
+    def test_language_empty_string(self):
+        """Test that an empty string language will only match untagged languages `lang=""`."""
+
+        markup = """
+        <div id="1" lang=""></div>
+        <div id="2" lang="und"></div>
+        <div id="3" lang=>
+            <div id="4"></div>
+        </div>
+        <div id="5"></div>
+        """
+
+        self.assert_selector(
+            markup,
+            "div:lang('')",
+            ['1', '3', '4'],
+            flags=util.HTML
+        )
+
     def test_language_list(self):
         """Test language list."""
 
