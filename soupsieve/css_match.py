@@ -6,7 +6,7 @@ import re
 from . import css_types as ct
 import unicodedata
 import bs4  # type: ignore[import]
-from typing import Iterator, Iterable, Any, Optional, Callable, Sequence, cast
+from typing import Iterator, Iterable, Any, Optional, Callable, Sequence, cast  # noqa: F401
 
 # Empty tag pattern (whitespace okay)
 RE_NOT_EMPTY = re.compile('[^ \t\r\n\f]')
