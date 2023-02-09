@@ -129,45 +129,20 @@ class TestHas(util.TestCase):
             flags=util.HTML
         )
 
-    def test_has_empty(self):
-        """Test has with empty slot due to multiple commas."""
+    def test_has_no_match(self):
+        """Test has with a non-matching selector."""
 
         self.assert_selector(
             self.MARKUP2,
-            'div:has()',
+            'div:has(:paused)',
             [],
             flags=util.HTML
         )
 
-    def test_has_multi_commas(self):
+    def test_has_empty(self):
         """Test has with empty slot due to multiple commas."""
 
-        self.assert_selector(
-            self.MARKUP2,
-            'div:has(> .bbbb, .ffff, , .jjjj)',
-            ['0', '4', '8'],
-            flags=util.HTML
-        )
-
-    def test_has_leading_commas(self):
-        """Test has with empty slot due to leading commas."""
-
-        self.assert_selector(
-            self.MARKUP2,
-            'div:has(, > .bbbb, .ffff, .jjjj)',
-            ['0', '4', '8'],
-            flags=util.HTML
-        )
-
-    def test_has_trailing_commas(self):
-        """Test has with empty slot due to trailing commas."""
-
-        self.assert_selector(
-            self.MARKUP2,
-            'div:has(> .bbbb, .ffff, .jjjj, )',
-            ['0', '4', '8'],
-            flags=util.HTML
-        )
+        self.assert_raises('div:has()', SelectorSyntaxError)
 
     def test_invalid_incomplete_has(self):
         """Test `:has()` fails with just a combinator."""

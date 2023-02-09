@@ -1,13 +1,11 @@
 # Changelog
 
-## 2.5
+## 2.4
 
 - **NEW**: Update to support changes related to `:lang()` in the official CSS spec. `:lang("")` should match unspecified
   languages, e.g. `lang=""`, but not `lang=und`.
-
-## 2.4
-
-- **NEW**: `:nth-child()` and `:nth-last-child()` will forgive irregular comma usage.
+- **NEW**: Only `:is()` and `:where()` should allow forgiving selector lists according to latest CSS (as far as Soup
+  Sieve supports "forgiving" which is limited to empty selectors).
 - **NEW**: Formally drop Python 3.6.
 
 ## 2.3.2.post1
