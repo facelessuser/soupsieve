@@ -46,13 +46,3 @@ class TestNthChild(util.TestCase):
             ['2', '6', '10'],
             flags=util.HTML
         )
-
-    def test_nth_child_forgive(self):
-        """Test that `nth` child forgives bad commas."""
-
-        self.assert_selector(
-            self.MARKUP,
-            ":nth-child(2n + 1 OF p.test,, span.test,)",
-            ['2', '6', '10'],
-            flags=util.HTML
-        )

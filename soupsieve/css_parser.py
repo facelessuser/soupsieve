@@ -723,7 +723,7 @@ class CSSParser:
         if postfix == '_child':
             if m.group('of'):
                 # Parse the rest of `of S`.
-                nth_sel = self.parse_selectors(iselector, m.end(0), FLG_PSEUDO | FLG_OPEN | FLG_FORGIVE)
+                nth_sel = self.parse_selectors(iselector, m.end(0), FLG_PSEUDO | FLG_OPEN)
             else:
                 # Use default `*|*` for `of S`.
                 nth_sel = CSS_NTH_OF_S_DEFAULT
@@ -753,7 +753,7 @@ class CSSParser:
         if name == ':not':
             flags |= FLG_NOT
         elif name == ':has':
-            flags |= FLG_RELATIVE | FLG_FORGIVE
+            flags |= FLG_RELATIVE
         elif name in (':where', ':is'):
             flags |= FLG_FORGIVE
 
@@ -777,11 +777,6 @@ class CSSParser:
         if not combinator:
             combinator = WS_COMBINATOR
         if combinator == COMMA_COMBINATOR:
-            if not has_selector:
-                # If we've not captured any selector parts, the comma is either at the beginning of the pattern
-                # or following another comma, both of which are unexpected. But shouldn't fail the pseudo-class.
-                sel.no_match = True
-
             sel.rel_type = rel_type
             selectors[-1].relations.append(sel)
             rel_type = ":" + WS_COMBINATOR
@@ -1070,22 +1065,12 @@ class CSSParser:
                 selectors.append(sel)
 
         # Forgive empty slots in pseudo-classes that have lists (and are forgiving)
-        elif is_forgive:
-            if is_relative:
-                # Handle relative selectors pseudo-classes with empty slots like `:has()`
-                if selectors and selectors[-1].rel_type is None and rel_type == ': ':
-                    sel.rel_type = rel_type
-                    sel.no_match = True
-                    selectors[-1].relations.append(sel)
-                    has_selector = True
-            else:
-                # Handle normal pseudo-classes with empty slots
-                if not selectors or not relations:
-                    # Others like `:is()` etc.
-                    sel.no_match = True
-                    del relations[:]
-                    selectors.append(sel)
-                    has_selector = True
+        elif is_forgive and (not selectors or not relations):
+            # Handle normal pseudo-classes with empty slots like `:is()` etc.
+            sel.no_match = True
+            del relations[:]
+            selectors.append(sel)
+            has_selector = True
 
         if not has_selector:
             # We will always need to finish a selector when `:has()` is used as it leads with combining.
