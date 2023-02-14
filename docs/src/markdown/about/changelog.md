@@ -7,6 +7,7 @@
 - **NEW**: Only `:is()` and `:where()` should allow forgiving selector lists according to latest CSS (as far as Soup
   Sieve supports "forgiving" which is limited to empty selectors).
 - **NEW**: Formally drop Python 3.6.
+- **NEW**: Formally declare support for Python 3.11.
 
 ## 2.3.2.post1
 
