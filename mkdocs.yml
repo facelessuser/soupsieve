@@ -4,7 +4,7 @@ repo_url: https://github.com/facelessuser/soupsieve
 edit_uri: tree/main/docs/src/markdown
 site_description: A modern CSS selector library for Beautiful Soup.
 copyright: |
-  Copyright &copy; 2018 - 2022 <a href="https://github.com/facelessuser"  target="_blank" rel="noopener">Isaac Muse</a>
+  Copyright &copy; 2018 - 2023 <a href="https://github.com/facelessuser"  target="_blank" rel="noopener">Isaac Muse</a>
 
 docs_dir: docs/src/markdown
 theme:
@@ -22,7 +22,14 @@ theme:
   features:
     - navigation.tabs
     - navigation.top
-    - naviagtion.instant
+    - navigation.instant
+    - navigation.indexes
+    - toc.follow
+    - content.code.copy
+    - navigation.footer
+    - search.share
+    - search.highlight
+    - search.suggest
   pymdownx:
     sponsor: "https://github.com/sponsors/facelessuser"
 
