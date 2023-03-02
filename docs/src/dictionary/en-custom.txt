@@ -6,6 +6,7 @@ BeautifulSoup
 CDATA
 CSS
 CSS's
+CVE
 Changelog
 Combinators
 DOM
@@ -58,6 +59,7 @@ namespaces
 newline
 parser's
 parsers
+postfix
 pre
 prerelease
 prereleases
