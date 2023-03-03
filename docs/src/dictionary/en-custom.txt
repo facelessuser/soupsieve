@@ -24,6 +24,7 @@ PyPI
 PySpelling
 SVG
 TODO
+Tidelift
 Tox
 Twemoji
 URL's
