@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.1
+
+- **FIX**: Attribute syntax for case insensitive flag optionally allows a space, it does not require one.
+
 ## 2.4
 
 - **NEW**: Update to support changes related to `:lang()` in the official CSS spec. `:lang("")` should match unspecified

@@ -36,6 +36,23 @@ class TestAttribute(util.TestCase):
             flags=util.HTML
         )
 
+    def test_attribute_case_insensitive_flag_spacing(self):
+        """Test attribute value case insensitivity spacing."""
+
+        self.assert_selector(
+            self.MARKUP,
+            "[class*=WORDSi]",
+            [],
+            flags=util.HTML
+        )
+
+        self.assert_selector(
+            self.MARKUP,
+            "[class*='WORDS'i]",
+            ["0", "3", "pre"],
+            flags=util.HTML
+        )
+
     def test_attribute_forced_case_insensitive_xml(self):
         """Test that attribute value case insensitivity can be forced in XML."""
 
