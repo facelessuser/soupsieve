@@ -113,7 +113,7 @@ VALUE = r'''
 '''.format(nl=NEWLINE, ident=IDENTIFIER)
 # Attribute value comparison. `!=` is handled special as it is non-standard.
 ATTR = r'''
-(?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*(?P<value>{value})(?:{ws}+(?P<case>[is]))?)?{ws}*\]
+(?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*(?P<value>{value})(?:{ws}*(?P<case>[is]))?)?{ws}*\]
 '''.format(ws=WSC, value=VALUE)
 
 # Selector patterns
