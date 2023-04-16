@@ -130,9 +130,9 @@ You can match a single tag:
 
 ```pycon3
 >>> els = sv.select('p:is(.a, .b, .c)', soup)
->>> sv.match(els[0], 'p:not(.b)')
+>>> sv.match('p:not(.b)', els[0])
 True
->>> sv.match(els[1], 'p:not(.b)')
+>>> sv.match('p:not(.b)', els[1])
 False
 ```
 
