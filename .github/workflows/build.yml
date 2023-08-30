@@ -17,7 +17,7 @@ jobs:
       max-parallel: 4
       matrix:
         platform: [ubuntu-latest, windows-latest]
-        tox-env: [py37, py38, py39, py310, py311, nolxml, nohtml5lib]
+        tox-env: [py37, py38, py39, py310, py311, py312, nolxml, nohtml5lib]
         include:
           - tox-env: py37
             python-version: 3.7
@@ -33,6 +33,9 @@ jobs:
             continue-on-error: false
           - tox-env: py311
             python-version: '3.11'
+            continue-on-error: false
+          - tox-env: py312
+            python-version: '3.12'
             continue-on-error: false
           - tox-env: nolxml
             python-version: '3.11'
@@ -56,6 +59,7 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
     - name: Set up development Python ${{ matrix.python-version }}
       if: endsWith(matrix.python-version, '-dev')
       uses: deadsnakes/action@v2.1.1
