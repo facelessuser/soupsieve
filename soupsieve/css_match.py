@@ -85,7 +85,7 @@ class _DocumentNav:
 
         # Fail on unexpected types.
         if not cls.is_tag(tag):
-            raise TypeError("Expected a BeautifulSoup 'Tag', but instead received type {}".format(type(tag)))
+            raise TypeError(f"Expected a BeautifulSoup 'Tag', but instead received type {type(tag)}")
 
     @staticmethod
     def is_doc(obj: bs4.Tag) -> bool:
@@ -165,8 +165,7 @@ class _DocumentNav:
     def get_contents(self, el: bs4.Tag, no_iframe: bool = False) -> Iterator[bs4.PageElement]:
         """Get contents or contents in reverse."""
         if not no_iframe or not self.is_iframe(el):
-            for content in el.contents:
-                yield content
+            yield from el.contents
 
     def get_children(
         self,
@@ -394,7 +393,7 @@ class Inputs:
     def validate_week(year: int, week: int) -> bool:
         """Validate week."""
 
-        max_week = datetime.strptime("{}-{}-{}".format(12, 31, year), "%m-%d-%Y").isocalendar()[1]
+        max_week = datetime.strptime(f"{12}-{31}-{year}", "%m-%d-%Y").isocalendar()[1]
         if max_week == 1:
             max_week = 53
         return 1 <= week <= max_week
@@ -1571,8 +1570,7 @@ class SoupSieve(ct.Immutable):
     def iselect(self, tag: bs4.Tag, limit: int = 0) -> Iterator[bs4.Tag]:
         """Iterate the specified tags."""
 
-        for el in CSSMatch(self.selectors, tag, self.namespaces, self.flags).select(limit):
-            yield el
+        yield from CSSMatch(self.selectors, tag, self.namespaces, self.flags).select(limit)
 
     def __repr__(self) -> str:  # pragma: no cover
         """Representation."""

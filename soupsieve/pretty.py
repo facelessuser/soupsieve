@@ -132,7 +132,7 @@ def pretty(obj: Any) -> str:  # pragma: no cover
                 elif name in ('sep',):
                     output.append('{}\n{}'.format(m.group(1), " " * indent))
                 elif name in ('dsep',):
-                    output.append('{} '.format(m.group(1)))
+                    output.append(f'{m.group(1)} ')
                 break
 
     return ''.join(output)

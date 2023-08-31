@@ -463,7 +463,7 @@ class TestSoupSieve(util.TestCase):
         sv.purge()
         self.assertEqual(sv.cp._cached_css_compile.cache_info().currsize, 0)
         for x in range(1000):
-            value = '[value="{}"]'.format(str(random.randint(1, 10000)))
+            value = f'[value="{str(random.randint(1, 10000))}"]'
             p = sv.compile(value)
             self.assertTrue(p.pattern == value)
             self.assertTrue(sv.cp._cached_css_compile.cache_info().currsize > 0)
