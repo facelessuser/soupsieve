@@ -45,11 +45,11 @@ class Immutable:
         for k, v in kwargs.items():
             temp.append(type(v))
             temp.append(v)
-            super(Immutable, self).__setattr__(k, v)
-        super(Immutable, self).__setattr__('_hash', hash(tuple(temp)))
+            super().__setattr__(k, v)
+        super().__setattr__('_hash', hash(tuple(temp)))
 
     @classmethod
-    def __base__(cls) -> "type[Immutable]":
+    def __base__(cls) -> type[Immutable]:
         """Get base class."""
 
         return cls
@@ -78,13 +78,13 @@ class Immutable:
     def __setattr__(self, name: str, value: Any) -> None:
         """Prevent mutability."""
 
-        raise AttributeError("'{}' is immutable".format(self.__class__.__name__))
+        raise AttributeError(f"'{self.__class__.__name__}' is immutable")
 
     def __repr__(self) -> str:  # pragma: no cover
         """Representation."""
 
         return "{}({})".format(
-            self.__class__.__name__, ', '.join(["{}={!r}".format(k, getattr(self, k)) for k in self.__slots__[:-1]])
+            self.__class__.__name__, ', '.join([f"{k}={getattr(self, k)!r}" for k in self.__slots__[:-1]])
         )
 
     __str__ = __repr__
@@ -113,9 +113,9 @@ class ImmutableDict(Mapping[Any, Any]):
 
         if isinstance(arg, dict):
             if not all([isinstance(v, Hashable) for v in arg.values()]):
-                raise TypeError('{} values must be hashable'.format(self.__class__.__name__))
+                raise TypeError(f'{self.__class__.__name__} values must be hashable')
         elif not all([isinstance(k, Hashable) and isinstance(v, Hashable) for k, v in arg]):
-            raise TypeError('{} values must be hashable'.format(self.__class__.__name__))
+            raise TypeError(f'{self.__class__.__name__} values must be hashable')
 
     def __iter__(self) -> Iterator[Any]:
         """Iterator."""
@@ -140,7 +140,7 @@ class ImmutableDict(Mapping[Any, Any]):
     def __repr__(self) -> str:  # pragma: no cover
         """Representation."""
 
-        return "{!r}".format(self._d)
+        return f"{self._d!r}"
 
     __str__ = __repr__
 
@@ -158,9 +158,9 @@ class Namespaces(ImmutableDict):
 
         if isinstance(arg, dict):
             if not all([isinstance(v, str) for v in arg.values()]):
-                raise TypeError('{} values must be hashable'.format(self.__class__.__name__))
+                raise TypeError(f'{self.__class__.__name__} values must be hashable')
         elif not all([isinstance(k, str) and isinstance(v, str) for k, v in arg]):
-            raise TypeError('{} keys and values must be Unicode strings'.format(self.__class__.__name__))
+            raise TypeError(f'{self.__class__.__name__} keys and values must be Unicode strings')
 
 
 class CustomSelectors(ImmutableDict):
@@ -176,9 +176,9 @@ class CustomSelectors(ImmutableDict):
 
         if isinstance(arg, dict):
             if not all([isinstance(v, str) for v in arg.values()]):
-                raise TypeError('{} values must be hashable'.format(self.__class__.__name__))
+                raise TypeError(f'{self.__class__.__name__} values must be hashable')
         elif not all([isinstance(k, str) and isinstance(v, str) for k, v in arg]):
-            raise TypeError('{} keys and values must be Unicode strings'.format(self.__class__.__name__))
+            raise TypeError(f'{self.__class__.__name__} keys and values must be Unicode strings')
 
 
 class Selector(Immutable):

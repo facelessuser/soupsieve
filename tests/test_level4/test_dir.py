@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Test direction selectors."""
 from .. import util
 import soupsieve as sv

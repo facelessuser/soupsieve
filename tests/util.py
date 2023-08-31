@@ -134,7 +134,7 @@ def available_parsers(*parsers):
             (parser in ('xml', 'lxml') and not LXML_PRESENT) or
             (parser == 'html5lib' and not HTML5LIB_PRESENT)
         ):
-            print('SKIPPED {}, not installed'.format(parser))
+            print(f'SKIPPED {parser}, not installed')
         else:
             ran_test = True
             yield parser
