@@ -25,15 +25,9 @@ Directory             | Description
 
 ## Coding Standards
 
-When writing code, the code should roughly conform to PEP8 and PEP257 suggestions.  The project utilizes the Flake8
-linter (with some additional plugins) to ensure code conforms (give or take some of the rules).  When in doubt, follow
-the formatting hints of existing code when adding files or modifying existing files.  Listed below are the modules used:
-
--   @gitlab:pycqa/flake8
--   @gitlab:pycqa/flake8-docstrings
--   @gitlab:pycqa/pep8-naming
--   @ebeweber/flake8-mutable
--   @gforcada/flake8-builtins
+When writing code, the code should roughly conform to PEP8 and PEP257 suggestions along with some other requirements.
+The project utilizes the @astral-sh/ruff linter that helps to ensure code conforms (give or take some of the rules).
+When in doubt, follow the formatting hints of existing code when adding files or modifying existing files.
 
 Usually this can be automated with Tox (assuming it is installed): `tox -e lint`.
 

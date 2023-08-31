@@ -869,7 +869,7 @@ class CSSParser:
 
         pseudo = util.lower(css_unescape(m.group('name')))
         if pseudo == ":contains":
-            warnings.warn(
+            warnings.warn(  # noqa: B028
                 "The pseudo class ':contains' is deprecated, ':-soup-contains' should be used moving forward.",
                 FutureWarning
             )

@@ -107,14 +107,10 @@ class TestRoot(util.TestCase):
 
         soup = self.soup(self.MARKUP_IFRAME, 'html.parser')
 
-        ids = []
-        for el in sv.select(':root div', soup.iframe.html):
-            ids.append(el['id'])
+        ids = [el['id'] for el in sv.select(':root div', soup.iframe.html)]
         self.assertEqual(sorted(ids), sorted(['div2']))
 
-        ids = []
-        for el in sv.select(':root > body > div', soup.iframe.html):
-            ids.append(el['id'])
+        ids = [el['id'] for el in sv.select(':root > body > div', soup.iframe.html)]
         self.assertEqual(sorted(ids), sorted(['div2']))
 
     def test_no_root_double_tag(self):
@@ -158,10 +154,8 @@ class TestRoot(util.TestCase):
         <div id="1"></div>
         """
 
-        ids = []
         soup = self.soup(markup, 'html.parser')
-        for el in soup.select(':root'):
-            ids.append(el['id'])
+        ids = [el['id'] for el in soup.select(':root')]
         self.assertEqual(sorted(ids), sorted(['1']))
 
     def test_root_preprocess(self):
@@ -172,10 +166,8 @@ class TestRoot(util.TestCase):
         <div id="1"></div>
         """
 
-        ids = []
         soup = self.soup(markup, 'html.parser')
-        for el in soup.select(':root'):
-            ids.append(el['id'])
+        ids = [el['id'] for el in soup.select(':root')]
         self.assertEqual(sorted(ids), sorted(['1']))
 
     def test_root_doctype(self):
@@ -187,8 +179,6 @@ class TestRoot(util.TestCase):
         <div id="1"></div>
         """
 
-        ids = []
         soup = self.soup(markup, 'html.parser')
-        for el in soup.select(':root'):
-            ids.append(el['id'])
+        ids = [el['id'] for el in soup.select(':root')]
         self.assertEqual(sorted(ids), sorted(['1']))

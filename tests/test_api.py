@@ -31,9 +31,7 @@ class TestSoupSieve(util.TestCase):
         """
 
         soup = self.soup(markup, 'html.parser')
-        ids = []
-        for el in sv.select('span[id]', soup):
-            ids.append(el.attrs['id'])
+        ids = [el.attrs['id'] for el in sv.select('span[id]', soup)]
 
         self.assertEqual(sorted(['5', 'some-id']), sorted(ids))
 
@@ -58,9 +56,7 @@ class TestSoupSieve(util.TestCase):
         """
 
         soup = self.soup(markup, 'html.parser')
-        ids = []
-        for el in sv.select('[id]', soup.body):
-            ids.append(el.attrs['id'])
+        ids = [el.attrs['id'] for el in sv.select('[id]', soup.body)]
 
         self.assertEqual(['1', '2', '3', '4', '5', 'some-id', '6'], ids)
 
@@ -86,9 +82,7 @@ class TestSoupSieve(util.TestCase):
 
         soup = self.soup(markup, 'html.parser')
 
-        ids = []
-        for el in sv.select('span[id]', soup, limit=1):
-            ids.append(el.attrs['id'])
+        ids = [el.attrs['id'] for el in sv.select('span[id]', soup, limit=1)]
 
         self.assertEqual(sorted(['5']), sorted(ids))
 
@@ -163,9 +157,7 @@ class TestSoupSieve(util.TestCase):
 
         soup = self.soup(markup, 'html.parser')
 
-        ids = []
-        for el in sv.iselect('span[id]', soup):
-            ids.append(el.attrs['id'])
+        ids = [el.attrs['id'] for el in sv.iselect('span[id]', soup)]
 
         self.assertEqual(sorted(['5', 'some-id']), sorted(ids))
 
@@ -190,9 +182,7 @@ class TestSoupSieve(util.TestCase):
         """
 
         soup = self.soup(markup, 'html.parser')
-        ids = []
-        for el in sv.iselect('[id]', soup):
-            ids.append(el.attrs['id'])
+        ids = [el.attrs['id'] for el in sv.iselect('[id]', soup)]
 
         self.assertEqual(['1', '2', '3', '4', '5', 'some-id', '6'], ids)
 
@@ -297,7 +287,7 @@ class TestSoupSieve(util.TestCase):
         """
 
         soup = self.soup(markup, 'html.parser')
-        nodes = sv.filter('pre#\\36', [el for el in soup.html.body.children])
+        nodes = sv.filter('pre#\\36', list(soup.html.body.children))
         self.assertEqual(len(nodes), 1)
         self.assertEqual(nodes[0].attrs['id'], '6')
 
@@ -462,8 +452,8 @@ class TestSoupSieve(util.TestCase):
 
         sv.purge()
         self.assertEqual(sv.cp._cached_css_compile.cache_info().currsize, 0)
-        for x in range(1000):
-            value = f'[value="{str(random.randint(1, 10000))}"]'
+        for _x in range(1000):
+            value = f'[value="{random.randint(1, 10000)!s}"]'
             p = sv.compile(value)
             self.assertTrue(p.pattern == value)
             self.assertTrue(sv.cp._cached_css_compile.cache_info().currsize > 0)

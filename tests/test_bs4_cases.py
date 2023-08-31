@@ -79,7 +79,7 @@ class SelectorNthOfTypeBugTest(unittest.TestCase):
         h1 = els[0]
         div_inner = h1.parent
         div_main = div_inner.parent
-        div_main_children = [child for child in div_main.children]
+        div_main_children = list(div_main.children)
         self.assertEqual(div_main_children[0], '\n')
         self.assertEqual(div_main_children[1], div_inner)
 
@@ -100,9 +100,11 @@ NAMESPACE_XML = """
   <o:UsernameToken u:Id="uuid-00000043-0000-4000-0000-000000000000">
 </s:Envelope>
 """.strip()
-NAMESPACES = dict(x="http://www.w3.org/2003/05/soap-envelope",
-                  y="http://www.w3.org/2005/08/addressing",
-                  z="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd")
+NAMESPACES = {
+    'x': "http://www.w3.org/2003/05/soap-envelope",
+    'y': "http://www.w3.org/2005/08/addressing",
+    'z': "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+}
 
 
 @util.requires_lxml
