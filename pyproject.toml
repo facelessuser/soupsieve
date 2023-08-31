@@ -24,7 +24,6 @@ keywords = [
 ]
 dynamic = [
     "classifiers",
-    "dependencies",
     "version",
 ]
 
@@ -67,3 +66,97 @@ strict = true
 show_error_codes = true
 
 [tool.hatch.metadata.hooks.custom]
+
+[tool.ruff]
+line-length = 120
+
+select = [
+    "A",    # flake8-builtins
+    "B",    # flake8-bugbear
+    "D",    # pydocstyle
+    "C4",   # flake8-comprehensions
+    "N",    # pep8-naming
+    "E",    # pycodestyle
+    "F",    # pyflakes
+    "PGH",  # pygrep-hooks
+    "RUF",  # ruff
+    # "UP",   # pyupgrade
+    "W",    # pycodestyle
+    "YTT",  # flake8-2020,
+    "PERF"  # Perflint
+]
+
+ignore = [
+    "E741",
+    "D202",
+    "D401",
+    "D212",
+    "D203",
+    "N802",
+    "N801",
+    "N803",
+    "N806",
+    "N818",
+    "RUF012",
+    "RUF005",
+    "PGH004",
+    "RUF100"
+]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = true
+envlist =
+    py{38,39,310,311,312},
+    lint, nolxml, nohtml5lib
+
+[testenv]
+passenv = *
+deps =
+    -rrequirements/tests.txt
+commands =
+    mypy
+    pytest --cov soupsieve --cov-append {toxinidir}
+    coverage html -d {envtmpdir}/coverage
+    coverage xml
+    coverage report --show-missing
+
+[testenv:documents]
+passenv = *
+deps =
+    -rrequirements/docs.txt
+commands =
+    mkdocs build --clean --verbose --strict
+    pyspelling
+
+[testenv:lint]
+passenv = *
+deps =
+    -rrequirements/lint.txt
+commands =
+    "{envbindir}"/ruff check .
+
+[testenv:nolxml]
+passenv = *
+deps =
+    -rrequirements/tests-nolxml.txt
+commands =
+    pytest {toxinidir}
+
+[testenv:nohtml5lib]
+passenv = *
+deps =
+    -rrequirements/tests-nohtml5lib.txt
+commands =
+    pytest {toxinidir}
+
+[flake8]
+exclude=build/*,.tox/*
+max-line-length=120
+ignore=D202,D203,D401,E741,W504,N817,N818
+
+[pytest]
+filterwarnings =
+    ignore:\nCSS selector pattern:UserWarning
+"""

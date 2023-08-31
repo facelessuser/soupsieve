@@ -59,7 +59,7 @@ class Immutable:
 
         return (
             isinstance(other, self.__base__()) and
-            all([getattr(other, key) == getattr(self, key) for key in self.__slots__ if key != '_hash'])
+            all(getattr(other, key) == getattr(self, key) for key in self.__slots__ if key != '_hash')
         )
 
     def __ne__(self, other: Any) -> bool:
@@ -67,7 +67,7 @@ class Immutable:
 
         return (
             not isinstance(other, self.__base__()) or
-            any([getattr(other, key) != getattr(self, key) for key in self.__slots__ if key != '_hash'])
+            any(getattr(other, key) != getattr(self, key) for key in self.__slots__ if key != '_hash')
         )
 
     def __hash__(self) -> int:
@@ -112,9 +112,9 @@ class ImmutableDict(Mapping[Any, Any]):
         """Validate arguments."""
 
         if isinstance(arg, dict):
-            if not all([isinstance(v, Hashable) for v in arg.values()]):
+            if not all(isinstance(v, Hashable) for v in arg.values()):
                 raise TypeError(f'{self.__class__.__name__} values must be hashable')
-        elif not all([isinstance(k, Hashable) and isinstance(v, Hashable) for k, v in arg]):
+        elif not all(isinstance(k, Hashable) and isinstance(v, Hashable) for k, v in arg):
             raise TypeError(f'{self.__class__.__name__} values must be hashable')
 
     def __iter__(self) -> Iterator[Any]:
@@ -157,9 +157,9 @@ class Namespaces(ImmutableDict):
         """Validate arguments."""
 
         if isinstance(arg, dict):
-            if not all([isinstance(v, str) for v in arg.values()]):
+            if not all(isinstance(v, str) for v in arg.values()):
                 raise TypeError(f'{self.__class__.__name__} values must be hashable')
-        elif not all([isinstance(k, str) and isinstance(v, str) for k, v in arg]):
+        elif not all(isinstance(k, str) and isinstance(v, str) for k, v in arg):
             raise TypeError(f'{self.__class__.__name__} keys and values must be Unicode strings')
 
 
@@ -175,9 +175,9 @@ class CustomSelectors(ImmutableDict):
         """Validate arguments."""
 
         if isinstance(arg, dict):
-            if not all([isinstance(v, str) for v in arg.values()]):
+            if not all(isinstance(v, str) for v in arg.values()):
                 raise TypeError(f'{self.__class__.__name__} values must be hashable')
-        elif not all([isinstance(k, str) and isinstance(v, str) for k, v in arg]):
+        elif not all(isinstance(k, str) and isinstance(v, str) for k, v in arg):
             raise TypeError(f'{self.__class__.__name__} keys and values must be Unicode strings')
 
 
@@ -367,7 +367,7 @@ class SelectorList(Immutable):
         """Initialize."""
 
         super().__init__(
-            selectors=tuple(selectors) if selectors is not None else tuple(),
+            selectors=tuple(selectors) if selectors is not None else (),
             is_not=is_not,
             is_html=is_html
         )

@@ -282,7 +282,7 @@ class _DocumentNav:
         like we do in the case of `is_html_tag`.
         """
 
-        ns = getattr(el, 'namespace') if el else None
+        ns = getattr(el, 'namespace') if el else None  # noqa: B009
         return bool(ns and ns == NS_XHTML)
 
     @staticmethod
@@ -1271,11 +1271,7 @@ class CSSMatch(_DocumentNav):
         # Auto handling for text inputs
         if ((is_input and itype in ('text', 'search', 'tel', 'url', 'email')) or is_textarea) and direction == 0:
             if is_textarea:
-                temp = []
-                for node in self.get_contents(el, no_iframe=True):
-                    if self.is_content_string(node):
-                        temp.append(node)
-                value = ''.join(temp)
+                value = ''.join(node for node in self.get_contents(el, no_iframe=True) if self.is_content_string(node))
             else:
                 value = cast(str, self.get_attribute_by_name(el, 'value', ''))
             if value:

@@ -63,26 +63,18 @@ class TestScope(util.TestCase):
             el = soup.html
 
             # Scope here means the current element under select
-            ids = []
-            for el in sv.select(':scope div', el, flags=sv.DEBUG):
-                ids.append(el.attrs['id'])
+            ids = [el.attrs['id'] for el in sv.select(':scope div', el, flags=sv.DEBUG)]
             self.assertEqual(sorted(ids), sorted(['div']))
 
             el = soup.body
-            ids = []
-            for el in sv.select(':scope div', el, flags=sv.DEBUG):
-                ids.append(el.attrs['id'])
+            ids = [el.attrs['id'] for el in sv.select(':scope div', el, flags=sv.DEBUG)]
             self.assertEqual(sorted(ids), sorted(['div']))
 
             # `div` is the current element under select, and it has no `div` elements.
             el = soup.div
-            ids = []
-            for el in sv.select(':scope div', el, flags=sv.DEBUG):
-                ids.append(el.attrs['id'])
+            ids = [el.attrs['id'] for el in sv.select(':scope div', el, flags=sv.DEBUG)]
             self.assertEqual(sorted(ids), sorted([]))
 
             # `div` does have an element with the class `.wordshere`
-            ids = []
-            for el in sv.select(':scope .wordshere', el, flags=sv.DEBUG):
-                ids.append(el.attrs['id'])
+            ids = [el.attrs['id'] for el in sv.select(':scope .wordshere', el, flags=sv.DEBUG)]
             self.assertEqual(sorted(ids), sorted(['pre']))

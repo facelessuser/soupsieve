@@ -1,6 +1,6 @@
 """Test not selectors."""
 from .. import util
-from bs4 import BeautifulSoup as BS
+from bs4 import BeautifulSoup
 from soupsieve import SelectorSyntaxError
 
 
@@ -53,7 +53,7 @@ class TestNot(util.TestCase):
     def test_none_inputs(self):
         """Test weird inputs."""
 
-        soup = BS('<span foo="something">text</span>', 'html.parser')
+        soup = BeautifulSoup('<span foo="something">text</span>', 'html.parser')
         soup.span['foo'] = None
         self.assertEqual(len(soup.select('span:not([foo])')), 0)
 

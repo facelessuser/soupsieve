@@ -103,9 +103,11 @@ class TestCase(unittest.TestCase):
         with self.assertRaises(exception):
             self.compile_pattern(pattern, namespaces=namespace, custom=custom)
 
-    def assert_selector(self, markup, selectors, expected_ids, namespaces={}, custom=None, flags=0):
+    def assert_selector(self, markup, selectors, expected_ids, namespaces=None, custom=None, flags=0):
         """Assert selector."""
 
+        if namespaces is None:
+            namespaces = {}
         parsers = self.get_parsers(flags)
 
         print('----Running Selector Test----')
@@ -123,7 +125,8 @@ class TestCase(unittest.TestCase):
 
 
 def available_parsers(*parsers):
-    """Filter a list of parsers, down to the available ones.
+    """
+    Filter a list of parsers, down to the available ones.
 
     If there are none, report the test as skipped to pytest.
     """
