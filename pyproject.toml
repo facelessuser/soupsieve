@@ -54,8 +54,7 @@ include = [
     "/tests/**/*.py",
     "/.pyspelling.yml",
     "/.coveragerc",
-    "/mkdocs.yml",
-    "/tox.ini",
+    "/mkdocs.yml"
 ]
 
 [tool.mypy]
