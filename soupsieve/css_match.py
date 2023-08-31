@@ -1571,11 +1571,9 @@ class SoupSieve(ct.Immutable):
     def __repr__(self) -> str:  # pragma: no cover
         """Representation."""
 
-        return "SoupSieve(pattern={!r}, namespaces={!r}, custom={!r}, flags={!r})".format(
-            self.pattern,
-            self.namespaces,
-            self.custom,
-            self.flags
+        return (
+            f"SoupSieve(pattern={self.pattern!r}, namespaces={self.namespaces!r}, "
+            f"custom={self.custom!r}, flags={self.flags!r})"
         )
 
     __str__ = __repr__

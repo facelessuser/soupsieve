@@ -83,9 +83,8 @@ class Immutable:
     def __repr__(self) -> str:  # pragma: no cover
         """Representation."""
 
-        return "{}({})".format(
-            self.__class__.__name__, ', '.join([f"{k}={getattr(self, k)!r}" for k in self.__slots__[:-1]])
-        )
+        r = ', '.join([f"{k}={getattr(self, k)!r}" for k in self.__slots__[:-1]])
+        return f"{self.__class__.__name__}({r})"
 
     __str__ = __repr__
 

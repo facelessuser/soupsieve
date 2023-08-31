@@ -43,7 +43,7 @@ class TestCase(unittest.TestCase):
     def wrap_xhtml(self, html):
         """Wrap HTML content with XHTML header and body."""
 
-        return """
+        return f"""
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
             "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
@@ -51,10 +51,10 @@ class TestCase(unittest.TestCase):
         <head>
         </head>
         <body>
-        {}
+        {html}
         </body>
         </html>
-        """.format(html)
+        """
 
     def setUp(self):
         """Setup."""

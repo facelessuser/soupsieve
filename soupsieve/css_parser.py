@@ -101,20 +101,16 @@ WSC = fr'(?:{WS}|{COMMENTS})'
 CSS_ESCAPES = fr'(?:\\(?:[a-f0-9]{{1,6}}{WS}?|[^\r\n\f]|$))'
 CSS_STRING_ESCAPES = fr'(?:\\(?:[a-f0-9]{{1,6}}{WS}?|[^\r\n\f]|$|{NEWLINE}))'
 # CSS Identifier
-IDENTIFIER = r'''
-(?:(?:-?(?:[^\x00-\x2f\x30-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})+|--)
-(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{esc})*)
-'''.format(esc=CSS_ESCAPES)
+IDENTIFIER = fr'''
+(?:(?:-?(?:[^\x00-\x2f\x30-\x40\x5B-\x5E\x60\x7B-\x9f]|{CSS_ESCAPES})+|--)
+(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{CSS_ESCAPES})*)
+'''
 # `nth` content
-NTH = r'(?:[-+])?(?:[0-9]+n?|n)(?:(?<=n){ws}*(?:[-+]){ws}*(?:[0-9]+))?'.format(ws=WSC)
+NTH = fr'(?:[-+])?(?:[0-9]+n?|n)(?:(?<=n){WSC}*(?:[-+]){WSC}*(?:[0-9]+))?'
 # Value: quoted string or identifier
-VALUE = r'''
-(?:"(?:\\(?:.|{nl})|[^\\"\r\n\f]+)*?"|'(?:\\(?:.|{nl})|[^\\'\r\n\f]+)*?'|{ident}+)
-'''.format(nl=NEWLINE, ident=IDENTIFIER)
+VALUE = fr'''(?:"(?:\\(?:.|{NEWLINE})|[^\\"\r\n\f]+)*?"|'(?:\\(?:.|{NEWLINE})|[^\\'\r\n\f]+)*?'|{IDENTIFIER}+)'''
 # Attribute value comparison. `!=` is handled special as it is non-standard.
-ATTR = r'''
-(?:{ws}*(?P<cmp>[!~^|*$]?=){ws}*(?P<value>{value})(?:{ws}*(?P<case>[is]))?)?{ws}*\]
-'''.format(ws=WSC, value=VALUE)
+ATTR = fr'(?:{WSC}*(?P<cmp>[!~^|*$]?=){WSC}*(?P<value>{VALUE})(?:{WSC}*(?P<case>[is]))?)?{WSC}*\]'
 
 # Selector patterns
 # IDs (`#id`)
@@ -122,11 +118,9 @@ PAT_ID = fr'\#{IDENTIFIER}'
 # Classes (`.class`)
 PAT_CLASS = fr'\.{IDENTIFIER}'
 # Prefix:Tag (`prefix|tag`)
-PAT_TAG = r'(?P<tag_ns>(?:{ident}|\*)?\|)?(?P<tag_name>{ident}|\*)'.format(ident=IDENTIFIER)
+PAT_TAG = fr'(?P<tag_ns>(?:{IDENTIFIER}|\*)?\|)?(?P<tag_name>{IDENTIFIER}|\*)'
 # Attributes (`[attr]`, `[attr=value]`, etc.)
-PAT_ATTR = r'''
-\[{ws}*(?P<attr_ns>(?:{ident}|\*)?\|)?(?P<attr_name>{ident}){attr}
-'''.format(ws=WSC, ident=IDENTIFIER, attr=ATTR)
+PAT_ATTR = fr'\[{WSC}*(?P<attr_ns>(?:{IDENTIFIER}|\*)?\|)?(?P<attr_name>{IDENTIFIER}){ATTR}'
 # Pseudo class (`:pseudo-class`, `:pseudo-class(`)
 PAT_PSEUDO_CLASS = fr'(?P<name>:{IDENTIFIER})(?P<open>\({WSC}*)?'
 # Pseudo class special patterns. Matches `:pseudo-class(` for special case pseudo classes.
@@ -140,45 +134,36 @@ PAT_PSEUDO_ELEMENT = fr':{PAT_PSEUDO_CLASS}'
 # At rule (`@page`, etc.) (not supported)
 PAT_AT_RULE = fr'@P{IDENTIFIER}'
 # Pseudo class `nth-child` (`:nth-child(an+b [of S]?)`, `:first-child`, etc.)
-PAT_PSEUDO_NTH_CHILD = r'''
-(?P<pseudo_nth_child>{name}
-(?P<nth_child>{nth}|even|odd))(?:{wsc}*\)|(?P<of>{comments}*{ws}{wsc}*of{comments}*{ws}{wsc}*))
-'''.format(name=PAT_PSEUDO_CLASS_SPECIAL, wsc=WSC, comments=COMMENTS, ws=WS, nth=NTH)
+PAT_PSEUDO_NTH_CHILD = fr'''
+(?P<pseudo_nth_child>{PAT_PSEUDO_CLASS_SPECIAL}
+(?P<nth_child>{NTH}|even|odd))(?:{WSC}*\)|(?P<of>{COMMENTS}*{WS}{WSC}*of{COMMENTS}*{WS}{WSC}*))
+'''
 # Pseudo class `nth-of-type` (`:nth-of-type(an+b)`, `:first-of-type`, etc.)
-PAT_PSEUDO_NTH_TYPE = r'''
-(?P<pseudo_nth_type>{name}
-(?P<nth_type>{nth}|even|odd)){ws}*\)
-'''.format(name=PAT_PSEUDO_CLASS_SPECIAL, ws=WSC, nth=NTH)
+PAT_PSEUDO_NTH_TYPE = fr'''
+(?P<pseudo_nth_type>{PAT_PSEUDO_CLASS_SPECIAL}
+(?P<nth_type>{NTH}|even|odd)){WSC}*\)
+'''
 # Pseudo class language (`:lang("*-de", en)`)
-PAT_PSEUDO_LANG = r'{name}(?P<values>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'.format(
-    name=PAT_PSEUDO_CLASS_SPECIAL, ws=WSC, value=VALUE
-)
+PAT_PSEUDO_LANG = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*,{WSC}*{VALUE})*){WSC}*\)'
 # Pseudo class direction (`:dir(ltr)`)
 PAT_PSEUDO_DIR = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<dir>ltr|rtl){WSC}*\)'
 # Combining characters (`>`, `~`, ` `, `+`, `,`)
-PAT_COMBINE = r'{wsc}*?(?P<relation>[,+>~]|{ws}(?![,+>~])){wsc}*'.format(ws=WS, wsc=WSC)
+PAT_COMBINE = fr'{WSC}*?(?P<relation>[,+>~]|{WS}(?![,+>~])){WSC}*'
 # Extra: Contains (`:contains(text)`)
-PAT_PSEUDO_CONTAINS = r'{name}(?P<values>{value}(?:{ws}*,{ws}*{value})*){ws}*\)'.format(
-    name=PAT_PSEUDO_CLASS_SPECIAL, ws=WSC, value=VALUE
-)
+PAT_PSEUDO_CONTAINS = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*,{WSC}*{VALUE})*){WSC}*\)'
 
 # Regular expressions
 # CSS escape pattern
 RE_CSS_ESC = re.compile(fr'(?:(\\[a-f0-9]{{1,6}}{WSC}?)|(\\[^\r\n\f])|(\\$))', re.I)
-RE_CSS_STR_ESC = re.compile(
-    fr'(?:(\\[a-f0-9]{{1,6}}{WS}?)|(\\[^\r\n\f])|(\\$)|(\\{NEWLINE}))', re.I
-)
+RE_CSS_STR_ESC = re.compile(fr'(?:(\\[a-f0-9]{{1,6}}{WS}?)|(\\[^\r\n\f])|(\\$)|(\\{NEWLINE}))', re.I)
 # Pattern to break up `nth` specifiers
-RE_NTH = re.compile(
-    r'(?P<s1>[-+])?(?P<a>[0-9]+n?|n)(?:(?<=n){ws}*(?P<s2>[-+]){ws}*(?P<b>[0-9]+))?'.format(ws=WSC),
-    re.I
-)
+RE_NTH = re.compile(fr'(?P<s1>[-+])?(?P<a>[0-9]+n?|n)(?:(?<=n){WSC}*(?P<s2>[-+]){WSC}*(?P<b>[0-9]+))?', re.I)
 # Pattern to iterate multiple values.
-RE_VALUES = re.compile(r'(?:(?P<value>{value})|(?P<split>{ws}*,{ws}*))'.format(ws=WSC, value=VALUE), re.X)
+RE_VALUES = re.compile(fr'(?:(?P<value>{VALUE})|(?P<split>{WSC}*,{WSC}*))', re.X)
 # Whitespace checks
 RE_WS = re.compile(WS)
-RE_WS_BEGIN = re.compile(f'^{WSC}*')
-RE_WS_END = re.compile(f'{WSC}*$')
+RE_WS_BEGIN = re.compile(fr'^{WSC}*')
+RE_WS_END = re.compile(fr'{WSC}*$')
 RE_CUSTOM = re.compile(fr'^{PAT_PSEUDO_CLASS_CUSTOM}$', re.X)
 
 # Constants
@@ -419,11 +404,10 @@ class _Selector:
         """String representation."""
 
         return (
-            '_Selector(tag={!r}, ids={!r}, classes={!r}, attributes={!r}, nth={!r}, selectors={!r}, '
-            'relations={!r}, rel_type={!r}, contains={!r}, lang={!r}, flags={!r}, no_match={!r})'
-        ).format(
-            self.tag, self.ids, self.classes, self.attributes, self.nth, self.selectors,
-            self.relations, self.rel_type, self.contains, self.lang, self.flags, self.no_match
+            f'_Selector(tag={self.tag!r}, ids={self.ids!r}, classes={self.classes!r}, attributes={self.attributes!r}, '
+            f'nth={self.nth!r}, selectors={self.selectors!r}, relations={self.relations!r}, '
+            f'rel_type={self.rel_type!r}, contains={self.contains!r}, lang={self.lang!r}, flags={self.flags!r}, '
+            f'no_match={self.no_match!r})'
         )
 
     __repr__ = __str__
