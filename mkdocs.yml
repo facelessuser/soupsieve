@@ -56,12 +56,10 @@ markdown_extensions:
   - markdown.extensions.toc:
       slugify: !!python/object/apply:pymdownx.slugs.slugify {kwds: {case: lower}}
       permalink: ""
-  - markdown.extensions.admonition:
   - markdown.extensions.smarty:
       smart_quotes: false
   - pymdownx.betterem:
   - markdown.extensions.attr_list:
-  - markdown.extensions.def_list:
   - markdown.extensions.tables:
   - markdown.extensions.abbr:
   - markdown.extensions.md_in_html:
@@ -102,10 +100,28 @@ markdown_extensions:
       - refs.md
   - pymdownx.keys:
       separator: "\uff0b"
-  - pymdownx.details:
-  - pymdownx.tabbed:
-      alternate_style: true
   - pymdownx.saneheaders:
+  - pymdownx.blocks.admonition:
+      types:
+      - new
+      - settings
+      - note
+      - abstract
+      - info
+      - tip
+      - success
+      - question
+      - warning
+      - failure
+      - danger
+      - bug
+      - example
+      - quote
+  - pymdownx.blocks.details:
+  - pymdownx.blocks.html:
+  - pymdownx.blocks.definition:
+  - pymdownx.blocks.tab:
+      alternate_style: True
 
 extra:
   social:

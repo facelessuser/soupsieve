@@ -11,25 +11,26 @@ When detecting XHTML, Soup Sieve simply looks to see if the root element of an X
 and does not currently look at the `doctype`. If in the future there is a need for stricter XHTML detection, this may
 change.
 
-- HTML document types (HTML, HTML5) will have their tag names and attribute names treated without case
-sensitivity, like most browsers do.
+-   HTML document types (HTML, HTML5) will have their tag names and attribute names treated without case
+    sensitivity, like most browsers do.
 
-- XML document types (including XHTML) will have their tag names and attribute names treated with case sensitivity.
+-   XML document types (including XHTML) will have their tag names and attribute names treated with case sensitivity.
 
-- HTML5, XHTML and XML documents will have namespaces evaluated per the document's support (provided via the
-parser). Some additional configuration is required when using namespaces, see [Namespace](#namespaces) for more
-information.
+-   HTML5, XHTML and XML documents will have namespaces evaluated per the document's support (provided via the
+    parser). Some additional configuration is required when using namespaces, see [Namespace](#namespaces) for more
+    information.
 
-    !!! tip "Getting Proper Namespaces"
-        The `html5lib` parser provides proper namespaces for HTML5, but `lxml`'s HTML parser will not. If you need
-        namespace support for HTML5, consider using `html5lib`.
+    /// tip | Getting Proper Namespaces
+    The `html5lib` parser provides proper namespaces for HTML5, but `lxml`'s HTML parser will not. If you need
+    namespace support for HTML5, consider using `html5lib`.
 
-        For XML, the `lxml-xml` parser (`xml` for short) will provide proper namespaces. It is generally suggested that
-        `lxml-xml` is used to parse XHTML documents to take advantage of namespaces.
+    For XML, the `lxml-xml` parser (`xml` for short) will provide proper namespaces. It is generally suggested that
+    `lxml-xml` is used to parse XHTML documents to take advantage of namespaces.
+    ///
 
-- While attribute values are generally treated as case sensitive, HTML5 and HTML treat the `type` attribute
-special. The `type` attribute's value is always case insensitive. This is generally how most browsers treat `type`. If
-you need `type` to be sensitive, you can use the `s` flag: `#!css [type="submit" s]`.
+-   While attribute values are generally treated as case sensitive, HTML5 and HTML treat the `type` attribute
+    special. The `type` attribute's value is always case insensitive. This is generally how most browsers treat `type`.
+    If you need `type` to be sensitive, you can use the `s` flag: `#!css [type="submit" s]`.
 
 While Soup Sieve access is exposed through Beautiful Soup's API, Soup Sieve's API can always be imported and accessed
 directly for more controlled tag selection if needed.
@@ -180,8 +181,9 @@ would normally cause an identifier to be invalid.
 '�'
 ```
 
-!!! new "New in 1.9.0"
-    `escape` is a new API function added in 1.9.0.
+/// new | New in 1.9.0
+`escape` is a new API function added in 1.9.0.
+///
 
 ## `soupsieve.compile()`
 

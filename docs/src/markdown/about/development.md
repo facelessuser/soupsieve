@@ -29,11 +29,11 @@ When writing code, the code should roughly conform to PEP8 and PEP257 suggestion
 linter (with some additional plugins) to ensure code conforms (give or take some of the rules).  When in doubt, follow
 the formatting hints of existing code when adding files or modifying existing files.  Listed below are the modules used:
 
-- @gitlab:pycqa/flake8
-- @gitlab:pycqa/flake8-docstrings
-- @gitlab:pycqa/pep8-naming
-- @ebeweber/flake8-mutable
-- @gforcada/flake8-builtins
+-   @gitlab:pycqa/flake8
+-   @gitlab:pycqa/flake8-docstrings
+-   @gitlab:pycqa/pep8-naming
+-   @ebeweber/flake8-mutable
+-   @gforcada/flake8-builtins
 
 Usually this can be automated with Tox (assuming it is installed): `tox -e lint`.
 
@@ -42,10 +42,10 @@ Usually this can be automated with Tox (assuming it is installed): `tox -e lint`
 Documents are in Markdown (with with some additional syntax provided by extensions) and are converted to HTML via Python
 Markdown. If you would like to build and preview the documentation, you must have these packages installed:
 
-- @Python-Markdown/markdown: the Markdown parser.
-- @mkdocs/mkdocs: the document site generator.
-- @squidfunk/mkdocs-material: a material theme for MkDocs.
-- @facelessuser/pymdown-extensions: this Python Markdown extension bundle.
+-   @Python-Markdown/markdown: the Markdown parser.
+-   @mkdocs/mkdocs: the document site generator.
+-   @squidfunk/mkdocs-material: a material theme for MkDocs.
+-   @facelessuser/pymdown-extensions: this Python Markdown extension bundle.
 
 It is advised that you just install document dependencies with the following as the above list may not include all
 document plugins:
