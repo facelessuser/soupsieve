@@ -9,7 +9,7 @@ name = "soupsieve"
 description = "A modern CSS selector implementation for Beautiful Soup."
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 authors = [
     { name = "Isaac Muse", email = "Isaac.Muse@gmail.com" },
 ]
