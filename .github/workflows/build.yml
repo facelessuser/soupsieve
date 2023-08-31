@@ -82,7 +82,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.9]
+        python-version: [3.11]
 
     env:
       TOXENV: lint
@@ -106,7 +106,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.9]
+        python-version: [3.11]
 
     env:
       TOXENV: documents
