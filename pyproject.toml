@@ -150,11 +150,6 @@ deps =
 commands =
     pytest {toxinidir}
 
-[flake8]
-exclude=build/*,.tox/*
-max-line-length=120
-ignore=D202,D203,D401,E741,W504,N817,N818
-
 [pytest]
 filterwarnings =
     ignore:\nCSS selector pattern:UserWarning
