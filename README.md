@@ -62,7 +62,7 @@ Then navigate to the root of the project and build the wheel and install (replac
 
 ```
 python -m build -w
-pip install dist/soupsive-<ver>-py3-none-any.whl
+pip install dist/soupsieve-<ver>-py3-none-any.whl
 ```
 
 ## Documentation
