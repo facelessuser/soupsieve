@@ -1,3 +1,4 @@
+[![soupsieve Downloads Last Month](https://assets.piptrends.com/get-last-month-downloads-badge/soupsieve.svg 'soupsieve Downloads Last Month by pip Trends')](https://piptrends.com/package/soupsieve)
 [![Donate via PayPal][donate-image]][donate-link]
 [![Discord][discord-image]][discord-link]
 [![Build][github-ci-image]][github-ci-link]
