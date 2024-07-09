@@ -1579,6 +1579,14 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/:root
 
 ## `:scope`:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:scope}
 
+/// new | New 2.6
+`&`, which was introduced in [CSS Nesting Level 1](https://www.w3.org/TR/css-nesting-1/#nest-selector) can be used as
+an alternative to `:scope` and is essentially equivalent. Soup Sieve does not support nesting selectors, but `&`, when
+not used in the context of nesting is treated as the scoping root per the specification.
+
+`#!py3 sv.select('& > p', soup.div)` is equivalent to `#!py3 sv.select(':scope > p', soup.div)`.
+///
+
 `:scope` represents the the element a `match`, `select`, or `filter` is being called on. If we were, for instance,
 using `:scope` on a div (`#!py3 sv.select(':scope > p', soup.div)`) `:scope` would represent **that** div element, and
 no others. If called on the Beautiful Soup object which represents the entire document, it would simply select

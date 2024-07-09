@@ -69,7 +69,7 @@ show_error_codes = true
 [tool.ruff]
 line-length = 120
 
-select = [
+lint.select = [
     "A",    # flake8-builtins
     "B",    # flake8-bugbear
     "D",    # pydocstyle
@@ -85,7 +85,7 @@ select = [
     "PERF"  # Perflint
 ]
 
-ignore = [
+lint.ignore = [
     "E741",
     "D202",
     "D401",
