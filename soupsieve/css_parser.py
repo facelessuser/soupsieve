@@ -127,6 +127,8 @@ PAT_PSEUDO_CLASS = fr'(?P<name>:{IDENTIFIER})(?P<open>\({WSC}*)?'
 PAT_PSEUDO_CLASS_SPECIAL = fr'(?P<name>:{IDENTIFIER})(?P<open>\({WSC}*)'
 # Custom pseudo class (`:--custom-pseudo`)
 PAT_PSEUDO_CLASS_CUSTOM = fr'(?P<name>:(?=--){IDENTIFIER})'
+# Nesting ampersand selector. Matches `&`
+PAT_AMP = r'&'
 # Closing pseudo group (`)`)
 PAT_PSEUDO_CLOSE = fr'{WSC}*\)'
 # Pseudo element (`::pseudo-element`)
@@ -435,6 +437,7 @@ class CSSParser:
         SelectorPattern("pseudo_class_custom", PAT_PSEUDO_CLASS_CUSTOM),
         SelectorPattern("pseudo_class", PAT_PSEUDO_CLASS),
         SelectorPattern("pseudo_element", PAT_PSEUDO_ELEMENT),
+        SelectorPattern("amp", PAT_AMP),
         SelectorPattern("at_rule", PAT_AT_RULE),
         SelectorPattern("id", PAT_ID),
         SelectorPattern("class", PAT_CLASS),
@@ -967,6 +970,9 @@ class CSSParser:
                 # Handle parts
                 if key == "at_rule":
                     raise NotImplementedError(f"At-rules found at position {m.start(0)}")
+                elif key == "amp":
+                    sel.flags |= ct.SEL_SCOPE
+                    has_selector = True
                 elif key == 'pseudo_class_custom':
                     has_selector = self.parse_pseudo_class_custom(sel, m, has_selector)
                 elif key == 'pseudo_class':
