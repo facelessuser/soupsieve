@@ -655,8 +655,9 @@ class CSSParser:
                 m.start(0)
             )
         else:
-            raise NotImplementedError(
-                f"'{pseudo}' pseudo-class is not implemented at this time"
+            raise ValueError(
+                f"'{pseudo}' was detected as a pseudo-class and is either unsupported or invalid. "
+                "If the syntax was not intended to be recognized as a pseudo-class, please escape the colon."
             )
 
         return has_selector, is_html
