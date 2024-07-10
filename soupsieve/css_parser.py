@@ -655,9 +655,11 @@ class CSSParser:
                 m.start(0)
             )
         else:
-            raise ValueError(
+            raise SelectorSyntaxError(
                 f"'{pseudo}' was detected as a pseudo-class and is either unsupported or invalid. "
-                "If the syntax was not intended to be recognized as a pseudo-class, please escape the colon."
+                "If the syntax was not intended to be recognized as a pseudo-class, please escape the colon.",
+                self.pattern,
+                m.start(0)
             )
 
         return has_selector, is_html
