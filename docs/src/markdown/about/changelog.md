@@ -2,8 +2,9 @@
 
 ## 2.6
 
--   **NEW** Add support for `&` as scoping root per the CSS Nesting Module, Level 1. When `&` is used outside the
+-   **NEW**: Add support for `&` as scoping root per the CSS Nesting Module, Level 1. When `&` is used outside the
     context of nesting, it is treated as the scoping root (equivalent to `:scope`).
+-   **FIX**: Improve error message when an unrecognized pseudo-class is used.
 
 ## 2.5
 
