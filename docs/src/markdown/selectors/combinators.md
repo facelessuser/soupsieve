@@ -156,7 +156,7 @@ prevsibling + nextsibling
 ... </html>
 ... """
 >>> soup = bs(html, 'html5lib')
->>> print(soup.select('h1 ~ p'))
+>>> print(soup.select('h1 + p'))
 [<p>Paragraph 1</p>]
 ```
 ///
