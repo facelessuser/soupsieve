@@ -154,3 +154,8 @@ commands =
 filterwarnings =
     ignore:\nCSS selector pattern:UserWarning
 """
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore:The 'strip_cdata':DeprecationWarning"
+]

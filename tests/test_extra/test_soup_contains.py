@@ -304,6 +304,11 @@ class TestSoupContains(util.TestCase):
                 ['2'],
                 flags=util.HTML
             )
+            found = False
+            target = "The pseudo class ':contains' is deprecated, ':-soup-contains' should be used moving forward."
+            for warn in w:
+                if target in str(warn.message):
+                    found = True
+                    break
             # Verify some things
-            self.assertTrue(len(w) == 1)
-            self.assertTrue(issubclass(w[-1].category, FutureWarning))
+            self.assertTrue(found)
