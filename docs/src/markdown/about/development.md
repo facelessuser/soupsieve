@@ -33,7 +33,7 @@ Usually this can be automated with Tox (assuming it is installed): `tox -e lint`
 
 ## Building and Editing Documents
 
-Documents are in Markdown (with with some additional syntax provided by extensions) and are converted to HTML via Python
+Documents are in Markdown (with some additional syntax provided by extensions) and are converted to HTML via Python
 Markdown. If you would like to build and preview the documentation, you must have these packages installed:
 
 -   @Python-Markdown/markdown: the Markdown parser.
@@ -194,7 +194,7 @@ object that may chain other `SelectorLists` objects depending on the complexity 
 a selector list, then you will get multiple `Selector` objects (one for each compound selector in the list) which in
 turn may chain other `Selector` objects.
 
-To view the selector list in in a compiled object for debugging purposes, one can access it via `SoupSieve.selectors`,
+To view the selector list in a compiled object for debugging purposes, one can access it via `SoupSieve.selectors`,
 though it is recommended to pretty print them:
 
 ```pycon3
@@ -358,7 +358,7 @@ class SelectorContains:
 
 Attribute           | Description
 ------------------- | -----------
-`text`              | A tuple of acceptable text that that an element should match. An element only needs to match at least one.
+`text`              | A tuple of acceptable text that an element should match. An element only needs to match at least one.
 
 ### `SelectorNth`
 

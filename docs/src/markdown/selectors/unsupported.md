@@ -31,7 +31,7 @@ Selects active elements.
 
 ## `:focus`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:focus}
 
-Represents an an element that has received focus.
+Represents an element that has received focus.
 
 /// tab | Syntax
 ```css

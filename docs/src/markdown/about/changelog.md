@@ -41,11 +41,11 @@
 
 -   **NEW**: Officially support Python 3.10.
 -   **NEW**: Add static typing.
--   **NEW**: `:has()`, `:is()`, and `:where()` now use use a forgiving selector list. While not as forgiving as CSS
-    might be, it will forgive such things as empty sets and empty slots due to multiple consecutive commas, leading
-    commas, or trailing commas. Essentially, these pseudo-classes will match all non-empty selectors and ignore empty
-    ones. As the scraping environment is different than a browser environment, it was chosen not to aggressively forgive
-    bad syntax and invalid features to ensure the user is alerted that their program may not perform as expected.
+-   **NEW**: `:has()`, `:is()`, and `:where()` now use a forgiving selector list. While not as forgiving as CSS might
+    be, it will forgive such things as empty sets and empty slots due to multiple consecutive commas, leading commas, or
+    trailing commas. Essentially, these pseudo-classes will match all non-empty selectors and ignore empty ones. As the
+    scraping environment is different than a browser environment, it was chosen not to aggressively forgive bad syntax
+    and invalid features to ensure the user is alerted that their program may not perform as expected.
 -   **NEW**: Add support to output a pretty print format of a compiled `SelectorList` for debug purposes.
 -   **FIX**: Some small corner cases discovered with static typing.
 
@@ -86,7 +86,7 @@
 -   **NEW**: `SelectorSyntaxError` is derived from `Exception` not `SyntaxError`.
 -   **NEW**: Remove deprecated `comments` and `icomments` from the API.
 -   **NEW**: Drop support for EOL Python versions (Python 2 and Python < 3.5).
--   **FIX**: Corner case with splitting namespace and tag name that that have an escaped `|`.
+-   **FIX**: Corner case with splitting namespace and tag name that have an escaped `|`.
 
 ## 1.9.6
 
@@ -94,7 +94,7 @@
 ///
 
 -   **FIX**: Prune dead code.
--   **FIX**: Corner case with splitting namespace and tag name that that have an escaped `|`.
+-   **FIX**: Corner case with splitting namespace and tag name that have an escaped `|`.
 
 ## 1.9.5
 

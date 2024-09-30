@@ -1587,9 +1587,9 @@ not used in the context of nesting is treated as the scoping root per the specif
 `#!py3 sv.select('& > p', soup.div)` is equivalent to `#!py3 sv.select(':scope > p', soup.div)`.
 ///
 
-`:scope` represents the the element a `match`, `select`, or `filter` is being called on. If we were, for instance,
-using `:scope` on a div (`#!py3 sv.select(':scope > p', soup.div)`) `:scope` would represent **that** div element, and
-no others. If called on the Beautiful Soup object which represents the entire document, it would simply select
+`:scope` represents the element a `match`, `select`, or `filter` is being called on. If we were, for instance, using
+`:scope` on a div (`#!py3 sv.select(':scope > p', soup.div)`) `:scope` would represent **that** div element, and no
+others. If called on the Beautiful Soup object which represents the entire document, it would simply select
 [`:root`](#:root).
 
 /// tab | Syntax
@@ -1708,7 +1708,7 @@ which includes all descendants. Using highly specific selectors can reduce how o
 ## `:-soup-contains-own()`:material-star:{: title="Custom" data-md-color-primary="green" .icon} {:#:-soup-contains-own}
 
 Selects elements that contain the provided text. Text must be found in the target element and not in its descendants. If
-text is broken up with with descendant elements, each text node will be evaluated separately.
+text is broken up with descendant elements, each text node will be evaluated separately.
 
 Syntax is the same as [`:-soup-contains()`](#:-soup-contains).
 

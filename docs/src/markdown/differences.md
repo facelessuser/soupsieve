@@ -93,7 +93,7 @@ el.select(':scope > .class')
 
 In the case where the element is the document node, `:scope` would simply represent the root element of the document.
 
-So, if you used to to have selectors such as:
+So, if you used to have selectors such as:
 
 ```py3
 soup.select('> div')
