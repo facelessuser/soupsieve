@@ -26,7 +26,7 @@ Soup Sieve isn't entirely unaware of `iframe` elements though. In Soup Sieve 1.9
 pseudo-classes behaved in unexpected ways without awareness to `iframes`, this was fixed in 1.9.1. Pseudo-classes such
 as [`:default`](./selectors/pseudo-classes.md#:default), [`:indeterminate`](./selectors/pseudo-classes.md#:indeterminate),
 [`:dir()`](./selectors/pseudo-classes.md#:dir), [`:lang()`](./selectors/pseudo-classes.md#:lang),
-[`:root`](./selectors/pseudo-classes.md#:root), and [`:contains()`](./selectors/pseudo-classes.md#:contains) where
+[`:root`](./selectors/pseudo-classes.md#:root), and [`:contains()`](./selectors/pseudo-classes.md#:contains) were
 given awareness of `iframes` to ensure they behaved properly and returned the expected elements. This doesn't mean that
 `select` won't return elements in `iframes`, but it won't allow something like `:default` to select a `button` in an
 `iframe` whose parent `form` is outside the `iframe`. Or better put, a default `button` will be evaluated in the context
