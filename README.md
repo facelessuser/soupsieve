@@ -74,7 +74,7 @@ MIT
 
 [bs4]: https://beautiful-soup-4.readthedocs.io/en/latest/#
 
-[github-ci-image]: https://github.com/facelessuser/soupsieve/workflows/build/badge.svg?branch=main&event=push
+[github-ci-image]: https://github.com/facelessuser/soupsieve/workflows/build/badge.svg
 [github-ci-link]: https://github.com/facelessuser/soupsieve/actions?query=workflow%3Abuild+branch%3Amain
 [codecov-image]: https://img.shields.io/codecov/c/github/facelessuser/soupsieve/master.svg?logo=codecov&logoColor=aaaaaa&labelColor=333333
 [codecov-link]: https://codecov.io/github/facelessuser/soupsieve
