@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6.1
+
+-   **FIX**: Typing fixes.
+
 ## 2.6
 
 -   **NEW**: Add official support for Python 3.13.
