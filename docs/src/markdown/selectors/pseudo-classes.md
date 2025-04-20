@@ -8,7 +8,7 @@ not being in a live, browser environment. Pseudo classes that cannot be implemen
 non-applicable either are under consideration, have not yet been evaluated, or are too new and viewed as a risk to
 implement as they might not stick around.
 
-## `:any-link`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:any-link}
+## `:any-link`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:any-link}
 
 Selects every `#!html <a>`, or `#!html <area>` element that has an `href` attribute, independent of
 whether it has been visited.
@@ -91,7 +91,7 @@ Selects any `#!html <input type="radio"/>`, `#!html <input type="checkbox"/>`, o
 https://developer.mozilla.org/en-US/docs/Web/CSS/:checked
 ///
 
-## `:default`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:default}
+## `:default`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:default}
 
 Selects any form element that is the default among a group of related elements, including: `#!html <button>`,
 `#!html <input type="checkbox">`, `#!html <input type="radio">`, `#!html <option>` elements.
@@ -146,7 +146,7 @@ Selects any form element that is the default among a group of related elements, 
 https://developer.mozilla.org/en-US/docs/Web/CSS/:default
 ///
 
-## `:defined`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}</span>:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:defined}
+## `:defined`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:defined}
 
 In a browser environment, this represents *defined* elements (names without hyphens) and custom elements (names with
 hyphens) that have been properly added to the custom element registry. Since elements cannot be added to a custom
@@ -181,7 +181,7 @@ specific selector, so it doesn't apply to XML.
 https://developer.mozilla.org/en-US/docs/Web/CSS/:defined
 ///
 
-## `:dir()`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:dir}
+## `:dir()`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:dir}
 
 Selects elements based on text directionality. Accepts either `ltr` or `rtl` for "left to right" and "right to left"
 respectively.
@@ -423,7 +423,7 @@ element:first-of-type
 https://developer.mozilla.org/en-US/docs/Web/CSS/:first-of-type
 ///
 
-## `:has()`:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#has}
+## `:has()` {:#has}
 
 Selects an element if any of the relative selectors passed as parameters (which are relative to the `:scope` of the
 given element), match at least one element.
@@ -469,7 +469,7 @@ not to nest `:has()` if there are concerns.
 https://developer.mozilla.org/en-US/docs/Web/CSS/:has
 ///
 
-## `:in-range`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:in-range}
+## `:in-range`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:in-range}
 
 Selects all `#!html <input>` elements whose values are in range according to their `type`, `min`, and `max` attributes.
 
@@ -501,7 +501,7 @@ Selects all `#!html <input>` elements whose values are in range according to the
 https://developer.mozilla.org/en-US/docs/Web/CSS/:in-range
 ///
 
-## `:indeterminate`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:indeterminate}
+## `:indeterminate`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:indeterminate}
 
 Selects all form elements whose are in an indeterminate state.
 
@@ -564,7 +564,7 @@ An element is considered indeterminate if:
 https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate
 ///
 
-## `:is()`:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:is}
+## `:is()` {:#:is}
 
 Selects an element, but only if it matches at least one selector in the selector list.
 
@@ -820,6 +820,48 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/:link
 /// new | New in 2.2
 The CSS specification recently updated to not include `#!html <link>` in the definition; therefore, Soup Sieve has
 removed it as well.
+///
+
+## `:muted`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:muted}
+
+Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and is
+currently "muted".
+
+Soup Sieve can only detect muted media elements that have the `muted` attribute explicitly applied.
+
+/// tab | Syntax
+```css
+:muted
+```
+///
+
+/// tab | Usage
+```pycon3
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <video id="vid1" width="320" height="240" controls muted>
+...   <source src="movie.mp4" type="video/mp4">
+...   <source src="movie.ogg" type="video/ogg">
+...   Your browser does not support the video tag.
+... </video>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select('video:muted'))
+[<video controls="" height="240" id="vid1" muted="" width="320">
+  <source src="movie.mp4" type="video/mp4"/>
+  <source src="movie.ogg" type="video/ogg"/>
+  Your browser does not support the video tag.
+</video>]
+```
+///
+
+/// tip | Additional Reading
+https://developer.mozilla.org/en-US/docs/Web/CSS/:muted
 ///
 
 ## `:not()` {:#:not}
@@ -1218,6 +1260,87 @@ element:nth-of-type(2n+2)
 https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type
 ///
 
+## `:open`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:open}
+
+Selects an element that has open and closed states, but only when it is in the open state.
+
+Due to limitations of not being in a live, browser environment, Soup Sieve can currently only target `#!html <details>`
+and `#!html <dialog>` elements with an `open` attribute. It cannot target `<input>` elements (such as color pickers)
+when they are open as there is no indication in a non-live environment.
+
+/// tab | Syntax
+```css
+:open
+```
+///
+
+/// tab | Usage
+```pycon3
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <details open>
+... <summary>A summary</summary>
+... <p>Content</p>
+... </details>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select('details:open'))
+[<details open="">
+<summary>A summary</summary>
+<p>Content</p>
+</details>]
+```
+///
+
+/// tip | Additional Reading
+https://developer.mozilla.org/en-US/docs/Web/CSS/:open
+///
+
+## `:optional`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:optional}
+
+Selects any `#!html <input>`, `#!html <select>`, or `#!html <textarea>` element that does not have the `required`
+attribute set on it.
+
+/// tab | Syntax
+```css
+:optional
+```
+///
+
+/// tab | Usage
+```pycon3
+>>> from bs4 import BeautifulSoup as bs
+>>> html = """
+... <html>
+... <head></head>
+... <body>
+... <form>
+... <input type="name" required>
+... <input type="checkbox" required>
+... <input type="email">
+... <textarea name="name" cols="30" rows="10" required></textarea>
+... <select name="nm" required>
+...     <!-- options -->
+... </select>
+... </form>
+... </body>
+... </html>
+... """
+>>> soup = bs(html, 'html5lib')
+>>> print(soup.select(':optional'))
+[<input type="email"/>]
+```
+///
+
+/// tip | Additional Reading
+https://developer.mozilla.org/en-US/docs/Web/CSS/:optional
+///
+
 ## `:only-child` {:#:only-child}
 
 Selects element without any siblings.
@@ -1296,47 +1419,7 @@ element:only-of-type
 https://developer.mozilla.org/en-US/docs/Web/CSS/:only-of-type
 ///
 
-## `:optional`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:optional}
-
-Selects any `#!html <input>`, `#!html <select>`, or `#!html <textarea>` element that does not have the `required`
-attribute set on it.
-
-/// tab | Syntax
-```css
-:optional
-```
-///
-
-/// tab | Usage
-```pycon3
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <form>
-... <input type="name" required>
-... <input type="checkbox" required>
-... <input type="email">
-... <textarea name="name" cols="30" rows="10" required></textarea>
-... <select name="nm" required>
-...     <!-- options -->
-... </select>
-... </form>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select(':optional'))
-[<input type="email"/>]
-```
-///
-
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:optional
-///
-
-## `:out-of-range`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:out-of-range}
+## `:out-of-range`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:out-of-range}
 
 Selects all `#!html <input>` elements whose values are out of range according to their `type`, `min`, and `max`
 attributes.
@@ -1369,7 +1452,7 @@ attributes.
 https://developer.mozilla.org/en-US/docs/Web/CSS/:out-of-range
 ///
 
-## `:placeholder-shown`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:placeholder-shown}
+## `:placeholder-shown`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:placeholder-shown}
 
 Selects any `#!html <input>` or `#!html <textarea>` element that is currently displaying placeholder text via the
 `placeholder` attribute.
@@ -1414,7 +1497,7 @@ it can't account for the quirks of the parsers in this case without introducing 
 https://developer.mozilla.org/en-US/docs/Web/CSS/:placeholder-shown
 ///
 
-## `:read-only`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:read-only}
+## `:read-only`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:read-only}
 
 Selects elements (such as `#!html <input>` or `#!html <textarea>`) that are *not* editable by the user. This does not
 just apply to form elements with `readonly` set, but it applies to **any** element that cannot be edited by the user.
@@ -1455,7 +1538,7 @@ just apply to form elements with `readonly` set, but it applies to **any** eleme
 https://developer.mozilla.org/en-US/docs/Web/CSS/:read-only
 ///
 
-## `:read-write`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:read-write}
+## `:read-write`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:read-write}
 
 Selects elements (such as `#!html <input>` or `#!html <textarea>`) that are editable by the user. This does not just
 apply to form elements as it applies to **any** element that can be edited by the user, such as a `#!html <p>` element
@@ -1497,7 +1580,7 @@ with `contenteditable` set on it.
 https://developer.mozilla.org/en-US/docs/Web/CSS/:read-write
 ///
 
-## `:required`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:required}
+## `:required`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:required}
 
 Selects any `#!html <input>`, `#!html <select>`, or `#!html <textarea>` element that has the `required` attribute set on
 it.
@@ -1577,7 +1660,7 @@ Selects the root element of a document tree.
 https://developer.mozilla.org/en-US/docs/Web/CSS/:root
 ///
 
-## `:scope`:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:scope}
+## `:scope` {:#:scope}
 
 /// new | New 2.6
 `&`, which was introduced in [CSS Nesting Level 1](https://www.w3.org/TR/css-nesting-1/#nest-selector) can be used as
@@ -1620,7 +1703,7 @@ others. If called on the Beautiful Soup object which represents the entire docum
 https://developer.mozilla.org/en-US/docs/Web/CSS/:scope
 ///
 
-## `:where()`:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:where}
+## `:where()` {:#:where}
 
 Selects an element, but only if it matches at least one selector in the selector list. In browsers, this also has zero
 specificity, but this only has relevance in a browser environment where you have multiple CSS styles, and specificity is

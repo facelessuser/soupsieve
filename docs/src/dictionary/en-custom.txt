@@ -35,6 +35,8 @@ WIP
 XHTML
 accessor
 amongst
+autofill
+autofilled
 boolean
 builtin
 centric
@@ -45,6 +47,7 @@ deregister
 dev
 directionality
 formatter
+fullscreen
 hashable
 html
 iterable

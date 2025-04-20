@@ -4,7 +4,7 @@ repo_url: https://github.com/facelessuser/soupsieve
 edit_uri: tree/main/docs/src/markdown
 site_description: A modern CSS selector library for Beautiful Soup.
 copyright: |
-  Copyright &copy; 2018 - 2024 <a href="https://github.com/facelessuser"  target="_blank" rel="noopener">Isaac Muse</a>
+  Copyright &copy; 2018 - 2025 <a href="https://github.com/facelessuser"  target="_blank" rel="noopener">Isaac Muse</a>
 
 docs_dir: docs/src/markdown
 theme:
@@ -151,6 +151,9 @@ markdown_extensions:
   - pymdownx.blocks.definition:
   - pymdownx.blocks.tab:
       alternate_style: True
+  - pymdownx.blocks.caption:
+  - pymdownx.fancylists:
+      inject_style: true
 
 extra:
   social:

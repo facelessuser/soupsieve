@@ -1,7 +1,14 @@
 # Changelog
 
-## 2.6.1
+## 2.7
 
+-   **NEW**: Add `:open` pseudo selector.
+-   **NEW**: Add `:muted` pseudo selector.
+-   **NEW**: Recognize the following pseudo selectors: `:autofill`, `:buffering`, `:fullscreen`, `:picture-in-picture`,
+    `:popover-open`, `:seeking`, `:stalled`, and `:volume-locked`. These selectors, while recognized, will not match any
+    element as they require a live environment to check element states and browser states. This just prevents Soup Sieve
+    from failing when any of these selectors are specified.
+-   **NEW**: A number of existing pseudo-classes are no longer noted as experimental.
 -   **FIX**: Typing fixes.
 
 ## 2.6
