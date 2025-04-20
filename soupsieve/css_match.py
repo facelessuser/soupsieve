@@ -56,7 +56,7 @@ FEB_LEAP_MONTH = 29
 DAYS_IN_WEEK = 7
 
 
-class _FakeParent(bs4.Tag):
+class _FakeParent:
     """
     Fake parent class.
 
@@ -129,7 +129,7 @@ class _DocumentNav:
         return cls.is_navigable_string(obj) and not cls.is_special_string(obj)
 
     @staticmethod
-    def create_fake_parent(el: bs4.Tag) -> bs4.Tag:
+    def create_fake_parent(el: bs4.Tag) -> _FakeParent:
         """Create fake parent for a given element."""
 
         return _FakeParent(el)
@@ -971,7 +971,7 @@ class CSSMatch(_DocumentNav):
                 break
             parent = self.get_parent(el)  # type: bs4.Tag | None
             if parent is None:
-                parent = self.create_fake_parent(el)
+                parent = cast('bs4.Tag', self.create_fake_parent(el))
             last = n.last
             last_index = len(parent) - 1
             index = last_index if last else 0

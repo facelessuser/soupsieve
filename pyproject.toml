@@ -129,7 +129,7 @@ deps =
     -rrequirements/docs.txt
 commands =
     mkdocs build --clean --verbose --strict
-    pyspelling
+    pyspelling -j 8
 
 [testenv:lint]
 passenv = *
