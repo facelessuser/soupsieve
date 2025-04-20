@@ -66,7 +66,7 @@ class TestOpen(util.TestCase):
         )
 
     def test_not_open(self):
-        """Test not open"""
+        """Test not open."""
 
         self.assert_selector(
             self.MARKUP,
