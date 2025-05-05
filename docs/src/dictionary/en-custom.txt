@@ -21,6 +21,7 @@ MkDocs
 NONINFRINGEMENT
 Precompile
 PyPI
+PyPI's
 PySpelling
 SVG
 TODO
