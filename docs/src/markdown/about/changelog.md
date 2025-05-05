@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+-  **ENHANCE**: Switch to deploying with PyPI's "Trusted Publisher".
+
 ## 2.7
 
 -   **NEW**: Add `:open` pseudo selector.
