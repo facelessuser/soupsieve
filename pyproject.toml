@@ -9,7 +9,7 @@ name = "soupsieve"
 description = "A modern CSS selector implementation for Beautiful Soup."
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 authors = [
     { name = "Isaac Muse", email = "Isaac.Muse@gmail.com" },
 ]
@@ -109,7 +109,7 @@ legacy_tox_ini = """
 [tox]
 isolated_build = true
 envlist =
-    py{38,39,310,311,312},
+    py{39,310,311,312,313,314},
     lint, nolxml, nohtml5lib
 
 [testenv]
