@@ -1,8 +1,10 @@
 # Changelog
 
-## Unreleased
+## 2.8
 
--  **ENHANCE**: Switch to deploying with PyPI's "Trusted Publisher".
+-   **NEW**: Drop support for Python 3.8.
+-   **NEW**: Add support for Python 3.14.
+-   **NEW**: Deploy with PyPI's "Trusted Publisher".
 
 ## 2.7
 
