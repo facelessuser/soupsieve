@@ -1,3 +1,6 @@
+---
+icon: lucide/scale
+---
 # Beautiful Soup Differences
 
 Soup Sieve is the official CSS "select" implementation of Beautiful Soup 4.7.0+. While the inclusion of Soup Sieve fixes

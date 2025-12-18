@@ -1,3 +1,6 @@
+---
+icon: lucide/boxes
+---
 # API
 
 Soup Sieve implements most of the selectors from the stable specification and even many from the latest draft
