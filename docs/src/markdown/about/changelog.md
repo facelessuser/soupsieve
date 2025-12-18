@@ -1,3 +1,6 @@
+---
+icon: lucide/scroll-text
+---
 # Changelog
 
 ## 2.8.1

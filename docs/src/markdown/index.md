@@ -30,28 +30,28 @@ do not match anything. Some of the supported selectors are:
 
 You must have Beautiful Soup already installed:
 
-```
-pip install beautifulsoup4
+```console
+$ pip install beautifulsoup4
 ```
 
 In most cases, assuming you've installed version 4.7.0, that should be all you need to do, but if you've installed via
 some alternative method, and Soup Sieve is not automatically installed, you can install it directly:
 
-```
-pip install soupsieve
+```console
+$ pip install soupsieve
 ```
 
 If you want to manually install it from source, first ensure that [`build`][build] is installed:
 
-```
-pip install build
+```console
+$ pip install build
 ```
 
 Then navigate to the root of the project and build the wheel and install (replacing `<ver>` with the current version):
 
-```
-python -m build -w
-pip install dist/soupsive-<ver>-py3-none-any.whl
+```console
+$ python -m build -w
+$ pip install dist/soupsive-<ver>-py3-none-any.whl
 ```
 
 ## Usage

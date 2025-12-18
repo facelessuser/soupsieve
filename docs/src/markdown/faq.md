@@ -1,3 +1,6 @@
+---
+icon: lucide/message-circle-question-mark
+---
 # Frequent Asked Questions
 
 ## Why do selectors not work the same in Beautiful Soup 4.7+?
@@ -13,6 +16,10 @@ For more details on specific changes, and the reasoning why a specific change is
 feature that Soup Sieve cannot/will not support, see [Beautiful Soup Differences](./differences.md).
 
 ## How does `iframe` handling work?
+
+/// note
+Recent versions of Python's `html.parser`, `lxml`, and `html5lib` all seem to escape `iframe` content.
+///
 
 In web browsers, CSS selectors do not usually select content inside an `iframe` element if the selector is called on an
 element outside of the `iframe`. Each HTML document is usually encapsulated and CSS selector leakage across this
