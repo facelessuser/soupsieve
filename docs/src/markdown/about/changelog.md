@@ -5,7 +5,7 @@ icon: lucide/scroll-text
 
 ## 2.8.1
 
--   **NEW**: Changes in tests to accommodate latest Python HTML parser changes.
+-   **FIX**: Changes in tests to accommodate latest Python HTML parser changes.
 
 ## 2.8
 
