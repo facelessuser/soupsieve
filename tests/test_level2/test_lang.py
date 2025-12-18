@@ -1,5 +1,8 @@
 """Test language selector."""
 from .. import util
+from bs4 import BeautifulSoup
+
+IFRAME_TEXT = BeautifulSoup('<iframe><div></div></iframe>', 'html.parser').iframe.text == '<div></div>'
 
 
 class TestLang(util.TestCase):
@@ -58,7 +61,7 @@ class TestLang(util.TestCase):
         self.assert_selector(
             markup,
             "p:lang(en)",
-            ['3'],
+            [] if IFRAME_TEXT else ['3'],
             flags=util.PYHTML
         )
 

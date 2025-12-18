@@ -258,7 +258,7 @@ class _DocumentNav:
         """Get parent."""
 
         parent = el.parent if el is not None else None
-        if no_iframe and parent is not None and self.is_iframe(parent):
+        if no_iframe and parent is not None and self.is_iframe(parent):  # pragma: no cover
             parent = None
         return parent
 
@@ -1250,7 +1250,7 @@ class CSSMatch(_DocumentNav):
         # Use cached meta language.
         if found_lang is None and self.cached_meta_lang:
             for cache in self.cached_meta_lang:
-                if root is cache[0]:
+                if root is not None and cast(str, root) is cache[0]:
                     found_lang = cache[1]
 
         # If we couldn't find a language, and the document is HTML, look to meta to determine language.
