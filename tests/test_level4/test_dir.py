@@ -1,6 +1,9 @@
 """Test direction selectors."""
 from .. import util
 import soupsieve as sv
+from bs4 import BeautifulSoup
+
+IFRAME_TEXT = BeautifulSoup('<iframe><div></div></iframe>', 'html.parser').iframe.text == '<div></div>'
 
 
 class TestDir(util.TestCase):
@@ -169,7 +172,7 @@ class TestDir(util.TestCase):
         self.assert_selector(
             markup,
             "div:dir(rtl)",
-            ['2'],
+            [] if IFRAME_TEXT else ['2'],
             flags=util.PYHTML
         )
 

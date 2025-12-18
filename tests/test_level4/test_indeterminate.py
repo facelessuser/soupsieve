@@ -1,5 +1,8 @@
 """Test indeterminate selectors."""
 from .. import util
+from bs4 import BeautifulSoup
+
+IFRAME_TEXT = BeautifulSoup('<iframe><div></div></iframe>', 'html.parser').iframe.text == '<div></div>'
 
 
 class TestIndeterminate(util.TestCase):
@@ -68,6 +71,6 @@ class TestIndeterminate(util.TestCase):
         self.assert_selector(
             markup,
             ":indeterminate",
-            ['radio1', 'radio3'],
+            ['radio1'] if IFRAME_TEXT else ['radio1', 'radio3'],
             flags=util.PYHTML
         )

@@ -2,6 +2,9 @@
 from .. import util
 import warnings
 import soupsieve as sv
+from bs4 import BeautifulSoup
+
+IFRAME_TEXT = BeautifulSoup('<iframe><div></div></iframe>', 'html.parser').iframe.text == '<div></div>'
 
 
 class TestSoupContains(util.TestCase):
@@ -250,7 +253,7 @@ class TestSoupContains(util.TestCase):
         self.assert_selector(
             markup,
             'span:-soup-contains("iframe")',
-            ['2'],
+            [] if IFRAME_TEXT else ['2'],
             flags=util.PYHTML
         )
 

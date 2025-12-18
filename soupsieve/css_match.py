@@ -258,7 +258,7 @@ class _DocumentNav:
         """Get parent."""
 
         parent = el.parent if el is not None else None
-        if no_iframe and parent is not None and self.is_iframe(parent):
+        if no_iframe and parent is not None and self.is_iframe(parent):  # pragma: no cover
             parent = None
         return parent
 

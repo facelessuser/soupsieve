@@ -1,5 +1,8 @@
 """Test default selectors."""
 from .. import util
+from bs4 import BeautifulSoup
+
+IFRAME_TEXT = BeautifulSoup('<iframe><div></div></iframe>', 'html.parser').iframe.text == '<div></div>'
 
 
 class TestDefault(util.TestCase):
@@ -113,7 +116,7 @@ class TestDefault(util.TestCase):
         self.assert_selector(
             markup,
             ":default",
-            ['d1', 'd3', 'd4'],
+            ['d1', 'd3'] if IFRAME_TEXT else ['d1', 'd3', 'd4'],
             flags=util.PYHTML
         )
 
