@@ -156,10 +156,21 @@ class Namespaces(ImmutableDict):
         """Validate arguments."""
 
         if isinstance(arg, dict):
-            if not all(isinstance(v, str) for v in arg.values()):
-                raise TypeError(f'{self.__class__.__name__} values must be hashable')
-        elif not all(isinstance(k, str) and isinstance(v, str) for k, v in arg):
-            raise TypeError(f'{self.__class__.__name__} keys and values must be Unicode strings')
+            if not all(
+                isinstance(k, str) and isinstance(v, str)
+                for k, v in arg.items()
+            ):
+                raise TypeError(
+                    f'{self.__class__.__name__} keys and values must be Unicode strings'
+                )
+        elif not all(
+            isinstance(k, str) and isinstance(v, str)
+            for k, v in arg
+        ):
+            raise TypeError(
+                f'{self.__class__.__name__} keys and values '
+                'must be Unicode strings'
+            )
 
 
 class CustomSelectors(ImmutableDict):
@@ -174,10 +185,21 @@ class CustomSelectors(ImmutableDict):
         """Validate arguments."""
 
         if isinstance(arg, dict):
-            if not all(isinstance(v, str) for v in arg.values()):
-                raise TypeError(f'{self.__class__.__name__} values must be hashable')
-        elif not all(isinstance(k, str) and isinstance(v, str) for k, v in arg):
-            raise TypeError(f'{self.__class__.__name__} keys and values must be Unicode strings')
+            if not all(
+                isinstance(k, str) and isinstance(v, str)
+                for k, v in arg.items()
+            ):
+                raise TypeError(
+                    f'{self.__class__.__name__} keys and values must be Unicode strings'
+                )
+        elif not all(
+            isinstance(k, str) and isinstance(v, str)
+            for k, v in arg
+        ):
+            raise TypeError(
+                f'{self.__class__.__name__} keys and values '
+                'must be Unicode strings'
+            )
 
 
 class Selector(Immutable):
