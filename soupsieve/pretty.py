@@ -136,4 +136,9 @@ def pretty(obj: Any) -> str:  # pragma: no cover
                     output.append(f'{m.group(1)} ')
                 break
 
+            # prevent never-ending loop
+            if m is None:
+                # Skip character that doesn't match any token
+                index += 1
+
     return ''.join(output)
