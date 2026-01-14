@@ -95,7 +95,7 @@ def get_pattern_context(pattern: str, index: int) -> tuple[str, int, int]:
             col = index - last + 1
         elif last <= index < m.end(0):
             indent = '--> '
-            offset = (-1 if index > m.start(0) else 0) + 3
+            offset = (-1 if index > m.start(0) else 0) + 2
             col = index - last + 1
         else:
             indent = '    '
