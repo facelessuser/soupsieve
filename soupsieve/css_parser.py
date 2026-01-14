@@ -1091,16 +1091,20 @@ class CSSParser:
         # Some patterns require additional logic, such as default. We try to make these the
         # last pattern, and append the appropriate flag to that selector which communicates
         # to the matcher what additional logic is required.
+        # Preserve any flags that were set during parsing (e.g. :empty, :root)
+        # by combining them with these special processing flags. Using
+        # assignment here would overwrite previously-set flags and break
+        # matching logic that depends on combined bitflags.
         if is_default:
-            selectors[-1].flags = ct.SEL_DEFAULT
+            selectors[-1].flags |= ct.SEL_DEFAULT
         if is_indeterminate:
-            selectors[-1].flags = ct.SEL_INDETERMINATE
+            selectors[-1].flags |= ct.SEL_INDETERMINATE
         if is_in_range:
-            selectors[-1].flags = ct.SEL_IN_RANGE
+            selectors[-1].flags |= ct.SEL_IN_RANGE
         if is_out_of_range:
-            selectors[-1].flags = ct.SEL_OUT_OF_RANGE
+            selectors[-1].flags |= ct.SEL_OUT_OF_RANGE
         if is_placeholder_shown:
-            selectors[-1].flags = ct.SEL_PLACEHOLDER_SHOWN
+            selectors[-1].flags |= ct.SEL_PLACEHOLDER_SHOWN
 
         # Return selector list
         return ct.SelectorList([s.freeze() for s in selectors], is_not, is_html)
