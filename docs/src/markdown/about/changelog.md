@@ -3,6 +3,12 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 2.8.2
+
+-   **FIX**: Ensure custom selectors or namespace dictionaries reject non-string keys (@mundanevision20).
+-   **FIX**: Fix handling of `:in-range` and `:out-of-range` with end of year weeks (@mundanevision20).
+-   **FIX**: Fix a potential infinite loop in pretty printing of compiled selector objects (@mundanevision20).
+
 ## 2.8.1
 
 -   **FIX**: Changes in tests to accommodate latest Python HTML parser changes.

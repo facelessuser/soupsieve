@@ -538,6 +538,12 @@ class TestInvalid(util.TestCase):
         with self.assertRaises(TypeError):
             sv.ct.Namespaces({{}: 'string'})
 
+    def test_invalid_namespace_key(self):
+        """Test custom selector key is hashable."""
+
+        with self.assertRaises(TypeError):
+            sv.ct.Namespaces({3: 'string'})
+
     def test_invalid_custom_type(self):
         """Test invalid custom selector type."""
 
@@ -555,6 +561,12 @@ class TestInvalid(util.TestCase):
 
         with self.assertRaises(TypeError):
             sv.ct.CustomSelectors({{}: 'string'})
+
+    def test_invalid_custom_key(self):
+        """Test custom selector key is hashable."""
+
+        with self.assertRaises(TypeError):
+            sv.ct.CustomSelectors({3: 'string'})
 
     def test_invalid_type_input_match(self):
         """Test bad input into the match API."""
