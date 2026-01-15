@@ -107,15 +107,15 @@ class TestInRange(util.TestCase):
         <input id="0" type="week" min="1980-W53" max="2004-W20" value="1999-W05">
         <input id="1" type="week" min="1980-W53" max="2004-W20" value="1980-W53">
         <input id="2" type="week" min="1980-W53" max="2004-W20" value="2004-W20">
-        <input id="3" type="week" min="1980-W53" value="1999-W05">
         <input id="4" type="week" max="2004-W20" value="1999-W05">
         <input id="5" type="week" min="1980-W53" max="2004-W20" value="2005-W53">
         <input id="6" type="week" min="1980-W53" max="2004-W20" value="2005-w52">
         <input id="7" type="week" min="1980-W53" max="2004-W20">
-
-        <!-- These should not match -->
         <input id="8" type="week" min="1980-W53" max="2004-W20" value="1979-W53">
         <input id="9" type="week" min="1980-W53" max="2004-W20" value="1980-W52">
+
+        <!-- These should not match -->
+        <input id="3" type="week" min="1980-W53" value="1999-W05">
         <input id="10" type="week" min="1980-W53" max="2004-W20" value="2005-W20">
         <input id="11" type="week" min="1980-W53" max="2004-W20" value="2004-W21">
 
@@ -127,7 +127,7 @@ class TestInRange(util.TestCase):
         self.assert_selector(
             markup,
             ":in-range",
-            ['0', '1', '2', '3', '4', '5', '6', '7'],
+            ['0', '1', '2', '4', '5', '6', '7', '8', '9'],
             flags=util.HTML
         )
 
