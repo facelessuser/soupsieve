@@ -40,8 +40,7 @@ Documents are in Markdown (with some additional syntax provided by extensions) a
 Markdown. If you would like to build and preview the documentation, you must have these packages installed:
 
 -   @Python-Markdown/markdown: the Markdown parser.
--   @mkdocs/mkdocs: the document site generator.
--   @squidfunk/mkdocs-material: a material theme for MkDocs.
+-   @zensical/zensical: the document site generator.
 -   @facelessuser/pymdown-extensions: this Python Markdown extension bundle.
 
 It is advised that you just install document dependencies with the following as the above list may not include all
@@ -56,7 +55,7 @@ able to view the documents at `localhost:8000` in your browser. After that, you 
 and have your browser preview update live.
 
 ```
-mkdocs serve
+python3 -m zensical serve -f zensical.yml
 ```
 
 ## Spell Checking Documents
@@ -75,7 +74,7 @@ run the following command from the root of the project.
 You will need to make sure the documents are built first:
 
 ```
-mkdocs build --clean
+python3 -m zensical build --clean -f zensical.yml
 ```
 
 And then run the spell checker.

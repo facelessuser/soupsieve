@@ -47,9 +47,8 @@ element
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/Type_selectors
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/Type_selectors
 
 ## Universal Selectors
 
@@ -90,9 +89,8 @@ The Universal selector (`*`) matches elements of any type.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/Universal_selectors
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/Universal_selectors
 
 ## ID Selectors
 
@@ -122,14 +120,12 @@ The ID selector matches an element based on its `id` attribute. The ID must matc
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/ID_selectors
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/ID_selectors
 
-/// note | XML Support
-While the use of the `id` attribute (in the context of CSS) is a very HTML centric idea, it is supported for XML as
-well because Beautiful Soup supported it before Soup Sieve's existence.
-///
+> [!note] XML Support
+> While the use of the `id` attribute (in the context of CSS) is a very HTML centric idea, it is supported for XML as
+> well because Beautiful Soup supported it before Soup Sieve's existence.
 
 ## Class Selectors
 
@@ -160,23 +156,20 @@ treated as a whitespace separated list, where each item is a **class**.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/Class_selectors
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/Class_selectors
 
-/// note | XML Support
-While the use of the `class` attribute (in the context of CSS) is a very HTML centric idea, it is supported for XML
-as well because Beautiful Soup supported it before Soup Sieve's existence.
-///
+> [!note] XML Support
+> While the use of the `class` attribute (in the context of CSS) is a very HTML centric idea, it is supported for XML
+> as well because Beautiful Soup supported it before Soup Sieve's existence.
 
 ## Attribute Selectors
 
 The attribute selector matches an element based on its attributes. When specifying a value of an attribute, if it
 contains whitespace or special characters, you should quote them with either single or double quotes.
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors
 
 /// define |
 `[attribute]`

@@ -4,7 +4,7 @@ repo_url: https://github.com/facelessuser/soupsieve
 edit_uri: tree/main/docs/src/markdown
 site_description: A modern CSS selector library for Beautiful Soup.
 copyright: |
-  Copyright &copy; 2018 - 2025 <a href="https://github.com/facelessuser"  target="_blank" rel="noopener">Isaac Muse</a>
+  Copyright &copy; 2018 - 2026 <a href="https://github.com/facelessuser"  target="_blank" rel="noopener">Isaac Muse</a>
 
 docs_dir: docs/src/markdown
 theme:
@@ -88,6 +88,9 @@ markdown_extensions:
   - markdown.extensions.md_in_html:
   - pymdownx.superfences:
   - pymdownx.highlight:
+      line_spans: __codeline
+      line_anchors: __codelineno
+      anchor_linenums: True
       extend_pygments_lang:
         - name: pycon3
           lang: pycon
@@ -177,6 +180,8 @@ markdown_extensions:
   - pymdownx.blocks.caption:
   - pymdownx.fancylists:
       inject_style: true
+  - pymdownx.quotes:
+      callouts: true
 
 extra:
   social:
@@ -184,7 +189,7 @@ extra:
       link: https://github.com/facelessuser
 
 extra_css:
-  - assets/pymdownx-extras/extra-835c322b67.css
+  - assets/pymdownx-extras/extra-928cef6c86.css
 extra_javascript:
   - assets/pymdownx-extras/extra-loader-Ccztcqfq.js
 

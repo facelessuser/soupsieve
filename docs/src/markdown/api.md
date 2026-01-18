@@ -23,13 +23,12 @@ change.
     parser). Some additional configuration is required when using namespaces, see [Namespace](#namespaces) for more
     information.
 
-    /// tip | Getting Proper Namespaces
-    The `html5lib` parser provides proper namespaces for HTML5, but `lxml`'s HTML parser will not. If you need
-    namespace support for HTML5, consider using `html5lib`.
-
-    For XML, the `lxml-xml` parser (`xml` for short) will provide proper namespaces. It is generally suggested that
-    `lxml-xml` is used to parse XHTML documents to take advantage of namespaces.
-    ///
+    > [!tip] Getting Proper Namespaces
+    > The `html5lib` parser provides proper namespaces for HTML5, but `lxml`'s HTML parser will not. If you need
+    > namespace support for HTML5, consider using `html5lib`.
+    > 
+    > For XML, the `lxml-xml` parser (`xml` for short) will provide proper namespaces. It is generally suggested that
+    > `lxml-xml` is used to parse XHTML documents to take advantage of namespaces.
 
 -   While attribute values are generally treated as case sensitive, HTML5 and HTML treat the `type` attribute
     special. The `type` attribute's value is always case insensitive. This is generally how most browsers treat `type`.
@@ -184,9 +183,8 @@ would normally cause an identifier to be invalid.
 '�'
 ```
 
-/// new | New in 1.9.0
-`escape` is a new API function added in 1.9.0.
-///
+> [!new] New in 1.9.0
+> `escape` is a new API function added in 1.9.0.
 
 ## `soupsieve.compile()`
 

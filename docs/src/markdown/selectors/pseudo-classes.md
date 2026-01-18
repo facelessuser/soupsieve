@@ -36,14 +36,12 @@ whether it has been visited.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:any-link
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:any-link
 
-/// new | New in 2.2
-The CSS specification recently updated to not include `#!html <link>` in the definition; therefore, Soup Sieve has
-removed it as well.
-///
+> [!new] New in 2.2
+> The CSS specification recently updated to not include `#!html <link>` in the definition; therefore, Soup Sieve has
+> removed it as well.
 
 ## `:checked`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:checked}
 
@@ -87,9 +85,8 @@ Selects any `#!html <input type="radio"/>`, `#!html <input type="checkbox"/>`, o
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:checked
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:checked
 
 ## `:default`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:default}
 
@@ -142,9 +139,8 @@ Selects any form element that is the default among a group of related elements, 
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:default
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:default
 
 ## `:defined`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:defined}
 
@@ -177,9 +173,8 @@ specific selector, so it doesn't apply to XML.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:defined
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:defined
 
 ## `:dir()`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:dir}
 
@@ -212,9 +207,8 @@ respectively.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:dir
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:dir
 
 ## `:disabled`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:disabled}
 
@@ -260,9 +254,8 @@ Selects any element that is disabled.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:disabled
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:disabled
 
 ## `:empty`:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:empty}
 
@@ -293,9 +286,8 @@ Selects elements that have no children and no text (whitespace is ignored).
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:empty
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:empty
 
 ## `:enabled`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:enabled}
 
@@ -341,9 +333,8 @@ Selects any element that is enabled.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:enabled
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:enabled
 
 ## `:first-child` {:#:first-child}
 
@@ -377,9 +368,8 @@ Selects the first child in a group of sibling elements.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:first-child
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:first-child
 
 ## `:first-of-type` {:#:first-of-type}
 
@@ -419,9 +409,8 @@ element:first-of-type
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:first-of-type
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:first-of-type
 
 ## `:has()` {:#has}
 
@@ -465,9 +454,8 @@ not to nest `:has()` if there are concerns.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:has
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:has
 
 ## `:in-range`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:in-range}
 
@@ -497,9 +485,8 @@ Selects all `#!html <input>` elements whose values are in range according to the
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:in-range
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:in-range
 
 ## `:indeterminate`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:indeterminate}
 
@@ -560,9 +547,8 @@ An element is considered indeterminate if:
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate
 
 ## `:is()` {:#:is}
 
@@ -599,9 +585,8 @@ While the level 4 specifications state that [compound](#compound-selector) selec
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:is
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:is
 
 ## `:lang()` {:#:lang}
 
@@ -700,9 +685,8 @@ Level 4 CSS:material-flask:{: title="Experimental" data-md-color-primary="purple
     ///
 ////
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:lang
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:lang
 
 ## `:last-child` {:#:last-child}
 
@@ -736,9 +720,8 @@ Selects the last element among a group of sibling elements.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:last-child
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:last-child
 
 ## `:last-of-type` {:#:last-of-type}
 
@@ -778,9 +761,8 @@ element:last-of-type
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:last-of-type
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:last-of-type
 
 ## `:link`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:link}
 
@@ -813,14 +795,12 @@ as `:any-link`.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:link
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:link
 
-/// new | New in 2.2
-The CSS specification recently updated to not include `#!html <link>` in the definition; therefore, Soup Sieve has
-removed it as well.
-///
+> [!new] New in 2.2
+> The CSS specification recently updated to not include `#!html <link>` in the definition; therefore, Soup Sieve has
+> removed it as well.
 
 ## `:muted`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:muted}
 
@@ -860,9 +840,8 @@ Soup Sieve can only detect muted media elements that have the `muted` attribute 
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:muted
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:muted
 
 ## `:not()` {:#:not}
 
@@ -929,9 +908,8 @@ Level 4+ CSS:material-flask:{: title="Experimental" data-md-color-primary="purpl
     ///
 ////
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:not
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:not
 
 ## `:nth-child()` {:#:nth-child}
 
@@ -1033,9 +1011,8 @@ Level 4+ CSS:material-flask:{: title="Experimental" data-md-color-primary="purpl
     ///
 ////
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child
 
 ## `:nth-last-child()` {:#:nth-last-child}
 
@@ -1137,9 +1114,8 @@ Level 4+ CSS:material-flask:{: title="Experimental" data-md-color-primary="purpl
     ///
 ////
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-child
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-child
 
 ## `:nth-last-of-type()` {:#:nth-last-of-type}
 
@@ -1197,9 +1173,8 @@ element:nth-last-of-type(2n+2)
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-of-type
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-of-type
 
 ## `:nth-of-type()` {:#:nth-of-type}
 
@@ -1256,9 +1231,8 @@ element:nth-of-type(2n+2)
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type
 
 ## `:open`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:open}
 
@@ -1297,9 +1271,8 @@ when they are open as there is no indication in a non-live environment.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:open
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:open
 
 ## `:optional`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:optional}
 
@@ -1337,9 +1310,8 @@ attribute set on it.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:optional
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:optional
 
 ## `:only-child` {:#:only-child}
 
@@ -1378,9 +1350,8 @@ Selects element without any siblings.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:only-child
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:only-child
 
 ## `:only-of-type` {:#:only-of-type}
 
@@ -1415,9 +1386,8 @@ element:only-of-type
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:only-of-type
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:only-of-type
 
 ## `:out-of-range`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:out-of-range}
 
@@ -1448,9 +1418,8 @@ attributes.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:out-of-range
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:out-of-range
 
 ## `:placeholder-shown`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:placeholder-shown}
 
@@ -1481,21 +1450,19 @@ Selects any `#!html <input>` or `#!html <textarea>` element that is currently di
 ```
 ///
 
-/// note | Parser Differences
-In general, when an input has a placeholder, but the element also has valid content, the placeholder is not shown.
-For instance, when a `textarea` has actual text associated with the element, the placeholder is overridden with the
-actual content. A `textarea` is allowed no more than a single newline to be considered as having no content
-(carriage returns don't count).
+> [!note] Parser Differences
+> In general, when an input has a placeholder, but the element also has valid content, the placeholder is not shown.
+> For instance, when a `textarea` has actual text associated with the element, the placeholder is overridden with the
+> actual content. A `textarea` is allowed no more than a single newline to be considered as having no content
+> (carriage returns don't count).
+>
+> `html5lib` will strip out carriage returns, but `lxml` and `html.parser` will not. This will cause a difference
+> between the parsers when dealing with Windows style line endings and `textareas`. `html5lib` seems to follow
+> *closest* to what real browsers do. Soup Sieve is simply following the specification as best it can. Unfortunately,
+> it can't account for the quirks of the parsers in this case without introducing other issues.
 
-`html5lib` will strip out carriage returns, but `lxml` and `html.parser` will not. This will cause a difference
-between the parsers when dealing with Windows style line endings and `textareas`. `html5lib` seems to follow
-*closest* to what real browsers do. Soup Sieve is simply following the specification as best it can. Unfortunately,
-it can't account for the quirks of the parsers in this case without introducing other issues.
-///
-
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:placeholder-shown
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:placeholder-shown
 
 ## `:read-only`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:read-only}
 
@@ -1534,9 +1501,8 @@ just apply to form elements with `readonly` set, but it applies to **any** eleme
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:read-only
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:read-only
 
 ## `:read-write`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:read-write}
 
@@ -1576,9 +1542,8 @@ with `contenteditable` set on it.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:read-write
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:read-write
 
 ## `:required`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:required}
 
@@ -1618,9 +1583,8 @@ it.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:required
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:required
 
 ## `:root` {:#:root}
 
@@ -1656,19 +1620,17 @@ Selects the root element of a document tree.
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:root
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:root
 
 ## `:scope` {:#:scope}
 
-/// new | New 2.6
-`&`, which was introduced in [CSS Nesting Level 1](https://www.w3.org/TR/css-nesting-1/#nest-selector) can be used as
-an alternative to `:scope` and is essentially equivalent. Soup Sieve does not support nesting selectors, but `&`, when
-not used in the context of nesting is treated as the scoping root per the specification.
-
-`#!py3 sv.select('& > p', soup.div)` is equivalent to `#!py3 sv.select(':scope > p', soup.div)`.
-///
+> [!new] New 2.6
+> `&`, which was introduced in [CSS Nesting Level 1](https://www.w3.org/TR/css-nesting-1/#nest-selector) can be used as
+> an alternative to `:scope` and is essentially equivalent. Soup Sieve does not support nesting selectors, but `&`, when
+> not used in the context of nesting is treated as the scoping root per the specification.
+>
+> `#!py3 sv.select('& > p', soup.div)` is equivalent to `#!py3 sv.select(':scope > p', soup.div)`.
 
 `:scope` represents the element a `match`, `select`, or `filter` is being called on. If we were, for instance, using
 `:scope` on a div (`#!py3 sv.select(':scope > p', soup.div)`) `:scope` would represent **that** div element, and no
@@ -1699,9 +1661,8 @@ others. If called on the Beautiful Soup object which represents the entire docum
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:scope
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:scope
 
 ## `:where()` {:#:where}
 
@@ -1738,9 +1699,8 @@ While the level 4 specifications state that [compound](#compound-selector) selec
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/:where
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/:where
 
 ## `:-soup-contains()`:material-star:{: title="Custom" data-md-color-primary="green" .icon} {:#:-soup-contains}
 
@@ -1752,16 +1712,14 @@ differences: it is called `:-soup-contains()` instead of `:contains()`, and it c
 comma separated list of values. An element needs only to match at least one of the items in the comma separated list to
 be considered matching.
 
-/// warning | Rename 2.1
-The name `:-soup-contains()` is new in version 2.1. Previously, it was known by `:contains()`. While the alias of
-`:contains()` is currently allowed, this alias is deprecated moving forward and will be removed in a future version.
-It is recommended to migrate to the name `:-soup-contains` moving forward.
-///
+> [!warning] Rename 2.1
+> The name `:-soup-contains()` is new in version 2.1. Previously, it was known by `:contains()`. While the alias of
+> `:contains()` is currently allowed, this alias is deprecated moving forward and will be removed in a future version.
+> It is recommended to migrate to the name `:-soup-contains` moving forward.
 
-/// warning | Expensive Operation
-`:-soup-contains()` is an expensive operation as it scans all the text nodes of an element under consideration,
-which includes all descendants. Using highly specific selectors can reduce how often it is evaluated.
-///
+> [!warning] Expensive Operation
+> `:-soup-contains()` is an expensive operation as it scans all the text nodes of an element under consideration,
+> which includes all descendants. Using highly specific selectors can reduce how often it is evaluated.
 
 /// tab | Syntax
 ```css
@@ -1820,9 +1778,8 @@ Syntax is the same as [`:-soup-contains()`](#:-soup-contains).
 ```
 ///
 
-/// new | New in 2.1
-`:-soup-contains-own()` was added in 2.1.
-///
+> [!new] New in 2.1
+> `:-soup-contains-own()` was added in 2.1.
 
 --8<--
 selector_styles.md

@@ -7,7 +7,7 @@ icon: lucide/scroll-text
 
 -   **FIX**: Ensure custom selectors or namespace dictionaries reject non-string keys (@mundanevision20).
 -   **FIX**: Fix handling of `:in-range` and `:out-of-range` with end of year weeks (@mundanevision20).
--   **FIX**: Fix a potential infinite loop in pretty printing of compiled selector objects (@mundanevision20).
+-   **FIX**: Fix a potential infinite loop in pretty printing debug function (@mundanevision20).
 
 ## 2.8.1
 
@@ -120,8 +120,7 @@ icon: lucide/scroll-text
 
 ## 1.9.6
 
-/// note | Last version for Python 2.7
-///
+> [!note] Last version for Python 2.7
 
 -   **FIX**: Prune dead code.
 -   **FIX**: Corner case with splitting namespace and tag name that have an escaped `|`.

@@ -60,9 +60,8 @@ parent descendant
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/Descendant_combinator
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/Descendant_combinator
 
 ## Child combinator
 
@@ -93,9 +92,8 @@ parent > child
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/Child_combinator
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/Child_combinator
 
 ## General sibling combinator
 
@@ -127,9 +125,8 @@ prevsibling ~ sibling
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/General_sibling_combinator
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/General_sibling_combinator
 
 ## Adjacent sibling combinator
 
@@ -161,9 +158,8 @@ prevsibling + nextsibling
 ```
 ///
 
-/// tip | Additional Reading
-https://developer.mozilla.org/en-US/docs/Web/CSS/Adjacent_sibling_combinator
-///
+> [!tip] Additional Reading
+> https://developer.mozilla.org/en-US/docs/Web/CSS/Adjacent_sibling_combinator
 
 --8<--
 selector_styles.md

@@ -67,23 +67,22 @@ cases, we may adopt them as "custom" selectors.
 </tr>
 </table>
 
-/// tip | Additional Reading
-If usage of a selector is not clear in this documentation, you can find more information by reading these
-specification documents:
-
-[CSS Level 3 Specification](https://www.w3.org/TR/selectors-3/)
-: Contains the latest official document outlying official behaviors of CSS selectors.
-
-[CSS Level 4 Working Draft](https://www.w3.org/TR/selectors-4/)
-: Contains the latest published working draft of the CSS level 4 selectors which outlines the experimental new
-selectors and experimental behavioral changes.
-
-[HTML5](https://www.w3.org/TR/html50/)
-: The HTML 5.0 specification document. Defines the semantics regarding HTML.
-
-[HTML Living Standard](https://html.spec.whatwg.org/)
-: The HTML Living Standard document. Defines semantics regarding HTML.
-///
+> [!tip] Additional Reading
+> If usage of a selector is not clear in this documentation, you can find more information by reading these
+> specification documents:
+>
+> [CSS Level 3 Specification](https://www.w3.org/TR/selectors-3/)
+> : Contains the latest official document outlying official behaviors of CSS selectors.
+>
+> [CSS Level 4 Working Draft](https://www.w3.org/TR/selectors-4/)
+> : Contains the latest published working draft of the CSS level 4 selectors which outlines the experimental new
+> selectors and experimental behavioral changes.
+>
+> [HTML5](https://www.w3.org/TR/html50/)
+> : The HTML 5.0 specification document. Defines the semantics regarding HTML.
+>
+> [HTML Living Standard](https://html.spec.whatwg.org/)
+> : The HTML Living Standard document. Defines semantics regarding HTML.
 
 ## Selector Terminology
 
