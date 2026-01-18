@@ -7,7 +7,7 @@ icon: lucide/scroll-text
 
 -   **FIX**: Ensure custom selectors or namespace dictionaries reject non-string keys (@mundanevision20).
 -   **FIX**: Fix handling of `:in-range` and `:out-of-range` with end of year weeks (@mundanevision20).
--   **FIX**: Fix a potential infinite loop in pretty printing debug function (@mundanevision20).
+-   **FIX**: Fix a potential infinite loop in the pretty printing debug function (@mundanevision20).
 
 ## 2.8.1
 
