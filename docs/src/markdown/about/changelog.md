@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 2.8.3
+
+-   **FIX**: Fix inefficient attribute pattern.
+
 ## 2.8.2
 
 -   **FIX**: Ensure custom selectors or namespace dictionaries reject non-string keys (@mundanevision20).
