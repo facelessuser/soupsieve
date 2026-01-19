@@ -1,5 +1,6 @@
 """Test attribute selectors."""
 from .. import util
+import soupsieve as sv
 
 
 class TestAttribute(util.TestCase):
@@ -50,3 +51,14 @@ class TestAttribute(util.TestCase):
             ["div", "0", "1", "2", "3", "pre", "4", "6"],
             flags=util.HTML5
         )
+
+    def test_bad_attribute(self):
+        """Test bad attribute fails."""
+
+        with self.assertRaises(sv.SelectorSyntaxError) as cm:
+            sv.compile(r"[\]!=D4XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+
+        e = cm.exception
+        self.assertEqual(e.context, '[\\]!=D4XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n^')
+        self.assertEqual(e.line, 1)
+        self.assertEqual(e.col, 1)
