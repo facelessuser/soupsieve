@@ -35,6 +35,29 @@ class TestSoupSieve(util.TestCase):
 
         self.assertEqual(sorted(['5', 'some-id']), sorted(ids))
 
+    @pytest.mark.xfail(reason="Known issue: https://github.com/facelessuser/soupsieve/issues/291")
+    def test_select_subtree_ignores_ancestor_elements(self):
+        """Test select ignores ancestor elements when operating on a subtree."""
+
+        markup = """
+        <html>
+        <body>
+        <div>
+        <section id="subtree">
+        Testing <span id="1">123</span>.
+        <div>Testing <span id="2">456</span>.</div>
+        </section>
+        </div>
+        </body>
+        </html>
+        """
+
+        soup = self.soup(markup, 'html.parser')
+        subtree = soup.find('section', id='subtree')
+        ids = [el.attrs['id'] for el in sv.select('div span[id]', subtree)]
+
+        self.assertEqual(sorted(['2']), sorted(ids))
+
     def test_select_order(self):
         """Test select order."""
 
