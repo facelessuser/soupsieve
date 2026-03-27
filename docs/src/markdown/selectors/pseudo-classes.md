@@ -1707,7 +1707,7 @@ While the level 4 specifications state that [compound](#compound-selector) selec
 Selects elements that contain the provided text. Text can be found in either itself, or its descendants.
 
 Originally, there was a pseudo-class called `:contains()` that was originally included in a [CSS early draft][contains-draft],
-but was dropped from the draft in the end. Soup Sieve implements it how it was originally proposed accept for two
+but was dropped from the draft in the end. Soup Sieve implements it how it was originally proposed except for two
 differences: it is called `:-soup-contains()` instead of `:contains()`, and it can accept either a single value, or a
 comma separated list of values. An element needs only to match at least one of the items in the comma separated list to
 be considered matching.
