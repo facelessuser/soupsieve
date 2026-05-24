@@ -66,21 +66,27 @@ class TestAttribute(util.TestCase):
     def test_bad_attribute_unclused(self):
         """Test bad attribute fails for syntax error, not timeout error."""
 
-        import signal
+        import platform
 
-        def timeout_handler(signum, frame):
-            raise TimeoutError
-
-        signal.signal(signal.SIGALRM, timeout_handler)
-        signal.alarm(3)
-
-        passed = False
-        try:
+        if platform.system() == 'Windows':
             with self.assertRaises(sv.SelectorSyntaxError):
                 sv.compile('[a="' + ('x' * 300))
-            passed = True
-        except TimeoutError:
-            pass
-        finally:
-            signal.alarm(0)
-        self.assertTrue(passed)
+        else:
+            import signal
+
+            def timeout_handler(signum, frame):
+                raise TimeoutError
+
+            signal.signal(signal.SIGALRM, timeout_handler)
+            signal.alarm(3)
+
+            passed = False
+            try:
+                with self.assertRaises(sv.SelectorSyntaxError):
+                    sv.compile('[a="' + ('x' * 300))
+                passed = True
+            except TimeoutError:
+                pass
+            finally:
+                signal.alarm(0)
+            self.assertTrue(passed)
