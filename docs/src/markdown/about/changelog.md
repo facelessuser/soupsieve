@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 2.8.4
+
+-   **FIX**: Fix another inefficient attribute pattern (@mauriceng98).
+
 ## 2.8.3
 
 -   **FIX**: Fix inefficient attribute pattern.

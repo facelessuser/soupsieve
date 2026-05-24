@@ -118,7 +118,7 @@ IDENTIFIER = fr'''
 # `nth` content
 NTH = fr'(?:[-+])?(?:[0-9]+n?|n)(?:(?<=n){WSC}*(?:[-+]){WSC}*(?:[0-9]+))?'
 # Value: quoted string or identifier
-VALUE = fr'''(?:"(?:\\(?:.|{NEWLINE})|[^\\"\r\n\f]+)*?"|'(?:\\(?:.|{NEWLINE})|[^\\'\r\n\f]+)*?'|{IDENTIFIER})'''
+VALUE = fr'''(?:"(?:\\(?:.|{NEWLINE})|[^\\"\r\n\f])*?"|'(?:\\(?:.|{NEWLINE})|[^\\'\r\n\f])*?'|{IDENTIFIER})'''
 # Attribute value comparison. `!=` is handled special as it is non-standard.
 ATTR = fr'(?:{WSC}*(?P<cmp>[!~^|*$]?=){WSC}*(?P<value>{VALUE})(?:{WSC}*(?P<case>[is]))?)?{WSC}*'
 

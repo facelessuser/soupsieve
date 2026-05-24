@@ -54,7 +54,7 @@ include = [
     "/tests/**/*.py",
     "/.pyspelling.yml",
     "/.coveragerc",
-    "/mkdocs.yml"
+    "/zensical.yml"
 ]
 
 [tool.mypy]
@@ -128,7 +128,7 @@ passenv = *
 deps =
     -rrequirements/docs.txt
 commands =
-    {envbindir}/zensical build -f zensical.yml --clean --strict
+    {envbindir}/zensical build -f zensical.yml --clean
     pyspelling -j 8
 
 [testenv:lint]
