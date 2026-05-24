@@ -6,6 +6,7 @@ icon: lucide/scroll-text
 ## 2.8.4
 
 -   **FIX**: Fix another inefficient attribute pattern (@mauriceng98).
+-   **FIX**: Limit total number of selectors processed in a pattern to prevent massive selector requests (@mauriceng98).
 
 ## 2.8.3
 

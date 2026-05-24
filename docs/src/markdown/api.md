@@ -26,7 +26,7 @@ change.
     > [!tip] Getting Proper Namespaces
     > The `html5lib` parser provides proper namespaces for HTML5, but `lxml`'s HTML parser will not. If you need
     > namespace support for HTML5, consider using `html5lib`.
-    > 
+    >
     > For XML, the `lxml-xml` parser (`xml` for short) will provide proper namespaces. It is generally suggested that
     > `lxml-xml` is used to parse XHTML documents to take advantage of namespaces.
 
@@ -36,6 +36,12 @@ change.
 
 While Soup Sieve access is exposed through Beautiful Soup's API, Soup Sieve's API can always be imported and accessed
 directly for more controlled tag selection if needed.
+
+> [!note] Selector Limits
+> Starting in 2.8.4, number of selectors in a given pattern are arbitrarily capped at ~8192. This limitation was added
+> to prevent cases where impractical, massive selectors.
+>
+> Some selectors are defined as a series of other pre-defined selectors which also contribute towards the count.
 
 ## Flags
 
