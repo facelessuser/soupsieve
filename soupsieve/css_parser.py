@@ -433,7 +433,8 @@ class _Selector:
 
 @dataclass
 class CSSPattern:
-    """A CSS pattern that hasn't been processed by CSSParser yet."""
+    """A CSS pattern that hasn't been processed by `CSSParser` yet."""
+
     selector: str
     flags: int
 
