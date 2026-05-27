@@ -432,21 +432,22 @@ class _Selector:
 
 
 @dataclass
-class PseudoSelector:
+class CSSPattern:
+    """A CSS pattern that hasn't been processed by CSSParser yet."""
     selector: str
     flags: int
 
 # CSS pattern for `:link` and `:any-link`
-CSS_LINK = PseudoSelector('html|*:is(a, area)[href]', 0)
+CSS_LINK = CSSPattern('html|*:is(a, area)[href]', 0)
 # CSS pattern for `:checked`
-CSS_CHECKED = PseudoSelector(
+CSS_CHECKED = CSSPattern(
     '''
     html|*:is(input[type=checkbox], input[type=radio])[checked], html|option[selected]
     ''',
     0
 )
 # CSS pattern for `:default` (must compile CSS_CHECKED first)
-CSS_DEFAULT = PseudoSelector(
+CSS_DEFAULT = CSSPattern(
     '''
     :checked,
 
@@ -459,7 +460,7 @@ CSS_DEFAULT = PseudoSelector(
     FLG_DEFAULT
 )
 # CSS pattern for `:indeterminate`
-CSS_INDETERMINATE = PseudoSelector(
+CSS_INDETERMINATE = CSSPattern(
     '''
     html|input[type="checkbox"][indeterminate],
     html|input[type="radio"]:is(:not([name]), [name=""]):not([checked]),
@@ -474,7 +475,7 @@ CSS_INDETERMINATE = PseudoSelector(
     FLG_INDETERMINATE
 )
 # CSS pattern for `:disabled`
-CSS_DISABLED = PseudoSelector(
+CSS_DISABLED = CSSPattern(
     '''
     html|*:is(input:not([type=hidden]), button, select, textarea, fieldset, optgroup, option, fieldset)[disabled],
     html|optgroup[disabled] > html|option,
@@ -485,18 +486,18 @@ CSS_DISABLED = PseudoSelector(
     0
 )
 # CSS pattern for `:enabled`
-CSS_ENABLED = PseudoSelector(
+CSS_ENABLED = CSSPattern(
     '''
     html|*:is(input:not([type=hidden]), button, select, textarea, fieldset, optgroup, option, fieldset):not(:disabled)
     ''',
     FLG_HTML
 )
 # CSS pattern for `:required`
-CSS_REQUIRED = PseudoSelector('html|*:is(input, textarea, select)[required]', 0)
+CSS_REQUIRED = CSSPattern('html|*:is(input, textarea, select)[required]', 0)
 # CSS pattern for `:optional`
-CSS_OPTIONAL = PseudoSelector('html|*:is(input, textarea, select):not([required])', 0)
+CSS_OPTIONAL = CSSPattern('html|*:is(input, textarea, select):not([required])', 0)
 # CSS pattern for `:placeholder-shown`
-CSS_PLACEHOLDER_SHOWN = PseudoSelector(
+CSS_PLACEHOLDER_SHOWN = CSSPattern(
     '''
     html|input:is(
         :not([type]),
@@ -514,7 +515,7 @@ CSS_PLACEHOLDER_SHOWN = PseudoSelector(
     FLG_PLACEHOLDER_SHOWN
 )
 # CSS pattern for `:read-write` (CSS_DISABLED must be compiled first)
-CSS_READ_WRITE = PseudoSelector(
+CSS_READ_WRITE = CSSPattern(
     '''
     html|*:is(
         textarea,
@@ -540,9 +541,9 @@ CSS_READ_WRITE = PseudoSelector(
     0
 )
 # CSS pattern for `:read-only`
-CSS_READ_ONLY = PseudoSelector('html|*:not(:read-write)', 0)
+CSS_READ_ONLY = CSSPattern('html|*:not(:read-write)', 0)
 # CSS pattern for `:in-range`
-CSS_IN_RANGE = PseudoSelector(
+CSS_IN_RANGE = CSSPattern(
     '''
     html|input:is(
         [type="date"],
@@ -560,7 +561,7 @@ CSS_IN_RANGE = PseudoSelector(
     FLG_IN_RANGE
 )
 # CSS pattern for `:out-of-range`
-CSS_OUT_OF_RANGE = PseudoSelector(
+CSS_OUT_OF_RANGE = CSSPattern(
     '''
     html|input:is(
         [type="date"],
@@ -579,11 +580,11 @@ CSS_OUT_OF_RANGE = PseudoSelector(
 )
 
 # CSS pattern for :open
-CSS_OPEN = PseudoSelector('html|*:is(details, dialog)[open]', 0)
+CSS_OPEN = CSSPattern('html|*:is(details, dialog)[open]', 0)
 
 
 # CSS pattern for :muted
-CSS_MUTED = PseudoSelector('html|*:is(video, audio)[muted]', 0)
+CSS_MUTED = CSSPattern('html|*:is(video, audio)[muted]', 0)
 
 
 class CSSParser:
@@ -618,7 +619,7 @@ class CSSParser:
     )
 
     # Pseudos that expand to selectors
-    pseudo_selectors: dict[str, PseudoSelector | ct.SelectorList] = {
+    pseudo_selectors: dict[str, CSSPattern | ct.SelectorList] = {
         ':link': CSS_LINK,
         ':any-link': CSS_LINK,
         ':checked': CSS_CHECKED,
@@ -798,7 +799,7 @@ class CSSParser:
                 sel.flags |= ct.SEL_EMPTY
             elif pseudo in self.pseudo_selectors:
                 pseudo_selector = self.pseudo_selectors[pseudo]
-                if isinstance(pseudo_selector, PseudoSelector):
+                if isinstance(pseudo_selector, CSSPattern):
                     self.pseudo_selectors[pseudo] = pseudo_selector = CSSParser(
                         pseudo_selector.selector
                     ).process_selectors(
