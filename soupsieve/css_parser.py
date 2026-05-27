@@ -8,6 +8,7 @@ from . import css_types as ct
 from .util import SelectorSyntaxError
 import warnings
 from typing import Match, Any, Iterator, cast
+from dataclasses import dataclass
 
 UNICODE_REPLACEMENT_CHAR = 0xFFFD
 
@@ -430,17 +431,22 @@ class _Selector:
     __repr__ = __str__
 
 
+@dataclass
+class PseudoSelector:
+    selector: str
+    flags: int
+
 # CSS pattern for `:link` and `:any-link`
-CSS_LINK = ('html|*:is(a, area)[href]', 0)
+CSS_LINK = PseudoSelector('html|*:is(a, area)[href]', 0)
 # CSS pattern for `:checked`
-CSS_CHECKED = (
+CSS_CHECKED = PseudoSelector(
     '''
     html|*:is(input[type=checkbox], input[type=radio])[checked], html|option[selected]
     ''',
     0
 )
 # CSS pattern for `:default` (must compile CSS_CHECKED first)
-CSS_DEFAULT = (
+CSS_DEFAULT = PseudoSelector(
     '''
     :checked,
 
@@ -453,7 +459,7 @@ CSS_DEFAULT = (
     FLG_DEFAULT
 )
 # CSS pattern for `:indeterminate`
-CSS_INDETERMINATE = (
+CSS_INDETERMINATE = PseudoSelector(
     '''
     html|input[type="checkbox"][indeterminate],
     html|input[type="radio"]:is(:not([name]), [name=""]):not([checked]),
@@ -468,7 +474,7 @@ CSS_INDETERMINATE = (
     FLG_INDETERMINATE
 )
 # CSS pattern for `:disabled`
-CSS_DISABLED = (
+CSS_DISABLED = PseudoSelector(
     '''
     html|*:is(input:not([type=hidden]), button, select, textarea, fieldset, optgroup, option, fieldset)[disabled],
     html|optgroup[disabled] > html|option,
@@ -479,18 +485,18 @@ CSS_DISABLED = (
     0
 )
 # CSS pattern for `:enabled`
-CSS_ENABLED = (
+CSS_ENABLED = PseudoSelector(
     '''
     html|*:is(input:not([type=hidden]), button, select, textarea, fieldset, optgroup, option, fieldset):not(:disabled)
     ''',
     FLG_HTML
 )
 # CSS pattern for `:required`
-CSS_REQUIRED = ('html|*:is(input, textarea, select)[required]', 0)
+CSS_REQUIRED = PseudoSelector('html|*:is(input, textarea, select)[required]', 0)
 # CSS pattern for `:optional`
-CSS_OPTIONAL = ('html|*:is(input, textarea, select):not([required])', 0)
+CSS_OPTIONAL = PseudoSelector('html|*:is(input, textarea, select):not([required])', 0)
 # CSS pattern for `:placeholder-shown`
-CSS_PLACEHOLDER_SHOWN = (
+CSS_PLACEHOLDER_SHOWN = PseudoSelector(
     '''
     html|input:is(
         :not([type]),
@@ -508,7 +514,7 @@ CSS_PLACEHOLDER_SHOWN = (
     FLG_PLACEHOLDER_SHOWN
 )
 # CSS pattern for `:read-write` (CSS_DISABLED must be compiled first)
-CSS_READ_WRITE = (
+CSS_READ_WRITE = PseudoSelector(
     '''
     html|*:is(
         textarea,
@@ -534,9 +540,9 @@ CSS_READ_WRITE = (
     0
 )
 # CSS pattern for `:read-only`
-CSS_READ_ONLY = ('html|*:not(:read-write)', 0)
+CSS_READ_ONLY = PseudoSelector('html|*:not(:read-write)', 0)
 # CSS pattern for `:in-range`
-CSS_IN_RANGE = (
+CSS_IN_RANGE = PseudoSelector(
     '''
     html|input:is(
         [type="date"],
@@ -554,7 +560,7 @@ CSS_IN_RANGE = (
     FLG_IN_RANGE
 )
 # CSS pattern for `:out-of-range`
-CSS_OUT_OF_RANGE = (
+CSS_OUT_OF_RANGE = PseudoSelector(
     '''
     html|input:is(
         [type="date"],
@@ -573,11 +579,11 @@ CSS_OUT_OF_RANGE = (
 )
 
 # CSS pattern for :open
-CSS_OPEN = ('html|*:is(details, dialog)[open]', 0)
+CSS_OPEN = PseudoSelector('html|*:is(details, dialog)[open]', 0)
 
 
 # CSS pattern for :muted
-CSS_MUTED = ('html|*:is(video, audio)[muted]', 0)
+CSS_MUTED = PseudoSelector('html|*:is(video, audio)[muted]', 0)
 
 
 class CSSParser:
@@ -612,7 +618,7 @@ class CSSParser:
     )
 
     # Pseudos that expand to selectors
-    pseudo_selectors: dict[str, tuple[str, int] | ct.SelectorList] = {
+    pseudo_selectors: dict[str, PseudoSelector | ct.SelectorList] = {
         ':link': CSS_LINK,
         ':any-link': CSS_LINK,
         ':checked': CSS_CHECKED,
@@ -791,16 +797,13 @@ class CSSParser:
             elif pseudo == ':empty':
                 sel.flags |= ct.SEL_EMPTY
             elif pseudo in self.pseudo_selectors:
-                if isinstance(self.pseudo_selectors[pseudo], tuple):
-                    selector = self.pseudo_selectors[pseudo][0]
-                    flags = self.pseudo_selectors[pseudo][1]
-                    assert isinstance(selector, str) and isinstance(flags, int)
-                    self.pseudo_selectors[pseudo] = CSSParser(selector).process_selectors(
-                        flags=FLG_PSEUDO | FLG_HTML | flags
-                    )
-
                 pseudo_selector = self.pseudo_selectors[pseudo]
-                assert isinstance(pseudo_selector, ct.SelectorList)
+                if isinstance(pseudo_selector, PseudoSelector):
+                    self.pseudo_selectors[pseudo] = pseudo_selector = CSSParser(
+                        pseudo_selector.selector
+                    ).process_selectors(
+                        flags=FLG_PSEUDO | FLG_HTML | pseudo_selector.flags
+                    )
 
                 self.count += pseudo_selector.count
                 self.check_count()
