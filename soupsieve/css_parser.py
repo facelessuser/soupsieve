@@ -179,6 +179,7 @@ RE_WS = re.compile(WS)
 RE_WS_BEGIN = re.compile(fr'^{WSC}*')
 RE_WS_END = re.compile(fr'{WSC}*$')
 RE_CUSTOM = re.compile(fr'^{PAT_PSEUDO_CLASS_CUSTOM}$', re.X)
+RE_PSEUDO_CLASS_SPECIAL = re.compile(PAT_PSEUDO_CLASS_SPECIAL, re.I | re.X | re.U)
 
 # Constants
 # List split token
@@ -338,7 +339,6 @@ class SpecialPseudoPattern(SelectorPattern):
                 self.patterns[pseudo] = pattern
 
         self.matched_name = None  # type: SelectorPattern | None
-        self.re_pseudo_name = re.compile(PAT_PSEUDO_CLASS_SPECIAL, re.I | re.X | re.U)
 
     def get_name(self) -> str:
         """Get name."""
@@ -349,7 +349,7 @@ class SpecialPseudoPattern(SelectorPattern):
         """Match the selector."""
 
         pseudo = None
-        m = self.re_pseudo_name.match(selector, index)
+        m = RE_PSEUDO_CLASS_SPECIAL.match(selector, index)
         if m:
             name = util.lower(css_unescape(m.group('name')))
             pattern = self.patterns.get(name)
@@ -630,6 +630,9 @@ class CSSParser:
         ':placeholder-shown': CSS_PLACEHOLDER_SHOWN
     }
 
+    # CSS pattern default for `:nth-child` "of S" feature
+    css_nth_of_s_default = None
+
     def __init__(
         self,
         selector: str,
@@ -895,7 +898,7 @@ class CSSParser:
                 nth_sel = self.parse_selectors(iselector, m.end(0), FLG_PSEUDO | FLG_OPEN)
             else:
                 # Use default `*|*` for `of S`.
-                if not hasattr(self, 'css_nth_of_s_default'):
+                if not self.css_nth_of_s_default:
                    self.css_nth_of_s_default = CSSParser('*|*').process_selectors(flags=FLG_PSEUDO)
 
                 nth_sel = self.css_nth_of_s_default
