@@ -310,7 +310,8 @@ class SelectorPattern:
         """Initialize."""
 
         self.name = name
-        self.re_pattern = pattern
+        self.pattern = pattern
+        self.re_pattern: re.Pattern[str] | None = None
 
     def get_name(self) -> str:
         """Get name."""
@@ -319,8 +320,8 @@ class SelectorPattern:
 
     def match(self, selector: str, index: int, flags: int) -> Match[str] | None:
         """Match the selector."""
-        if isinstance(self.re_pattern, str):
-            self.re_pattern = re.compile(self.re_pattern, re.I | re.X | re.U)
+        if not self.re_pattern:
+            self.re_pattern = re.compile(self.pattern, re.I | re.X | re.U)
 
         return self.re_pattern.match(selector, index)
 
@@ -611,7 +612,7 @@ class CSSParser:
     )
 
     # Pseudos that expand to selectors
-    pseudo_selectors = {
+    pseudo_selectors: dict[str, tuple[str, int] | ct.SelectorList] = {
         ':link': CSS_LINK,
         ':any-link': CSS_LINK,
         ':checked': CSS_CHECKED,
@@ -791,15 +792,19 @@ class CSSParser:
                 sel.flags |= ct.SEL_EMPTY
             elif pseudo in self.pseudo_selectors:
                 if isinstance(self.pseudo_selectors[pseudo], tuple):
-                    self.pseudo_selectors[pseudo] = CSSParser(
-                        self.pseudo_selectors[pseudo][0]
-                    ).process_selectors(
-                        flags=FLG_PSEUDO | FLG_HTML | self.pseudo_selectors[pseudo][1]
+                    selector = self.pseudo_selectors[pseudo][0]
+                    flags = self.pseudo_selectors[pseudo][1]
+                    assert isinstance(selector, str) and isinstance(flags, int)
+                    self.pseudo_selectors[pseudo] = CSSParser(selector).process_selectors(
+                        flags=FLG_PSEUDO | FLG_HTML | flags
                     )
 
-                self.count += self.pseudo_selectors[pseudo].count
+                pseudo_selector = self.pseudo_selectors[pseudo]
+                assert isinstance(pseudo_selector, ct.SelectorList)
+
+                self.count += pseudo_selector.count
                 self.check_count()
-                sel.selectors.append(self.pseudo_selectors[pseudo])
+                sel.selectors.append(pseudo_selector)
             elif pseudo == ':first-child':
                 sel.nth.append(ct.SelectorNth(1, False, 0, False, False, ct.SelectorList()))
             elif pseudo == ':last-child':
