@@ -3,6 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 2.9
+
+-   **NEW**: Drop Python 3.9 support.
+-   **NEW**: Lazy compile selector patterns to improve initial import speed.
+
 ## 2.8.4
 
 -   **FIX**: Fix another inefficient attribute pattern (@mauriceng98).
