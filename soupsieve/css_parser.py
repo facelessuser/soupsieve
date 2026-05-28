@@ -312,7 +312,15 @@ class SelectorPattern:
 
         self.name = name
         self.pattern = pattern
-        self.re_pattern: re.Pattern[str] | None = None
+        self._re_pattern: re.Pattern[str] | None = None
+
+    @property
+    def re_pattern(self) -> re.Pattern[str]:
+        """Retrieve the compiled regular expression pattern."""
+
+        if self._re_pattern is None:
+            self._re_pattern = re.compile(self.pattern, re.I | re.X | re.U)
+        return self._re_pattern
 
     def get_name(self) -> str:
         """Get name."""
@@ -321,8 +329,6 @@ class SelectorPattern:
 
     def match(self, selector: str, index: int, flags: int) -> Match[str] | None:
         """Match the selector."""
-        if not self.re_pattern:
-            self.re_pattern = re.compile(self.pattern, re.I | re.X | re.U)
 
         return self.re_pattern.match(selector, index)
 
@@ -579,11 +585,8 @@ CSS_OUT_OF_RANGE = CSSPattern(
     ''',
     FLG_OUT_OF_RANGE
 )
-
 # CSS pattern for :open
 CSS_OPEN = CSSPattern('html|*:is(details, dialog)[open]', 0)
-
-
 # CSS pattern for :muted
 CSS_MUTED = CSSPattern('html|*:is(video, audio)[muted]', 0)
 
