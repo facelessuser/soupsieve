@@ -244,3 +244,30 @@ class TestNthChild(util.TestCase):
         """Test that pseudo class fails with bad parameters (basically it doesn't match)."""
 
         self.assert_raises(':nth-child(a)', SelectorSyntaxError)
+
+    def test_nth_child_an_plus_b_boundaries(self):
+        """Test `An+B` forms whose sequence steps onto index 0 or the last child."""
+
+        markup = """
+        <body>
+        <i id="0"></i>
+        <i id="1"></i>
+        <i id="2"></i>
+        <i id="3"></i>
+        <i id="4"></i>
+        </body>
+        """
+
+        # `B < 1` sequences whose first valid index is > 1 or is all indices
+        self.assert_selector(markup, "i:nth-child(2n-2)", ['1', '3'], flags=util.HTML)
+        self.assert_selector(
+            markup, "i:nth-child(n-1)", ['0', '1', '2', '3', '4'], flags=util.HTML
+        )
+        # `B` equal to the child count (index lands on the last child)
+        self.assert_selector(markup, "i:nth-child(n+5)", ['4'], flags=util.HTML)
+        self.assert_selector(markup, "i:nth-child(2n+5)", ['4'], flags=util.HTML)
+        # same boundaries, counted from the end
+        self.assert_selector(
+            markup, "i:nth-last-child(2n-2)", ['1', '3'], flags=util.HTML
+        )
+        self.assert_selector(markup, "i:nth-last-child(n+5)", ['0'], flags=util.HTML)
