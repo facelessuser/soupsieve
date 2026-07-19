@@ -12,6 +12,9 @@ icon: lucide/scroll-text
     matched the wrong elements or nothing at all (@gaoflow).
 -   **FIX**: More efficient CSS ID matching (@kaimandalic).
 -   **FIX**: Fix inefficient trimming of comments and white space (@kaimandalic).
+-   **FIX**: Correct `[attr^=""]`, `[attr$=""]`, and `[attr*=""]` to match nothing when the value is empty, per CSS
+    Selectors Level 4 substring matching, which previously matched any element merely having the attribute
+    (@chuenchen309).
 
 ## 2.8.4
 

@@ -725,13 +725,19 @@ class CSSParser:
             pattern = None
         elif op.startswith('^'):
             # Value start with
-            pattern = re.compile(r'^%s.*' % re.escape(value), flags)
+            # `^=` should match nothing if the value is empty, so use `[^\s\S]` which cannot be matched.
+            value = r'[^\s\S]' if not value else re.escape(value)
+            pattern = re.compile(r'^%s.*' % value, flags)
         elif op.startswith('$'):
             # Value ends with
-            pattern = re.compile(r'.*?%s$' % re.escape(value), flags)
+            # `$=` should match nothing if the value is empty, so use `[^\s\S]` which cannot be matched.
+            value = r'[^\s\S]' if not value else re.escape(value)
+            pattern = re.compile(r'.*?%s$' % value, flags)
         elif op.startswith('*'):
             # Value contains
-            pattern = re.compile(r'.*?%s.*' % re.escape(value), flags)
+            # `*=` should match nothing if the value is empty, so use `[^\s\S]` which cannot be matched.
+            value = r'[^\s\S]' if not value else re.escape(value)
+            pattern = re.compile(r'.*?%s.*' % value, flags)
         elif op.startswith('~'):
             # Value contains word within space separated list
             # `~=` should match nothing if it is empty or contains whitespace,

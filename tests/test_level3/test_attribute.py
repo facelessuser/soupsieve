@@ -61,6 +61,39 @@ class TestAttribute(util.TestCase):
             flags=util.HTML
         )
 
+    def test_attribute_begins_cannot_have_empty(self):
+        """Test attribute `^=` will match nothing when value is empty."""
+
+        # An empty value cannot match anything per the spec.
+        self.assert_selector(
+            self.MARKUP,
+            '[class^=""]',
+            [],
+            flags=util.HTML
+        )
+
+    def test_attribute_end_cannot_have_empty(self):
+        """Test attribute `$=` will match nothing when value is empty."""
+
+        # An empty value cannot match anything per the spec.
+        self.assert_selector(
+            self.MARKUP,
+            '[class$=""]',
+            [],
+            flags=util.HTML
+        )
+
+    def test_attribute_contains_cannot_have_empty(self):
+        """Test attribute `*=` will match nothing when value is empty."""
+
+        # An empty value cannot match anything per the spec.
+        self.assert_selector(
+            self.MARKUP,
+            '[class*=""]',
+            [],
+            flags=util.HTML
+        )
+
     def test_attribute_contains_with_newlines(self):
         """Test attribute `*=` will match with new lines."""
 
