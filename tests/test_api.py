@@ -603,6 +603,22 @@ class TestInvalid(util.TestCase):
         with self.assertRaises(ValueError):
             sv.compile(selector)
 
+    def test_excessive_group_selectors(self):
+        """Test excessive selectors in `:is()` and `:where()`."""
+
+        count = 10000
+        selector = f':is({"," * count})'
+
+        # Compile the selector
+        with self.assertRaises(ValueError):
+            sv.compile(selector)
+
+        selector = f':where({"," * count})'
+
+        # Compile the selector
+        with self.assertRaises(ValueError):
+            sv.compile(selector)
+
     def test_excessive_custom_selectors(self):
         """Test excessive custom selectors."""
 

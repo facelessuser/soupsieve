@@ -3,6 +3,14 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 2.9.2
+
+-   **FIX**: Fix issue where `:is()` and `:where()` were not accounting for empty selectors in the max selector count as
+    they should (@arpitjain099).
+-   **FIX**: Fix issue where `:has()` was allowing empty selectors in some circumstances even though it is not
+    forgiving.
+-   **FIX**: Reduce selector object size when `:is()` and `:where()` contain empty selectors.
+
 ## 2.9.1
 
 -   **FIX**: Correct `[attr^=""]`, `[attr$=""]`, and `[attr*=""]` to match nothing when the value is empty, per CSS
