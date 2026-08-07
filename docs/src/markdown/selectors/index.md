@@ -96,20 +96,21 @@ Selector is used to describe any selector whether it is a [simple](#simple-selec
 
 ### Simple Selector
 
-A simple selector represents a single condition on an element. It can be a [type selector](#type-selectors),
-[universal selector](#universal-selectors), [ID selector](#id-selectors), [class selector](#class-selectors),
-[attribute selector](#attribute-selectors), or [pseudo class selector](#pseudo-classes).
+A simple selector represents a single condition on an element. It can be a [type selector](./basic.md#type-selectors),
+[universal selector](./basic.md#universal-selectors), [ID selector](./basic.md#id-selectors),
+[class selector](./basic.md#class-selectors), [attribute selector](./basic.md#attribute-selectors), or
+[pseudo class selector](./pseudo-classes.md).
 
 ### Compound Selector
 
 A [compound](#compound-selector) selector is a sequence of [simple](#simple-selector) selectors. They do not contain any
-[combinators](#combinators-and-selector-lists). If a universal or type selector is used, they must come first, and only
-one instance of either a universal or type selector can be used, both cannot be used at the same time.
+[combinators](./combinators.md). If a universal or type selector is used, they must come first, and only one instance of
+either a universal or type selector can be used, both cannot be used at the same time.
 
 ### Complex Selector
 
 A complex selector consists of multiple [simple](#simple-selector) or [compound](#compound-selector) selectors joined
-with [combinators](#combinators-and-selector-lists).
+with [combinators](./combinators.md).
 
 ### Selector List
 

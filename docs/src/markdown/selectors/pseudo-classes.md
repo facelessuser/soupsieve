@@ -4,9 +4,9 @@
 
 These are pseudo classes that are either fully or partially supported. Partial support is usually due to limitations of
 not being in a live, browser environment. Pseudo classes that cannot be implemented are found under
-[Non-Applicable Pseudo Classes](./unsupported.md/#non-applicable-pseudo-classes). Any selectors that are not found here or under the
-non-applicable either are under consideration, have not yet been evaluated, or are too new and viewed as a risk to
-implement as they might not stick around.
+[Non-Applicable Pseudo Classes](./unsupported.md). Any selectors that are not found here or under the non-applicable
+either are under consideration, have not yet been evaluated, or are too new and viewed as a risk to implement as they
+might not stick around.
 
 ## `:any-link`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:any-link}
 
@@ -417,8 +417,8 @@ element:first-of-type
 Selects an element if any of the relative selectors passed as parameters (which are relative to the `:scope` of the
 given element), match at least one element.
 
-While the level 4 specifications state that [compound](#compound-selector) selectors are supported, complex selectors
-are planned for level 5 CSS selectors. Soup Sieve supports [complex](#complex-selector) selectors.
+While the level 4 specifications state that [compound](./index.md#compound-selector) selectors are supported, complex
+selectors are planned for level 5 CSS selectors. Soup Sieve supports [complex](./index.md#complex-selector) selectors.
 
 In addition to supporting complex selectors, Soup Sieve also supports nested `:has()` which has been excluded from the
 level 4 specifications to help encourage browsers to implement `:has()`. This exclusion helps to reduces complexity and
@@ -557,9 +557,9 @@ Selects an element, but only if it matches at least one selector in the selector
 The alias `:matches()` is also supported as it was the original name for the selector, and some browsers support it.
 It is strongly encouraged to use `:is()` instead as support for `:matches()` may be dropped in the future.
 
-While the level 4 specifications state that [compound](#compound-selector) selectors are supported, some browsers
-(Safari) support complex selectors which are planned for level 5 CSS selectors. Soup Sieve also supports
-[complex](#complex-selector) selectors.
+While the level 4 specifications state that [compound](./index.md#compound-selector) selectors are supported, some
+browsers (Safari) support complex selectors which are planned for level 5 CSS selectors. Soup Sieve also supports
+[complex](./index.md#complex-selector) selectors.
 
 /// tab | Syntax
 ```css
@@ -880,8 +880,9 @@ Level 3 CSS
 Level 4+ CSS:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon}
 
 -   Selects all elements that do not match any of the selectors in the selector list. While the level 4 specifications
-    state that [compound](#compound-selector) selectors are supported, some browsers (Safari) support complex selectors
-    which are planned for level 5 CSS selectors. Soup Sieve also supports [complex](#complex-selector) selectors.
+    state that [compound](./index.md#compound-selector) selectors are supported, some browsers (Safari) support complex
+    selectors which are planned for level 5 CSS selectors. Soup Sieve also supports
+    [complex](./index.md#complex-selector) selectors.
 
     /// tab | Syntax
     ```css
@@ -977,10 +978,11 @@ Level 4+ CSS:material-flask:{: title="Experimental" data-md-color-primary="purpl
 
     Essentially, `#!css img:nth-of-type(2)` would be equivalent to `#!css :nth-child(2 of img)`. The advantage of using
     `:nth-child(an+b [of S]?)` over `:nth-of-type` is that `:nth-of-type` is restricted to types, while
-    `:nth-child(an+b [of S]?)` can use [complex](#complex-selector) selectors.
+    `:nth-child(an+b [of S]?)` can use [complex](./index.md#complex-selector) selectors.
 
-    While the level 4 specifications state that [compound](#compound-selector) selectors are supported, complex
-    selectors are planned for level 5 CSS selectors. Soup Sieve supports [complex](#complex-selector) selectors.
+    While the level 4 specifications state that [compound](./index.md#compound-selector) selectors are supported,
+    complex selectors are planned for level 5 CSS selectors. Soup Sieve supports [complex](./index.md#complex-selector)
+    selectors.
 
     /// tab | Syntax
     ```css
@@ -1080,10 +1082,11 @@ Level 4+ CSS:material-flask:{: title="Experimental" data-md-color-primary="purpl
 
     Essentially, `#!css img:nth-last-of-type(2)` would be equivalent to `#!css :nth-last-child(2 of img)`. The advantage
     of using `:nth-last-child(an+b [of S]?)` over `:nth-last-of-type` is that `:nth-last-of-type` is restricted to
-    types, while `:nth-last-child(an+b [of S]?)` can use [complex](#complex-selector) selectors.
+    types, while `:nth-last-child(an+b [of S]?)` can use [complex](./index.md#complex-selector) selectors.
 
-    While the level 4 specifications state that [compound](#compound-selector) selectors are supported, complex
-    selectors are planned for level 5 CSS selectors. Soup Sieve supports [complex](#complex-selector) selectors.
+    While the level 4 specifications state that [compound](./index.md#compound-selector) selectors are supported,
+    complex selectors are planned for level 5 CSS selectors. Soup Sieve supports [complex](./index.md#complex-selector)
+    selectors.
 
     /// tab | Syntax
     ```css
@@ -1671,9 +1674,9 @@ specificity, but this only has relevance in a browser environment where you have
 used to see which applies. Beautiful Soup and Soup Sieve don't care about specificity so `:where()` is essentially just
 an alias for `:is()`.
 
-While the level 4 specifications state that [compound](#compound-selector) selectors are supported, some browsers
-(Safari) support complex selectors which are planned for level 5 CSS selectors. Soup Sieve also supports
-[complex](#complex-selector) selectors.
+While the level 4 specifications state that [compound](./index.md#compound-selector) selectors are supported, some
+browsers (Safari) support complex selectors which are planned for level 5 CSS selectors. Soup Sieve also supports
+[complex](./index.md#complex-selector) selectors.
 
 /// tab | Syntax
 ```css
