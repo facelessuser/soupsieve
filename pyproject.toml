@@ -152,11 +152,11 @@ python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
 [tool.hatch.envs.dev.scripts]
 types = "mypy"
-tests = "pytest --cov coloraide --cov-append --cov-report term-missing --cov-report xml --cov-report html:.cov tests"
+tests = "pytest --cov soupsieve --cov-append --cov-report term-missing --cov-report xml --cov-report html:.cov tests"
 lint = 'ruff check .'
 
 [tool.hatch.envs.dev-stdlib.scripts]
-tests = "pytest --cov coloraide --cov-append --cov-report term-missing --cov-report xml --cov-report html:.cov tests"
+tests = "pytest --cov soupsieve --cov-append --cov-report term-missing --cov-report xml --cov-report html:.cov tests"
 
 [tool.hatch.envs.docs.scripts]
 spellcheck = [
