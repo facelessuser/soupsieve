@@ -104,59 +104,73 @@ lint.ignore = [
     "RUF023"
 ]
 
-[tool.tox]
-legacy_tox_ini = """
-[tox]
-isolated_build = true
-envlist =
-    py{310,311,312,313,314},
-    lint, nolxml, nohtml5lib
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+exclude_lines = [
+    "pragma: no cover",
+    "@overload"
+]
 
-[testenv]
-passenv = *
-deps =
-    -rrequirements/tests.txt
-commands =
-    mypy
-    pytest --cov soupsieve --cov-append {toxinidir}
-    coverage html -d {envtmpdir}/coverage
-    coverage xml
-    coverage report --show-missing
+[tool.hatch.envs.dev]
+dependencies = [
+    "pytest",
+    "pytest-cov",
+    "coverage",
+    "mypy",
+    "ruff",
+    "build",
+    "beautifulsoup4",
+    "lxml",
+    "html5lib"
+]
 
-[testenv:documents]
-passenv = *
-deps =
-    -rrequirements/docs.txt
-commands =
-    {envbindir}/zensical build -f zensical.yml --clean
-    pyspelling -j 8
+[tool.hatch.envs.dev-stdlib]
+dependencies = [
+    "pytest",
+    "pytest-cov",
+    "coverage",
+    "build",
+    "beautifulsoup4"
+]
 
-[testenv:lint]
-passenv = *
-deps =
-    -rrequirements/lint.txt
-commands =
-    "{envbindir}"/ruff check .
+[tool.hatch.envs.docs]
+dependencies = [
+    "zensical",
+    "markdown",
+    "pymdown-extensions",
+    "pymdown_lexers @ git+https://github.com/facelessuser/pymdown-lexers.git",
+    "pyspelling",
+    "build",
+    "python-minifier"
+]
 
-[testenv:nolxml]
-passenv = *
-deps =
-    -rrequirements/tests-nolxml.txt
-commands =
-    pytest {toxinidir}
+[[tool.hatch.envs.dev.matrix]]
+python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
-[testenv:nohtml5lib]
-passenv = *
-deps =
-    -rrequirements/tests-nohtml5lib.txt
-commands =
-    pytest {toxinidir}
+[[tool.hatch.envs.dev-stdlib.matrix]]
+python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
-[pytest]
-filterwarnings =
-    ignore:\nCSS selector pattern:UserWarning
-"""
+[tool.hatch.envs.dev.scripts]
+types = "mypy"
+tests = "pytest --cov coloraide --cov-append --cov-report term-missing --cov-report xml --cov-report html:.cov tests"
+lint = 'ruff check .'
 
+[tool.hatch.envs.dev-stdlib.scripts]
+tests = "pytest --cov coloraide --cov-append --cov-report term-missing --cov-report xml --cov-report html:.cov tests"
+
+[tool.hatch.envs.docs.scripts]
+spellcheck = [
+    "python -m zensical.main build -f zensical.yml --clean --strict; pyspelling"
+]
+clean = [
+    "python -m zensical.main build -f zensical.yml --clean"
+]
+serve = [
+    "python -m zensical.main serve -f zensical.yml"
+]
+build = [
+    "python -m zensical.main build -f zensical.yml --clean"
+]
 [tool.pytest.ini_options]
 filterwarnings = [
     "ignore:The 'strip_cdata':DeprecationWarning"
