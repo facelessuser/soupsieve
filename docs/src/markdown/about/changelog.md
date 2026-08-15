@@ -3,6 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 2.10
+
+-   **NEW**: Drop Python 3.10.
+-   **NEW**: Aggressively use possessive quantifiers and atomic groups in CSS pattern parsing to reduce backtracking.
+
 ## 2.9.2
 
 -   **FIX**: Fix issue where `:is()` and `:where()` were not accounting for empty selectors in the max selector count as
