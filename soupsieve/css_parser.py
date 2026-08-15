@@ -109,26 +109,30 @@ PSEUDO_SUPPORTED = PSEUDO_SIMPLE | PSEUDO_SIMPLE_NO_MATCH | PSEUDO_COMPLEX | PSE
 
 # Sub-patterns parts
 # Whitespace
-NEWLINE = r'(?:\r\n|(?!\r\n)[\n\f\r])'
+NEWLINE = r'(?>\r\n|[\n\f\r])'
 WS = fr'(?:[ \t]|{NEWLINE})'
 # Comments
-COMMENTS = r'(?:/\*(?:[^*]|\*(?!/))*\*/)'
+COMMENTS = r'(?:/\*(?:[^*]|\*(?!/))*+\*/)'
 # Whitespace with comments included
 WSC = fr'(?:{WS}|{COMMENTS})'
 # CSS escapes
-CSS_ESCAPES = fr'(?:\\(?:[a-f0-9]{{1,6}}{WS}?|[^\r\n\f]|$))'
-CSS_STRING_ESCAPES = fr'(?:\\(?:[a-f0-9]{{1,6}}{WS}?|[^\r\n\f]|$|{NEWLINE}))'
+CSS_ESCAPES = fr'(?:\\(?:[a-f0-9]{{1,6}}{WS}?+|[^\r\n\f]|$))'
+CSS_STRING_ESCAPES = fr'(?:\\(?:[a-f0-9]{{1,6}}{WS}?+|{NEWLINE}|[^\r\n\f]|$))'
 # CSS Identifier
 IDENTIFIER = fr'''
-(?:(?:--|-?(?:[^\x00-\x2f\x30-\x40\x5B-\x5E\x60\x7B-\x9f]|{CSS_ESCAPES}))
-(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{CSS_ESCAPES})*)
+(?:(?:--|-?+(?:[^\x00-\x2f\x30-\x40\x5B-\x5E\x60\x7B-\x9f]|{CSS_ESCAPES}))
+(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{CSS_ESCAPES})*+)
 '''
 # `nth` content
-NTH = fr'(?:[-+])?(?:[0-9]+n?|n)(?:(?<=n){WSC}*(?:[-+]){WSC}*(?:[0-9]+))?'
+NTH = fr'[-+]?+(?:[0-9]++n?+|n)(?:(?<=n){WSC}*+[-+]{WSC}*+[0-9]++)?+'
 # Value: quoted string or identifier
-VALUE = fr'''(?:"(?:\\(?:.|{NEWLINE})|[^\\"\r\n\f])*?"|'(?:\\(?:.|{NEWLINE})|[^\\'\r\n\f])*?'|{IDENTIFIER})'''
+VALUE = fr'''
+(?:"(?:\\(?:{NEWLINE}|[^\r\n\f])|[^\\"\r\n\f])*+"|
+'(?:\\(?:{NEWLINE}|[^\r\n\f])|[^\\'\r\n\f])*+'|
+{IDENTIFIER})
+'''
 # Attribute value comparison. `!=` is handled special as it is non-standard.
-ATTR = fr'(?:{WSC}*(?P<cmp>[!~^|*$]?=){WSC}*(?P<value>{VALUE})(?:{WSC}*(?P<case>[is]))?)?{WSC}*'
+ATTR = fr'(?:{WSC}*+(?P<cmp>[!~^|*$]?+=){WSC}*+(?P<value>{VALUE})(?:{WSC}*+(?P<case>[is]))?+)?+'
 
 # Selector patterns
 # IDs (`#id`)
@@ -136,19 +140,19 @@ PAT_ID = fr'\#{IDENTIFIER}'
 # Classes (`.class`)
 PAT_CLASS = fr'\.{IDENTIFIER}'
 # Prefix:Tag (`prefix|tag`)
-PAT_TAG = fr'(?P<tag_ns>(?:{IDENTIFIER}|\*)?\|)?(?P<tag_name>{IDENTIFIER}|\*)'
+PAT_TAG = fr'(?P<tag_ns>(?:{IDENTIFIER}|\*)?+\|)?+(?P<tag_name>{IDENTIFIER}|\*)'
 # Attributes (`[attr]`, `[attr=value]`, etc.)
-PAT_ATTR = fr'\[{WSC}*(?P<attr_ns>(?:{IDENTIFIER}|\*)?\|)?(?P<attr_name>{IDENTIFIER}){ATTR}\]'
+PAT_ATTR = fr'\[{WSC}*+(?P<attr_ns>(?:{IDENTIFIER}|\*)?+\|(?!=))?+(?P<attr_name>{IDENTIFIER}){ATTR}{WSC}*+\]'
 # Pseudo class (`:pseudo-class`, `:pseudo-class(`)
-PAT_PSEUDO_CLASS = fr'(?P<name>:{IDENTIFIER})(?P<open>\({WSC}*)?'
+PAT_PSEUDO_CLASS = fr'(?P<name>:{IDENTIFIER})(?P<open>\({WSC}*+)?+'
 # Pseudo class special patterns. Matches `:pseudo-class(` for special case pseudo classes.
-PAT_PSEUDO_CLASS_SPECIAL = fr'(?P<name>:{IDENTIFIER})(?P<open>\({WSC}*)'
+PAT_PSEUDO_CLASS_SPECIAL = fr'(?P<name>:{IDENTIFIER})(?P<open>\({WSC}*+)'
 # Custom pseudo class (`:--custom-pseudo`)
 PAT_PSEUDO_CLASS_CUSTOM = fr'(?P<name>:(?=--){IDENTIFIER})'
 # Nesting ampersand selector. Matches `&`
 PAT_AMP = r'&'
 # Closing pseudo group (`)`)
-PAT_PSEUDO_CLOSE = fr'{WSC}*\)'
+PAT_PSEUDO_CLOSE = fr'{WSC}*+\)'
 # Pseudo element (`::pseudo-element`)
 PAT_PSEUDO_ELEMENT = fr':{PAT_PSEUDO_CLASS}'
 # At rule (`@page`, etc.) (not supported)
@@ -156,34 +160,34 @@ PAT_AT_RULE = fr'@P{IDENTIFIER}'
 # Pseudo class `nth-child` (`:nth-child(an+b [of S]?)`, `:first-child`, etc.)
 PAT_PSEUDO_NTH_CHILD = fr'''
 (?P<pseudo_nth_child>{PAT_PSEUDO_CLASS_SPECIAL}
-(?P<nth_child>{NTH}|even|odd))(?:{WSC}*\)|(?P<of>{COMMENTS}*{WS}{WSC}*of{COMMENTS}*{WS}{WSC}*))
+(?P<nth_child>{NTH}|even|odd))(?:{WSC}*+\)|(?P<of>{COMMENTS}*+{WS}{WSC}*+of{COMMENTS}*+{WS}{WSC}*+))
 '''
 # Pseudo class `nth-of-type` (`:nth-of-type(an+b)`, `:first-of-type`, etc.)
 PAT_PSEUDO_NTH_TYPE = fr'''
 (?P<pseudo_nth_type>{PAT_PSEUDO_CLASS_SPECIAL}
-(?P<nth_type>{NTH}|even|odd)){WSC}*\)
+(?P<nth_type>{NTH}|even|odd)){WSC}*+\)
 '''
 # Pseudo class language (`:lang("*-de", en)`)
-PAT_PSEUDO_LANG = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*,{WSC}*{VALUE})*){WSC}*\)'
+PAT_PSEUDO_LANG = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*+,{WSC}*+{VALUE})*+){WSC}*+\)'
 # Pseudo class direction (`:dir(ltr)`)
-PAT_PSEUDO_DIR = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<dir>ltr|rtl){WSC}*\)'
+PAT_PSEUDO_DIR = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<dir>ltr|rtl){WSC}*+\)'
 # Combining characters (`>`, `~`, ` `, `+`, `,`)
-PAT_COMBINE = fr'{WSC}*?(?P<relation>[,+>~]|{WS}(?![,+>~])){WSC}*'
+PAT_COMBINE = fr'{COMMENTS}*+(?={WS}|[,+>~]){WSC}*+(?P<relation>[,+>~])?+{WSC}*+'
 # Extra: Contains (`:contains(text)`)
-PAT_PSEUDO_CONTAINS = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*,{WSC}*{VALUE})*){WSC}*\)'
+PAT_PSEUDO_CONTAINS = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*+,{WSC}*+{VALUE})*+){WSC}*+\)'
 
 # Regular expressions
 # CSS escape pattern
-RE_CSS_ESC = re.compile(fr'(?:(\\[a-f0-9]{{1,6}}{WSC}?)|(\\[^\r\n\f])|(\\$))', re.I)
-RE_CSS_STR_ESC = re.compile(fr'(?:(\\[a-f0-9]{{1,6}}{WS}?)|(\\[^\r\n\f])|(\\$)|(\\{NEWLINE}))', re.I)
+RE_CSS_ESC = re.compile(fr'(?:(\\[a-f0-9]{{1,6}}{WSC}?+)|(\\[^\r\n\f])|(\\$))', re.I)
+RE_CSS_STR_ESC = re.compile(fr'(?:(\\[a-f0-9]{{1,6}}{WS}?+)|(\\[^\r\n\f])|(\\$)|(\\{NEWLINE}))', re.I)
 # Pattern to break up `nth` specifiers
-RE_NTH = re.compile(fr'(?P<s1>[-+])?(?P<a>[0-9]+n?|n)(?:(?<=n){WSC}*(?P<s2>[-+]){WSC}*(?P<b>[0-9]+))?', re.I)
+RE_NTH = re.compile(fr'(?P<s1>[-+])?+(?P<a>[0-9]++n?+|n)(?:(?<=n){WSC}*+(?P<s2>[-+]){WSC}*+(?P<b>[0-9]++))?+', re.I)
 # Pattern to iterate multiple values.
-RE_VALUES = re.compile(fr'(?:(?P<value>{VALUE})|(?P<split>{WSC}*,{WSC}*))', re.X)
+RE_VALUES = re.compile(fr'(?:(?P<value>{VALUE})|(?P<split>{WSC}*+,{WSC}*+))', re.X)
 # Whitespace checks
 RE_WS = re.compile(WS)
-RE_WS_BEGIN = re.compile(fr'^{WSC}*')
-RE_WS_END = re.compile(fr'^(?:[ \t]|(?:\n\r|(?!\n\r)[\n\f\r])|{COMMENTS})*')
+RE_WS_BEGIN = re.compile(fr'^{WSC}*+')
+RE_WS_END = re.compile(fr'^(?:[ \t]|(?>\n\r|[\n\f\r])|{COMMENTS})*+')
 RE_CUSTOM = re.compile(fr'^{PAT_PSEUDO_CLASS_CUSTOM}$', re.X)
 RE_PSEUDO_CLASS_SPECIAL = re.compile(PAT_PSEUDO_CLASS_SPECIAL, re.I | re.X | re.U)
 
@@ -987,7 +991,7 @@ class CSSParser:
     ) -> tuple[bool, _Selector, str]:
         """Parse combinator tokens."""
 
-        combinator = m.group('relation').strip()
+        combinator = m.group('relation')
         if not combinator:
             combinator = WS_COMBINATOR
         if combinator == COMMA_COMBINATOR:
@@ -1038,7 +1042,7 @@ class CSSParser:
     ) -> tuple[bool, _Selector]:
         """Parse combinator tokens."""
 
-        combinator = m.group('relation').strip()
+        combinator = m.group('relation')
         if not combinator:
             combinator = WS_COMBINATOR
         if not has_selector:

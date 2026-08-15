@@ -9,7 +9,7 @@ name = "soupsieve"
 description = "A modern CSS selector implementation for Beautiful Soup."
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [
     { name = "Isaac Muse", email = "Isaac.Muse@gmail.com" },
 ]
@@ -145,10 +145,10 @@ dependencies = [
 ]
 
 [[tool.hatch.envs.dev.matrix]]
-python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
+python = ["3.11", "3.12", "3.13", "3.14"]
 
 [[tool.hatch.envs.dev-stdlib.matrix]]
-python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
+python = ["3.11", "3.12", "3.13", "3.14"]
 
 [tool.hatch.envs.dev.scripts]
 types = "mypy"
