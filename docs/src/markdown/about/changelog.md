@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 2.10
+
+-   **FIX**: Ensure `custom` is properly passed down from API functions to compilation.
+
 ## 2.9.2
 
 -   **FIX**: Fix issue where `:is()` and `:where()` were not accounting for empty selectors in the max selector count as

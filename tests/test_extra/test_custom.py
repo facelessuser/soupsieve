@@ -15,6 +15,18 @@ class TestCustomSelectors(util.TestCase):
     </body>
     """
 
+    def test_custom_select(self):
+        """Ensure custom is properly passed via the API."""
+
+        import bs4
+        soup = bs4.BeautifulSoup(self.MARKUP, 'html.parser')
+
+        custom_selectors = {
+            ":--headers": "h1, h2, h3, h4, h5, h6"
+        }
+        tags = sv.select(':--headers', soup, custom=custom_selectors)
+        self.assertEqual([t['id'] for t in tags], ['1', '2'])
+
     def test_custom_selectors(self):
         """Test custom selectors."""
 

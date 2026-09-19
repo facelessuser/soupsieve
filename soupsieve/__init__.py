@@ -87,7 +87,7 @@ def closest(
 ) -> bs4.Tag | None:
     """Match closest ancestor."""
 
-    return compile(select, namespaces, flags, **kwargs).closest(tag)
+    return compile(select, namespaces, flags, custom=custom, **kwargs).closest(tag)
 
 
 def match(
@@ -101,7 +101,7 @@ def match(
 ) -> bool:
     """Match node."""
 
-    return compile(select, namespaces, flags, **kwargs).match(tag)
+    return compile(select, namespaces, flags, custom=custom, **kwargs).match(tag)
 
 
 def filter(  # noqa: A001
@@ -115,7 +115,7 @@ def filter(  # noqa: A001
 ) -> list[bs4.Tag]:
     """Filter list of nodes."""
 
-    return compile(select, namespaces, flags, **kwargs).filter(iterable)
+    return compile(select, namespaces, flags, custom=custom, **kwargs).filter(iterable)
 
 
 def select_one(
@@ -129,7 +129,7 @@ def select_one(
 ) -> bs4.Tag | None:
     """Select a single tag."""
 
-    return compile(select, namespaces, flags, **kwargs).select_one(tag)
+    return compile(select, namespaces, flags, custom=custom, **kwargs).select_one(tag)
 
 
 def select(
@@ -144,7 +144,7 @@ def select(
 ) -> list[bs4.Tag]:
     """Select the specified tags."""
 
-    return compile(select, namespaces, flags, **kwargs).select(tag, limit)
+    return compile(select, namespaces, flags, custom=custom, **kwargs).select(tag, limit)
 
 
 def iselect(
@@ -159,7 +159,7 @@ def iselect(
 ) -> Iterator[bs4.Tag]:
     """Iterate the specified tags."""
 
-    yield from compile(select, namespaces, flags, **kwargs).iselect(tag, limit)
+    yield from compile(select, namespaces, flags, custom=custom, **kwargs).iselect(tag, limit)
 
 
 def escape(ident: str) -> str:
