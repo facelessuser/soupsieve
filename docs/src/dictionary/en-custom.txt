@@ -75,6 +75,7 @@ sublicense
 substring
 subtag
 subtags
+subtree
 traceback
 tuple
 tuples
@@ -82,6 +83,7 @@ un
 unmatchable
 unpickle
 untagged
+untrusted
 unvisited
 whitespace
 wildcard

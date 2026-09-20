@@ -412,7 +412,7 @@ element:first-of-type
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:first-of-type
 
-## `:has()` {:#has}
+## `:has()` {:#:has}
 
 Selects an element if any of the relative selectors passed as parameters (which are relative to the `:scope` of the
 given element), match at least one element.
@@ -425,6 +425,47 @@ level 4 specifications to help encourage browsers to implement `:has()`. This ex
 improves performance in a live environment. As these performance concerns are not an issue in a scraping environment
 compared to a web browser, Soup Sieve has no intentions on restricting the nesting of `:has()`. Users can always choose
 not to nest `:has()` if there are concerns.
+
+> [!note] Performance Considerations
+> Certain uses of the `:has()` pseudo-class can significantly impact performance.
+>
+> The anchor selector (the `A` in `A:has(B)`) should not be an element that has too many children. Additionally, too
+> general an anchor, such as `*`, can cause `:has()` to be applied to every element.
+>
+> > [!failure] Avoid
+> > ```css
+> > /* Avoid anchoring :has() to broad elements */
+> > body:has(.content)
+> > *:has(.content)
+> > ```
+>
+> > [!success] Recommended
+> > ```css
+> > /* Use specific containers to limit scope */
+> > .container:has(.sidebar-expanded)
+> > .content-wrapper:has(> article[data-priority="high"])
+> > .gallery:has(> img[data-loaded="false"])
+> > ```
+>
+> The inner selector (the `B` in `A:has(B)`) should use combinators like `>` or `+` to limit traversal. When the selector
+> inside `:has()` is not tightly constrained, the Soup Sieve might need to traverse the entire subtree of the anchor
+> element to check if the condition holds.
+>
+> > [!failure] Avoid
+> > ```css
+> > /* May trigger full subtree traversal */
+> > .ancestor:has(.foo)
+> > ```
+>
+> > [!success] Recommended
+> > ```css
+> > /* More constrained - limits traversal */
+> > .ancestor:has(> .foo)
+> > .ancestor:has(+ .sibling .foo)
+> > ```
+>
+> If the risk of performance concerns from untrusted user input cannot be tolerated in a specific project, `:has` can
+> be disabled using the [`ignore`](../api.md#ignore-pseudo-class) option.
 
 /// tab | Syntax
 ```css
@@ -1715,14 +1756,38 @@ differences: it is called `:-soup-contains()` instead of `:contains()`, and it c
 comma separated list of values. An element needs only to match at least one of the items in the comma separated list to
 be considered matching.
 
+> [!note] Performance Considerations
+> `:-soup-contains()` is an expensive operation as it scans all the text nodes of an element under consideration,
+> which includes all descendants. This has the potential to cause scanning the entire tree, potentially multiple times.
+>
+> While sometimes, scanning large portions of the tree may be exactly what you want, and the outcome is worth the
+> performance hit. Anchoring `:-soup_contains` to a very broad element, like `*`, can cause every element to have all of
+> its children scanned. Using highly specific selectors can reduce how often it is evaluated and limiting usage to
+> shallow elements with a small amount of descendants can reduce the amount of content that is checked.
+>
+> > [!failure] Avoid
+> > ```css
+> > /* Avoid anchoring :-soup-contains() to broad elements */
+> > body:-soup-contains('text')
+> > *:-soup-contains('text')
+> > ```
+>
+> > [!success] Recommended
+> > ```css
+> > /* Use specific containers to limit scope */
+> > .container:-soup-contains('text')
+> > ```
+>
+> Additionally, using [`anchor:-soup-contains-own()`](#:-soup-contains-own) can limit crawling to just the immediate
+> children under the anchor, providing better performance at the cost of of a more shallow search.
+>
+> If the risk of performance concerns from untrusted user input cannot be tolerated in a specific project,
+> `:-soup-contains` can be disabled using the [`ignore`](../api.md#ignore-pseudo-class) option.
+
 > [!warning] Rename 2.1
 > The name `:-soup-contains()` is new in version 2.1. Previously, it was known by `:contains()`. While the alias of
 > `:contains()` is currently allowed, this alias is deprecated moving forward and will be removed in a future version.
 > It is recommended to migrate to the name `:-soup-contains` moving forward.
-
-> [!warning] Expensive Operation
-> `:-soup-contains()` is an expensive operation as it scans all the text nodes of an element under consideration,
-> which includes all descendants. Using highly specific selectors can reduce how often it is evaluated.
 
 /// tab | Syntax
 ```css

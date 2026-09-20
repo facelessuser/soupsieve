@@ -323,3 +323,20 @@ Tags do not necessarily have to have a prefix for Soup Sieve to recognize them e
 *should* automatically get the SVG namespace. Depending how namespaces were defined in the document, tags may inherit
 namespaces in some conditions.  Namespace assignment is mainly handled by the parser and exposed through the Beautiful
 Soup API. Soup Sieve uses the Beautiful Soup API to then compare namespaces for supported documents.
+
+## Ignore Pseudo-class
+
+Soup Sieve implements a number of pseudo classes, but but some (e.g. [`:has()`](./selectors/pseudo-classes.md#:has) and
+[`:-soup-contains()`](./selectors/pseudo-classes.md#:-soup-contains)) have potential performance concerns if exposed to
+untrusted user inputs. While Beautiful Soup (along with Soup Sieve) are not necessarily recommended for time critical,
+high performance systems, if you are in an environment where the risk of using a specific pseudo-class is not tolerable,
+you can use the `ignore` option to specify and fail if they are used.
+
+```py
+import soupsieve as sv
+try:
+    sv.compile('*:has(a)', ignore=[':has'])
+except sv.SelectorSyntaxError:
+    # Captured disallowed usage of `:has`
+    pass
+```

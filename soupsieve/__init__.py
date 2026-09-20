@@ -49,6 +49,7 @@ def compile(  # noqa: A001
     flags: int = 0,
     *,
     custom: dict[str, str] | None = None,
+    ignore: Iterable[str] | None = None,
     **kwargs: Any
 ) -> cm.SoupSieve:
     """Compile CSS pattern."""
@@ -66,7 +67,8 @@ def compile(  # noqa: A001
         pattern,
         ct.Namespaces(namespaces) if namespaces is not None else namespaces,
         ct.CustomSelectors(custom) if custom is not None else custom,
-        flags
+        tuple(i.lower() for i in ignore) if ignore is not None else ignore,
+        flags,
     )
 
 
@@ -83,11 +85,12 @@ def closest(
     flags: int = 0,
     *,
     custom: dict[str, str] | None = None,
+    ignore: Iterable[str] | None = None,
     **kwargs: Any
 ) -> bs4.Tag | None:
     """Match closest ancestor."""
 
-    return compile(select, namespaces, flags, custom=custom, **kwargs).closest(tag)
+    return compile(select, namespaces, flags, custom=custom, ignore=ignore, **kwargs).closest(tag)
 
 
 def match(
@@ -97,11 +100,12 @@ def match(
     flags: int = 0,
     *,
     custom: dict[str, str] | None = None,
+    ignore: Iterable[str] | None = None,
     **kwargs: Any
 ) -> bool:
     """Match node."""
 
-    return compile(select, namespaces, flags, custom=custom, **kwargs).match(tag)
+    return compile(select, namespaces, flags, custom=custom, ignore=ignore, **kwargs).match(tag)
 
 
 def filter(  # noqa: A001
@@ -111,11 +115,12 @@ def filter(  # noqa: A001
     flags: int = 0,
     *,
     custom: dict[str, str] | None = None,
+    ignore: Iterable[str] | None = None,
     **kwargs: Any
 ) -> list[bs4.Tag]:
     """Filter list of nodes."""
 
-    return compile(select, namespaces, flags, custom=custom, **kwargs).filter(iterable)
+    return compile(select, namespaces, flags, custom=custom, ignore=ignore, **kwargs).filter(iterable)
 
 
 def select_one(
@@ -125,11 +130,12 @@ def select_one(
     flags: int = 0,
     *,
     custom: dict[str, str] | None = None,
+    ignore: Iterable[str] | None = None,
     **kwargs: Any
 ) -> bs4.Tag | None:
     """Select a single tag."""
 
-    return compile(select, namespaces, flags, custom=custom, **kwargs).select_one(tag)
+    return compile(select, namespaces, flags, custom=custom, ignore=ignore, **kwargs).select_one(tag)
 
 
 def select(
@@ -140,11 +146,12 @@ def select(
     flags: int = 0,
     *,
     custom: dict[str, str] | None = None,
+    ignore: Iterable[str] | None = None,
     **kwargs: Any
 ) -> list[bs4.Tag]:
     """Select the specified tags."""
 
-    return compile(select, namespaces, flags, custom=custom, **kwargs).select(tag, limit)
+    return compile(select, namespaces, flags, custom=custom, ignore=ignore, **kwargs).select(tag, limit)
 
 
 def iselect(
@@ -155,11 +162,12 @@ def iselect(
     flags: int = 0,
     *,
     custom: dict[str, str] | None = None,
+    ignore: Iterable[str] | None = None,
     **kwargs: Any
 ) -> Iterator[bs4.Tag]:
     """Iterate the specified tags."""
 
-    yield from compile(select, namespaces, flags, custom=custom, **kwargs).iselect(tag, limit)
+    yield from compile(select, namespaces, flags, custom=custom, ignore=ignore, **kwargs).iselect(tag, limit)
 
 
 def escape(ident: str) -> str:

@@ -7,7 +7,7 @@ from . import css_match as cm
 from . import css_types as ct
 from .util import SelectorSyntaxError
 import warnings
-from typing import Match, Any, Iterator, cast
+from typing import Match, Any, Iterator, Iterable, cast
 from dataclasses import dataclass
 from collections import UserDict
 import threading
@@ -186,6 +186,7 @@ RE_WS_BEGIN = re.compile(fr'^{WSC}*')
 RE_WS_END = re.compile(fr'^(?:[ \t]|(?:\n\r|(?!\n\r)[\n\f\r])|{COMMENTS})*')
 RE_CUSTOM = re.compile(fr'^{PAT_PSEUDO_CLASS_CUSTOM}$', re.X)
 RE_PSEUDO_CLASS_SPECIAL = re.compile(PAT_PSEUDO_CLASS_SPECIAL, re.I | re.X | re.U)
+RE_PSEUDO_IGNORE = re.compile(PAT_PSEUDO_CLASS, re.X | re.I | re.U)
 
 QUOTED = ("'", '"')
 
@@ -217,7 +218,8 @@ def _cached_css_compile(
     pattern: str,
     namespaces: ct.Namespaces | None,
     custom: ct.CustomSelectors | None,
-    flags: int
+    ignore: tuple[str] | None = None,
+    flags: int = 0
 ) -> cm.SoupSieve:
     """Cached CSS compile."""
 
@@ -227,6 +229,7 @@ def _cached_css_compile(
         CSSParser(
             pattern,
             custom=custom_selectors,
+            ignore=ignore,
             flags=flags
         ).process_selectors(),
         namespaces,
@@ -683,7 +686,9 @@ class CSSParser:
     def __init__(
         self,
         selector: str,
+        *,
         custom: dict[str, str | ct.SelectorList] | None = None,
+        ignore: Iterable[str] | None = None,
         flags: int = 0
     ) -> None:
         """Initialize."""
@@ -692,6 +697,7 @@ class CSSParser:
         self.flags = flags
         self.debug = self.flags & util.DEBUG
         self.custom = {} if custom is None else custom
+        self.ignore = frozenset([] if ignore is None else ignore)
         self.count = 0
 
     def increment_count(self, increment: int = 1) -> None:
@@ -802,7 +808,7 @@ class CSSParser:
         if not isinstance(selector, ct.SelectorList):
             del self.custom[pseudo]
             selector = CSSParser(
-                selector, custom=self.custom, flags=self.flags
+                selector, custom=self.custom, flags=self.flags, ignore=self.ignore
             ).process_selectors(flags=FLG_PSEUDO)
             self.custom[pseudo] = selector
 
@@ -1190,6 +1196,14 @@ class CSSParser:
                     self.increment_count()
 
                 # Handle parts
+                if self.ignore:
+                    mi = RE_PSEUDO_IGNORE.match(m.group(0))
+                    if mi is not None and mi.group('name').lower() in self.ignore:
+                        raise SelectorSyntaxError(
+                            f"The selector '{mi.group('name')}' at position {m.start(0)}, has been disallowed",
+                            self.pattern,
+                            m.start(0)
+                        )
                 if key == "at_rule":
                     raise NotImplementedError(f"At-rules found at position {m.start(0)}")
                 elif key == "amp":

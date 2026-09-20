@@ -10,6 +10,12 @@ import pickle
 class TestSoupSieve(util.TestCase):
     """Test Soup Sieve."""
 
+    def test_ignore(self):
+        """Test ignore."""
+
+        with self.assertRaises(sv.SelectorSyntaxError):
+            sv.compile('*:has(a)', ignore=[':has'])
+
     def test_select(self):
         """Test select."""
 
