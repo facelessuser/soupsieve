@@ -15,7 +15,8 @@ project is broken up like so.
 │       └── markdown
 ├── soupsieve
 ├── requirements
-└── tests
+├── tests
+└── tools
 ```
 
 Directory             | Description
@@ -23,133 +24,81 @@ Directory             | Description
 `docs/src/dictionary` | Contains the spell check wordlist(s) for the project.
 `docs/src/markdown`   | Contains the content for the documentation.
 `soupsieve`           | Contains the source code for the project.
-`requirements`        | Contains files with lists of dependencies that are required for the project, and required for continuous integration.
 `tests`               | Contains unit test files.
+`tools`               | Contains tools that are useful in development or documentation.
 
 ## Coding Standards
 
-When writing code, the code should roughly conform to PEP8 and PEP257 suggestions along with some other requirements.
-The project utilizes the @astral-sh/ruff linter that helps to ensure code conforms (give or take some of the rules).
-When in doubt, follow the formatting hints of existing code when adding files or modifying existing files.
+Coding standards are enforced using @astral-sh/ruff. The environment can be setup and run as shown below.
 
-Usually this can be automated with Tox (assuming it is installed): `tox -e lint`.
+```console
+$ hatch run +py=3.14 dev:lint
+```
+
+## Coding Types
+
+We use @python/mypy to enforce typing. It can be run as shown below.
+
+```console
+$ hatch run +py=3.14 dev:mypy
+```
 
 ## Building and Editing Documents
 
-Documents are in Markdown (with some additional syntax provided by extensions) and are converted to HTML via Python
-Markdown. If you would like to build and preview the documentation, you must have these packages installed:
+Documents are in Markdown (with some additional syntax) and converted to HTML via Python Markdown and this extension
+bundle. The documentation site is built with @zensical/zensical.
 
--   @Python-Markdown/markdown: the Markdown parser.
--   @zensical/zensical: the document site generator.
--   @facelessuser/pymdown-extensions: this Python Markdown extension bundle.
+To build docs:
 
-It is advised that you just install document dependencies with the following as the above list may not include all
-document plugins:
-
-```
-pip install -r requirements/docs.txt
+```console
+$ hatch run docs:build
 ```
 
-In order to build and preview the documents, just run the command below from the root of the project and you should be
-able to view the documents at `localhost:8000` in your browser. After that, you should be able to update the documents
-and have your browser preview update live.
+To serve docs and to live preview in a browser:
 
+```console
+$ hatch run docs:serve
 ```
-python3 -m zensical serve -f zensical.yml
+
+To clean the documents:
+
+```console
+$ hatch run docs:clean
 ```
 
 ## Spell Checking Documents
 
-Spell checking is performed via @facelessuser/pyspelling.
+During validation, we build the docs and run a spell checker on them.  The spell checker uses @facelessuser/pyspelling
+and [Aspell][aspell]. As it can be trickier to run Aspell under Windows, it is not expected that everyone will install
+and run the spell checker locally.  In order to perform the spell check, just run the following command:
 
-During validation we build the docs and spell check various files in the project. [Aspell][aspell] must be installed and
-in the path.  Currently this project uses one of the more recent versions of Aspell.  It is not expected that everyone
-will install and run Aspell locally, but it will be run in CI tests for pull requests.
-
-In order to perform the spell check locally, it is expected you are setup to build the documents, and that you have
-Aspell installed in your system path (if needed you can use the `--binary` option to point to the location of your
-Aspell binary). It is also expected that you have the `en` dictionary installed as well. To initiate the spell check,
-run the following command from the root of the project.
-
-You will need to make sure the documents are built first:
-
+```console
+$ hatch run docs:spellcheck
 ```
-python3 -m zensical build --clean -f zensical.yml
-```
-
-And then run the spell checker.
-
-```
-pyspelling
-```
-
-It should print out the files with the misspelled words if any are found.  If you find it prints words that are not
-misspelled, you can add them in `docs/src/dictionary/en-custom.text`.
 
 ## Validation Tests
 
-In order to preserve good code health, a test suite has been put together with pytest (@pytest-dev/pytest).  To run
-these tests, you can use the following command:
+In order to preserve good code health, a test suite has been put together with pytest (@pytest-dev/pytest). There are
+currently two kinds of tests: syntax and targeted.  To run these tests, you can use the following command:
 
-```
-pytest
-```
+If you wish to run the tests locally, just run:
 
-### Running Validation With Tox
-
-Tox (@tox-dev/tox) is a great way to run the validation tests, spelling checks, and linting in virtual environments so
-as not to mess with your current working environment. Tox will use the specified Python version for the given
-environment and create a virtual environment and install all the needed requirements (minus Aspell).  You could also
-setup your own virtual environments with the Virtualenv module without Tox, and manually do the same.
-
-First, you need to have Tox installed:
-
-```
-pip install tox
-```
-
-By running Tox, it will walk through all the environments and create them (assuming you have all the python versions on
-your machine) and run the related tests.  See `tox.ini` to learn more.
-
-```
-tox
-```
-
-If you don't have all the Python versions needed to test all the environments, those entries will fail. To run the tests
-for specific versions of Python, you specify the environment with `-e PXY` where `X` is the major version and `Y` is the
-minor version.
-
-```
-tox -e py310
-```
-
-To target linting:
-
-```
-tox -e lint
-```
-
-To select spell checking and document building:
-
-```
-tox -e documents
+```console
+$ hatch run +py=3.14 dev:tests
 ```
 
 ## Code Coverage
 
-When running the validation tests through Tox, it is setup to track code coverage via the Coverage
-(@bitbucket:ned/coveragepy) module.  Coverage is run on each `pyxx` environment.  If you've made changes to the code,
-you can clear the old coverage data:
+When running the validation tests, it is setup to track code coverage via the Coverage
+(@bitbucket:ned/coveragepy) module.  Coverage is run on each Python environment.  If you've made changes to
+the code, you can clear the old coverage data, assuming coverage is installed, by running:
 
+```console
+$ coverage erase
 ```
-coverage erase
-```
 
-Then run each unit test environment to generate coverage data. All the data from each run is merged together.  HTML is
-output for each file in `.tox/pyXX/tmp`.  You can use these to see areas that are not covered/exercised yet with
-testing.
-
-You can checkout `tox.ini` to see how this is accomplished.
+Then run each unit test environment to and coverage will be calculated. All the data from each run is merged together.
+HTML is output for each file in `.cov`.  You can use these to see areas that are not covered/exercised yet with testing.
 
 ## Code Documentation
 
