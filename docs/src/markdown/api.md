@@ -49,28 +49,27 @@ directly for more controlled tag selection if needed.
 
 Print debug output when parsing a selector.
 
-```pycon3
->>> import soupsieve as sv
->>> sv.compile('p:has(#id) > span.some-class:contains(text)', flags=sv.DEBUG)
-## PARSING: 'p:has(#id) > span.some-class:contains(text)'
-TOKEN: 'tag' --> 'p' at position 0
-TOKEN: 'pseudo_class' --> ':has(' at position 1
-    is_pseudo: True
-    is_open: True
-    is_relative: True
-TOKEN: 'id' --> '#id' at position 6
-TOKEN: 'pseudo_close' --> ')' at position 9
-TOKEN: 'combine' --> ' > ' at position 10
-TOKEN: 'tag' --> 'span' at position 13
-TOKEN: 'class' --> '.some-class' at position 17
-TOKEN: 'pseudo_contains' --> ':contains(text)' at position 28
-## END PARSING
-SoupSieve(pattern='p:has(#id) > span.some-class:contains(text)', namespaces=None, custom=None, flags=1)
+```py play session="example1"
+# pragma: init
+from bs4 import BeautifulSoup
+text = """
+<div>
+<!-- These are animals -->
+<p class="a">Cat</p>
+<p class="b">Dog</p>
+<p class="c">Mouse</p>
+</div>
+"""
+soup = BeautifulSoup(text, 'html5lib')
+# pragma: init
+
+import soupsieve as sv
+sv.compile('p:has(#id) > span.some-class:-soup-contains(text)', flags=sv.DEBUG)
 ```
 
 ## `soupsieve.select_one()`
 
-```py3
+```py
 def select_one(select, tag, namespaces=None, flags=0, **kwargs):
     """Select the specified tags."""
 ```
@@ -81,15 +80,14 @@ return `None` if a suitable tag was not found.
 `select_one` accepts a CSS selector string, a `Tag`/`BeautifulSoup` object, an optional [namespace](#namespaces)
 dictionary, and `flags`.
 
-```pycon3
->>> import soupsieve as sv
->>> sv.select_one('p:is(.a, .b, .c)', soup)
-<p class="a">Cat</p>
+```py play session="example1"
+import soupsieve as sv
+sv.select_one('p:is(.a, .b, .c)', soup)
 ```
 
 ## `soupsieve.select()`
 
-```py3
+```py
 def select(select, tag, namespaces=None, limit=0, flags=0, **kwargs):
     """Select the specified tags."""
 ```
@@ -100,15 +98,14 @@ number of tags returned by providing a positive integer via the `limit` paramete
 `select` accepts a CSS selector string, a `Tag`/`BeautifulSoup` object, an optional [namespace](#namespaces) dictionary,
 a `limit`, and `flags`.
 
-```pycon3
->>> import soupsieve as sv
->>> sv.select('p:is(.a, .b, .c)', soup)
-[<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
+```py play session="example1"
+import soupsieve as sv
+sv.select('p:is(.a, .b, .c)', soup)
 ```
 
 ## `soupsieve.iselect()`
 
-```py3
+```py
 def iselect(select, node, namespaces=None, limit=0, flags=0, **kwargs):
     """Select the specified tags."""
 ```
@@ -117,7 +114,7 @@ def iselect(select, node, namespaces=None, limit=0, flags=0, **kwargs):
 
 ## `soupsieve.closest()`
 
-```py3
+```py
 def closest(select, tag, namespaces=None, flags=0, **kwargs):
     """Match closest ancestor to the provided tag."""
 ```
@@ -130,7 +127,7 @@ dictionary, and `flags`.
 
 ## `soupsieve.match()`
 
-```py3
+```py
 def match(select, tag, namespaces=None, flags=0, **kwargs):
     """Match node."""
 ```
@@ -140,17 +137,15 @@ The `match` function matches a given tag with a given CSS selector.
 `match` accepts a CSS selector string, a `Tag`/`BeautifulSoup` object, an optional [namespace](#namespaces) dictionary,
 and flags.
 
-```pycon3
->>> nodes = sv.select('p:is(.a, .b, .c)', soup)
->>> sv.match('p:not(.b)', nodes[0])
-True
->>> sv.match('p:not(.b)', nodes[1])
-False
+```py play session="example1"
+nodes = sv.select('p:is(.a, .b, .c)', soup)
+sv.match('p:not(.b)', nodes[0])
+sv.match('p:not(.b)', nodes[1])
 ```
 
 ## `soupsieve.filter()`
 
-```py3
+```py
 def filter(select, nodes, namespaces=None, flags=0, **kwargs):
     """Filter list of nodes."""
 ```
@@ -161,14 +156,13 @@ given a `Tag`/`BeautifulSoup` object, it will iterate the direct children filter
 `filter` accepts a CSS selector string, an iterable containing nodes, an optional [namespace](#namespaces) dictionary,
 and flags.
 
-```pycon3
->>> sv.filter('p:not(.b)', soup.div)
-[<p class="a">Cat</p>, <p class="c">Mouse</p>]
+```py play session="example1"
+sv.filter('p:not(.b)', soup.div)
 ```
 
 ## `soupsieve.escape()`
 
-```py3
+```py
 def escape(ident):
     """Escape CSS identifier."""
 ```
@@ -176,17 +170,12 @@ def escape(ident):
 `escape` is used to escape CSS identifiers. It follows the [CSS specification][cssom] and escapes any character that
 would normally cause an identifier to be invalid.
 
-```pycon3
->>> sv.escape(".foo#bar")
-'\\.foo\\#bar'
->>> sv.escape("()[]{}")
-'\\(\\)\\[\\]\\{\\}'
->>> sv.escape('--a')
-'--a'
->>> sv.escape('0')
-'\\30 '
->>> sv.escape('\0')
-'�'
+```py play session="example1"
+sv.escape(".foo#bar")
+sv.escape("()[]{}")
+sv.escape('--a')
+sv.escape('0')
+sv.escape('\0')
 ```
 
 > [!new] New in 1.9.0
@@ -194,7 +183,7 @@ would normally cause an identifier to be invalid.
 
 ## `soupsieve.compile()`
 
-```py3
+```py
 def compile(pattern, namespaces=None, flags=0, **kwargs):
     """Compile CSS pattern."""
 ```
@@ -202,7 +191,7 @@ def compile(pattern, namespaces=None, flags=0, **kwargs):
 `compile` will pre-compile a CSS selector pattern returning a `SoupSieve` object. The `SoupSieve` object has the same
 selector functions available via the module without the need to specify the selector, namespaces, or flags.
 
-```py3
+```py
 class SoupSieve:
     """Match tags in Beautiful Soup with CSS selectors."""
 
@@ -245,7 +234,7 @@ to do so.
 In the following example, we will define our own custom selector called `#!css :--header` that will be an alias for
 `#!css h1, h2, h3, h4, h5, h6`.
 
-```py3
+```py play session="example2"
 import soupsieve as sv
 import bs4
 
@@ -260,14 +249,8 @@ markup = """
 </html
 """
 
-soup = bs4.BeautifulSoup(markup, 'lxml')
-print(sv.select(':--header', soup, custom={':--header': 'h1, h2, h3, h4, h5, h6'}))
-```
-
-The above code, when run, should yield the following output:
-
-```
-[<h1 id="1">Header 1</h1>, <h2 id="2">Header 2</h2>]
+soup = bs4.BeautifulSoup(markup, 'html5lib')
+sv.select(':--header', soup, custom={':--header': 'h1, h2, h3, h4, h5, h6'})
 ```
 
 Custom selectors can also be dependent upon other custom selectors. You don't have to worry about the order in the
@@ -278,18 +261,12 @@ Assuming the same markup as in the first example, we will now create a custom se
 has child elements, we will call the selector `:--parent`. Then we will create another selector called
 `:--parent-paragraph` that will use the `:--parent` selector to find `#!html <p>` elements that are also parents:
 
-```py3
+```py play session="example2"
 custom = {
     ":--parent": ":has(> *|*)",
     ":--parent-paragraph": "p:--parent"
 }
-print(sv.select(':--parent-paragraph', soup, custom=custom))
-```
-
-The above code will yield the only paragraph that is a parent:
-
-```
-[<p id="4"><span>child</span></p>]
+sv.select(':--parent-paragraph', soup, custom=custom)
 ```
 
 ## Namespaces
@@ -306,7 +283,7 @@ A namespace dictionary should have keys (prefixes) and values (namespaces). An e
 the default key.  An empty value would essentially represent a null namespace.  To represent the above CSS example for
 Soup Sieve, we would configure it like so:
 
-```py3
+```py
 
 namespace = {
     "": "http://www.w3.org/1999/xhtml",   # Default namespace is for XHTML

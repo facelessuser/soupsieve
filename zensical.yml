@@ -87,6 +87,23 @@ markdown_extensions:
   - markdown.extensions.abbr:
   - markdown.extensions.md_in_html:
   - pymdownx.superfences:
+      custom_fences:
+        - name: py
+          class: 'highlight'
+          format: !!python/object/apply:tools.pycon.py_command_formatter
+            kwds:
+              init: |
+                from bs4 import BeautifulSoup
+                import soupsieve as sv
+          validator: !!python/name:tools.pycon.py_command_validator
+        - name: python
+          class: 'highlight'
+          format: !!python/object/apply:tools.pycon.py_command_formatter
+            kwds:
+              init: |
+                from bs4 import BeautifulSoup
+                import soupsieve as sv
+          validator: !!python/name:tools.pycon.py_command_validator
   - pymdownx.highlight:
       line_spans: __codeline
       line_anchors: __codelineno

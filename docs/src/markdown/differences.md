@@ -20,19 +20,19 @@ about a malformed attribute, you may need to quote the value.
 
 For instance, if you previously used a selector like this:
 
-```py3
+```py
 soup.select('[attr={}]')
 ```
 
 You would need to quote the value as `{}` is not a valid CSS identifier, so it must be quoted:
 
-```py3
+```py
 soup.select('[attr="{}"]')
 ```
 
 You can also use the [escape](./api.md#soupsieveescape) function to escape dynamic content:
 
-```py3
+```py
 import soupsieve
 soup.select('[attr=%s]' % soupsieve.escape('{}'))
 ```
@@ -46,19 +46,19 @@ escapes.
 
 So if you used to use:
 
-```py3
+```py
 soup.select('.2class')
 ```
 
 You would need to update with:
 
-```py3
+```py
 soup.select(r'.\32 class')
 ```
 
 Numbers in the middle or at the end of a class will work as they always did:
 
-```py3
+```py
 soup.select('.class2')
 ```
 
@@ -66,7 +66,7 @@ soup.select('.class2')
 
 Whether on purpose or on accident, Beautiful Soup used to allow relative selectors:
 
-```py3
+```py
 soup.select('> div')
 ```
 
@@ -90,7 +90,7 @@ el.querySelectorAll(':scope > .class')
 
 Just like in the JavaScript example above, Soup Sieve would also treat `:scope` as the element that `el` references:
 
-```py3
+```py
 el.select(':scope > .class')
 ```
 
@@ -98,13 +98,13 @@ In the case where the element is the document node, `:scope` would simply repres
 
 So, if you used to have selectors such as:
 
-```py3
+```py
 soup.select('> div')
 ```
 
 You can simply add `:scope`, and it should work the same:
 
-```py3
+```py
 soup.select(':scope > div')
 ```
 
@@ -123,7 +123,7 @@ el.querySelectorAll('.class')
 This same concept applies to Soup Sieve, where the element that `select` or `select_one` is called on is also the
 *scoped* element. So in the following example, `el` is also the *scoped* element:
 
-```py3
+```py
 el.select('.class')
 ```
 
@@ -139,14 +139,14 @@ that behaves, as close as possible, to what people familiar with CSS selectors a
 
 So while Soup Sieve will find elements relative to `:scope` with `>` or <code>&nbsp;</code>:
 
-```py3
+```py
 soup.select(':scope > div')
 ```
 
 It will not find elements relative to `:scope` with `+` or `~` as siblings to the *scoped* element are not under the
 *scoped* element:
 
-```py3
+```py
 soup.select(':scope + div')
 ```
 

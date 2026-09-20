@@ -14,20 +14,19 @@ element1, element2
 ///
 
 /// tab | Usage
-```pycon3
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <h1>Title</h1>
-... <p>Paragraph</p>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('h1, p'))
-[<h1>Title</h1>, <p>Paragraph</p>]
+```py play
+from bs4 import BeautifulSoup as bs
+html = """
+<html>
+<head></head>
+<body>
+<h1>Title</h1>
+<p>Paragraph</p>
+</body>
+</html>
+"""
+soup = bs(html, 'html5lib')
+soup.select('h1, p')
 ```
 ///
 
@@ -43,20 +42,19 @@ parent descendant
 ///
 
 /// tab | Usage
-```pycon3
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <div><p>Paragraph 1</p></div>
-... <div><p>Paragraph 2</p></div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('body p'))
-[<p>Paragraph 1</p>, <p>Paragraph 2</p>]
+```py play
+from bs4 import BeautifulSoup as bs
+html = """
+<html>
+<head></head>
+<body>
+<div><p>Paragraph 1</p></div>
+<div><p>Paragraph 2</p></div>
+</body>
+</html>
+"""
+soup = bs(html, 'html5lib')
+soup.select('body p')
 ```
 ///
 
@@ -75,20 +73,19 @@ parent > child
 ///
 
 /// tab | Usage
-```pycon3
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <div><p>Paragraph 1</p></div>
-... <div><ul><li><p>Paragraph 2</p></li></ul></div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('div > p'))
-[<p>Paragraph 1</p>]
+```py play
+from bs4 import BeautifulSoup as bs
+html = """
+<html>
+<head></head>
+<body>
+<div><p>Paragraph 1</p></div>
+<div><ul><li><p>Paragraph 2</p></li></ul></div>
+</body>
+</html>
+"""
+soup = bs(html, 'html5lib')
+soup.select('div > p')
 ```
 ///
 
@@ -107,21 +104,20 @@ prevsibling ~ sibling
 ///
 
 /// tab | Usage
-```pycon3
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <h1>Title</h1>
-... <p>Paragraph 1</p>
-... <p>Paragraph 2</p>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('h1 ~ p'))
-[<p>Paragraph 1</p>, <p>Paragraph 2</p>]
+```py play
+from bs4 import BeautifulSoup as bs
+html = """
+<html>
+<head></head>
+<body>
+<h1>Title</h1>
+<p>Paragraph 1</p>
+<p>Paragraph 2</p>
+</body>
+</html>
+"""
+soup = bs(html, 'html5lib')
+soup.select('h1 ~ p')
 ```
 ///
 
@@ -140,21 +136,20 @@ prevsibling + nextsibling
 ///
 
 /// tab | Usage
-```pycon3
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <h1>Title</h1>
-... <p>Paragraph 1</p>
-... <p>Paragraph 2</p>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('h1 + p'))
-[<p>Paragraph 1</p>]
+```py play
+from bs4 import BeautifulSoup as bs
+html = """
+<html>
+<head></head>
+<body>
+<h1>Title</h1>
+<p>Paragraph 1</p>
+<p>Paragraph 2</p>
+</body>
+</html>
+"""
+soup = bs(html, 'html5lib')
+soup.select('h1 + p')
 ```
 ///
 

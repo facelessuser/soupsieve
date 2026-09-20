@@ -58,118 +58,93 @@ $ pip install dist/soupsive-<ver>-py3-none-any.whl
 
 To use Soup Sieve, you must create a `BeautifulSoup` object:
 
-```pycon3
->>> import bs4
-
->>> text = """
-... <div>
-... <!-- These are animals -->
-... <p class="a">Cat</p>
-... <p class="b">Dog</p>
-... <p class="c">Mouse</p>
-... </div>
-... """
->>> soup = bs4.BeautifulSoup(text, 'html5lib')
-```
-
-For most people, using the Beautiful Soup 4.7.0+ API may be more than sufficient. Beautiful Soup offers two methods that employ
-Soup Sieve: `select` and `select_one`. Beautiful Soup's select API is identical to Soup Sieve's, except that you don't
-have to hand it the tag object, the calling object passes itself to Soup Sieve:
-
-```pycon3
->>> soup = bs4.BeautifulSoup(text, 'html5lib')
->>> soup.select_one('p:is(.a, .b, .c)')
-<p class="a">Cat</p>
-```
-
-```pycon3
->>> soup = bs4.BeautifulSoup(text, 'html5lib')
->>> soup.select('p:is(.a, .b, .c)')
-[<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
-```
-
-You can also use the Soup Sieve API directly to get access to the full range of possibilities that Soup Sieve offers.
-You can select a single tag:
-
-```pycon3
->>> import soupsieve as sv
->>> sv.select_one('p:is(.a, .b, .c)', soup)
-<p class="a">Cat</p>
-```
-
-You can select all tags:
-
-```pycon3
->>> import soupsieve as sv
->>> sv.select('p:is(.a, .b, .c)', soup)
-[<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
-```
-
-You can select the closest ancestor:
-
-```pycon3
->>> import soupsieve as sv
->>> el = sv.select_one('.c', soup)
->>> sv.closest('div', el)
+```py play session="example"
+from bs4 import BeautifulSoup
+text = """
 <div>
 <!-- These are animals -->
 <p class="a">Cat</p>
 <p class="b">Dog</p>
 <p class="c">Mouse</p>
 </div>
+"""
+soup = BeautifulSoup(text, 'html5lib')
+```
+
+For most people, using the Beautiful Soup 4.7.0+ API may be more than sufficient. Beautiful Soup offers two methods that employ
+Soup Sieve: `select` and `select_one`. Beautiful Soup's select API is identical to Soup Sieve's, except that you don't
+have to hand it the tag object, the calling object passes itself to Soup Sieve:
+
+```py play session="example"
+soup.select_one('p:is(.a, .b, .c)')
+```
+
+```py play session="example"
+soup.select('p:is(.a, .b, .c)')
+```
+
+You can also use the Soup Sieve API directly to get access to the full range of possibilities that Soup Sieve offers.
+You can select a single tag:
+
+```py play session="example"
+import soupsieve as sv
+sv.select_one('p:is(.a, .b, .c)', soup)
+```
+
+You can select all tags:
+
+```py play session="example"
+import soupsieve as sv
+sv.select('p:is(.a, .b, .c)', soup)
+```
+
+You can select the closest ancestor:
+
+```py play session="example"
+import soupsieve as sv
+el = sv.select_one('.c', soup)
+sv.closest('div', el)
 ```
 
 You can filter a tag's Children (or an iterable of tags):
 
-```pycon3
->>> sv.filter('p:not(.b)', soup.div)
-[<p class="a">Cat</p>, <p class="c">Mouse</p>]
+```py play session="example"
+sv.filter('p:not(.b)', soup.div)
 ```
 
 You can match a single tag:
 
-```pycon3
->>> els = sv.select('p:is(.a, .b, .c)', soup)
->>> sv.match('p:not(.b)', els[0])
-True
->>> sv.match('p:not(.b)', els[1])
-False
-```
-
-Or even just extract comments:
-
-```pycon3
->>> sv.comments(soup)
-[' These are animals ']
+```py play session="example"
+els = sv.select('p:is(.a, .b, .c)', soup)
+sv.match('p:not(.b)', els[0])
+sv.match('p:not(.b)', els[1])
 ```
 
 Selectors do not have to be constrained to one line either. You can span selectors over multiple lines just like you
 would in a CSS file.
 
-```pycon3
->>> selector = """
-... .a,
-... .b,
-... .c
-... """
->>> sv.select(selector, soup)
-[<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
+```py play session="example"
+selector = """
+.a,
+.b,
+.c
+"""
+sv.select(selector, soup)
 ```
 
 You can even use comments to annotate a particularly complex selector.
 
-```pycon3
->>> selector = """
-... /* This isn't complicated, but we're going to annotate it anyways.
-...    This is the a class */
-... .a,
-... /* This is the b class */
-... .b,
-... /* This is the c class */
-... .c
-... """
->>> sv.select(selector, soup)
-[<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
+```py play session="example"
+selector = """
+/* This isn't complicated, but we're going to annotate it anyways.
+   This is the a class */
+.a,
+/* This is the b class */
+.b,
+/* This is the c class */
+.c
+"""
+sv.select(selector, soup)
 ```
 
 If you've ever used Python's Re library for regular expressions, you may know that it is often useful to pre-compile a
@@ -177,10 +152,9 @@ regular expression pattern, especially if you plan to use it more than once.  Th
 matchers, though is not required.  If you have a pattern that you want to use more than once, it may be wise to
 pre-compile it early on:
 
-```pycon3
->>> selector = sv.compile('p:is(.a, .b, .c)')
->>> selector.filter(soup.div)
-[<p class="a">Cat</p>, <p class="b">Dog</p>, <p class="c">Mouse</p>]
+```py play session="example"
+selector = sv.compile('p:is(.a, .b, .c)')
+selector.filter(soup.div)
 ```
 
 A compiled object has all the same methods, though the parameters will be slightly different as they don't need things
@@ -188,6 +162,6 @@ like the pattern or flags once compiled. See [API](./api.md) documentation for m
 
 Compiled patterns are cached, so if for any reason you need to clear the cache, simply issue the `purge` command.
 
-```pycon3
->>> sv.purge()
+```py play session="example"
+sv.purge()
 ```

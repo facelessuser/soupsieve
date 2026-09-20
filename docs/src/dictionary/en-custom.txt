@@ -85,6 +85,7 @@ unpickle
 untagged
 untrusted
 unvisited
+validator
 whitespace
 wildcard
 wordlist

@@ -30,20 +30,19 @@ element
 ///
 
 /// tab | Usage
-```pycon3
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-...   <div>Here is some text.</div>
-...   <div>Here is some more text.</div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('div'))
-[<div>Here is some text.</div>, <div>Here is some more text.</div>]
+```py play
+from bs4 import BeautifulSoup as bs
+html = """
+<html>
+<head></head>
+<body>
+  <div>Here is some text.</div>
+  <div>Here is some more text.</div>
+</body>
+</html>
+"""
+soup = bs(html, 'html5lib')
+soup.select('div')
 ```
 ///
 
@@ -61,31 +60,19 @@ The Universal selector (`*`) matches elements of any type.
 ///
 
 /// tab | Usage
-```pycon3
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-...    <p>Here is some text.</p>
-...    <div>Here is some more text.</div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('*'))
-[<html><head></head>
+```py play
+from bs4 import BeautifulSoup as bs
+html = """
+<html>
+<head></head>
 <body>
-   <div>Here is some text.</div>
+   <p>Here is some text.</p>
    <div>Here is some more text.</div>
-
-
-</body></html>, <head></head>, <body>
-   <div>Here is some text.</div>
-   <div>Here is some more text.</div>
-
-
-</body>, <div>Here is some text.</div>, <div>Here is some more text.</div>]
+</body>
+</html>
+"""
+soup = bs(html, 'html5lib')
+soup.select('*')
 ```
 ///
 
@@ -103,20 +90,19 @@ The ID selector matches an element based on its `id` attribute. The ID must matc
 ///
 
 /// tab | Usage
-```pycon3
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-...    <div id="some-id">Here is some text.</div>
-...    <div>Here is some more text.</div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('#some-id'))
-[<div id="some-id">Here is some text.</div>]
+```py play
+from bs4 import BeautifulSoup as bs
+html = """
+<html>
+<head></head>
+<body>
+   <div id="some-id">Here is some text.</div>
+   <div>Here is some more text.</div>
+</body>
+</html>
+"""
+soup = bs(html, 'html5lib')
+soup.select('#some-id')
 ```
 ///
 
@@ -139,20 +125,19 @@ treated as a whitespace separated list, where each item is a **class**.
 ///
 
 /// tab | Usage
-```pycon3
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-...    <div class="some-class">Here is some text.</div>
-...    <div>Here is some more text.</div>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('.some-class'))
-[<div class="some-class">Here is some text.</div>]
+```py play
+from bs4 import BeautifulSoup as bs
+html = """
+<html>
+<head></head>
+<body>
+   <div class="some-class">Here is some text.</div>
+   <div>Here is some more text.</div>
+</body>
+</html>
+"""
+soup = bs(html, 'html5lib')
+soup.select('.some-class')
 ```
 ///
 
@@ -183,24 +168,23 @@ contains whitespace or special characters, you should quote them with either sin
     ////
 
     //// tab | Usage
-    ```pycon3
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('[href]'))
-    [<a href="#internal">Internal link</a>, <a href="http://example.com">Example link</a>, <a href="#InSensitive">Insensitive internal link</a>, <a href="http://example.org">Example org link</a>]
+    ```py play
+    from bs4 import BeautifulSoup as bs
+    html = """
+    <html>
+    <head></head>
+    <body>
+    <ul>
+      <li><a href="#internal">Internal link</a></li>
+      <li><a href="http://example.com">Example link</a></li>
+      <li><a href="#InSensitive">Insensitive internal link</a></li>
+      <li><a href="http://example.org">Example org link</a></li>
+    </ul>
+    </body>
+    </html>
+    """
+    soup = bs(html, 'html5lib')
+    soup.select('[href]')
     ```
     ////
 ///
@@ -218,24 +202,23 @@ contains whitespace or special characters, you should quote them with either sin
     ////
 
     //// tab | Usage
-    ```pycon3
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('[href="#internal"]'))
-    [<a href="#internal">Internal link</a>]
+    ```py play
+    from bs4 import BeautifulSoup as bs
+    html = """
+    <html>
+    <head></head>
+    <body>
+    <ul>
+      <li><a href="#internal">Internal link</a></li>
+      <li><a href="http://example.com">Example link</a></li>
+      <li><a href="#InSensitive">Insensitive internal link</a></li>
+      <li><a href="http://example.org">Example org link</a></li>
+    </ul>
+    </body>
+    </html>
+    """
+    soup = bs(html, 'html5lib')
+    soup.select('[href="#internal"]')
     ```
     ////
 ///
@@ -254,24 +237,23 @@ contains whitespace or special characters, you should quote them with either sin
     ////
 
     //// tab | Usage
-    ```pycon3
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal" class="class1 class2 class3">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('[class~=class2]'))
-    [<a class="class1 class2 class3" href="#internal">Internal link</a>]
+    ```py play
+    from bs4 import BeautifulSoup as bs
+    html = """
+    <html>
+    <head></head>
+    <body>
+    <ul>
+      <li><a href="#internal" class="class1 class2 class3">Internal link</a></li>
+      <li><a href="http://example.com">Example link</a></li>
+      <li><a href="#InSensitive">Insensitive internal link</a></li>
+      <li><a href="http://example.org">Example org link</a></li>
+    </ul>
+    </body>
+    </html>
+    """
+    soup = bs(html, 'html5lib')
+    soup.select('[class~=class2]')
     ```
     ////
 ///
@@ -290,20 +272,19 @@ contains whitespace or special characters, you should quote them with either sin
     ////
 
     //// tab | Usage
-    ```pycon3
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <div lang="en">Some text</div>
-    ... <div lang="en-US">Some more text</div>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('div[lang|="en"]'))
-    [<div lang="en">Some text</div>, <div lang="en-US">Some more text</div>]
+    ```py play
+    from bs4 import BeautifulSoup as bs
+    html = """
+    <html>
+    <head></head>
+    <body>
+    <div lang="en">Some text</div>
+    <div lang="en-US">Some more text</div>
+    </body>
+    </html>
+    """
+    soup = bs(html, 'html5lib')
+    soup.select('div[lang|="en"]')
     ```
     ////
 ///
@@ -321,24 +302,23 @@ contains whitespace or special characters, you should quote them with either sin
     ////
 
     //// tab | Usage
-    ```pycon3
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('[href^=http]'))
-    [<a href="http://example.com">Example link</a>, <a href="http://example.org">Example org link</a>]
+    ```py play
+    from bs4 import BeautifulSoup as bs
+    html = """
+    <html>
+    <head></head>
+    <body>
+    <ul>
+      <li><a href="#internal">Internal link</a></li>
+      <li><a href="http://example.com">Example link</a></li>
+      <li><a href="#InSensitive">Insensitive internal link</a></li>
+      <li><a href="http://example.org">Example org link</a></li>
+    </ul>
+    </body>
+    </html>
+    """
+    soup = bs(html, 'html5lib')
+    soup.select('[href^=http]')
     ```
     ////
 ///
@@ -357,24 +337,23 @@ contains whitespace or special characters, you should quote them with either sin
     ////
 
     //// tab | Usage
-    ```pycon3
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('[href$=org]'))
-    [<a href="http://example.org">Example org link</a>]
+    ```py play
+    from bs4 import BeautifulSoup as bs
+    html = """
+    <html>
+    <head></head>
+    <body>
+    <ul>
+      <li><a href="#internal">Internal link</a></li>
+      <li><a href="http://example.com">Example link</a></li>
+      <li><a href="#InSensitive">Insensitive internal link</a></li>
+      <li><a href="http://example.org">Example org link</a></li>
+    </ul>
+    </body>
+    </html>
+    """
+    soup = bs(html, 'html5lib')
+    soup.select('[href$=org]')
     ```
     ////
 ///
@@ -392,24 +371,23 @@ contains whitespace or special characters, you should quote them with either sin
     ////
 
     //// tab | Usage
-    ```pycon3
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('[href*="example"]'))
-    [<a href="http://example.com">Example link</a>, <a href="http://example.org">Example org link</a>]
+    ```py play
+    from bs4 import BeautifulSoup as bs
+    html = """
+    <html>
+    <head></head>
+    <body>
+    <ul>
+      <li><a href="#internal">Internal link</a></li>
+      <li><a href="http://example.com">Example link</a></li>
+      <li><a href="#InSensitive">Insensitive internal link</a></li>
+      <li><a href="http://example.org">Example org link</a></li>
+    </ul>
+    </body>
+    </html>
+    """
+    soup = bs(html, 'html5lib')
+    soup.select('[href*="example"]')
     ```
     ////
 ///
@@ -427,24 +405,23 @@ contains whitespace or special characters, you should quote them with either sin
     ////
 
     //// tab | Usage
-    ```pycon3
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('a[href!="#internal"]'))
-    [<a href="http://example.com">Example link</a>, <a href="#InSensitive">Insensitive internal link</a>, <a href="http://example.org">Example org link</a>]
+    ```py play
+    from bs4 import BeautifulSoup as bs
+    html = """
+    <html>
+    <head></head>
+    <body>
+    <ul>
+      <li><a href="#internal">Internal link</a></li>
+      <li><a href="http://example.com">Example link</a></li>
+      <li><a href="#InSensitive">Insensitive internal link</a></li>
+      <li><a href="http://example.org">Example org link</a></li>
+    </ul>
+    </body>
+    </html>
+    """
+    soup = bs(html, 'html5lib')
+    soup.select('a[href!="#internal"]')
     ```
     ////
 ///
@@ -464,24 +441,23 @@ contains whitespace or special characters, you should quote them with either sin
     ////
 
     //// tab | Usage
-    ```pycon3
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('[href="#INTERNAL" i]'))
-    [<a href="#internal">Internal link</a>]
+    ```py play
+    from bs4 import BeautifulSoup as bs
+    html = """
+    <html>
+    <head></head>
+    <body>
+    <ul>
+      <li><a href="#internal">Internal link</a></li>
+      <li><a href="http://example.com">Example link</a></li>
+      <li><a href="#InSensitive">Insensitive internal link</a></li>
+      <li><a href="http://example.org">Example org link</a></li>
+    </ul>
+    </body>
+    </html>
+    """
+    soup = bs(html, 'html5lib')
+    soup.select('[href="#INTERNAL" i]')
     ```
     ////
 ///
@@ -500,26 +476,24 @@ contains whitespace or special characters, you should quote them with either sin
     ////
 
     //// tab | Usage
-    ```pycon3
-    >>> from bs4 import BeautifulSoup as bs
-    >>> html = """
-    ... <html>
-    ... <head></head>
-    ... <body>
-    ... <ul>
-    ...   <li><a href="#internal">Internal link</a></li>
-    ...   <li><a href="http://example.com">Example link</a></li>
-    ...   <li><a href="#InSensitive">Insensitive internal link</a></li>
-    ...   <li><a href="http://example.org">Example org link</a></li>
-    ... </ul>
-    ... </body>
-    ... </html>
-    ... """
-    >>> soup = bs(html, 'html5lib')
-    >>> print(soup.select('[href="#INTERNAL" s]'))
-    []
-    >>> print(soup.select('[href="#internal" s]'))
-    [<a href="#internal">Internal link</a>]
+    ```py play
+    from bs4 import BeautifulSoup as bs
+    html = """
+    <html>
+    <head></head>
+    <body>
+    <ul>
+      <li><a href="#internal">Internal link</a></li>
+      <li><a href="http://example.com">Example link</a></li>
+      <li><a href="#InSensitive">Insensitive internal link</a></li>
+      <li><a href="http://example.org">Example org link</a></li>
+    </ul>
+    </body>
+    </html>
+    """
+    soup = bs(html, 'html5lib')
+    soup.select('[href="#INTERNAL" s]')
+    soup.select('[href="#internal" s]')
     ```
     ////
 ///
@@ -562,32 +536,28 @@ ns|*
 ///
 
 /// tab | Usage
-```pycon3
->>> from bs4 import BeautifulSoup as bs
->>> html = """
-... <html>
-... <head></head>
-... <body>
-... <h1>SVG Example</h1>
-... <p><a href="http://facelessuser.github.io/soupsieve/">Soup Sieve Docs</a></p>
-... 
-... <svg viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg">
-...   <a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>
-... </svg>
-... </body>
-... </html>
-... """
->>> soup = bs(html, 'html5lib')
->>> print(soup.select('svg|a', namespaces={'svg': 'http://www.w3.org/2000/svg'}))
-[<a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>]  
->>> print(soup.select('a', namespaces={'svg': 'http://www.w3.org/2000/svg'}))
-[<a href="http://facelessuser.github.io/soupsieve/">Soup Sieve Docs</a>, <a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>]
->>> print(soup.select('a', namespaces={'': 'http://www.w3.org/1999/xhtml', 'svg': 'http://www.w3.org/2000/svg'}))
-[<a href="http://facelessuser.github.io/soupsieve/">Soup Sieve Docs</a>]
->>> print(soup.select('[xlink|href]', namespaces={'xlink': 'http://www.w3.org/1999/xlink'}))
-[<a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>]
->>> print(soup.select('[|href]', namespaces={'xlink': 'http://www.w3.org/1999/xlink'}))
-[<a href="http://facelessuser.github.io/soupsieve/">Soup Sieve Docs</a>]
+```py play
+from bs4 import BeautifulSoup as bs
+html = """
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<h1>SVG Example</h1>
+<p><a href="http://facelessuser.github.io/soupsieve/">Soup Sieve Docs</a></p>
+
+<svg viewBox="0 0 160 40" xmlns="http://www.w3.org/2000/svg">
+  <a xlink:href="https://developer.mozilla.org/"><text x="10" y="25">MDN Web Docs</text></a>
+</svg>
+</body>
+</html>
+"""
+soup = bs(html, 'html5lib')
+soup.select('svg|a', namespaces={'svg': 'http://www.w3.org/2000/svg'})
+soup.select('a', namespaces={'svg': 'http://www.w3.org/2000/svg'})
+soup.select('a', namespaces={'': 'http://www.w3.org/1999/xhtml', 'svg': 'http://www.w3.org/2000/svg'})
+soup.select('[xlink|href]', namespaces={'xlink': 'http://www.w3.org/1999/xlink'})
+soup.select('[|href]', namespaces={'xlink': 'http://www.w3.org/1999/xlink'})
 ```
 ///
 
