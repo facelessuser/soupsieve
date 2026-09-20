@@ -447,9 +447,9 @@ not to nest `:has()` if there are concerns.
 > > .gallery:has(> img[data-loaded="false"])
 > > ```
 >
-> The inner selector (the `B` in `A:has(B)`) should use combinators like `>` or `+` to limit traversal. When the selector
-> inside `:has()` is not tightly constrained, the Soup Sieve might need to traverse the entire subtree of the anchor
-> element to check if the condition holds.
+> The inner selector (the `B` in `A:has(B)`) should use combinators like `>` or `+` to limit traversal. When the
+> selector inside `:has()` is not tightly constrained, Soup Sieve might need to traverse the entire subtree of the
+> anchor element to check if the condition holds.
 >
 > > [!failure] Avoid
 > > ```css
