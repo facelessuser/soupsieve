@@ -6,7 +6,7 @@ import re
 from . import css_types as ct
 import unicodedata
 import bs4
-from typing import Iterator, Iterable, Any, Callable, Sequence, Any, cast  # noqa: F401, F811
+from typing import Iterator, Iterable, Any, Callable, Sequence, Any, overload, Literal, cast  # noqa: F401, F811
 
 # Empty tag pattern (whitespace okay)
 RE_NOT_EMPTY = re.compile('[^ \t\r\n\f]')
@@ -181,14 +181,36 @@ class _DocumentNav:
     ) -> Iterator[bs4.Tag]:
         """Get tag children."""
 
-        return self.get_children(el, start, reverse, True, no_iframe)  # type: ignore[return-value]
+        return self.get_children(el, start, reverse, True, no_iframe)
+
+    @overload
+    def get_children(
+        self,
+        el: bs4.Tag | None,
+        start: int | None = None,
+        reverse: bool = False,
+        tags: Literal[True] = ...,
+        no_iframe: bool = False
+    ) -> Iterator[bs4.Tag]:
+        ...
+
+    @overload
+    def get_children(
+        self,
+        el: bs4.Tag | None,
+        start: int | None = None,
+        reverse: bool = False,
+        tags: Literal[False] = ...,
+        no_iframe: bool = False
+    ) -> Iterator[bs4.element.PageElement]:
+        ...
 
     def get_children(
         self,
         el: bs4.Tag | None,
         start: int | None = None,
         reverse: bool = False,
-        tags: bool = False,
+        tags: Literal[True] | Literal[False] = False,
         no_iframe: bool = False
     ) -> Iterator[bs4.element.PageElement]:
         """Get children."""
@@ -203,9 +225,8 @@ class _DocumentNav:
             incr = -1 if reverse else 1
 
             if 0 <= index <= last:
-                while index != end:
-                    node = el.contents[index]
-                    index += incr
+                for i in range(index, end, incr):
+                    node = el.contents[i]
                     if not tags or self.is_tag(node):
                         yield node
 
@@ -631,17 +652,17 @@ class CSSMatch(_DocumentNav):
             if self.is_tag(node):
 
                 # Avoid analyzing certain elements specified in the specification.
-                direction = DIR_MAP.get(util.lower(self.get_attribute_by_name(node, 'dir', '')), None)  # type: ignore[arg-type]
-                name = self.get_tag(node)  # type: ignore[arg-type]
+                direction = DIR_MAP.get(util.lower(self.get_attribute_by_name(node, 'dir', '')), None)
+                name = self.get_tag(node)
                 if (
                     (name and name in ('bdi', 'script', 'style', 'textarea', 'iframe')) or
-                    not self.is_html_tag(node) or  # type: ignore[arg-type]
+                    not self.is_html_tag(node) or
                     direction is not None
                 ):
                     continue  # pragma: no cover
 
                 # Check directionality of this node's text
-                value = self.find_bidi(node)  # type: ignore[arg-type]
+                value = self.find_bidi(node)
                 if value is not None:
                     return value
 
@@ -653,7 +674,7 @@ class CSSMatch(_DocumentNav):
                 continue
 
             # Analyze text nodes for directionality.
-            for c in node:  # type: ignore[attr-defined]
+            for c in cast('bs4.element.NavigableString', node):
                 bidi = unicodedata.bidirectional(c)
                 if bidi in ('AL', 'R', 'L'):
                     return ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
@@ -973,75 +994,41 @@ class CSSMatch(_DocumentNav):
         """Match `nth` elements."""
 
         matched = True
+        parent = self.get_parent(el)  # type: bs4.Tag | None
+        if parent is None:
+            parent = cast('bs4.Tag', self.create_fake_parent(el))
 
         for n in nth:
             matched = False
             if n.selectors and not self.match_selectors(el, n.selectors):
                 break
-            parent = self.get_parent(el)  # type: bs4.Tag | None
-            if parent is None:
-                parent = cast('bs4.Tag', self.create_fake_parent(el))
-            last = n.last
-            last_index = len(parent) - 1
-            index = last_index if last else 0
-            relative_index = 0
-            a = n.a
-            b = n.b
-            var = n.n
-            count = 0
-            count_incr = 1
-            factor = -1 if last else 1
-            idx = last_idx = a * count + b if var else a
 
-            # We can only adjust bounds within a variable index
-            if var:
-                # Find the count `n` that yields the smallest in-bounds index
-                # (>= 1), then set the increment direction so that the index
-                # ascends from there as the evaluation loop below walks children.
-                if a > 0:
-                    # Ascending sequence: smallest n with a * n + b >= 1.
-                    count = 0 if b >= 1 else -(-(1 - b) // a)
-                elif a < 0:
-                    # Descending sequence: largest n with a * n + b >= 1, then
-                    # walk n back down so the index increases.
-                    count = (b - 1) // -a if b >= 1 else 0
-                    count_incr = -1
-                idx = last_idx = a * count + b
+            last = n.last
+            start = len(parent) - 1 if last else 0
 
             # Evaluate elements while our calculated nth index is still in range
-            while 1 <= idx <= last_index + 1:
-                child = None  # type: bs4.element.PageElement | None
-                # Evaluate while our child index is still in range.
-                for child in self.get_children(parent, start=index, reverse=factor < 0):
-                    index += factor
-                    if not isinstance(child, bs4.Tag):
-                        continue
-                    # Handle `of S` in `nth-child`
-                    if n.selectors and not self.match_selectors(child, n.selectors):
-                        continue
-                    # Handle `of-type`
-                    if n.of_type and not self.match_nth_tag_type(el, child):
-                        continue
-                    relative_index += 1
-                    if relative_index == idx:
-                        if child is el:
-                            matched = True
-                        else:
-                            break
-                    if child is el:
-                        break
+            relative_index = 0
+            child: bs4.Tag
+            for child in self.get_children(parent, start=start, tags=True, reverse=last):
+                # Handle `of S` in `nth-child`
+                if n.selectors and not self.match_selectors(child, n.selectors):
+                    continue
+                # Handle `of-type`
+                if n.of_type and not self.match_nth_tag_type(el, child):
+                    continue
+
+                relative_index += 1
                 if child is el:
+                    if n.a != 0:
+                        v = (relative_index - n.b) / n.a
+                        matched = v.is_integer() and v >= 0
+                    else:
+                        matched = relative_index == n.b and n.b >= 1
                     break
-                last_idx = idx
-                count += count_incr
-                if count < 0:
-                    # Count is counting down and has now ventured into invalid territory.
-                    break
-                idx = a * count + b if var else a
-                if last_idx == idx:
-                    break
+
             if not matched:
                 break
+
         return matched
 
     def match_empty(self, el: bs4.Tag) -> bool:

@@ -848,25 +848,25 @@ class CSSParser:
                 self.increment_count(pseudo_selector.count)
                 sel.selectors.append(pseudo_selector)
             elif pseudo == ':first-child':
-                sel.nth.append(ct.SelectorNth(1, False, 0, False, False, ct.SelectorList()))
+                sel.nth.append(ct.SelectorNth(0, False, 1, False, False, ct.SelectorList()))
             elif pseudo == ':last-child':
-                sel.nth.append(ct.SelectorNth(1, False, 0, False, True, ct.SelectorList()))
+                sel.nth.append(ct.SelectorNth(0, False, 1, False, True, ct.SelectorList()))
             elif pseudo == ':first-of-type':
-                sel.nth.append(ct.SelectorNth(1, False, 0, True, False, ct.SelectorList()))
+                sel.nth.append(ct.SelectorNth(0, False, 1, True, False, ct.SelectorList()))
             elif pseudo == ':last-of-type':
-                sel.nth.append(ct.SelectorNth(1, False, 0, True, True, ct.SelectorList()))
+                sel.nth.append(ct.SelectorNth(0, False, 1, True, True, ct.SelectorList()))
             elif pseudo == ':only-child':
                 sel.nth.extend(
                     [
-                        ct.SelectorNth(1, False, 0, False, False, ct.SelectorList()),
-                        ct.SelectorNth(1, False, 0, False, True, ct.SelectorList())
+                        ct.SelectorNth(0, False, 1, False, False, ct.SelectorList()),
+                        ct.SelectorNth(0, False, 1, False, True, ct.SelectorList())
                     ]
                 )
             elif pseudo == ':only-of-type':
                 sel.nth.extend(
                     [
-                        ct.SelectorNth(1, False, 0, True, False, ct.SelectorList()),
-                        ct.SelectorNth(1, False, 0, True, True, ct.SelectorList())
+                        ct.SelectorNth(0, False, 1, True, False, ct.SelectorList()),
+                        ct.SelectorNth(0, False, 1, True, True, ct.SelectorList())
                     ]
                 )
             has_selector = True
@@ -922,6 +922,7 @@ class CSSParser:
         else:
             nth_parts = cast(Match[str], RE_NTH.match(content))
             _s1 = '-' if nth_parts.group('s1') and nth_parts.group('s1') == '-' else ''
+            _s2 = ''
             a = nth_parts.group('a')
             var = a.endswith('n')
             if a.startswith('n'):
@@ -929,14 +930,14 @@ class CSSParser:
             elif var:
                 _s1 += a[:-1]
             else:
-                _s1 += a
-            _s2 = '-' if nth_parts.group('s2') and nth_parts.group('s2') == '-' else ''
+                _s2 = _s1 + a
+                _s1 = ''
+            if nth_parts.group('s2') and nth_parts.group('s2') == '-':
+                _s2 = '-'
             if nth_parts.group('b'):
                 _s2 += nth_parts.group('b')
-            else:
-                _s2 = '0'
-            s1 = int(_s1, 10)
-            s2 = int(_s2, 10)
+            s1 = int(_s1, 10) if _s1 else 0
+            s2 = int(_s2, 10) if _s2 else 0
 
         pseudo_sel = mdict['name']
         if postfix == '_child':
