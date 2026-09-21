@@ -70,7 +70,7 @@ class _FakeParent:
 
         self.contents = [element]
 
-    def __len__(self) -> int:
+    def __len__(self) -> int:  # pragma: no cover
         """Length."""
 
         return len(self.contents)
