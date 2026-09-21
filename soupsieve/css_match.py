@@ -56,26 +56,6 @@ FEB_LEAP_MONTH = 29
 DAYS_IN_WEEK = 7
 
 
-class _FakeParent:
-    """
-    Fake parent class.
-
-    When we have a fragment with no `BeautifulSoup` document object,
-    we can't evaluate `nth` selectors properly.  Create a temporary
-    fake parent so we can traverse the root element as a child.
-    """
-
-    def __init__(self, element: bs4.Tag) -> None:
-        """Initialize."""
-
-        self.contents = [element]
-
-    def __len__(self) -> int:  # pragma: no cover
-        """Length."""
-
-        return len(self.contents)
-
-
 class _DocumentNav:
     """Navigate a Beautiful Soup document."""
 
@@ -127,12 +107,6 @@ class _DocumentNav:
         """Check if node is content string."""
 
         return cls.is_navigable_string(obj) and not cls.is_special_string(obj)
-
-    @staticmethod
-    def create_fake_parent(el: bs4.Tag) -> _FakeParent:
-        """Create fake parent for a given element."""
-
-        return _FakeParent(el)
 
     @staticmethod
     def is_xml_tree(el: bs4.Tag | None) -> bool:
@@ -995,8 +969,6 @@ class CSSMatch(_DocumentNav):
 
         matched = True
         parent = self.get_parent(el)  # type: bs4.Tag | None
-        if parent is None:
-            parent = cast('bs4.Tag', self.create_fake_parent(el))
 
         for n in nth:
             matched = False
@@ -1004,12 +976,16 @@ class CSSMatch(_DocumentNav):
                 break
 
             last = n.last
-            start = len(parent) - 1 if last else 0
+            # Prepare child iterator
+            if parent is None:
+                children = iter([el])
+            else:
+                children = self.get_children(parent, start=len(parent) - 1 if last else 0, tags=True, reverse=last)
 
-            # Evaluate elements while our calculated nth index is still in range
-            relative_index = 0
+            # Find index of element compared to its siblings and check the index conditions
             child: bs4.Tag
-            for child in self.get_children(parent, start=start, tags=True, reverse=last):
+            relative_index = 0
+            for child in children:
                 # Handle `of S` in `nth-child`
                 if n.selectors and not self.match_selectors(child, n.selectors):
                     continue
