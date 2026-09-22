@@ -3,7 +3,7 @@ from .. import util
 import pytest
 
 try:
-    import lxml
+    import lxml  # noqa: F401
     lxml_available = True
 except ImportError:
     lxml_available = False
