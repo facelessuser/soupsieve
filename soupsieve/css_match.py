@@ -818,9 +818,9 @@ class CSSMatch(_DocumentNav):
         match = True
         if tag is not None:
             # Verify namespace
-            if not self.match_namespace(el, tag):
-                match = False
             if not self.match_tagname(el, tag):
+                match = False
+            if match and not self.match_namespace(el, tag):
                 match = False
         return match
 
