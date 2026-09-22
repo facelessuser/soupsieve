@@ -8,6 +8,8 @@ icon: lucide/scroll-text
 -   **NEW**: Add new `ignore` option to API methods that allows the specification of specific pseudo-classes to be
     ignored. This can be used to exclude specific pseudo-classes that may present performance issues when accepted
     untrusted user inputs.
+-   **NEW**: Tighten restrictions such that `namespaces` and `custom` objects must always be a Mapping, previously lists
+    of tuples were also allowed.
 -   **FIX**: Ensure `custom` is properly passed down from API functions to compilation.
 
 ## 2.9.2
