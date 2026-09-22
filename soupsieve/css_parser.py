@@ -423,7 +423,7 @@ class _Selector:
         """Freeze self."""
 
         if self.no_match:
-            return ct.SelectorNull()
+            return ct.Null
         else:
             return ct.Selector(
                 self.tag,

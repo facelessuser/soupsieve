@@ -262,7 +262,8 @@ class SelectorNull:
         """Initialize."""
 ```
 
-The null selector is like `Selector`, but it matches nothing.
+The null selector is like `Selector`, but it matches nothing. Internally, a singleton of this type is used called
+`Null`.
 
 ### `SelectorTag`
 

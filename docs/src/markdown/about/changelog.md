@@ -10,6 +10,7 @@ icon: lucide/scroll-text
     untrusted user inputs.
 -   **NEW**: Tighten restrictions such that `namespaces` and `custom` objects must always be a Mapping, previously lists
     of tuples were also allowed.
+-   **NEW**: Use a singleton for null selectors internally via called `Null` of type `SelectorNull`.
 -   **FIX**: Ensure `custom` is properly passed down from API functions to compilation.
 
 ## 2.9.2

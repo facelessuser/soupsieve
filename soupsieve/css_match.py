@@ -829,7 +829,7 @@ class CSSMatch(_DocumentNav):
 
         found = False
         # I don't think this can ever happen, but it makes `mypy` happy
-        if isinstance(relation[0], ct.SelectorNull):  # pragma: no cover
+        if relation[0] is ct.Null:  # pragma: no cover
             return found
 
         if relation[0].rel_type == REL_PARENT:
@@ -871,7 +871,7 @@ class CSSMatch(_DocumentNav):
 
         found = False
         # I don't think this can ever happen, but it makes `mypy` happy
-        if isinstance(relation[0], ct.SelectorNull):  # pragma: no cover
+        if relation[0] is ct.Null:  # pragma: no cover
             return found
 
         if relation[0].rel_type == REL_HAS_PARENT:
@@ -894,7 +894,7 @@ class CSSMatch(_DocumentNav):
 
         found = False
 
-        if isinstance(relation[0], ct.SelectorNull) or relation[0].rel_type is None:
+        if relation[0] is ct.Null or relation[0].rel_type is None:
             return found
 
         if relation[0].rel_type.startswith(':'):
@@ -1400,7 +1400,7 @@ class CSSMatch(_DocumentNav):
             for selector in selectors:
                 match = is_not
                 # We have a un-matchable situation (like `:focus` as you can focus an element in this environment)
-                if isinstance(selector, ct.SelectorNull):
+                if selector is ct.Null:
                     continue
                 # Verify tag matches
                 if not self.match_tag(el, selector.tag):

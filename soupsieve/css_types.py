@@ -1,5 +1,6 @@
 """CSS selector structure items."""
 from __future__ import annotations
+from enum import Enum
 import copyreg
 from .pretty import pretty
 from typing import Any, Iterator, Pattern, Iterable, Mapping
@@ -217,13 +218,13 @@ class Selector(Immutable):
         )
 
 
-class SelectorNull(Immutable):
+class SelectorNull(Enum):
     """Null Selector."""
 
-    def __init__(self) -> None:
-        """Initialize."""
+    null = 0
 
-        super().__init__()
+
+Null = SelectorNull.null
 
 
 class SelectorTag(Immutable):
@@ -387,7 +388,6 @@ def pickle_register(obj: Any) -> None:
 
 
 pickle_register(Selector)
-pickle_register(SelectorNull)
 pickle_register(SelectorTag)
 pickle_register(SelectorAttribute)
 pickle_register(SelectorContains)
