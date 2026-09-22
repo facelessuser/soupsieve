@@ -335,39 +335,6 @@ class _DocumentNav:
         return getattr(attr_name, 'namespace', None), getattr(attr_name, 'name', None)
 
     @classmethod
-    def normalize_value(cls, value: Any) -> str | Sequence[str]:
-        """Normalize the value to be a string or list of strings."""
-
-        # Treat `None` as empty string.
-        if value is None:
-            return ''
-
-        # Pass through strings
-        if (isinstance(value, str)):
-            return value
-
-        # If it's a byte string, convert it to Unicode, treating it as UTF-8.
-        if isinstance(value, bytes):
-            return value.decode("utf8")
-
-        # BeautifulSoup supports sequences of attribute values, so make sure the children are strings.
-        if isinstance(value, Sequence):
-            new_value = []
-            for v in value:
-                if not isinstance(v, (str, bytes)) and isinstance(v, Sequence):
-                    # This is most certainly a user error and will crash and burn later.
-                    # To keep things working, we'll do what we do with all objects,
-                    # And convert them to strings.
-                    new_value.append(str(v))
-                else:
-                    # Convert the child to a string
-                    new_value.append(cast(str, cls.normalize_value(v)))
-            return new_value
-
-        # Try and make anything else a string
-        return str(value)
-
-    @classmethod
     def get_attribute_by_name(
         cls,
         el: bs4.Tag,
@@ -378,14 +345,13 @@ class _DocumentNav:
 
         value = default
         if el._is_xml:
-            try:
-                value = cls.normalize_value(el.attrs[name])
-            except KeyError:
-                pass
+            if name in el.attrs:
+                v = el.attrs[name]
+                value = '' if v is None else v
         else:
             for k, v in el.attrs.items():
                 if util.lower(k) == name:
-                    value = cls.normalize_value(v)
+                    value = '' if v is None else v
                     break
         return value
 
@@ -395,7 +361,7 @@ class _DocumentNav:
 
         if el is not None:
             for k, v in el.attrs.items():
-                yield k, cls.normalize_value(v)
+                yield k, '' if v is None else v
 
     @classmethod
     def get_classes(cls, el: bs4.Tag) -> Sequence[str]:

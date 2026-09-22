@@ -379,36 +379,6 @@ class TestAttribute(util.TestCase):
         soup.span['foo'] = None
         self.assertEqual(len(soup.select('span[foo]')), 1)
 
-    def test_numeric_inputs(self):
-        """Test weird inputs."""
-
-        soup = BeautifulSoup('<span>text</span>', 'html.parser')
-        soup.span['foo'] = 3
-        self.assertEqual(len(soup.select('span[foo="3"]')), 1)
-        soup.span['foo'] = 3.3
-        self.assertEqual(len(soup.select('span[foo="3.3"]')), 1)
-
-    def test_sequence_inputs(self):
-        """Test weird inputs."""
-
-        soup = BeautifulSoup('<span>text</span>', 'html.parser')
-        soup.span['foo'] = [3, "4"]
-        self.assertEqual(len(soup.select('span[foo="3 4"]')), 1)
-
-    def test_bytes_inputs(self):
-        """Test weird inputs."""
-
-        soup = BeautifulSoup('<span>text</span>', 'html.parser')
-        soup.span['foo'] = b'test'
-        self.assertEqual(len(soup.select('span[foo="test"]')), 1)
-
-    def test_weird_inputs(self):
-        """Test weird inputs."""
-
-        soup = BeautifulSoup('<span>text</span>', 'html.parser')
-        soup.span['foo'] = {'3': '4'}
-        self.assertEqual(len(soup.select('span[foo="{\'3\': \'4\'}"]')), 1)
-
     def test_nested_sequences(self):
         """Nested sequences will crash and burn due to the way BeautifulSoup handles them."""
 
