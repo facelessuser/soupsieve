@@ -707,6 +707,8 @@ class CSSMatch(_DocumentNav):
             # If we have not defined namespaces, we can't very well find them, so don't bother trying.
             if prefix:
                 ns = self.namespaces.get(prefix)
+                if ns is None:
+                    ns = el._namespaces.get(prefix)
                 if ns is None and prefix != '*':
                     return None
             else:
@@ -752,7 +754,14 @@ class CSSMatch(_DocumentNav):
         match = True
         namespace = self.get_tag_ns(el)
         default_namespace = self.namespaces.get('')
-        tag_ns = '' if tag.prefix is None else self.namespaces.get(tag.prefix)
+        if default_namespace is None:
+            default_namespace = el._namespaces.get('')
+        if tag.prefix is not None:
+            tag_ns = self.namespaces.get(tag.prefix)
+            if tag_ns is None:
+                tag_ns = el._namespaces.get(tag.prefix)
+        else:
+            tag_ns = ''
         # We must match the default namespace if one is not provided
         if tag.prefix is None and (default_namespace is not None and namespace != default_namespace):
             match = False

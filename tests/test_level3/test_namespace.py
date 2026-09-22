@@ -75,6 +75,16 @@ class TestNamespace(util.TestCase):
         </html>
         """
 
+    def test_auto_namespace(self):
+        """Test namespace."""
+
+        self.assert_selector(
+            self.MARKUP,
+            "foo|title",
+            ["3"],
+            flags=util.XML
+        )
+
     def test_namespace(self):
         """Test namespace."""
 
@@ -104,12 +114,13 @@ class TestNamespace(util.TestCase):
             flags=util.XML
         )
 
+        # We won't match `FOO` because it doesn't exist, but we will match internal `foo`.
         self.assert_selector(
             self.MARKUP,
             "foo|title",
-            [],
+            ["3"],
             namespaces={
-                "FOO": "http://me.com/namespaces/foofoo",
+                "FOO": "http://me.com/namespaces/barfoo",
                 "bar": "http://me.com/namespaces/foobar"
             },
             flags=util.XML
@@ -315,6 +326,16 @@ class TestNamespace(util.TestCase):
             flags=util.XHTML
         )
 
+    def test_auto_attribute_namespace_xhtml(self):
+        """Test attribute namespace in XHTML."""
+
+        self.assert_selector(
+            self.wrap_xlink(self.MARKUP_ATTR, True),
+            '[xlink|href*=forw],[xlink|href="images/sprites.svg#icon-redo"]',
+            ['1', '2'],
+            flags=util.XHTML
+        )
+
     def test_attribute_namespace_xml(self):
         """Test attribute namespace in XML."""
 
@@ -325,3 +346,40 @@ class TestNamespace(util.TestCase):
             namespaces={"xlink": "http://www.w3.org/1999/xlink"},
             flags=util.XHTML
         )
+
+    def test_bs_tests(self):
+        """
+        Test cases from Beautiful Soup.
+
+        Test Case 3 behavior changed with new enhanced namespace logic.
+        """
+
+        from bs4 import BeautifulSoup
+        import soupsieve as sv
+
+        soup = BeautifulSoup(
+            '<?xml version="1.1"?>\n'
+            "<root>"
+            '<tag xmlns="http://unprefixed-namespace.com">content</tag>'
+            '<prefix:tag2 xmlns:prefix="http://prefixed-namespace.com">content</tag>'
+            '<subtag xmlns:prefix="http://another-namespace-same-prefix.com">'
+            "<prefix:tag3>"
+            "</subtag>"
+            "</root>",
+            'xml'
+        )
+
+        # Case 1: select uses namespace URIs.
+        self.assertEqual(sv.select_one("tag", soup).name, "tag")
+        self.assertEqual(sv.select_one("prefix|tag2", soup).name, "tag2")
+
+        # Case 2: If a prefix is declared more than once, only the one attached
+        # to the element is used.
+        self.assertTrue(sv.select_one("prefix|tag3", soup) is not None)
+
+        # Case3: But you can always explicitly specify a namespace dictionary.
+        self.assertEqual(sv.select_one("prefix|tag3", soup, namespaces=soup.subtag._namespaces).name, 'tag3')
+
+        # Case 4: And a Tag (as opposed to the BeautifulSoup object) will
+        # have a set of default namespaces scoped to that Tag.
+        self.assertEqual(sv.select_one("prefix|tag3", soup.subtag).name, "tag3")

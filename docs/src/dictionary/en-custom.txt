@@ -28,6 +28,7 @@ TODO
 Tidelift
 Tox
 Twemoji
+URIs
 URL's
 UTF
 Unescape
