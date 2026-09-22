@@ -1,5 +1,12 @@
 """Test namespace selectors."""
 from .. import util
+import pytest
+
+try:
+    import lxml
+    lxml_available = True
+except ImportError:
+    lxml_available = False
 
 
 class TestNamespace(util.TestCase):
@@ -347,6 +354,7 @@ class TestNamespace(util.TestCase):
             flags=util.XHTML
         )
 
+    @pytest.mark.skipif(not lxml_available, reason="lxml not installed")
     def test_bs_tests(self):
         """
         Test cases from Beautiful Soup.
