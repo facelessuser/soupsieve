@@ -1,6 +1,7 @@
 """CSS matcher."""
 from __future__ import annotations
 from datetime import datetime
+from collections.abc import Hashable
 from . import util
 import re
 from . import css_types as ct
@@ -54,6 +55,13 @@ LONG_MONTH = 31
 FEB_MONTH = 28
 FEB_LEAP_MONTH = 29
 DAYS_IN_WEEK = 7
+
+
+def within(target: bs4.Tag, parent: bs4.Tag | bs4.BeautifulSoup, start: int, end: int | None = None) -> bool:
+    """Check if target is within data."""
+
+    contents = parent.contents
+    return any(contents[i] is target for i in range(start, end if end is not None else len(contents)))
 
 
 class _DocumentNav:
@@ -522,7 +530,9 @@ class CSSMatch(_DocumentNav):
         self.selectors = selectors
         self.namespaces = {} if namespaces is None else namespaces  # type: ct.Namespaces | dict[str, str]
         self.flags = flags
+        self.enable_cache = not bool(self.flags & util.NOCACHE)
         self.iframe_restrict = False
+        self.nth_cache: dict[Hashable, dict[Hashable, list[int]]] = {}
 
         # Find the root element for the whole tree
         doc = scope
@@ -545,6 +555,11 @@ class CSSMatch(_DocumentNav):
         # A document can be both XML and HTML (XHTML)
         self.is_xml = self.is_xml_tree(doc)
         self.is_html = not self.is_xml or self.has_html_namespace
+
+    def reset(self) -> None:  # pragma: no cover
+        """Reset."""
+
+        self.nth_cache.clear()
 
     def supports_namespaces(self) -> bool:
         """Check if namespaces are supported in the HTML type."""
@@ -933,41 +948,101 @@ class CSSMatch(_DocumentNav):
     def match_nth(self, el: bs4.Tag, nth: tuple[ct.SelectorNth, ...]) -> bool:
         """Match `nth` elements."""
 
-        matched = True
+        # `nth` selectors are evaluated against siblings under the same parent.
         parent = self.get_parent(el)  # type: bs4.Tag | None
+        pkey: tuple[str | None, int] | None = None
+        key: tuple[ct.SelectorNth, int, str | None, str | None] | None = None
+        start = rindex = 0
+        incr = rincr = 0
 
+        # Setup the cache by the parent, if parent a parent is present
+        if self.enable_cache and parent:
+            pkey = (parent.name, id(parent))
+
+            # Initialize the cache if necessary
+            if pkey not in self.nth_cache:
+                self.nth_cache[pkey] = {}
+
+        # Test element against the `nth` selectors.
+        matched = True
         for n in nth:
             matched = False
-            if n.selectors and not self.match_selectors(el, n.selectors):
-                break
-
             last = n.last
-            # Prepare child iterator
-            if parent is None:
-                children = iter([el])
+            key = None
+
+            # Prepare the child iterator and get the starting, real index and the relative index
+            if pkey and parent:
+                # Get last info from the cache
+                key = (n, id(n), self.get_tag(el), self.get_tag_ns(el)) if n.of_type else (n, id(n), None, None)
+                valid = False
+                if key in self.nth_cache[pkey]:
+                    start, rindex = self.nth_cache[pkey][key]
+                    if within(el, parent, start):
+                        last = False
+                        rincr = -1 if n.last else 1
+                        valid = True
+
+                # Start/overwrite the cache if the cache was empty or invalid
+                if not valid:
+                    start, rindex = len(parent) - 1 if last else 0, 0
+                    self.nth_cache[pkey][key] = [start, rindex]
+                    rincr = 1
+
+                incr = 1 if not last else -1
+                children = self.get_children(parent, start=start, reverse=last)
+
+            # Non-cached handling of parented element
+            elif parent:
+                rindex = 0
+                start = len(parent) - 1 if last else 0
+                rincr = incr = 1
+                children = self.get_children(parent, start=start, reverse=last)
+
+            # No parent, just evaluate the element against the selectors
             else:
-                children = self.get_children(parent, start=len(parent) - 1 if last else 0, tags=True, reverse=last)
+                start = rindex = 0
+                rincr = incr = 1
+                children = iter([el])
 
             # Find index of element compared to its siblings and check the index conditions
             child: bs4.Tag
-            relative_index = 0
             for child in children:
-                # Handle `of S` in `nth-child`
-                if n.selectors and not self.match_selectors(child, n.selectors):
-                    continue
-                # Handle `of-type`
-                if n.of_type and not self.match_nth_tag_type(el, child):
+                start += incr
+
+                # We only care about tags
+                if not self.is_tag(child):
                     continue
 
-                relative_index += 1
+                # Handle `of S` in `nth-child` and handle `of-type`
+                if (
+                    (n.selectors and not self.match_selectors(child, n.selectors)) or
+                    (n.of_type and not self.match_nth_tag_type(el, child))
+                ):
+                    if child is el:
+                        break
+                    continue
+
+                # Test the relative index against the `nth` requirement.
+                rindex += rincr
                 if child is el:
                     if n.a != 0:
-                        v = (relative_index - n.b) / n.a
+                        v = (rindex - n.b) / n.a
                         matched = v.is_integer() and v >= 0
                     else:
-                        matched = relative_index == n.b and n.b >= 1
+                        matched = rindex == n.b and n.b >= 1
                     break
 
+            # "Last index" selectors evaluate first from the bottom and then evaluate
+            # from the first found element top-down. Start will be incremented in the
+            # wrong direction, so increment it and step over the current index.
+            if last:
+                start += 2
+
+            # Update the cache
+            if pkey and key:
+                self.nth_cache[pkey][key] = [start, rindex]
+
+            # If we failed to match any `nth` selectors, quit.
             if not matched:
                 break
 
@@ -1384,7 +1459,7 @@ class CSSMatch(_DocumentNav):
                 if selector.flags & ct.SEL_PLACEHOLDER_SHOWN and not self.match_placeholder_shown(el):
                     continue
                 # Verify `nth` matches
-                if not self.match_nth(el, selector.nth):
+                if selector.nth and not self.match_nth(el, selector.nth):
                     continue
                 if selector.flags & ct.SEL_EMPTY and not self.match_empty(el):
                     continue
@@ -1525,6 +1600,7 @@ class SoupSieve(ct.Immutable):
         if isinstance(iterable, bs4.Tag):
             return CSSMatch(self.selectors, iterable, self.namespaces, self.flags).filter()
         else:
+            # There is no guarantee that elements are from the same document, evaluate them separately.
             return [node for node in iterable if not CSSMatch.is_navigable_string(node) and self.match(node)]
 
     def select_one(self, tag: bs4.Tag) -> bs4.Tag | None:
