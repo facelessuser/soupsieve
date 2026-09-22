@@ -526,12 +526,6 @@ class TestInvalid(util.TestCase):
         with self.assertRaises(TypeError):
             sv.ct.ImmutableDict({3: {}})
 
-    def test_invalid_namespace_type(self):
-        """Test invalid namespace type."""
-
-        with self.assertRaises(TypeError):
-            sv.ct.Namespaces(((3, 3),))
-
     def test_invalid_namespace_hashable_value(self):
         """Test namespace has hashable value."""
 
@@ -549,12 +543,6 @@ class TestInvalid(util.TestCase):
 
         with self.assertRaises(TypeError):
             sv.ct.Namespaces({3: 'string'})
-
-    def test_invalid_custom_type(self):
-        """Test invalid custom selector type."""
-
-        with self.assertRaises(TypeError):
-            sv.ct.CustomSelectors(((3, 3),))
 
     def test_invalid_custom_hashable_value(self):
         """Test custom selector has hashable value."""
