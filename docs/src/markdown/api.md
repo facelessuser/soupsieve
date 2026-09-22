@@ -50,7 +50,16 @@ directly for more controlled tag selection if needed.
 Print debug output when parsing a selector.
 
 ```py play session="example1"
-# pragma: init
+import soupsieve as sv
+sv.compile('p:has(#id) > span.some-class:-soup-contains(text)', flags=sv.DEBUG)
+```
+
+### `soupseive.NOCACHE`
+
+Disable caching optimizations. Results should be the same with or without except in cases where the tree is
+intentionally mutated during lazy iterations such as `iselect()`.
+
+```py play session="example1"
 from bs4 import BeautifulSoup
 text = """
 <div>
@@ -61,10 +70,10 @@ text = """
 </div>
 """
 soup = BeautifulSoup(text, 'html5lib')
-# pragma: init
 
 import soupsieve as sv
-sv.compile('p:has(#id) > span.some-class:-soup-contains(text)', flags=sv.DEBUG)
+sv.select('p:nth-child(2n + 1)', soup)
+sv.select('p:nth-child(2n + 1)', soup, flags=sv.NOCACHE)
 ```
 
 ## `soupsieve.select_one()`
