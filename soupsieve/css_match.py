@@ -1,6 +1,7 @@
 """CSS matcher."""
 from __future__ import annotations
 from datetime import datetime
+from collections import deque
 from . import util
 import re
 from . import css_types as ct
@@ -1505,6 +1506,44 @@ class CSSMatch(_DocumentNav):
         return not self.is_doc(el) and self.is_tag(el) and self.match_selectors(el, self.selectors)
 
 
+def sieve_prefixes(sieve: SoupSieve) -> set[str]:
+    """Search for and return namespace prefixes."""
+
+    found = set()
+    stack: deque[ct.Selector] = deque(s for s in sieve.selectors if not isinstance(s, ct.SelectorNull))
+
+    while stack:
+        selector = stack.popleft()
+
+        # `ns|tag`
+        if selector.tag and selector.tag.prefix:
+            found.add(selector.tag.prefix)
+
+        # `[ns|attr]`
+        for attribute in selector.attributes:
+            if attribute.prefix:
+                found.add(attribute.prefix)
+
+        # `:not(ns|tag)`
+        for subselector_list in selector.selectors:
+            for subselector in subselector_list:
+                if subselector is not ct.Null:
+                    stack.append(subselector)
+
+        # `ns|tag > tag`
+        for relation in selector.relation:
+            if relation is not ct.Null:
+                stack.append(relation)
+
+        # `:nth-child(An+B of ns|S)`
+        for nth in selector.nth:
+            for subselector in nth.selectors:
+                if subselector is not ct.Null:
+                    stack.append(subselector)
+
+    return found
+
+
 class SoupSieve(ct.Immutable):
     """Compiled Soup Sieve selector matching object."""
 
@@ -1534,17 +1573,27 @@ class SoupSieve(ct.Immutable):
             flags=flags
         )
 
-    def match(self, tag: bs4.Tag) -> bool:
+    def _get_namespaces(self, namespaces: dict[str, str] | None = None) -> ct.Namespaces | None:
+        """Get namespaces."""
+
+        if not namespaces:
+            ns = self.namespaces
+        else:
+            # Merge namespaces
+            ns = ct.Namespaces({**namespaces, **self.namespaces} if self.namespaces else namespaces)
+        return ns
+
+    def match(self, tag: bs4.Tag, *, namespaces: dict[str, str] | None = None) -> bool:
         """Match."""
 
-        return CSSMatch(self.selectors, tag, self.namespaces, self.flags).match(tag)
+        return CSSMatch(self.selectors, tag, self._get_namespaces(namespaces), self.flags).match(tag)
 
-    def closest(self, tag: bs4.Tag) -> bs4.Tag | None:
+    def closest(self, tag: bs4.Tag, *, namespaces: dict[str, str] | None = None) -> bs4.Tag | None:
         """Match closest ancestor."""
 
-        return CSSMatch(self.selectors, tag, self.namespaces, self.flags).closest()
+        return CSSMatch(self.selectors, tag, self._get_namespaces(namespaces), self.flags).closest()
 
-    def filter(self, iterable: Iterable[bs4.Tag]) -> list[bs4.Tag]:  # noqa A001
+    def filter(self, iterable: Iterable[bs4.Tag], *, namespaces: dict[str, str] | None = None) -> list[bs4.Tag]:  # noqa A001
         """
         Filter.
 
@@ -1556,26 +1605,32 @@ class SoupSieve(ct.Immutable):
         so for those, we use a new `CSSMatch` for each item in the iterable.
         """
 
+        ns = self._get_namespaces(namespaces)
         if isinstance(iterable, bs4.Tag):
-            return CSSMatch(self.selectors, iterable, self.namespaces, self.flags).filter()
+            return CSSMatch(self.selectors, iterable, ns, self.flags).filter()
         else:
-            return [node for node in iterable if not CSSMatch.is_navigable_string(node) and self.match(node)]
+            # There is no guarantee that elements are from the same document, evaluate them separately.
+            return [
+                node
+                for node in iterable
+                if not CSSMatch.is_navigable_string(node) and CSSMatch(self.selectors, node, ns, self.flags).match(node)
+            ]
 
-    def select_one(self, tag: bs4.Tag) -> bs4.Tag | None:
+    def select_one(self, tag: bs4.Tag, *, namespaces: dict[str, str] | None = None) -> bs4.Tag | None:
         """Select a single tag."""
 
-        tags = self.select(tag, limit=1)
+        tags = self.select(tag, limit=1, namespaces=namespaces)
         return tags[0] if tags else None
 
-    def select(self, tag: bs4.Tag, limit: int = 0) -> list[bs4.Tag]:
+    def select(self, tag: bs4.Tag, limit: int = 0, *, namespaces: dict[str, str] | None = None) -> list[bs4.Tag]:
         """Select the specified tags."""
 
-        return list(self.iselect(tag, limit))
+        return list(self.iselect(tag, limit, namespaces=namespaces))
 
-    def iselect(self, tag: bs4.Tag, limit: int = 0) -> Iterator[bs4.Tag]:
+    def iselect(self, tag: bs4.Tag, limit: int = 0, *, namespaces: dict[str, str] | None = None) -> Iterator[bs4.Tag]:
         """Iterate the specified tags."""
 
-        yield from CSSMatch(self.selectors, tag, self.namespaces, self.flags).select(limit)
+        yield from CSSMatch(self.selectors, tag, self._get_namespaces(namespaces), self.flags).select(limit)
 
     def __repr__(self) -> str:  # pragma: no cover
         """Representation."""
