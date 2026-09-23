@@ -23,6 +23,7 @@ XHTML = 0x4
 XML = 0x8
 PYHTML = 0x10
 LXML_HTML = 0x20
+NOCACHE = 0x100
 
 
 def skip_no_lxml(func):
@@ -96,6 +97,11 @@ class TestCase(unittest.TestCase):
 
         return parsers
 
+    def get_cache_states(self, flags):
+        """Get cache states."""
+
+        return (0, sv.NOCACHE) if flags & NOCACHE else (0,)
+
     def assert_raises(self, pattern, exception, namespace=None, custom=None):
         """Assert raises."""
 
@@ -109,19 +115,20 @@ class TestCase(unittest.TestCase):
         if namespaces is None:
             namespaces = {}
         parsers = self.get_parsers(flags)
+        cache_states = self.get_cache_states(flags)
 
         print('----Running Selector Test----')
-        selector = self.compile_pattern(selectors, namespaces, custom)
+        for caching in cache_states:
+            selector = self.compile_pattern(selectors, namespaces, custom, flags=caching)
+            for parser in available_parsers(*parsers):
+                soup = self.soup(markup, parser)
+                # print(soup)
 
-        for parser in available_parsers(*parsers):
-            soup = self.soup(markup, parser)
-            # print(soup)
-
-            ids = []
-            for el in selector.select(soup):
-                print('TAG: ', el.name)
-                ids.append(el.attrs['id'])
-            self.assertEqual(sorted(ids), sorted(expected_ids))
+                ids = []
+                for el in selector.select(soup):
+                    print('TAG: ', el.name)
+                    ids.append(el.attrs['id'])
+                self.assertEqual(sorted(ids), sorted(expected_ids))
 
 
 def available_parsers(*parsers):

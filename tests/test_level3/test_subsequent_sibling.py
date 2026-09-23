@@ -23,5 +23,17 @@ class TestSubsequentSibling(util.TestCase):
             """,
             "p ~ span",
             ["3"],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
+
+    def test_many_siblings(self):
+        """Test many siblings case."""
+
+        import soupsieve as sv
+        from bs4 import BeautifulSoup
+
+        selector = "b ~ a"
+        for n in (1000, 2000, 4000, 8000):
+            html = "<div>" + ("<a></a>" * n) + "</div>"
+            soup = BeautifulSoup(html, "html.parser")
+            self.assertEqual(len(sv.select(selector, soup)), 0)

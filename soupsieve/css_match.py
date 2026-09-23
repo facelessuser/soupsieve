@@ -820,7 +820,7 @@ class CSSMatch(_DocumentNav):
 
         # Setup the cache by the parent if present
         parent = self.get_parent(el)
-        if parent is None:
+        if parent is None:  # pragma: no cover
             return found
 
         if parent:
@@ -885,26 +885,22 @@ class CSSMatch(_DocumentNav):
             return found
 
         if relation[0].rel_type == REL_PARENT:
-            parent = self.get_parent(el, no_iframe=self.iframe_restrict)
-            while not found and parent:
-                found = self.match_selectors(parent, relation)
-                parent = self.get_parent(parent, no_iframe=self.iframe_restrict)
+            parent: bs4.Tag | None = el
+            while not found and parent and (parent := self.get_parent(parent, no_iframe=self.iframe_restrict)):
+                found = parent is not None and self.match_selectors(parent, relation)
         elif relation[0].rel_type == REL_CLOSE_PARENT:
             parent = self.get_parent(el, no_iframe=self.iframe_restrict)
-            if parent:
-                found = self.match_selectors(parent, relation)
+            found = parent is not None and self.match_selectors(parent, relation)
         elif relation[0].rel_type == REL_SIBLING:
             if self.enable_cache:
                 found = self.match_general_sibling(el, relation)
             else:
-                sibling = self.get_previous_tag(el)
-                while not found and sibling:
-                    found = self.match_selectors(sibling, relation)
-                    sibling = self.get_previous_tag(sibling)
+                sibling: bs4.Tag | None = el
+                while not found and sibling and (sibling := self.get_previous_tag(sibling)):
+                    found = sibling is not None and self.match_selectors(sibling, relation)
         elif relation[0].rel_type == REL_CLOSE_SIBLING:
             sibling = self.get_previous_tag(el)
-            if sibling and self.is_tag(sibling):
-                found = self.match_selectors(sibling, relation)
+            found = sibling is not None and self.match_selectors(sibling, relation)
         return found
 
     def match_future_child(self, parent: bs4.Tag, relation: ct.SelectorList, recursive: bool = False) -> bool:
@@ -916,8 +912,8 @@ class CSSMatch(_DocumentNav):
         else:
             children = self.get_tag_children
         for child in children(parent, no_iframe=self.iframe_restrict):
-            match = self.match_selectors(child, relation)
-            if match:
+            if self.match_selectors(child, relation):
+                match = True
                 break
         return match
 
@@ -937,14 +933,12 @@ class CSSMatch(_DocumentNav):
             if self.enable_cache:
                 found = self.match_general_sibling(el, relation)
             else:
-                sibling = self.get_next_tag(el)
-                while not found and sibling:
+                sibling: bs4.Tag | None = el
+                while not found and sibling and (sibling := self.get_next_tag(sibling)):
                     found = self.match_selectors(sibling, relation)
-                    sibling = self.get_next_tag(sibling)
         elif relation[0].rel_type == REL_HAS_CLOSE_SIBLING:
             sibling = self.get_next_tag(el)
-            if sibling and self.is_tag(sibling):
-                found = self.match_selectors(sibling, relation)
+            found = sibling is not None and self.match_selectors(sibling, relation)
         return found
 
     def match_relations(self, el: bs4.Tag, relation: ct.SelectorList) -> bool:

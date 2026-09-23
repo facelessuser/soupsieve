@@ -105,3 +105,12 @@ class TestType(util.TestCase):
 
         self.assert_raises('div?', SelectorSyntaxError)
         self.assert_raises('-', SelectorSyntaxError)
+
+    def test_long_tag(self):
+        """Test long tag."""
+
+        import soupsieve as sv
+
+        for n in (1000, 2000, 4000, 8000):
+            with self.assertRaises(sv.SelectorSyntaxError):
+                sv.compile("a" * n + "!")
