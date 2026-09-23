@@ -52,7 +52,7 @@ class TestHas(util.TestCase):
             self.MARKUP,
             'div:not(.aaaa):has(.kkkk > p.llll)',
             ['4', '5', '6'],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
     def test_has_next_sibling(self):
@@ -62,7 +62,7 @@ class TestHas(util.TestCase):
             self.MARKUP,
             'p:has(+ .dddd:has(+ div .jjjj))',
             ['2'],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
     def test_has_subsequent_sibling(self):
@@ -72,7 +72,7 @@ class TestHas(util.TestCase):
             self.MARKUP,
             'p:has(~ .jjjj)',
             ['7', '8'],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
     def test_has_child(self):
@@ -82,7 +82,7 @@ class TestHas(util.TestCase):
             self.MARKUP2,
             'div:has(> .bbbb)',
             ['0'],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
     def test_has_case(self):
@@ -92,7 +92,7 @@ class TestHas(util.TestCase):
             self.MARKUP,
             'div:NOT(.aaaa):HAS(.kkkk > p.llll)',
             ['4', '5', '6'],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
     def test_has_mixed(self):
@@ -102,14 +102,14 @@ class TestHas(util.TestCase):
             self.MARKUP2,
             'div:has(> .bbbb, .ffff, .jjjj)',
             ['0', '4', '8'],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
         self.assert_selector(
             self.MARKUP2,
             'div:has(.ffff, > .bbbb, .jjjj)',
             ['0', '4', '8'],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
     def test_has_nested_pseudo(self):
@@ -119,14 +119,14 @@ class TestHas(util.TestCase):
             self.MARKUP2,
             'div:has(> :not(.bbbb, .ffff, .jjjj))',
             ['2', '6', '8'],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
         self.assert_selector(
             self.MARKUP2,
             'div:not(:has(> .bbbb, .ffff, .jjjj))',
             ['2', '6'],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
     def test_has_no_match(self):
@@ -136,8 +136,20 @@ class TestHas(util.TestCase):
             self.MARKUP2,
             'div:has(:paused)',
             [],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
+
+    def test_many_siblings(self):
+        """Test many siblings case."""
+
+        import soupsieve as sv
+        from bs4 import BeautifulSoup
+
+        selector = "div:has(a ~ b)"
+        for n in (1000, 2000, 4000, 8000):
+            html = "<div>" + ("<a></a>" * n) + "</div>"
+            soup = BeautifulSoup(html, "html.parser")
+            self.assertEqual(len(sv.select(selector, soup)), 0)
 
     def test_has_empty(self):
         """Test has with empty slot due to no selectors."""

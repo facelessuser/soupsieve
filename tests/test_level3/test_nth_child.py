@@ -147,135 +147,81 @@ class TestNthChild(util.TestCase):
             markup,
             "p:nth-child(2n-5)",
             ['0', '8', '10'],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(2N-5)",
             ['0', '8', '10'],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(-2n+20)",
             ['1', '7', '9'],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(50n-20)",
             [],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(-2n-2)",
             [],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(9n - 1)",
             ['7'],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(2n + 1)",
             ['0', '8', '10'],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
         self.assert_selector(
             markup,
             "p:nth-child(-n+3)",
             ['0', '1'],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
         self.assert_selector(
             markup,
             "span:nth-child(-n+3)",
             ['2'],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
         self.assert_selector(
             markup,
             "body *:nth-child(-n+3)",
             ['0', '1', '2'],
-            flags=util.HTML
+            flags=util.HTML | util.NOCACHE
         )
 
-    def test_nth_child_complex_no_cache(self):
-        """Test `nth` child complex cases with no caching."""
+    def test_many_siblings(self):
+        """Test many siblings."""
 
-        markup = """
-        <body>
-        <p id="0"></p>
-        <p id="1"></p>
-        <span id="2"></span>
-        <span id="3"></span>
-        <span id="4"></span>
-        <span id="5"></span>
-        <span id="6"></span>
-        <p id="7"></p>
-        <p id="8"></p>
-        <p id="9"></p>
-        <p id="10"></p>
-        <span id="11"></span>
-        </body>
-        """
-
+        import soupsieve as sv
         from bs4 import BeautifulSoup
 
-        soup = BeautifulSoup(markup, 'html.parser')
-
-        expected = sorted(['0', '8', '10'])
-        results = sorted([e['id'] for e in sv.select("p:nth-child(2n-5)", soup, flags=sv.NOCACHE)])
-        self.assertEqual(expected, results)
-
-        expected = sorted(['0', '8', '10'])
-        results = sorted([e['id'] for e in sv.select("p:nth-child(2N-5)", soup, flags=sv.NOCACHE)])
-        self.assertEqual(expected, results)
-
-        expected = sorted(['1', '7', '9'])
-        results = sorted([e['id'] for e in sv.select("p:nth-child(-2n+20)", soup, flags=sv.NOCACHE)])
-        self.assertEqual(expected, results)
-
-        expected = sorted([])
-        results = sorted([e['id'] for e in sv.select("p:nth-child(50n-20)", soup, flags=sv.NOCACHE)])
-        self.assertEqual(expected, results)
-
-        expected = sorted([])
-        results = sorted([e['id'] for e in sv.select("p:nth-child(-2n-2)", soup, flags=sv.NOCACHE)])
-        self.assertEqual(expected, results)
-
-        expected = sorted(['7'])
-        results = sorted([e['id'] for e in sv.select("p:nth-child(9n - 1)", soup, flags=sv.NOCACHE)])
-        self.assertEqual(expected, results)
-
-        expected = sorted(['0', '8', '10'])
-        results = sorted([e['id'] for e in sv.select("p:nth-child(2n + 1)", soup, flags=sv.NOCACHE)])
-        self.assertEqual(expected, results)
-
-        expected = sorted(['0', '1'])
-        results = sorted([e['id'] for e in sv.select("p:nth-child(-n+3)", soup, flags=sv.NOCACHE)])
-        self.assertEqual(expected, results)
-
-        expected = sorted(['2'])
-        results = sorted([e['id'] for e in sv.select("span:nth-child(-n+3)", soup, flags=sv.NOCACHE)])
-        self.assertEqual(expected, results)
-
-        expected = sorted(['0', '1', '2'])
-        results = sorted([e['id'] for e in sv.select("body *:nth-child(-n+3)", soup, flags=sv.NOCACHE)])
-        self.assertEqual(expected, results)
+        markup = "".join(f'<div class="c{i}">x</div>' for i in range(3200))
+        soup = BeautifulSoup(markup, "html.parser")
+        self.assertEqual(len(sv.select(":nth-of-type(2n+1):nth-of-type(2n+1)", soup)), 1600)
 
     def test_nth_child_no_parent(self):
         """Test `nth` child with no parent."""

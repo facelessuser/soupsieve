@@ -387,3 +387,12 @@ class TestAttribute(util.TestCase):
             soup = BeautifulSoup('<span>text</span>', 'html.parser')
             soup.span['foo'] = [['1']]
             soup.select("span['foo']")
+
+    def test_unclosed_attribute_cases(self):
+        """Test unclosed attribute."""
+
+        import soupsieve as sv
+
+        for n in (1000, 2000, 4000, 8000):
+            with self.assertRaises(sv.SelectorSyntaxError):
+                sv.compile("[a=" + "a" * n)

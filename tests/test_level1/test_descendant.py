@@ -20,3 +20,11 @@ class TestDescendants(util.TestCase):
             ["1"],
             flags=util.HTML
         )
+
+    def test_long_duplicate_tag_case(self):
+        """Test long descendant case."""
+
+        import soupsieve as sv
+
+        for n in (1000, 2000, 4000, 8000):
+            self.assertEqual(sv.compile("a" + " " * n + "b").selectors.count, 2)
