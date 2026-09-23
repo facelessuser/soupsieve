@@ -12,6 +12,12 @@ icon: lucide/scroll-text
     of tuples were also allowed.
 -   **NEW**: Use a singleton for null selectors internally via called `Null` of type `SelectorNull`.
 -   **NEW**: For performance, Soup Sieve will no longer try and coerce bad attribute values to useable strings.
+-   **NEW**: Add `NOCACHE` flag that can be used to disable caching optimizations of `nth-*` and possibly other future
+    caching optimizations. Provided for disabling and also disabling if issues are found with the new caching approach.
+-   **FIX**: Improve performance of `nth-*` family of selectors in certain scenarios by employing caching. It should be
+    mentioned if mutating the tree structure while performing lazy iterations via `iselect()`, results may be negatively
+    impacted. In general, read only operations are always recommended with lazy iterations, due to potential issues
+    mutating the tree during such operations can pose, but re-emphasizing that point with these latest changes.
 -   **FIX**: Ensure `custom` is properly passed down from API functions to compilation.
 
 ## 2.9.2
