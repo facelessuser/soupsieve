@@ -493,7 +493,7 @@ Selects all `#!html <input>` elements whose values are in range according to the
 
 /// tab | Syntax
 ```css
-:#!css in-range
+:in-range
 ```
 ///
 

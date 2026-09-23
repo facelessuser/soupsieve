@@ -96,6 +96,7 @@ markdown_extensions:
                 from bs4 import BeautifulSoup
                 import soupsieve as sv
           validator: !!python/name:tools.pycon.py_command_validator
+          reset: !!python/name:tools.pycon.py_command_reset
         - name: python
           class: 'highlight'
           format: !!python/object/apply:tools.pycon.py_command_formatter
@@ -104,6 +105,7 @@ markdown_extensions:
                 from bs4 import BeautifulSoup
                 import soupsieve as sv
           validator: !!python/name:tools.pycon.py_command_validator
+          reset: !!python/name:tools.pycon.py_command_reset
   - pymdownx.highlight:
       line_spans: __codeline
       line_anchors: __codelineno
