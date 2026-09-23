@@ -1,6 +1,7 @@
 API
 Accessors
 Aspell
+Autodetect
 BCP
 BeautifulSoup
 CDATA
