@@ -10,7 +10,7 @@ CSS style escapes.
 Escapes can be specified with a backslash followed by 1 - 6 hexadecimal digits: `#!css \20AC`, `#!css \0020AC`, etc. If
 you need to terminate an escape to avoid it accumulating unintended hexadecimal characters, you can use a space:
 `#!css \0020AC dont-escape-me`. You can also escape any non-hexadecimal character, and it will be treated as that
-character: `#!css \+` --> `+`. The one exception is that you cannot escape the form feed, newline, or carriage
+character: `#!css \+` --> `#!css +`. The one exception is that you cannot escape the form feed, newline, or carriage
 return.
 
 You can always use Soup Sieve's [escape command](../api.md#soupsieveescape) to escape identifiers as well.
@@ -51,7 +51,7 @@ soup.select('div')
 
 ## Universal Selectors
 
-The Universal selector (`*`) matches elements of any type.
+The Universal selector (`#!css *`) matches elements of any type.
 
 /// tab | Syntax
 ```css
@@ -157,7 +157,7 @@ contains whitespace or special characters, you should quote them with either sin
 > https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors
 
 /// define |
-`[attribute]`
+`#!css [attribute]`
 
 -   Represents elements with an attribute named **attribute**.
 
@@ -190,7 +190,7 @@ contains whitespace or special characters, you should quote them with either sin
 ///
 
 /// define
-`[attribute=value]`
+`#!css [attribute=value]`
 
 -   Represents elements with an attribute named **attribute** that also has a value of **value**.
 
@@ -224,7 +224,7 @@ contains whitespace or special characters, you should quote them with either sin
 ///
 
 /// define
-`[attribute~=value]`
+`#!css [attribute~=value]`
 
 -   Represents elements with an attribute named **attribute** whose value is a space separated list which contains
     **value**.
@@ -259,7 +259,7 @@ contains whitespace or special characters, you should quote them with either sin
 ///
 
 /// define
-`[attribute|=value]`
+`#!css [attribute|=value]`
 
 -   Represents elements with an attribute named **attribute** whose value is a dash separated list that starts with
     **value**.
@@ -290,7 +290,7 @@ contains whitespace or special characters, you should quote them with either sin
 ///
 
 /// define
-`[attribute^=value]`
+`#!css [attribute^=value]`
 
 -   Represents elements with an attribute named **attribute** whose value starts with **value**.
 
@@ -325,7 +325,7 @@ contains whitespace or special characters, you should quote them with either sin
 
 /// define
 
-`[attribute$=value]`
+`#!css [attribute$=value]`
 
 -   Represents elements with an attribute named **attribute** whose value ends with **value**.
 
@@ -359,7 +359,7 @@ contains whitespace or special characters, you should quote them with either sin
 ///
 
 /// define
-`[attribute*=value]`
+`#!css [attribute*=value]`
 
 -   Represents elements with an attribute named **attribute** whose value containing the substring **value**.
 
@@ -393,7 +393,7 @@ contains whitespace or special characters, you should quote them with either sin
 ///
 
 /// define
-`[attribute!=value]`:material-star:{: title="Custom" data-md-color-primary="green" .icon}
+`#!css [attribute!=value]`:material-star:{: title="Custom" data-md-color-primary="green" .icon}
 
 -   Equivalent to `#!css :not([attribute=value])`.
 
@@ -427,7 +427,7 @@ contains whitespace or special characters, you should quote them with either sin
 ///
 
 /// define
-`[attribute operator value i]`:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon}
+`#!css [attribute operator value i]`:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon}
 
 -   Represents elements with an attribute named **attribute** and whose value, when the **operator** is applied, matches
     **value** *without* case sensitivity. In general, attribute comparison is insensitive in normal HTML, but not XML.
@@ -463,7 +463,7 @@ contains whitespace or special characters, you should quote them with either sin
 ///
 
 /// define
-`[attribute operator value s]` :material-flask:{: title="Experimental" data-md-color-primary="purple" .icon}
+`#!css [attribute operator value s]` :material-flask:{: title="Experimental" data-md-color-primary="purple" .icon}
 
 -   Represents elements with an attribute named **attribute** and whose value, when the **operator** is applied, matches
     **value** *with* case sensitivity.
@@ -501,26 +501,27 @@ contains whitespace or special characters, you should quote them with either sin
 ## Namespace Selectors
 
 Namespace selectors are used in conjunction with type and universal selectors as well as attribute names in attribute
-selectors. They are specified by declaring the namespace and the selector separated with `|`: `namespace|selector`.
-`namespace`, in this context, is the prefix defined via the [namespace dictionary](../api.md#namespaces). The prefix
-defined for the CSS selector does not need to match the prefix name in the document as it is the namespace associated
-with the prefix that is compared, not the prefix itself.
+selectors. They are specified by declaring the namespace and the selector separated with `#!css |`:
+`#!css namespace|selector`. `#!css namespace`, in this context, is the prefix defined via the
+[namespace dictionary](../api.md#namespaces). The prefix defined for the CSS selector does not need to match the prefix
+name in the document as it is the namespace associated with the prefix that is compared, not the prefix itself.
 
-The universal selector (`*`) can be used to represent any namespace just as it can with types.
+The universal selector (`#!css *`) can be used to represent any namespace just as it can with types.
 
 By default, type selectors without a namespace selector will match any element whose type matches, regardless of
-namespace. But if a CSS default namespace is declared (one with an empty key: `{"": "http://www.w3.org/1999/xhtml"}`),
+namespace. But if a CSS default namespace is declared (one with an empty key: `#!py {"": "http://www.w3.org/1999/xhtml"}`),
 all type selectors will assume the default namespace unless an explicit namespace selector is specified. For example,
-if the default name was defined to be `http://www.w3.org/1999/xhtml`, the selector `a` would only match `a` tags that
-are within the `http://www.w3.org/1999/xhtml` namespace. The one exception is within pseudo classes (`:not()`, `:has()`,
-etc.) as namespaces are not considered within pseudo classes unless one is explicitly specified.
+if the default name was defined to be `http://www.w3.org/1999/xhtml`, the selector `#!css a` would only match
+`#!html <a>` tags that are within the `http://www.w3.org/1999/xhtml` namespace. The one exception is within pseudo
+classes (`#!css :not()`, `#!css :has()`, etc.) as namespaces are not considered within pseudo classes unless one is
+explicitly specified.
 
-If the namespace is omitted (`|element`), any element without a namespace will be matched. In HTML documents that
+If the namespace is omitted (`#!css |element`), any element without a namespace will be matched. In HTML documents that
 support namespaces (XHTML and HTML5), HTML elements are counted as part of the `http://www.w3.org/1999/xhtml` namespace,
 but attributes usually do not have a namespace unless one is explicitly defined in the markup.
 
-Namespaces can be used with attribute selectors as well except that when `[|attribute`] is used, it is equivalent to
-`[attribute]`.
+Namespaces can be used with attribute selectors as well except that when `#!css [|attribute`] is used, it is equivalent
+to `#!css [attribute]`.
 
 /// tab | Syntax
 ```css

@@ -232,7 +232,7 @@ Soup Sieve caches compiled patterns for performance. If for whatever reason, you
 
 The custom selector feature is loosely inspired by the `css-extensions` [proposal][custom-extensions-1]. In its current
 form, Soup Sieve allows assigning a complex selector to a custom pseudo-class name. The pseudo-class name must start
-with `:--` to avoid conflicts with any future pseudo-classes.
+with `#!css :--` to avoid conflicts with any future pseudo-classes.
 
 To create custom selectors, you simply need to pass a dictionary containing the custom pseudo-class names (keys) with
 the associated CSS selectors that the pseudo-classes are meant to represent (values). It is important to remember that
@@ -264,11 +264,12 @@ sv.select(':--header', soup, custom={':--header': 'h1, h2, h3, h4, h5, h6'})
 
 Custom selectors can also be dependent upon other custom selectors. You don't have to worry about the order in the
 dictionary as custom selectors will be compiled "just in time" when they are needed. Be careful though, if you create
-a circular dependency, you will get a `SelectorSyntaxError`.
+a circular dependency, you will get a `#!py SelectorSyntaxError`.
 
 Assuming the same markup as in the first example, we will now create a custom selector that should find any element that
-has child elements, we will call the selector `:--parent`. Then we will create another selector called
-`:--parent-paragraph` that will use the `:--parent` selector to find `#!html <p>` elements that are also parents:
+has child elements, we will call the selector `#!css :--parent`. Then we will create another selector called
+`#!css :--parent-paragraph` that will use the `#!css :--parent` selector to find `#!html <p>` elements that are also
+parents:
 
 ```py play session="example2"
 custom = {
@@ -281,7 +282,7 @@ sv.select(':--parent-paragraph', soup, custom=custom)
 ## Namespaces
 
 Many of Soup Sieve's selector functions take an optional namespace dictionary. Namespaces, just like CSS, must be
-defined for Soup Sieve to evaluate `ns|tag` type selectors. This is analogous to CSS's namespace at-rule:
+defined for Soup Sieve to evaluate `#!css ns|tag` type selectors. This is analogous to CSS's namespace at-rule:
 
 ```css
 @namespace url("http://www.w3.org/1999/xhtml");
@@ -303,7 +304,7 @@ namespace = {
 Prefixes used in the namespace dictionary do not have to match the prefixes in the document. The provided prefix is
 never compared against the prefixes in the document, only the namespaces are compared. The prefixes in the document are
 only there for the parser to know which tags get which namespace. And the prefixes in the namespace dictionary are only
-defined in order to provide an alias for the namespaces when using the namespace selector syntax: `ns|name`.
+defined in order to provide an alias for the namespaces when using the namespace selector syntax: `#!css ns|name`.
 
 Tags do not necessarily have to have a prefix for Soup Sieve to recognize them either.  For instance, in HTML5, SVG
 *should* automatically get the SVG namespace. Depending how namespaces were defined in the document, tags may inherit
@@ -312,11 +313,11 @@ Soup API. Soup Sieve uses the Beautiful Soup API to then compare namespaces for 
 
 ## Ignore Pseudo-class
 
-Soup Sieve implements a number of pseudo classes, but but some (e.g. [`:has()`](./selectors/pseudo-classes.md#:has) and
-[`:-soup-contains()`](./selectors/pseudo-classes.md#:-soup-contains)) have potential performance concerns if exposed to
-untrusted user inputs. While Beautiful Soup (along with Soup Sieve) are not necessarily recommended for time critical,
-high performance systems, if you are in an environment where the risk of using a specific pseudo-class is not tolerable,
-you can use the `ignore` option to specify and fail if they are used.
+Soup Sieve implements a number of pseudo classes, but but some (e.g. [`#!css :has()`](./selectors/pseudo-classes.md#:has)
+and [`#!css :-soup-contains()`](./selectors/pseudo-classes.md#:-soup-contains)) have potential performance concerns if
+exposed to untrusted user inputs. While Beautiful Soup (along with Soup Sieve) are not necessarily recommended for time
+critical, high performance systems, if you are in an environment where the risk of using a specific pseudo-class is not
+tolerable, you can use the `ignore` option to specify and fail if they are used.
 
 ```py
 import soupsieve as sv

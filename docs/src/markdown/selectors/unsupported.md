@@ -7,7 +7,7 @@ environment. While the pseudo-classes will parse correctly, they will not match 
 implemented outside a live, browser environment. If at any time these are dropped from the CSS spec, they will simply
 be removed.
 
-## `:active`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:active}
+## `#!css :active`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:active}
 
 Selects active elements.
 
@@ -17,7 +17,7 @@ Selects active elements.
 ```
 ///
 
-## `:autofill`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:autofill}
+## `#!css :autofill`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:autofill}
 
 Selects an `#!html <input>` element when its content has been autofilled by the browser.
 
@@ -27,7 +27,7 @@ Selects an `#!html <input>` element when its content has been autofilled by the 
 ```
 ///
 
-## `:buffering`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:buffering}
+## `#!css :buffering`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:buffering}
 
 Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and is
 currently "buffering".
@@ -38,7 +38,7 @@ currently "buffering".
 ```
 ///
 
-## `:current`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:current}
+## `#!css :current`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:current}
 
 `:current` selects the element, or an ancestor of the element, that is currently being displayed. The functional form of
 `:current()` takes a compound selector list.
@@ -50,7 +50,7 @@ currently "buffering".
 ```
 ///
 
-## `:focus`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:focus}
+## `#!css :focus`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:focus}
 
 Represents an element that has received focus.
 
@@ -60,10 +60,10 @@ Represents an element that has received focus.
 ```
 ///
 
-## `:focus-visible`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:focus-visible}
+## `#!css :focus-visible`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:focus-visible}
 
-Selects an element that matches `:focus` and the user agent determines that the focus should be made evident on the
-element.
+Selects an element that matches `#!css :focus` and the user agent determines that the focus should be made evident on
+the element.
 
 /// tab | Syntax
 ```css
@@ -71,7 +71,7 @@ element.
 ```
 ///
 
-## `:focus-within`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:focus-within}
+## `#!css :focus-within`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:focus-within}
 
 Selects an element that has received focus or contains an element that has received focus.
 
@@ -81,7 +81,7 @@ Selects an element that has received focus or contains an element that has recei
 ```
 ///
 
-## `:fullscreen`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:fullscreen}
+## `#!css :fullscreen`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:fullscreen}
 
 Selects an element that is currently in fullscreen mode.
 
@@ -91,9 +91,9 @@ Selects an element that is currently in fullscreen mode.
 ```
 ///
 
-## `:future`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:future}
+## `#!css :future`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:future}
 
-Selects an element that is defined to occur entirely after a `:current` element.
+Selects an element that is defined to occur entirely after a `#!css :current` element.
 
 /// tab | Syntax
 ```css
@@ -101,10 +101,10 @@ Selects an element that is defined to occur entirely after a `:current` element.
 ```
 ///
 
-## `:host`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#host}
+## `#!css :host`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#host}
 
-`:host` selects the element hosting a shadow tree. While the function form of `:host()` takes a complex selector list
-and matches the shadow host only if it matches one of the selectors in the list.
+`:host` selects the element hosting a shadow tree. While the function form of `#!css :host()` takes a complex selector
+list and matches the shadow host only if it matches one of the selectors in the list.
 
 /// tab | Syntax
 ```css
@@ -113,7 +113,7 @@ and matches the shadow host only if it matches one of the selectors in the list.
 ```
 ///
 
-## `:host-context()`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:host-context}
+## `#!css :host-context()`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:host-context}
 
 Selects the element hosting shadow tree, but only if one of the element's ancestors match a selector in the selector
 list.
@@ -124,7 +124,7 @@ list.
 ```
 ///
 
-## `:hover`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:hover}
+## `#!css :hover`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:hover}
 
 Selects an element when the user interacts with it by hovering over it with a pointing device.
 
@@ -134,7 +134,7 @@ Selects an element when the user interacts with it by hovering over it with a po
 ```
 ///
 
-## `:local-link`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:local-link}
+## `#!css :local-link`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:local-link}
 
 Selects link (every `#!html <a>`, `#!html <link>`, and `#!html <area>` element with an `href` attribute) elements whose
 absolute URL matches the element’s own document URL.
@@ -145,9 +145,9 @@ absolute URL matches the element’s own document URL.
 ```
 ///
 
-## `:past`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:past}
+## `#!css :past`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:past}
 
-Selects an element that is defined to occur entirely prior to a `:current` element.
+Selects an element that is defined to occur entirely prior to a `#!css :current` element.
 
 /// tab | Syntax
 ```css
@@ -155,7 +155,7 @@ Selects an element that is defined to occur entirely prior to a `:current` eleme
 ```
 ///
 
-## `:paused`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:paused}
+## `#!css :paused`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:paused}
 
 Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and is
 currently "paused".
@@ -166,7 +166,7 @@ currently "paused".
 ```
 ///
 
-## `:picture-in-picture`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:picture-in-picture}
+## `#!css :picture-in-picture`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:picture-in-picture}
 
 Selects an element that is currently in "picture-in-picture" mode.
 
@@ -176,7 +176,7 @@ Selects an element that is currently in "picture-in-picture" mode.
 ```
 ///
 
-## `:playing`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:playing}
+## `#!css :playing`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:playing}
 
 Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and is
 currently "playing".
@@ -187,7 +187,7 @@ currently "playing".
 ```
 ///
 
-## `:popover-open`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:popover-open}
+## `#!css :popover-open`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:popover-open}
 
 Selects a popover element (i.e., one with a popover attribute) that is in the showing state.
 
@@ -197,7 +197,7 @@ Selects a popover element (i.e., one with a popover attribute) that is in the sh
 ```
 ///
 
-## `:seeking`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:seeking}
+## `#!css :seeking`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:seeking}
 
 Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and is
 currently "seeking".
@@ -208,7 +208,7 @@ currently "seeking".
 ```
 ///
 
-## `:stalled`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:stalled}
+## `#!css :stalled`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:stalled}
 
 Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and is
 currently "stalled".
@@ -219,7 +219,7 @@ currently "stalled".
 ```
 ///
 
-## `:target`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:target}
+## `#!css :target`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:target}
 
 Selects a unique element (the target element) with an id matching the URL's fragment.
 
@@ -229,7 +229,7 @@ Selects a unique element (the target element) with an id matching the URL's frag
 ```
 ///
 
-## `:target-within`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:target-within}
+## `#!css :target-within`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:target-within}
 
 Selects a unique element with an id matching the URL's fragment or an element which contains the element.
 
@@ -239,7 +239,7 @@ Selects a unique element with an id matching the URL's fragment or an element wh
 ```
 ///
 
-## `:user-invalid`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:user-invalid}
+## `#!css :user-invalid`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:user-invalid}
 
 Selects an element with incorrect input, but only after the user has significantly interacted with it.
 
@@ -249,7 +249,7 @@ Selects an element with incorrect input, but only after the user has significant
 ```
 ///
 
-## `:visited`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:visited}
+## `#!css :visited`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:visited}
 
 Selects links that have already been visited.
 
@@ -259,7 +259,7 @@ Selects links that have already been visited.
 ```
 ///
 
-## `:volume-locked`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:volume-locked}
+## `#!css :volume-locked`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:volume-locked}
 
 Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and whose
 volume is currently locked by the user.

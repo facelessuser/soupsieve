@@ -4,7 +4,7 @@ CSS employs a number of tokens in order to represent lists or to provide relatio
 
 ## Selector Lists
 
-Selector lists use the comma (`,`) to join multiple selectors in a list. When presented with a selector list, any
+Selector lists use the comma (`#!css ,`) to join multiple selectors in a list. When presented with a selector list, any
 selector in the list that matches an element will return that element.
 
 /// tab | Syntax
@@ -61,6 +61,12 @@ soup.select('body p')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/Descendant_combinator
 
+> [!warning]
+> Selectors like the descendant and subsequent sibling combinators (`#!css a b` and `#!css a ~ b`) often cause entire
+> subtrees of the main document tree to be crawled when evaluating a single element. If used poorly, this can impact
+> performance in a non-linear ways. It should be noted that Soup Sieve employs caching to reduce performance concerns in
+> various cases, but there will always be the potential produce non-linear cases simply due to how the selectors work.
+
 ## Child combinator
 
 Child combinators combine two selectors with `>` in order to signify that the second element is matched if it has a
@@ -92,10 +98,10 @@ soup.select('div > p')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/Child_combinator
 
-## General sibling combinator
+## General Sibling Combinator
 
-General sibling combinators combine two selectors with `~` in order to signify that the second element is matched if it
-has a sibling that precedes it that matches the first element.
+General sibling combinators combine two selectors with `#!css ~` in order to signify that the second element is matched
+if it has a sibling that precedes it that matches the first element.
 
 /// tab | Syntax
 ```css
@@ -124,10 +130,16 @@ soup.select('h1 ~ p')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/General_sibling_combinator
 
-## Adjacent sibling combinator
+> [!warning]
+> Selectors like the descendant and subsequent sibling combinators (`#!css a b` and `#!css a ~ b`) often cause entire
+> subtrees of the main document tree to be crawled when evaluating a single element. If used poorly, this can impact
+> performance in a non-linear ways. It should be noted that Soup Sieve employs caching to reduce performance concerns in
+> various cases, but there will always be the potential produce non-linear cases simply due to how the selectors work.
 
-Adjacent sibling combinators combine two selectors with `+` in order to signify that the second element is matched if it
-has an adjacent sibling that precedes it that matches the first element.
+## Adjacent Sibling Combinator
+
+Adjacent sibling combinators combine two selectors with `#!css +` in order to signify that the second element is matched
+if it has an adjacent sibling that precedes it that matches the first element.
 
 /// tab | Syntax
 ```css

@@ -8,7 +8,7 @@ not being in a live, browser environment. Pseudo classes that cannot be implemen
 either are under consideration, have not yet been evaluated, or are too new and viewed as a risk to implement as they
 might not stick around.
 
-## `:any-link`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:any-link}
+## `#!css :any-link`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:any-link}
 
 Selects every `#!html <a>`, or `#!html <area>` element that has an `href` attribute, independent of
 whether it has been visited.
@@ -42,7 +42,7 @@ soup.select(':any-link')
 > The CSS specification recently updated to not include `#!html <link>` in the definition; therefore, Soup Sieve has
 > removed it as well.
 
-## `:checked`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:checked}
+## `#!css :checked`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:checked}
 
 Selects any `#!html <input type="radio"/>`, `#!html <input type="checkbox"/>`, or `#!html <option>` element (in a
 `#!html <select>` element) that is checked or toggled to an on state.
@@ -86,7 +86,7 @@ soup.select(':checked')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:checked
 
-## `:default`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:default}
+## `#!css :default`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:default}
 
 Selects any form element that is the default among a group of related elements, including: `#!html <button>`,
 `#!html <input type="checkbox">`, `#!html <input type="radio">`, `#!html <option>` elements.
@@ -139,7 +139,7 @@ soup.select(':default')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:default
 
-## `:defined`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:defined}
+## `#!css :defined`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:defined}
 
 In a browser environment, this represents *defined* elements (names without hyphens) and custom elements (names with
 hyphens) that have been properly added to the custom element registry. Since elements cannot be added to a custom
@@ -172,7 +172,7 @@ soup.select('body > *:defined')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:defined
 
-## `:dir()`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:dir}
+## `#!css :dir()`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:dir}
 
 Selects elements based on text directionality. Accepts either `ltr` or `rtl` for "left to right" and "right to left"
 respectively.
@@ -205,7 +205,7 @@ soup.select(':dir(rtl)')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:dir
 
-## `:disabled`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:disabled}
+## `#!css :disabled`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:disabled}
 
 Selects any element that is disabled.
 
@@ -251,7 +251,7 @@ soup.select('input:disabled')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:disabled
 
-## `:empty`:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:empty}
+## `#!css :empty`:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:empty}
 
 Selects elements that have no children and no text (whitespace is ignored).
 
@@ -282,7 +282,7 @@ soup.select('body :empty')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:empty
 
-## `:enabled`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:enabled}
+## `#!css :enabled`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:enabled}
 
 Selects any element that is enabled.
 
@@ -328,7 +328,7 @@ soup.select('input:enabled')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:enabled
 
-## `:first-child` {:#:first-child}
+## `#!css :first-child` {:#:first-child}
 
 Selects the first child in a group of sibling elements.
 
@@ -362,7 +362,7 @@ soup.select('p:first-child')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:first-child
 
-## `:first-of-type` {:#:first-of-type}
+## `#!css :first-of-type` {:#:first-of-type}
 
 Selects the first child of a given type in a group of sibling elements.
 
@@ -402,7 +402,7 @@ soup.select('span:first-of-type')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:first-of-type
 
-## `:has()` {:#:has}
+## `#!css :has()` {:#:has}
 
 Selects an element if any of the relative selectors passed as parameters (which are relative to the `:scope` of the
 given element), match at least one element.
@@ -487,13 +487,13 @@ soup.select('div:has(span, > .class)')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:has
 
-## `:in-range`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:in-range}
+## `#!css :in-range`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:in-range}
 
 Selects all `#!html <input>` elements whose values are in range according to their `type`, `min`, and `max` attributes.
 
 /// tab | Syntax
 ```css
-:in-range
+:#!css in-range
 ```
 ///
 
@@ -517,7 +517,7 @@ soup.select(':in-range')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:in-range
 
-## `:indeterminate`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:indeterminate}
+## `#!css :indeterminate`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:indeterminate}
 
 Selects all form elements whose are in an indeterminate state.
 
@@ -578,12 +578,13 @@ soup.select(':indeterminate')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:indeterminate
 
-## `:is()` {:#:is}
+## `#!css :is()` {:#:is}
 
 Selects an element, but only if it matches at least one selector in the selector list.
 
-The alias `:matches()` is also supported as it was the original name for the selector, and some browsers support it.
-It is strongly encouraged to use `:is()` instead as support for `:matches()` may be dropped in the future.
+The alias `#!css :matches()` is also supported as it was the original name for the selector, and some browsers support
+it. It is strongly encouraged to use `#!css :is()` instead as support for `#!css :matches()` may be dropped in the
+future.
 
 While the level 4 specifications state that [compound](./index.md#compound-selector) selectors are supported, some
 browsers (Safari) support complex selectors which are planned for level 5 CSS selectors. Soup Sieve also supports
@@ -615,7 +616,7 @@ soup.select('[id]:is(a, span)')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:is
 
-## `:lang()` {:#:lang}
+## `#!css :lang()` {:#:lang}
 
 //// define
 Level 3 CSS
@@ -666,11 +667,12 @@ Level 4 CSS:material-flask:{: title="Experimental" data-md-color-primary="purple
 
 -   The level 4 CSS specifications adds the ability to define multiple language tags using a comma separated list. The
     specifications also allow for BCP 47 language ranges as described in [RFC4647](https://tools.ietf.org/html/rfc4647)
-    for extended filtering. This enables implicit wildcard matching between subtags. For instance, `:lang(de-DE)` will
-    match all of `de-DE`, `de-DE-1996`, `de-Latn-DE`, `de-Latf-DE`, and `de-Latn-DE-1996`. Implicit wildcard matching
-    will not take place at the beginning on the primary language tag, `*` must be used to force wildcard matching at the
-    beginning of the language. If desired an explicit wildcard between subtags can be used, but since implicit wildcard
-    matching already takes place between subtags, it is not needed: `de-*-DE` would be the same as just using `de-DE`.
+    for extended filtering. This enables implicit wildcard matching between subtags. For instance, `#!css :lang(de-DE)`
+    will match all of `de-DE`, `de-DE-1996`, `de-Latn-DE`, `de-Latf-DE`, and `de-Latn-DE-1996`. Implicit wildcard
+    matching will not take place at the beginning on the primary language tag, `*` must be used to force wildcard
+    matching at the beginning of the language. If desired an explicit wildcard between subtags can be used, but since
+    implicit wildcard matching already takes place between subtags, it is not needed: `de-*-DE` would be the same as
+    just using `de-DE`.
 
     /// tab | Syntax
     ```css
@@ -713,7 +715,7 @@ Level 4 CSS:material-flask:{: title="Experimental" data-md-color-primary="purple
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:lang
 
-## `:last-child` {:#:last-child}
+## `#!css :last-child` {:#:last-child}
 
 Selects the last element among a group of sibling elements.
 
@@ -747,7 +749,7 @@ soup.select('p:last-child')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:last-child
 
-## `:last-of-type` {:#:last-of-type}
+## `#!css :last-of-type` {:#:last-of-type}
 
 Selects the last child of a given type in a group of sibling elements.
 
@@ -787,13 +789,13 @@ soup.select('span:last-of-type')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:last-of-type
 
-## `:link`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:link}
+## `#!css :link`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:link}
 
 Selects a link (every `#!html <a>` and `#!html <area>` element with an `href` attribute) that has not
 yet been visited.
 
 Since Beautiful Soup does not have *visited* states, this will match all links, essentially making the behavior the same
-as `:any-link`.
+as `#!css :any-link`.
 
 /// tab | Syntax
 ```css
@@ -824,7 +826,7 @@ soup.select(':link')
 > The CSS specification recently updated to not include `#!html <link>` in the definition; therefore, Soup Sieve has
 > removed it as well.
 
-## `:muted`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:muted}
+## `#!css :muted`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:muted}
 
 Selects an element that is capable of being played or paused (such as an audio, video, or similar resource) and is
 currently "muted".
@@ -860,12 +862,12 @@ soup.select('video:muted')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:muted
 
-## `:not()` {:#:not}
+## `#!css :not()` {:#:not}
 
 //// define
 Level 3 CSS
 
--   Selects all elements that do not match the selector. The level 3 CSS specification states that `:not()` only
+-   Selects all elements that do not match the selector. The level 3 CSS specification states that `#!css :not()` only
     supports simple selectors.
 
     /// tab | Syntax
@@ -927,9 +929,9 @@ Level 4+ CSS:material-flask:{: title="Experimental" data-md-color-primary="purpl
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:not
 
-## `:nth-child()` {:#:nth-child}
+## `#!css :nth-child()` {:#:nth-child}
 
-`:nth-child()` matches elements based on their position in a group of siblings.
+`#!css :nth-child()` matches elements based on their position in a group of siblings.
 
 //// define
 Level 3 CSS
@@ -988,8 +990,8 @@ Level 4+ CSS:material-flask:{: title="Experimental" data-md-color-primary="purpl
     be integers.
 
     Essentially, `#!css img:nth-of-type(2)` would be equivalent to `#!css :nth-child(2 of img)`. The advantage of using
-    `:nth-child(an+b [of S]?)` over `:nth-of-type` is that `:nth-of-type` is restricted to types, while
-    `:nth-child(an+b [of S]?)` can use [complex](./index.md#complex-selector) selectors.
+    `#!css :nth-child(an+b [of S]?)` over `#!css :nth-of-type` is that `#!css :nth-of-type` is restricted to types,
+    while `#!css :nth-child(an+b [of S]?)` can use [complex](./index.md#complex-selector) selectors.
 
     While the level 4 specifications state that [compound](./index.md#compound-selector) selectors are supported,
     complex selectors are planned for level 5 CSS selectors. Soup Sieve supports [complex](./index.md#complex-selector)
@@ -1026,9 +1028,9 @@ Level 4+ CSS:material-flask:{: title="Experimental" data-md-color-primary="purpl
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child
 
-## `:nth-last-child()` {:#:nth-last-child}
+## `#!css :nth-last-child()` {:#:nth-last-child}
 
-`:nth-last-child()` matches elements based on their position in a group of siblings, counting from the end.
+`#!css :nth-last-child()` matches elements based on their position in a group of siblings, counting from the end.
 
 //// define
 Level 3 CSS
@@ -1087,8 +1089,9 @@ Level 4+ CSS:material-flask:{: title="Experimental" data-md-color-primary="purpl
     be integers. Elements will be counted from the end.
 
     Essentially, `#!css img:nth-last-of-type(2)` would be equivalent to `#!css :nth-last-child(2 of img)`. The advantage
-    of using `:nth-last-child(an+b [of S]?)` over `:nth-last-of-type` is that `:nth-last-of-type` is restricted to
-    types, while `:nth-last-child(an+b [of S]?)` can use [complex](./index.md#complex-selector) selectors.
+    of using `#!css :nth-last-child(an+b [of S]?)` over `#!css :nth-last-of-type` is that `#!css :nth-last-of-type` is
+    restricted to types, while `#!css :nth-last-child(an+b [of S]?)` can use [complex](./index.md#complex-selector)
+    selectors.
 
     While the level 4 specifications state that [compound](./index.md#compound-selector) selectors are supported,
     complex selectors are planned for level 5 CSS selectors. Soup Sieve supports [complex](./index.md#complex-selector)
@@ -1125,10 +1128,10 @@ Level 4+ CSS:material-flask:{: title="Experimental" data-md-color-primary="purpl
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-child
 
-## `:nth-last-of-type()` {:#:nth-last-of-type}
+## `#!css :nth-last-of-type()` {:#:nth-last-of-type}
 
-`:nth-of-type()` matches elements of a given type, based on their position among a group of siblings, counting from the
-end.
+`#!css :nth-of-type()` matches elements of a given type, based on their position among a group of siblings, counting
+from the end.
 
 -   The keywords `even` and `odd`, and will respectively select elements, from a sub-group of
     sibling elements that all match the given type, whose position is either even or odd amongst that sub-group of
@@ -1180,9 +1183,9 @@ soup.select('p:nth-last-of-type(-n+3)')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-of-type
 
-## `:nth-of-type()` {:#:nth-of-type}
+## `#!css :nth-of-type()` {:#:nth-of-type}
 
-`:nth-of-type()` matches elements of a given type, based on their position among a group of siblings.
+`#!css :nth-of-type()` matches elements of a given type, based on their position among a group of siblings.
 
 -   The keywords `even` and `odd`, and will respectively select elements, from a sub-group of
     sibling elements that all match the given type, whose position is either even or odd amongst that sub-group of
@@ -1234,13 +1237,13 @@ soup.select('p:nth-of-type(-n+3)')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type
 
-## `:open`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:open}
+## `#!css :open`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon}:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:open}
 
 Selects an element that has open and closed states, but only when it is in the open state.
 
 Due to limitations of not being in a live, browser environment, Soup Sieve can currently only target `#!html <details>`
-and `#!html <dialog>` elements with an `open` attribute. It cannot target `<input>` elements (such as color pickers)
-when they are open as there is no indication in a non-live environment.
+and `#!html <dialog>` elements with an `open` attribute. It cannot target `#!html <input>` elements (such as color
+pickers) when they are open as there is no indication in a non-live environment.
 
 /// tab | Syntax
 ```css
@@ -1270,7 +1273,7 @@ soup.select('details:open')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:open
 
-## `:optional`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:optional}
+## `#!css :optional`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:optional}
 
 Selects any `#!html <input>`, `#!html <select>`, or `#!html <textarea>` element that does not have the `required`
 attribute set on it.
@@ -1308,7 +1311,7 @@ soup.select(':optional')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:optional
 
-## `:only-child` {:#:only-child}
+## `#!css :only-child` {:#:only-child}
 
 Selects element without any siblings.
 
@@ -1347,7 +1350,7 @@ soup.select('p:only-child')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:only-child
 
-## `:only-of-type` {:#:only-of-type}
+## `#!css :only-of-type` {:#:only-of-type}
 
 Selects element without any siblings that matches a given type.
 
@@ -1382,7 +1385,7 @@ soup.select('span:only-of-type')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:only-of-type
 
-## `:out-of-range`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:out-of-range}
+## `#!css :out-of-range`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:out-of-range}
 
 Selects all `#!html <input>` elements whose values are out of range according to their `type`, `min`, and `max`
 attributes.
@@ -1413,7 +1416,7 @@ soup.select(':out-of-range')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:out-of-range
 
-## `:placeholder-shown`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:placeholder-shown}
+## `#!css :placeholder-shown`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:placeholder-shown}
 
 Selects any `#!html <input>` or `#!html <textarea>` element that is currently displaying placeholder text via the
 `placeholder` attribute.
@@ -1455,7 +1458,7 @@ soup.select(':placeholder-shown')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:placeholder-shown
 
-## `:read-only`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:read-only}
+## `#!css :read-only`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:read-only}
 
 Selects elements (such as `#!html <input>` or `#!html <textarea>`) that are *not* editable by the user. This does not
 just apply to form elements with `readonly` set, but it applies to **any** element that cannot be edited by the user.
@@ -1494,7 +1497,7 @@ soup.select('body :read-only')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:read-only
 
-## `:read-write`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:read-write}
+## `#!css :read-write`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:read-write}
 
 Selects elements (such as `#!html <input>` or `#!html <textarea>`) that are editable by the user. This does not just
 apply to form elements as it applies to **any** element that can be edited by the user, such as a `#!html <p>` element
@@ -1534,7 +1537,7 @@ soup.select('body :read-write')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:read-write
 
-## `:required`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:required}
+## `#!css :required`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:required}
 
 Selects any `#!html <input>`, `#!html <select>`, or `#!html <textarea>` element that has the `required` attribute set on
 it.
@@ -1572,7 +1575,7 @@ soup.select(':required')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:required
 
-## `:root` {:#:root}
+## `#!css :root` {:#:root}
 
 Selects the root element of a document tree.
 
@@ -1602,7 +1605,7 @@ soup.select(':root')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:root
 
-## `:scope` {:#:scope}
+## `#!css :scope` {:#:scope}
 
 > [!new] New 2.6
 > `&`, which was introduced in [CSS Nesting Level 1](https://www.w3.org/TR/css-nesting-1/#nest-selector) can be used as
@@ -1611,10 +1614,10 @@ soup.select(':root')
 >
 > `#!py3 sv.select('& > p', soup.div)` is equivalent to `#!py3 sv.select(':scope > p', soup.div)`.
 
-`:scope` represents the element a `match`, `select`, or `filter` is being called on. If we were, for instance, using
-`:scope` on a div (`#!py3 sv.select(':scope > p', soup.div)`) `:scope` would represent **that** div element, and no
-others. If called on the Beautiful Soup object which represents the entire document, it would simply select
-[`:root`](#:root).
+`#!css :scope` represents the element a `match`, `select`, or `filter` is being called on. If we were, for instance,
+using `#!css :scope` on a div (`#!py3 sv.select(':scope > p', soup.div)`) `:scope` would represent **that** div element,
+and no others. If called on the Beautiful Soup object which represents the entire document, it would simply select
+[`#!css :root`](#:root).
 
 /// tab | Syntax
 ```css
@@ -1642,12 +1645,12 @@ soup.select_one('body').select(':scope > div')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:scope
 
-## `:where()` {:#:where}
+## `#!css :where()` {:#:where}
 
 Selects an element, but only if it matches at least one selector in the selector list. In browsers, this also has zero
 specificity, but this only has relevance in a browser environment where you have multiple CSS styles, and specificity is
-used to see which applies. Beautiful Soup and Soup Sieve don't care about specificity so `:where()` is essentially just
-an alias for `:is()`.
+used to see which applies. Beautiful Soup and Soup Sieve don't care about specificity so `#!css :where()` is essentially
+just an alias for `#!css :is()`.
 
 While the level 4 specifications state that [compound](./index.md#compound-selector) selectors are supported, some
 browsers (Safari) support complex selectors which are planned for level 5 CSS selectors. Soup Sieve also supports
@@ -1679,24 +1682,25 @@ soup.select('[id]:where(a, span)')
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/:where
 
-## `:-soup-contains()`:material-star:{: title="Custom" data-md-color-primary="green" .icon} {:#:-soup-contains}
+## `#!css :-soup-contains()`:material-star:{: title="Custom" data-md-color-primary="green" .icon} {:#:-soup-contains}
 
 Selects elements that contain the provided text. Text can be found in either itself, or its descendants.
 
-Originally, there was a pseudo-class called `:contains()` that was originally included in a [CSS early draft][contains-draft],
-but was dropped from the draft in the end. Soup Sieve implements it how it was originally proposed except for two
-differences: it is called `:-soup-contains()` instead of `:contains()`, and it can accept either a single value, or a
-comma separated list of values. An element needs only to match at least one of the items in the comma separated list to
+Originally, there was a pseudo-class called `#!css :contains()` that was originally included in a
+[CSS early draft][contains-draft], but was dropped from the draft in the end. Soup Sieve implements it how it was
+originally proposed except for two differences: it is called `#!css :-soup-contains()` instead of `#!css :contains()`,
+and it can accept either a single value, or a comma separated list of values. An element needs only to match at least
+one of the items in the comma separated list to
 be considered matching.
 
 > [!note] Performance Considerations
-> `:-soup-contains()` is an expensive operation as it scans all the text nodes of an element under consideration,
+> `#!css :-soup-contains()` is an expensive operation as it scans all the text nodes of an element under consideration,
 > which includes all descendants. This has the potential to cause scanning the entire tree, potentially multiple times.
 >
 > While sometimes, scanning large portions of the tree may be exactly what you want, and the outcome is worth the
-> performance hit. Anchoring `:-soup_contains` to a very broad element, like `*`, can cause every element to have all of
-> its children scanned. Using highly specific selectors can reduce how often it is evaluated and limiting usage to
-> shallow elements with a small amount of descendants can reduce the amount of content that is checked.
+> performance hit. Anchoring `#!css :-soup_contains` to a very broad element, like `*`, can cause every element to have
+> all of its children scanned. Using highly specific selectors can reduce how often it is evaluated and limiting usage
+> to shallow elements with a small amount of descendants can reduce the amount of content that is checked.
 >
 > > [!failure] Avoid
 > > ```css
@@ -1711,16 +1715,16 @@ be considered matching.
 > > .container:-soup-contains('text')
 > > ```
 >
-> Additionally, using [`anchor:-soup-contains-own()`](#:-soup-contains-own) can limit crawling to just the immediate
-> children under the anchor, providing better performance at the cost of of a more shallow search.
+> Additionally, using [`#!css anchor:-soup-contains-own()`](#:-soup-contains-own) can limit crawling to just the
+> immediate children under the anchor, providing better performance at the cost of of a more shallow search.
 >
 > If the risk of performance concerns from untrusted user input cannot be tolerated in a specific project,
-> `:-soup-contains` can be disabled using the [`ignore`](../api.md#ignore-pseudo-class) option.
+> `#!css :-soup-contains` can be disabled using the [`ignore`](../api.md#ignore-pseudo-class) option.
 
 > [!warning] Rename 2.1
-> The name `:-soup-contains()` is new in version 2.1. Previously, it was known by `:contains()`. While the alias of
-> `:contains()` is currently allowed, this alias is deprecated moving forward and will be removed in a future version.
-> It is recommended to migrate to the name `:-soup-contains` moving forward.
+> The name `#!css :-soup-contains()` is new in version 2.1. Previously, it was known by `#!css :contains()`. While the
+> alias of `#!css :contains()` is currently allowed, this alias is deprecated moving forward and will be removed in a
+> future version. It is recommended to migrate to the name `#!css :-soup-contains` moving forward.
 
 /// tab | Syntax
 ```css
@@ -1746,12 +1750,12 @@ soup.select('div:-soup-contains("some text")')
 ```
 ///
 
-## `:-soup-contains-own()`:material-star:{: title="Custom" data-md-color-primary="green" .icon} {:#:-soup-contains-own}
+## `#!css :-soup-contains-own()`:material-star:{: title="Custom" data-md-color-primary="green" .icon} {:#:-soup-contains-own}
 
 Selects elements that contain the provided text. Text must be found in the target element and not in its descendants. If
 text is broken up with descendant elements, each text node will be evaluated separately.
 
-Syntax is the same as [`:-soup-contains()`](#:-soup-contains).
+Syntax is the same as [`#!css :-soup-contains()`](#:-soup-contains).
 
 /// tab | Syntax
 ```css
@@ -1778,7 +1782,7 @@ soup.select('div:-soup-contains-own("some")')
 ///
 
 > [!new] New in 2.1
-> `:-soup-contains-own()` was added in 2.1.
+> `#!css :-soup-contains-own()` was added in 2.1.
 
 --8<--
 selector_styles.md

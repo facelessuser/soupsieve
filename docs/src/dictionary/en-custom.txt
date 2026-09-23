@@ -55,6 +55,8 @@ html
 iterable
 iterables
 linter
+lookahead
+lookaheads
 lxml
 matchable
 matcher
@@ -76,6 +78,7 @@ substring
 subtag
 subtags
 subtree
+subtrees
 traceback
 tuple
 tuples

@@ -71,9 +71,9 @@ text = """
 soup = BeautifulSoup(text, 'html5lib')
 ```
 
-For most people, using the Beautiful Soup 4.7.0+ API may be more than sufficient. Beautiful Soup offers two methods that employ
-Soup Sieve: `select` and `select_one`. Beautiful Soup's select API is identical to Soup Sieve's, except that you don't
-have to hand it the tag object, the calling object passes itself to Soup Sieve:
+For most people, using the Beautiful Soup 4.7.0+ API may be more than sufficient. Beautiful Soup offers two methods that
+employ Soup Sieve: `select` and `select_one`. Beautiful Soup's select API is identical to Soup Sieve's, except that you
+don't have to hand it the tag object, the calling object passes itself to Soup Sieve:
 
 ```py play session="example"
 soup.select_one('p:is(.a, .b, .c)')
@@ -165,3 +165,43 @@ Compiled patterns are cached, so if for any reason you need to clear the cache, 
 ```py play session="example"
 sv.purge()
 ```
+
+## Security Concerns
+
+Soup Sieve is a library built for Beautiful Soup that takes user specified CSS language style inputs and uses them to
+walk the HTML/XML tree and return elements according to the CSS Specification. While performance concerns are taken
+seriously, not all selectors are equal in regard to performance as specified via the CSS specification.
+
+Soup Sieve attempts to do various tricks to help improve performance, but some selectors will always have non-linear
+performance in certain situations.
+
+Selectors like the descendant and subsequent sibling combinators (`#!css a b` and `#!css a ~ b`) often cause entire
+subtrees of the main document tree to be crawled when evaluating a single element. If used poorly, this can impact
+performance in a non-linear ways. It should be noted that Soup Sieve employs caching to reduce performance concerns
+in various cases, but there will always be the potential produce non-linear cases simply due to how the selectors work.
+
+Selectors like the `#!css :nth-*` family of selectors will evaluate numerous children under one parent to find a
+suitable element. These can also be a potential concern for performance if used poorly. Soup Sieve also employs caching
+in these cases to dramatically improve performance in a number of problematic circumstances, but again, there will
+likely always be some cases that will exhibit performance that is inferior to other cases.
+
+The `#!css :has()` selector acts like a lookahead in regular expression. And paired with  descendant and subsequent
+sibling combinators, can exhibit non-linear performance. Much like regular expression lookaheads, it is an extremely
+powerful selector, but will always open the door for poor performance if not used thoughtfully.
+
+The `#!css :-soup-contains()` selector is also a very useful selector that can crawl entire subtrees of the main
+document tree. This is by design, and provides useful utility, but admittedly, if not used in an intelligent manner,
+using tight patterns to narrow the scope of operation, can degrade performance.
+
+This is not an exhaustive list of all possibilities in which CSS selectors can be performance bottleneck, but is meant
+to accomplish a few things.
+
+1.  Make clear to all users that taking untrusted user input in a time critical system, without any kind of mitigation
+    to abort long running operations will open you up to performance concerns.
+
+2.  Encourage users, before deploying solutions, to test understand how the selectors work, and thoughtfully apply them
+    after testing them .
+
+As always, we here at Soup Sieve are happy to hear about real performance concerns that are within our power to improve,
+and will always take them seriously, but it should be noted that exposing time critical systems, with large document
+trees, to untrusted user inputs, will open you up to performance related exploits.

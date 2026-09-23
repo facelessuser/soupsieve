@@ -33,8 +33,7 @@ We will strive to acknowledge the report in about two business days.
 Reports will be kept private until the issue is properly understood.
 
 If the report is accepted we will notify Tidelift (who we've partnered with), request a CVE from GitHub, and work with
-the reporter to find a resolution. Work will be done privately, and the final commit will not mention the security
-issue.
+the reporter to find a resolution. Work will be done privately, until resolved.
 
 The fix, announcement, and release will be negotiated with the reporter.
 
