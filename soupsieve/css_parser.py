@@ -117,16 +117,20 @@ COMMENTS = r'(?:/\*(?:[^*]|\*(?!/))*\*/)'
 WSC = fr'(?:{WS}|{COMMENTS})'
 # CSS escapes
 CSS_ESCAPES = fr'(?:\\(?:[a-f0-9]{{1,6}}{WS}?|[^\r\n\f]|$))'
-CSS_STRING_ESCAPES = fr'(?:\\(?:[a-f0-9]{{1,6}}{WS}?|[^\r\n\f]|$|{NEWLINE}))'
+CSS_STRING_ESCAPES = fr'(?:\\(?:[a-f0-9]{{1,6}}{WS}?|{NEWLINE}|[^\r\n\f]|$))'
 # CSS Identifier
 IDENTIFIER = fr'''
 (?:(?:--|-?(?:[^\x00-\x2f\x30-\x40\x5B-\x5E\x60\x7B-\x9f]|{CSS_ESCAPES}))
 (?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{CSS_ESCAPES})*)
 '''
 # `nth` content
-NTH = fr'(?:[-+])?(?:[0-9]+n?|n)(?:(?<=n){WSC}*(?:[-+]){WSC}*(?:[0-9]+))?'
+NTH = fr'[-+]?(?:[0-9]+n?|n)(?:(?<=n){WSC}*[-+]{WSC}*[0-9]+)?'
 # Value: quoted string or identifier
-VALUE = fr'''(?:"(?:\\(?:.|{NEWLINE})|[^\\"\r\n\f])*?"|'(?:\\(?:.|{NEWLINE})|[^\\'\r\n\f])*?'|{IDENTIFIER})'''
+VALUE = fr'''
+(?:"(?:\\(?:{NEWLINE}|[^\r\n\f])|[^\\"\r\n\f])*"|
+'(?:\\(?:{NEWLINE}|[^\r\n\f])|[^\\'\r\n\f])*'|
+{IDENTIFIER})
+'''
 # Attribute value comparison. `!=` is handled special as it is non-standard.
 ATTR = fr'(?:{WSC}*(?P<cmp>[!~^|*$]?=){WSC}*(?P<value>{VALUE})(?:{WSC}*(?P<case>[is]))?)?{WSC}*'
 
@@ -138,7 +142,7 @@ PAT_CLASS = fr'\.{IDENTIFIER}'
 # Prefix:Tag (`prefix|tag`)
 PAT_TAG = fr'(?P<tag_ns>(?:{IDENTIFIER}|\*)?\|)?(?P<tag_name>{IDENTIFIER}|\*)'
 # Attributes (`[attr]`, `[attr=value]`, etc.)
-PAT_ATTR = fr'\[{WSC}*(?P<attr_ns>(?:{IDENTIFIER}|\*)?\|)?(?P<attr_name>{IDENTIFIER}){ATTR}\]'
+PAT_ATTR = fr'\[{WSC}*(?P<attr_ns>(?:{IDENTIFIER}|\*)?\|(?!=))?(?P<attr_name>{IDENTIFIER}){ATTR}{WSC}*\]'
 # Pseudo class (`:pseudo-class`, `:pseudo-class(`)
 PAT_PSEUDO_CLASS = fr'(?P<name>:{IDENTIFIER})(?P<open>\({WSC}*)?'
 # Pseudo class special patterns. Matches `:pseudo-class(` for special case pseudo classes.
@@ -168,7 +172,7 @@ PAT_PSEUDO_LANG = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*,{WSC}
 # Pseudo class direction (`:dir(ltr)`)
 PAT_PSEUDO_DIR = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<dir>ltr|rtl){WSC}*\)'
 # Combining characters (`>`, `~`, ` `, `+`, `,`)
-PAT_COMBINE = fr'{WSC}*?(?P<relation>[,+>~]|{WS}(?![,+>~])){WSC}*'
+PAT_COMBINE = fr'{COMMENTS}*(?={WS}|[,+>~]){WSC}*(?P<relation>[,+>~])?{WSC}*'
 # Extra: Contains (`:contains(text)`)
 PAT_PSEUDO_CONTAINS = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*,{WSC}*{VALUE})*){WSC}*\)'
 
@@ -994,7 +998,7 @@ class CSSParser:
     ) -> tuple[bool, _Selector, str]:
         """Parse combinator tokens."""
 
-        combinator = m.group('relation').strip()
+        combinator = m.group('relation')
         if not combinator:
             combinator = WS_COMBINATOR
         if combinator == COMMA_COMBINATOR:
@@ -1045,7 +1049,7 @@ class CSSParser:
     ) -> tuple[bool, _Selector]:
         """Parse combinator tokens."""
 
-        combinator = m.group('relation').strip()
+        combinator = m.group('relation')
         if not combinator:
             combinator = WS_COMBINATOR
         if not has_selector:
