@@ -533,6 +533,7 @@ class CSSMatch(_DocumentNav):
         self.enable_cache = not bool(self.flags & util.NOCACHE)
         self.iframe_restrict = False
         self.nth_cache: dict[Hashable, dict[Hashable, list[int]]] = {}
+        self.sib_cache: dict[Hashable, dict[Hashable, int]] = {}
 
         # Find the root element for the whole tree
         doc = scope
@@ -560,6 +561,7 @@ class CSSMatch(_DocumentNav):
         """Reset."""
 
         self.nth_cache.clear()
+        self.sib_cache.clear()
 
     def supports_namespaces(self) -> bool:
         """Check if namespaces are supported in the HTML type."""
@@ -805,6 +807,75 @@ class CSSMatch(_DocumentNav):
                 match = False
         return match
 
+    def match_general_sibling(self, el: bs4.Tag, relation: ct.SelectorList) -> bool:
+        """Match general sibling combinator."""
+
+        found = False
+
+        if relation[0] is ct.Null:  # pragma: no cover
+            return found
+
+        pkey: tuple[str | None, int] | None = None
+        key: tuple[ct.SelectorList, int] | None = None
+
+        # Setup the cache by the parent if present
+        parent = self.get_parent(el)
+        if parent is None:
+            return found
+
+        if parent:
+            pkey = (parent.name, id(parent))
+
+            # Initialize the cache if necessary
+            if pkey not in self.sib_cache:
+                self.sib_cache[pkey] = {}
+
+        # Check the cache to see if we already know where the first sibling is,
+        # and if we do, check if we are on the correct side of it.
+        # If we've previously searched and found no sibling, there is no sibling.
+        # Lastly, if this is our first time, setup the cache.
+        reverse = relation[0].rel_type == REL_HAS_SIBLING
+        start = len(parent) - 1 if reverse else 0
+        if pkey:
+            key = (relation, id(relation))
+            if key in self.sib_cache[pkey]:
+                index = self.sib_cache[pkey][key]
+                if index >= 0:
+                    a, b = (index, start) if reverse else (start, index)
+                    return not within(el, parent, a, b)
+                else:
+                    return False
+            self.sib_cache[pkey][key] = start
+
+        # Start at the furthest endpoint and walk back towards the element looking for siblings.
+        # The current element counts as a sibling, but will not cause a match.
+        passed = False
+        incr = -1 if reverse else 1
+        for child in self.get_children(parent, start=start, reverse=reverse):
+            start += incr
+            if not isinstance(child, bs4.Tag):
+                continue
+
+            # Flag that we are passing the element.
+            # Any siblings we find aren't valid for this element.
+            if child is el:
+                passed = True
+
+            # We found the furthest sibling.
+            if self.match_selectors(child, relation):
+                found = True
+                break
+
+        # Cache the index of the sibling or mark as there being no siblings.
+        if pkey and key:
+            self.sib_cache[pkey][key] = start if found else -1
+
+        # If we passed the current element and then found a sibling, it doesn't count as a match.
+        if passed:
+            found = False
+
+        return found
+
     def match_past_relations(self, el: bs4.Tag, relation: ct.SelectorList) -> bool:
         """Match past relationship."""
 
@@ -823,10 +894,13 @@ class CSSMatch(_DocumentNav):
             if parent:
                 found = self.match_selectors(parent, relation)
         elif relation[0].rel_type == REL_SIBLING:
-            sibling = self.get_previous_tag(el)
-            while not found and sibling:
-                found = self.match_selectors(sibling, relation)
-                sibling = self.get_previous_tag(sibling)
+            if self.enable_cache:
+                found = self.match_general_sibling(el, relation)
+            else:
+                sibling = self.get_previous_tag(el)
+                while not found and sibling:
+                    found = self.match_selectors(sibling, relation)
+                    sibling = self.get_previous_tag(sibling)
         elif relation[0].rel_type == REL_CLOSE_SIBLING:
             sibling = self.get_previous_tag(el)
             if sibling and self.is_tag(sibling):
@@ -860,10 +934,13 @@ class CSSMatch(_DocumentNav):
         elif relation[0].rel_type == REL_HAS_CLOSE_PARENT:
             found = self.match_future_child(el, relation)
         elif relation[0].rel_type == REL_HAS_SIBLING:
-            sibling = self.get_next_tag(el)
-            while not found and sibling:
-                found = self.match_selectors(sibling, relation)
-                sibling = self.get_next_tag(sibling)
+            if self.enable_cache:
+                found = self.match_general_sibling(el, relation)
+            else:
+                sibling = self.get_next_tag(el)
+                while not found and sibling:
+                    found = self.match_selectors(sibling, relation)
+                    sibling = self.get_next_tag(sibling)
         elif relation[0].rel_type == REL_HAS_CLOSE_SIBLING:
             sibling = self.get_next_tag(el)
             if sibling and self.is_tag(sibling):
