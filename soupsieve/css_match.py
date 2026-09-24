@@ -532,8 +532,8 @@ class CSSMatch(_DocumentNav):
         self.flags = flags
         self.enable_cache = not bool(self.flags & util.NOCACHE)
         self.iframe_restrict = False
-        self.nth_cache: dict[Hashable, dict[Hashable, list[int]]] = {}
-        self.sib_cache: dict[Hashable, dict[Hashable, int]] = {}
+        self.nth_cache: dict[Hashable, list[int]] = {}
+        self.sib_cache: dict[Hashable, int] = {}
 
         # Find the root element for the whole tree
         doc = scope
@@ -815,8 +815,8 @@ class CSSMatch(_DocumentNav):
         if relation[0] is ct.Null:  # pragma: no cover
             return found
 
-        pkey: tuple[str | None, int] | None = None
-        key: tuple[ct.SelectorList, int] | None = None
+        pkey: int | None = None
+        key: tuple[int, int] | None = None
 
         # Setup the cache by the parent if present
         parent = self.get_parent(el)
@@ -824,11 +824,7 @@ class CSSMatch(_DocumentNav):
             return found
 
         if parent:
-            pkey = (parent.name, id(parent))
-
-            # Initialize the cache if necessary
-            if pkey not in self.sib_cache:
-                self.sib_cache[pkey] = {}
+            pkey = id(parent)
 
         # Check the cache to see if we already know where the first sibling is,
         # and if we do, check if we are on the correct side of it.
@@ -836,16 +832,16 @@ class CSSMatch(_DocumentNav):
         # Lastly, if this is our first time, setup the cache.
         reverse = relation[0].rel_type == REL_HAS_SIBLING
         start = len(parent) - 1 if reverse else 0
-        if pkey:
-            key = (relation, id(relation))
-            if key in self.sib_cache[pkey]:
-                index = self.sib_cache[pkey][key]
+        if pkey is not None:
+            key = (pkey, id(relation))
+            if key in self.sib_cache:
+                index = self.sib_cache[key]
                 if index >= 0:
                     a, b = (index, start) if reverse else (start, index)
                     return not within(el, parent, a, b)
                 else:
                     return False
-            self.sib_cache[pkey][key] = start
+            self.sib_cache[key] = start
 
         # Start at the furthest endpoint and walk back towards the element looking for siblings.
         # The current element counts as a sibling, but will not cause a match.
@@ -868,7 +864,7 @@ class CSSMatch(_DocumentNav):
 
         # Cache the index of the sibling or mark as there being no siblings.
         if pkey and key:
-            self.sib_cache[pkey][key] = start if found else -1
+            self.sib_cache[key] = start if found else -1
 
         # If we passed the current element and then found a sibling, it doesn't count as a match.
         if passed:
@@ -1021,18 +1017,14 @@ class CSSMatch(_DocumentNav):
 
         # `nth` selectors are evaluated against siblings under the same parent.
         parent = self.get_parent(el)  # type: bs4.Tag | None
-        pkey: tuple[str | None, int] | None = None
-        key: tuple[ct.SelectorNth, int, str | None, str | None] | None = None
+        pkey: int | None = None
+        key: tuple[int, int, str | None, str | None] | None = None
         start = rindex = 0
         incr = rincr = 0
 
         # Setup the cache by the parent, if parent a parent is present
         if self.enable_cache and parent:
-            pkey = (parent.name, id(parent))
-
-            # Initialize the cache if necessary
-            if pkey not in self.nth_cache:
-                self.nth_cache[pkey] = {}
+            pkey = id(parent)
 
         # Test element against the `nth` selectors.
         matched = True
@@ -1042,12 +1034,18 @@ class CSSMatch(_DocumentNav):
             key = None
 
             # Prepare the child iterator and get the starting, real index and the relative index
-            if pkey and parent:
+            if pkey is not None and parent:
                 # Get last info from the cache
-                key = (n, id(n), self.get_tag(el), self.get_tag_ns(el)) if n.of_type else (n, id(n), None, None)
+                if pkey:
+                    key = (
+                        (pkey, id(n), self.get_tag(el), self.get_tag_ns(el))
+                        if n.of_type
+                        else (pkey, id(n), None, None)
+                    )
+
                 valid = False
-                if key in self.nth_cache[pkey]:
-                    start, rindex = self.nth_cache[pkey][key]
+                if key and key in self.nth_cache:
+                    start, rindex = self.nth_cache[key]
                     if within(el, parent, start):
                         last = False
                         rincr = -1 if n.last else 1
@@ -1056,7 +1054,7 @@ class CSSMatch(_DocumentNav):
                 # Start/overwrite the cache if the cache was empty or invalid
                 if not valid:
                     start, rindex = len(parent) - 1 if last else 0, 0
-                    self.nth_cache[pkey][key] = [start, rindex]
+                    self.nth_cache[key] = [start, rindex]
                     rincr = 1
 
                 incr = 1 if not last else -1
@@ -1110,8 +1108,8 @@ class CSSMatch(_DocumentNav):
                 start += 2
 
             # Update the cache
-            if pkey and key:
-                self.nth_cache[pkey][key] = [start, rindex]
+            if key:
+                self.nth_cache[key] = [start, rindex]
 
             # If we failed to match any `nth` selectors, quit.
             if not matched:
