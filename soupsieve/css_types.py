@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 import copyreg
 from .pretty import pretty
-from typing import Any, Iterator, Pattern, Iterable, Mapping
+from typing import Any, Iterator, Pattern, Iterable, Mapping, TypeVar, overload
 
 __all__ = (
     'Selector',
@@ -93,78 +93,6 @@ class Immutable:
         """Pretty print."""
 
         print(pretty(self))
-
-
-class ImmutableDict(Mapping[Any, Any]):
-    """Hashable, immutable dictionary."""
-
-    def __init__(
-        self,
-        arg: Mapping[Any, Any]
-    ) -> None:
-        """Initialize."""
-
-        self._d = dict(arg)
-        self._hash = hash(tuple([(type(x), x, type(y), y) for x, y in sorted(self._d.items())]))
-
-    def __iter__(self) -> Iterator[Any]:
-        """Iterator."""
-
-        return iter(self._d)
-
-    def __len__(self) -> int:
-        """Length."""
-
-        return len(self._d)
-
-    def __getitem__(self, key: Any) -> Any:
-        """Get item: `namespace['key']`."""
-
-        return self._d[key]
-
-    def __hash__(self) -> int:
-        """Hash."""
-
-        return self._hash
-
-    def __repr__(self) -> str:  # pragma: no cover
-        """Representation."""
-
-        return f"{self._d!r}"
-
-    __str__ = __repr__
-
-
-class Namespaces(ImmutableDict):
-    """Namespaces."""
-
-    def __init__(self, arg: Mapping[str, str]) -> None:
-        """Initialize."""
-
-        self._validate(arg)
-        super().__init__(arg)
-
-    def _validate(self, arg: Mapping[str, str]) -> None:
-        """Validate arguments."""
-
-        if not all(isinstance(k, str) and isinstance(v, str) for k, v in arg.items()):
-            raise TypeError(f'{self.__class__.__name__} values must be hashable')
-
-
-class CustomSelectors(ImmutableDict):
-    """Custom selectors."""
-
-    def __init__(self, arg: Mapping[str, str]) -> None:
-        """Initialize."""
-
-        self._validate(arg)
-        super().__init__(arg)
-
-    def _validate(self, arg: Mapping[str, str]) -> None:
-        """Validate arguments."""
-
-        if not all(isinstance(k, str) and isinstance(v, str) for k, v in arg.items()):
-            raise TypeError(f'{self.__class__.__name__} values must be hashable')
 
 
 class Selector(Immutable):
@@ -375,6 +303,100 @@ class SelectorList(Immutable):
         """Get item."""
 
         return self.selectors[index]
+
+
+KT = TypeVar('KT')
+VT = TypeVar('VT')
+RT = TypeVar('RT')
+
+
+class ImmutableDict(Mapping[KT, VT]):
+    """Hashable, immutable dictionary."""
+
+    def __init__(
+        self,
+        arg: Mapping[KT, VT]
+    ) -> None:
+        """Initialize."""
+
+        self._d = dict(arg)
+        self._hash = hash(tuple([(type(x), x, type(y), y) for x, y in sorted(self._d.items())]))
+
+    @overload
+    def get(self, key: KT, /) -> VT | None:
+        ...
+
+    @overload
+    def get(self, key: KT, /, default: VT) -> VT:
+        ...
+
+    @overload
+    def get(self, key: KT, /, default: RT) -> VT | RT:
+        ...
+
+    def get(self, key: KT, /, default: RT | VT | None = None) -> VT | RT | None:
+        """Get value."""
+
+        return self._d.get(key, default)
+
+    def __iter__(self) -> Iterator[KT]:
+        """Iterator."""
+
+        return iter(self._d)
+
+    def __len__(self) -> int:
+        """Length."""
+
+        return len(self._d)
+
+    def __getitem__(self, key: KT) -> VT:
+        """Get item: `namespace['key']`."""
+
+        return self._d[key]
+
+    def __hash__(self) -> int:
+        """Hash."""
+
+        return self._hash
+
+    def __repr__(self) -> str:  # pragma: no cover
+        """Representation."""
+
+        return f"{self._d!r}"
+
+    __str__ = __repr__
+
+
+class Namespaces(ImmutableDict[str, str]):
+    """Namespaces."""
+
+    def __init__(self, arg: Mapping[str, str]) -> None:
+        """Initialize."""
+
+        self._validate(arg)
+        super().__init__(arg)
+
+    def _validate(self, arg: Mapping[str, str]) -> None:
+        """Validate arguments."""
+
+        if not all(isinstance(k, str) and isinstance(v, str) for k, v in arg.items()):
+            raise TypeError(f'{self.__class__.__name__} values must be hashable')
+
+
+class CustomSelectors(ImmutableDict[str, str | SelectorList]):
+    """Custom selectors."""
+
+    def __init__(self, arg: Mapping[str, str | SelectorList]) -> None:
+        """Initialize."""
+
+        self._validate(arg)
+        super().__init__(arg)
+
+    def _validate(self, arg: Mapping[str, str | SelectorList]) -> None:
+        """Validate arguments."""
+
+        if not all(isinstance(k, str) and isinstance(v, str) for k, v in arg.items()):
+            raise TypeError(f'{self.__class__.__name__} values must be hashable')
 
 
 def _pickle(p: Any) -> Any:
