@@ -6,6 +6,8 @@ icon: lucide/scroll-text
 ## 2.10
 
 -   **NEW**: Support Python 3.15.
+-   **NEW**: Drop Python 3.10.
+-   **NEW**: Aggressively use possessive quantifiers and atomic groups in CSS pattern parsing to reduce backtracking.
 -   **NEW**: Add new `ignore` option to API methods that allows the specification of specific pseudo-classes to be
     ignored.
 -   **NEW**: Tighten restrictions such that `namespaces` and `custom` objects must always be a Mapping, previously lists
