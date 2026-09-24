@@ -52,6 +52,7 @@ include = [
     "/soupsieve/**/*.py",
     "/soupsieve/py.typed",
     "/tests/**/*.py",
+    "/tools/**/*.py",
     "/.pyspelling.yml",
     "/.coveragerc",
     "/zensical.yml"
