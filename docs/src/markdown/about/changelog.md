@@ -12,6 +12,7 @@ icon: lucide/scroll-text
     of tuples were also allowed.
 -   **NEW**: Use a singleton for null selectors internally via called `Null` of type `SelectorNull`.
 -   **NEW**: For performance, Soup Sieve will no longer try and coerce bad attribute values to useable strings.
+-   **NEW**: Autodetect namespaces where we can directly from Beautiful Soup object.
 -   **NEW**: Add `NOCACHE` flag that can be used to disable caching optimizations selectors and possibly other future
     caching optimizations. Provided for disabling and also disabling if issues are found with the new caching approach.
 -   **FIX**: Improve performance of `~` for various cases by employing caching.
