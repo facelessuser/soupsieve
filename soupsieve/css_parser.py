@@ -7,7 +7,7 @@ from . import css_match as cm
 from . import css_types as ct
 from .util import SelectorSyntaxError
 import warnings
-from typing import Match, Any, Iterator, Iterable, cast
+from typing import Match, Any, Callable, Iterator, Iterable, cast
 from dataclasses import dataclass
 from collections import UserDict
 import threading
@@ -413,18 +413,8 @@ class _Selector:
         self.flags = kwargs.get('flags', 0)  # type: int
         self.no_match = kwargs.get('no_match', False)  # type: bool
 
-    def _freeze_relations(self, relations: list[_Selector]) -> ct.SelectorList:
-        """Freeze relation."""
-
-        if relations:
-            sel = relations[0]
-            sel.relations.extend(relations[1:])
-            return ct.SelectorList([sel.freeze()])
-        else:
-            return ct.SelectorList()
-
-    def freeze(self) -> ct.Selector | ct.SelectorNull:
-        """Freeze self."""
+    def _freeze(self, relation: ct.SelectorList) -> ct.Selector | ct.SelectorNull:
+        """Freeze self with an already frozen relation."""
 
         if self.no_match:
             return ct.Null
@@ -436,12 +426,36 @@ class _Selector:
                 tuple(self.attributes),
                 tuple(self.nth),
                 tuple(self.selectors),
-                self._freeze_relations(self.relations),
+                relation,
                 self.rel_type,
                 tuple(self.contains),
                 tuple(self.lang),
                 self.flags
             )
+
+    def freeze(self) -> ct.Selector | ct.SelectorNull:
+        """
+        Freeze self.
+
+        Relations form a chain where each selector's first relation is the next link and any
+        remaining relations are carried down to follow it. As the far end of the chain must be
+        frozen first, flatten the chain and then freeze it in reverse to avoid recursion.
+        """
+
+        chain = []  # type: list[_Selector]
+        pending = [self]
+        while pending:
+            sel = pending.pop()
+            chain.append(sel)
+            if sel.no_match:
+                break
+            pending.extend(reversed(sel.relations))
+
+        relation = ct.SelectorList()
+        for sel in reversed(chain):
+            frozen = sel._freeze(relation)
+            relation = ct.SelectorList([frozen])
+        return frozen
 
     def __str__(self) -> str:  # pragma: no cover
         """String representation."""
@@ -454,6 +468,60 @@ class _Selector:
         )
 
     __repr__ = __str__
+
+
+class _SelectorContext:
+    """
+    Parsing state for a selector list.
+
+    Context are created for each nesting level to avoid recursion.
+    """
+
+    def __init__(
+        self,
+        flags: int,
+        index: int,
+        count: int,
+        on_close: Callable[[ct.SelectorList], None] | None = None
+    ) -> None:
+        """Initialize."""
+
+        self.sel = _Selector()
+        self.selectors: list[_Selector] = []
+        self.relations: list[_Selector] = []
+        self.has_selector = False
+        self.rel_type = ":" + WS_COMBINATOR
+        self.index = index
+        self.count = count
+        # Receives the frozen selector list when an open pseudo-class is closed.
+        self.on_close = on_close
+
+        # Setup various flags
+        self.is_open = bool(flags & FLG_OPEN)
+        self.is_pseudo = bool(flags & FLG_PSEUDO)
+        self.is_relative = bool(flags & FLG_RELATIVE)
+        self.is_not = bool(flags & FLG_NOT)
+        self.is_html = bool(flags & FLG_HTML)
+        self.is_default = bool(flags & FLG_DEFAULT)
+        self.is_indeterminate = bool(flags & FLG_INDETERMINATE)
+        self.is_in_range = bool(flags & FLG_IN_RANGE)
+        self.is_out_of_range = bool(flags & FLG_OUT_OF_RANGE)
+        self.is_placeholder_shown = bool(flags & FLG_PLACEHOLDER_SHOWN)
+        self.is_forgive = bool(flags & FLG_FORGIVE)
+
+        # The algorithm for relative selectors require an initial selector in the selector list
+        if self.is_relative:
+            self.selectors.append(_Selector())
+
+    def debug(self) -> None:  # pragma: no cover
+        """Print out useful debug stuff."""
+
+        for name in (
+            'is_pseudo', 'is_open', 'is_relative', 'is_not', 'is_html', 'is_default', 'is_indeterminate',
+            'is_in_range', 'is_out_of_range', 'is_placeholder_shown', 'is_forgive'
+        ):
+            if getattr(self, name):
+                print(f'    {name}: True')
 
 
 @dataclass
@@ -819,18 +887,21 @@ class CSSParser:
         sel: _Selector,
         m: Match[str],
         has_selector: bool,
-        iselector: Iterator[tuple[str, Match[str]]],
         is_html: bool
-    ) -> tuple[bool, bool]:
-        """Parse pseudo class."""
+    ) -> tuple[bool, bool, _SelectorContext | None]:
+        """
+        Parse pseudo class.
 
+        If the pseudo-class opens a selector list, a new context is returned to parse its contents.
+        """
+
+        context = None
         complex_pseudo = False
         pseudo = util.lower(css_unescape(m.group('name')))
         if m.group('open'):
             complex_pseudo = True
         if complex_pseudo and pseudo in PSEUDO_COMPLEX:
-            selectors = self.parse_pseudo_open(pseudo, iselector, m.end(0))
-            sel.selectors.append(selectors)
+            context = self.parse_pseudo_open(pseudo, m.end(0), sel.selectors.append)
             has_selector = True
         elif not complex_pseudo and pseudo in PSEUDO_SIMPLE:
             if pseudo == ':root':
@@ -870,7 +941,7 @@ class CSSParser:
                 )
             has_selector = True
         elif complex_pseudo and pseudo in PSEUDO_COMPLEX_NO_MATCH:
-            self.parse_pseudo_open(pseudo, iselector, m.end(0))
+            context = self.parse_pseudo_open(pseudo, m.end(0))
             sel.no_match = True
             has_selector = True
         elif not complex_pseudo and pseudo in PSEUDO_SIMPLE_NO_MATCH:
@@ -890,17 +961,21 @@ class CSSParser:
                 m.start(0)
             )
 
-        return has_selector, is_html
+        return has_selector, is_html, context
 
     def parse_pseudo_nth(
         self,
         sel: _Selector,
         m: Match[str],
-        has_selector: bool,
-        iselector: Iterator[tuple[str, Match[str]]]
-    ) -> bool:
-        """Parse `nth` pseudo."""
+        has_selector: bool
+    ) -> tuple[bool, _SelectorContext | None]:
+        """
+        Parse `nth` pseudo.
 
+        If `of S` is specified, a new context is returned to parse `S`.
+        """
+
+        context = None
         mdict = m.groupdict()
         if mdict.get('pseudo_nth_child'):
             postfix = '_child'
@@ -940,32 +1015,36 @@ class CSSParser:
 
         pseudo_sel = mdict['name']
         if postfix == '_child':
+            last = pseudo_sel == ':nth-last-child'
+
+            def append_nth(nth_sel: ct.SelectorList) -> None:
+                """Append to this selector's `nth` attribute."""
+
+                sel.nth.append(ct.SelectorNth(s1, var, s2, False, last, nth_sel))
+
             if m.group('of'):
                 # Parse the rest of `of S`.
-                nth_sel = self.parse_pseudo_open(pseudo_sel, iselector, m.end(0))
+                context = self.parse_pseudo_open(pseudo_sel, m.end(0), append_nth)
             else:
                 # Use default `*|*` for `of S`.
                 nth_sel = self.PSEUDO_SELECTORS['<nth-of-s>']
                 self.increment_count(nth_sel.count)
-            if pseudo_sel == ':nth-child':
-                sel.nth.append(ct.SelectorNth(s1, var, s2, False, False, nth_sel))
-            elif pseudo_sel == ':nth-last-child':
-                sel.nth.append(ct.SelectorNth(s1, var, s2, False, True, nth_sel))
+                append_nth(nth_sel)
         else:
             if pseudo_sel == ':nth-of-type':
                 sel.nth.append(ct.SelectorNth(s1, var, s2, True, False, ct.SelectorList()))
             elif pseudo_sel == ':nth-last-of-type':
                 sel.nth.append(ct.SelectorNth(s1, var, s2, True, True, ct.SelectorList()))
         has_selector = True
-        return has_selector
+        return has_selector, context
 
     def parse_pseudo_open(
         self,
         name: str,
-        iselector: Iterator[tuple[str, Match[str]]],
         index: int,
-    ) -> ct.SelectorList:
-        """Parse pseudo with opening bracket."""
+        on_close: Callable[[ct.SelectorList], None] | None = None
+    ) -> _SelectorContext:
+        """Create a new context for nested pseudo-class selectors."""
 
         flags = FLG_PSEUDO | FLG_OPEN
         if name == ':not':
@@ -975,7 +1054,20 @@ class CSSParser:
         elif name in (':where', ':is'):
             flags |= FLG_FORGIVE
 
-        return self.parse_selectors(iselector, index, flags)
+        return self.create_context(flags, index, on_close)
+
+    def create_context(
+        self,
+        flags: int,
+        index: int,
+        on_close: Callable[[ct.SelectorList], None] | None = None
+    ) -> _SelectorContext:
+        """Create a new selector context."""
+
+        context = _SelectorContext(flags, index, self.count, on_close)
+        if self.debug:  # pragma: no cover
+            context.debug()
+        return context
 
     def parse_has_combinator(
         self,
@@ -1130,155 +1222,131 @@ class CSSParser:
         index: int = 0,
         flags: int = 0
     ) -> ct.SelectorList:
-        """Parse selectors."""
+        """
+        Parse selectors.
 
-        # Initialize important variables
-        sel = _Selector()
-        selectors = []
-        has_selector = False
-        closed = False
-        relations = []  # type: list[_Selector]
-        rel_type = ":" + WS_COMBINATOR
-        count = self.count
+        Pseudo-classes that open a nested selector list push a new context onto a stack,
+        and closing them pops back to the parent context, so nesting does not recurse.
+        """
 
-        # Setup various flags
-        is_open = bool(flags & FLG_OPEN)
-        is_pseudo = bool(flags & FLG_PSEUDO)
-        is_relative = bool(flags & FLG_RELATIVE)
-        is_not = bool(flags & FLG_NOT)
-        is_html = bool(flags & FLG_HTML)
-        is_default = bool(flags & FLG_DEFAULT)
-        is_indeterminate = bool(flags & FLG_INDETERMINATE)
-        is_in_range = bool(flags & FLG_IN_RANGE)
-        is_out_of_range = bool(flags & FLG_OUT_OF_RANGE)
-        is_placeholder_shown = bool(flags & FLG_PLACEHOLDER_SHOWN)
-        is_forgive = bool(flags & FLG_FORGIVE)
+        ctx = self.create_context(flags, index)
+        stack: list[_SelectorContext] = []
 
-        # Print out useful debug stuff
-        if self.debug:  # pragma: no cover
-            if is_pseudo:
-                print('    is_pseudo: True')
-            if is_open:
-                print('    is_open: True')
-            if is_relative:
-                print('    is_relative: True')
-            if is_not:
-                print('    is_not: True')
-            if is_html:
-                print('    is_html: True')
-            if is_default:
-                print('    is_default: True')
-            if is_indeterminate:
-                print('    is_indeterminate: True')
-            if is_in_range:
-                print('    is_in_range: True')
-            if is_out_of_range:
-                print('    is_out_of_range: True')
-            if is_placeholder_shown:
-                print('    is_placeholder_shown: True')
-            if is_forgive:
-                print('    is_forgive: True')
+        for key, m in iselector:
+            child: _SelectorContext | None = None
 
-        # The algorithm for relative selectors require an initial selector in the selector list
-        if is_relative:
-            selectors.append(_Selector())
+            if key not in ('combine', 'pseudo_close'):
+                self.increment_count()
 
-        try:
-            while True:
-                key, m = next(iselector)
-
-                if key not in ('combine', 'pseudo_close'):
-                    self.increment_count()
-
-                # Handle parts
-                if self.ignore:
-                    mi = RE_PSEUDO_IGNORE.match(m.group(0))
-                    if mi is not None and mi.group('name').lower() in self.ignore:
+            # Handle parts
+            if self.ignore:
+                mi = RE_PSEUDO_IGNORE.match(m.group(0))
+                if mi is not None and mi.group('name').lower() in self.ignore:
+                    raise SelectorSyntaxError(
+                        f"The selector '{mi.group('name')}' at position {m.start(0)}, has been disallowed",
+                        self.pattern,
+                        m.start(0)
+                    )
+            if key == "at_rule":
+                raise NotImplementedError(f"At-rules found at position {m.start(0)}")
+            elif key == "amp":
+                ctx.sel.flags |= ct.SEL_SCOPE
+                ctx.has_selector = True
+            elif key == 'pseudo_class_custom':
+                ctx.has_selector = self.parse_pseudo_class_custom(ctx.sel, m, ctx.has_selector)
+            elif key == 'pseudo_class':
+                ctx.has_selector, ctx.is_html, child = self.parse_pseudo_class(
+                    ctx.sel, m, ctx.has_selector, ctx.is_html
+                )
+            elif key == 'pseudo_element':
+                raise NotImplementedError(f"Pseudo-element found at position {m.start(0)}")
+            elif key == 'pseudo_contains':
+                ctx.has_selector = self.parse_pseudo_contains(ctx.sel, m, ctx.has_selector)
+            elif key in ('pseudo_nth_type', 'pseudo_nth_child'):
+                ctx.has_selector, child = self.parse_pseudo_nth(ctx.sel, m, ctx.has_selector)
+            elif key == 'pseudo_lang':
+                ctx.has_selector = self.parse_pseudo_lang(ctx.sel, m, ctx.has_selector)
+            elif key == 'pseudo_dir':
+                ctx.has_selector = self.parse_pseudo_dir(ctx.sel, m, ctx.has_selector)
+                # Currently only supports HTML
+                ctx.is_html = True
+            elif key == 'pseudo_close':
+                if not ctx.has_selector:
+                    if not ctx.is_forgive:
                         raise SelectorSyntaxError(
-                            f"The selector '{mi.group('name')}' at position {m.start(0)}, has been disallowed",
+                            f"Expected a selector at position {m.start(0)}",
                             self.pattern,
                             m.start(0)
                         )
-                if key == "at_rule":
-                    raise NotImplementedError(f"At-rules found at position {m.start(0)}")
-                elif key == "amp":
-                    sel.flags |= ct.SEL_SCOPE
-                    has_selector = True
-                elif key == 'pseudo_class_custom':
-                    has_selector = self.parse_pseudo_class_custom(sel, m, has_selector)
-                elif key == 'pseudo_class':
-                    has_selector, is_html = self.parse_pseudo_class(sel, m, has_selector, iselector, is_html)
-                elif key == 'pseudo_element':
-                    raise NotImplementedError(f"Pseudo-element found at position {m.start(0)}")
-                elif key == 'pseudo_contains':
-                    has_selector = self.parse_pseudo_contains(sel, m, has_selector)
-                elif key in ('pseudo_nth_type', 'pseudo_nth_child'):
-                    has_selector = self.parse_pseudo_nth(sel, m, has_selector, iselector)
-                elif key == 'pseudo_lang':
-                    has_selector = self.parse_pseudo_lang(sel, m, has_selector)
-                elif key == 'pseudo_dir':
-                    has_selector = self.parse_pseudo_dir(sel, m, has_selector)
-                    # Currently only supports HTML
-                    is_html = True
-                elif key == 'pseudo_close':
-                    if not has_selector:
-                        if not is_forgive:
-                            raise SelectorSyntaxError(
-                                f"Expected a selector at position {m.start(0)}",
-                                self.pattern,
-                                m.start(0)
-                            )
-                        sel.no_match = True
-                    if is_open:
-                        closed = True
-                        break
-                    else:
-                        raise SelectorSyntaxError(
-                            f"Unmatched pseudo-class close at position {m.start(0)}",
-                            self.pattern,
-                            m.start(0)
-                        )
-                elif key == 'combine':
-                    if is_relative:
-                        has_selector, sel, rel_type = self.parse_has_combinator(
-                            sel, m, has_selector, selectors, rel_type, index
-                        )
-                    else:
-                        has_selector, sel = self.parse_combinator(
-                            sel, m, has_selector, selectors, relations, is_pseudo, is_forgive, index
-                        )
-                elif key == 'attribute':
-                    has_selector = self.parse_attribute_selector(sel, m, has_selector)
-                elif key == 'tag':
-                    if has_selector:
-                        raise SelectorSyntaxError(
-                            f"Tag name found at position {m.start(0)} instead of at the start",
-                            self.pattern,
-                            m.start(0)
-                        )
-                    has_selector = self.parse_tag_pattern(sel, m, has_selector)
-                elif key in ('class', 'id'):
-                    has_selector = self.parse_class_id(sel, m, has_selector)
+                    ctx.sel.no_match = True
+                if not ctx.is_open:
+                    raise SelectorSyntaxError(
+                        f"Unmatched pseudo-class close at position {m.start(0)}",
+                        self.pattern,
+                        m.start(0)
+                    )
 
-                index = m.end(0)
-        except StopIteration:
-            pass
+                # Hand the completed selector list to the parent and resume parsing the parent.
+                selectors = self.finalize_selectors(ctx)
+                if ctx.on_close is not None:
+                    ctx.on_close(selectors)
+                ctx = stack.pop()
+                continue
+            elif key == 'combine':
+                if ctx.is_relative:
+                    ctx.has_selector, ctx.sel, ctx.rel_type = self.parse_has_combinator(
+                        ctx.sel, m, ctx.has_selector, ctx.selectors, ctx.rel_type, ctx.index
+                    )
+                else:
+                    ctx.has_selector, ctx.sel = self.parse_combinator(
+                        ctx.sel, m, ctx.has_selector, ctx.selectors, ctx.relations,
+                        ctx.is_pseudo, ctx.is_forgive, ctx.index
+                    )
+            elif key == 'attribute':
+                ctx.has_selector = self.parse_attribute_selector(ctx.sel, m, ctx.has_selector)
+            elif key == 'tag':
+                if ctx.has_selector:
+                    raise SelectorSyntaxError(
+                        f"Tag name found at position {m.start(0)} instead of at the start",
+                        self.pattern,
+                        m.start(0)
+                    )
+                ctx.has_selector = self.parse_tag_pattern(ctx.sel, m, ctx.has_selector)
+            elif key in ('class', 'id'):
+                ctx.has_selector = self.parse_class_id(ctx.sel, m, ctx.has_selector)
+
+            ctx.index = m.end(0)
+
+            # A pseudo-class opened a nested selector list, parse it before resuming this one.
+            if child is not None:
+                stack.append(ctx)
+                ctx = child
 
         # Handle selectors that are not closed
-        if is_open and not closed:
+        if ctx.is_open:
             raise SelectorSyntaxError(
-                f"Unclosed pseudo-class at position {index}",
+                f"Unclosed pseudo-class at position {ctx.index}",
                 self.pattern,
-                index
+                ctx.index
             )
+
+        return self.finalize_selectors(ctx)
+
+    def finalize_selectors(self, ctx: _SelectorContext) -> ct.SelectorList:
+        """Complete the selector list of a context and freeze it."""
+
+        sel = ctx.sel
+        selectors = ctx.selectors
+        relations = ctx.relations
+        has_selector = ctx.has_selector
 
         # Cleanup completed selector piece
         if has_selector:
-            if not sel.tag and not is_pseudo:
+            if not sel.tag and not ctx.is_pseudo:
                 # Implied `*`
                 sel.tag = ct.SelectorTag('*', None)
-            if is_relative:
-                sel.rel_type = rel_type
+            if ctx.is_relative:
+                sel.rel_type = ctx.rel_type
                 selectors[-1].relations.append(sel)
             else:
                 sel.relations.extend(relations)
@@ -1286,7 +1354,7 @@ class CSSParser:
                 selectors.append(sel)
 
         # Forgive empty slots in pseudo-classes that have lists (and are forgiving)
-        elif is_forgive and (not selectors or not relations):
+        elif ctx.is_forgive and (not selectors or not relations):
             # Handle normal pseudo-classes with empty slots like `:is()` etc.
             self.increment_count()
             sel.no_match = True
@@ -1298,27 +1366,27 @@ class CSSParser:
             # We will always need to finish a selector when `:has()` is used as it leads with combining.
             # May apply to others as well.
             raise SelectorSyntaxError(
-                f'Expected a selector at position {index}',
+                f'Expected a selector at position {ctx.index}',
                 self.pattern,
-                index
+                ctx.index
             )
 
         # Some patterns require additional logic, such as default. We try to make these the
         # last pattern, and append the appropriate flag to that selector which communicates
         # to the matcher what additional logic is required.
-        if is_default:
+        if ctx.is_default:
             selectors[-1].flags = ct.SEL_DEFAULT
-        if is_indeterminate:
+        if ctx.is_indeterminate:
             selectors[-1].flags = ct.SEL_INDETERMINATE
-        if is_in_range:
+        if ctx.is_in_range:
             selectors[-1].flags = ct.SEL_IN_RANGE
-        if is_out_of_range:
+        if ctx.is_out_of_range:
             selectors[-1].flags = ct.SEL_OUT_OF_RANGE
-        if is_placeholder_shown:
+        if ctx.is_placeholder_shown:
             selectors[-1].flags = ct.SEL_PLACEHOLDER_SHOWN
 
         # Return selector list
-        return ct.SelectorList([s.freeze() for s in selectors], is_not, is_html, self.count - count)
+        return ct.SelectorList([s.freeze() for s in selectors], ctx.is_not, ctx.is_html, self.count - ctx.count)
 
     def selector_iter(self, pattern: str) -> Iterator[tuple[str, Match[str]]]:
         """Iterate selector tokens."""
