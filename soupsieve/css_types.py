@@ -32,6 +32,24 @@ SEL_DEFINED = 0x200
 SEL_PLACEHOLDER_SHOWN = 0x400
 
 
+def _repr_expand(value: Any) -> bool:  # pragma: no cover
+    """Check if the value is an immutable object that uses the default representation."""
+
+    return isinstance(value, Immutable) and type(value).__repr__ is Immutable.__repr__
+
+
+def _repr_value(value: Any) -> Any:  # pragma: no cover
+    """
+    Return the representation of a leaf value, or the value itself if it must be expanded.
+
+    Immutable objects using the default representation are expanded, as are tuples containing them.
+    """
+
+    if _repr_expand(value) or (value.__class__ is tuple and any(_repr_expand(v) for v in value)):
+        return value
+    return repr(value)
+
+
 class Immutable:
     """Immutable."""
 
@@ -56,20 +74,40 @@ class Immutable:
         return cls
 
     def __eq__(self, other: Any) -> bool:
-        """Equal."""
+        """Check equaling in a non-recursive manner."""
 
-        return (
-            isinstance(other, self.__base__()) and
-            all(getattr(other, key) == getattr(self, key) for key in self.__slots__ if key != '_hash')
-        )
+        stack: list[tuple[Immutable, Any]] = [(self, other)]
+        while stack:
+            a, b = stack.pop()
+            if a is b:
+                continue
+
+            # The hash is derived from the content, so differing hashes cannot be equal.
+            if not isinstance(b, a.__base__()) or a._hash != b._hash:
+                return False
+
+            # Compare the attributes in the slot
+            for key in a.__slots__[:-1]:
+                x = getattr(a, key)
+                y = getattr(b, key)
+                if isinstance(x, Immutable):
+                    stack.append((x, y))
+                elif x.__class__ is tuple and y.__class__ is tuple:
+                    if len(x) != len(y):
+                        return False
+                    for i, j in zip(x, y, strict=True):
+                        if isinstance(i, Immutable):
+                            stack.append((i, j))
+                        elif i != j:
+                            return False
+                elif x != y:
+                    return False
+        return True
 
     def __ne__(self, other: Any) -> bool:
-        """Equal."""
+        """Not equal."""
 
-        return (
-            not isinstance(other, self.__base__()) or
-            any(getattr(other, key) != getattr(self, key) for key in self.__slots__ if key != '_hash')
-        )
+        return not self.__eq__(other)
 
     def __hash__(self) -> int:
         """Hash."""
@@ -82,10 +120,37 @@ class Immutable:
         raise AttributeError(f"'{self.__class__.__name__}' is immutable")
 
     def __repr__(self) -> str:  # pragma: no cover
-        """Representation."""
+        """
+        Build a representation without using recursion.
 
-        r = ', '.join([f"{k}={getattr(self, k)!r}" for k in self.__slots__[:-1]])
-        return f"{self.__class__.__name__}({r})"
+        Selectors can be nested very deeply, so build the representation of nested
+        immutable objects with an explicit stack instead of recursing into their `__repr__`.
+        Strings on the stack are output as is, other items are expanded into more items.
+        """
+
+        output: list[str] = []
+        stack: list[Any] = [self]
+        while stack:
+            item = stack.pop()
+            if item.__class__ is str:
+                output.append(item)
+            elif isinstance(item, Immutable):
+                # Push parts in reverse so they are popped in order: `Name(key=value, ...)`
+                stack.append(')')
+                keys = item.__slots__[:-1]
+                for index in range(len(keys) - 1, -1, -1):
+                    stack.append(_repr_value(getattr(item, keys[index])))
+                    stack.append(f'{keys[index]}=' if index == 0 else f', {keys[index]}=')
+                stack.append(f'{item.__class__.__name__}(')
+            else:
+                # A tuple containing immutable objects: `(a,)` or `(a, b, ...)`
+                stack.append(',)' if len(item) == 1 else ')')
+                for index in range(len(item) - 1, -1, -1):
+                    stack.append(_repr_value(item[index]))
+                    if index:
+                        stack.append(', ')
+                stack.append('(')
+        return ''.join(output)
 
     __str__ = __repr__
 
