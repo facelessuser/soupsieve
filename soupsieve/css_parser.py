@@ -836,7 +836,9 @@ class CSSParser:
         if m.group('open'):
             complex_pseudo = True
         if complex_pseudo and pseudo in PSEUDO_COMPLEX:
-            has_selector = self.parse_pseudo_open(sel, pseudo, has_selector, iselector, m.end(0))
+            selectors = self.parse_pseudo_open(pseudo, iselector, m.end(0))
+            sel.selectors.append(selectors)
+            has_selector = True
         elif not complex_pseudo and pseudo in PSEUDO_SIMPLE:
             if pseudo == ':root':
                 sel.flags |= ct.SEL_ROOT
@@ -875,7 +877,7 @@ class CSSParser:
                 )
             has_selector = True
         elif complex_pseudo and pseudo in PSEUDO_COMPLEX_NO_MATCH:
-            self.parse_selectors(iselector, m.end(0), FLG_PSEUDO | FLG_OPEN)
+            self.parse_pseudo_open(pseudo, iselector, m.end(0))
             sel.no_match = True
             has_selector = True
         elif not complex_pseudo and pseudo in PSEUDO_SIMPLE_NO_MATCH:
@@ -947,7 +949,7 @@ class CSSParser:
         if postfix == '_child':
             if m.group('of'):
                 # Parse the rest of `of S`.
-                nth_sel = self.parse_selectors(iselector, m.end(0), FLG_PSEUDO | FLG_OPEN)
+                nth_sel = self.parse_pseudo_open(pseudo_sel, iselector, m.end(0))
             else:
                 # Use default `*|*` for `of S`.
                 nth_sel = self.PSEUDO_SELECTORS['<nth-of-s>']
@@ -966,12 +968,10 @@ class CSSParser:
 
     def parse_pseudo_open(
         self,
-        sel: _Selector,
         name: str,
-        has_selector: bool,
         iselector: Iterator[tuple[str, Match[str]]],
-        index: int
-    ) -> bool:
+        index: int,
+    ) -> ct.SelectorList:
         """Parse pseudo with opening bracket."""
 
         flags = FLG_PSEUDO | FLG_OPEN
@@ -982,10 +982,7 @@ class CSSParser:
         elif name in (':where', ':is'):
             flags |= FLG_FORGIVE
 
-        sel.selectors.append(self.parse_selectors(iselector, index, flags))
-        has_selector = True
-
-        return has_selector
+        return self.parse_selectors(iselector, index, flags)
 
     def parse_has_combinator(
         self,
