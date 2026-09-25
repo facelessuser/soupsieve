@@ -93,12 +93,12 @@ class Immutable:
                 if isinstance(x, Immutable):
                     stack.append((x, y))
                 elif x.__class__ is tuple and y.__class__ is tuple:
-                    if len(x) != len(y):
+                    if len(x) != len(y):  # pragma: no cover
                         return False
                     for i, j in zip(x, y, strict=True):
                         if isinstance(i, Immutable):
                             stack.append((i, j))
-                        elif i != j:
+                        elif i != j:  # pragma: no cover
                             return False
                 elif x != y:
                     return False

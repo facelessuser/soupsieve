@@ -14,7 +14,6 @@ from typing import (
     Any,
     Callable,
     Sequence,
-    Any,
     overload,
     Literal,
     cast,
@@ -926,7 +925,7 @@ class CSSMatch(_DocumentNav):
 
         match = False
         if recursive:
-            children = self.get_tag_descendants  # type: Callable[..., Iterator[bs4.Tag]]
+            children: Callable[..., Iterator[bs4.Tag]] = self.get_tag_descendants
         else:
             children = self.get_tag_children
         for child in children(parent, no_iframe=self.iframe_restrict):
@@ -1530,7 +1529,7 @@ class CSSMatch(_DocumentNav):
 
         # We need to setup a stack as a selector has sent back a match request.
         stack = [frame, self._match_selectors(*cast('MatchRequest', item))]
-        result: bool | None = None 
+        result: bool | None = None
         while True:
             item = stack[-1].send(result)  # type: ignore[arg-type]
             if item.__class__ is bool:
