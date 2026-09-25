@@ -399,8 +399,79 @@ class CustomSelectors(ImmutableDict[str, str | SelectorList]):
             raise TypeError(f'{self.__class__.__name__} values must be hashable')
 
 
-def _pickle(p: Any) -> Any:
-    return p.__base__(), tuple([getattr(p, s) for s in p.__slots__[:-1]])
+def _pickle(p: Immutable) -> Any:
+    """
+    Reduce an immutable object for pickling.
+
+    Selectors can be nested very deeply, and pickling them object by object would
+    recurse for each level. Instead, flatten the entire structure into a table of
+    nodes, children before parents, where nested immutable objects are replaced by
+    their index in the table. As the table only contains leaf values, neither
+    pickling nor unpickling needs to recurse.
+
+    Each node is `(class, args, refs)`. A ref is either the index of an argument that
+    is an immutable object, or `(index, positions)` for an argument that is a tuple
+    containing immutable objects at the given positions.
+    """
+
+    indexes: dict[int, int] = {}
+    nodes: list[tuple[type[Immutable], tuple[Any, ...], tuple[Any, ...]]] = []
+    stack: list[tuple[Immutable, list[Any] | None]] = [(p, None)]
+
+    while stack:
+        obj, values = stack.pop()
+        if id(obj) in indexes:
+            continue
+
+        # Queue up children to be processed before the parent.
+        if values is None:
+            values = [getattr(obj, s) for s in obj.__slots__[:-1]]
+            stack.append((obj, values))
+            for value in values:
+                if isinstance(value, Immutable):
+                    stack.append((value, None))
+                elif value.__class__ is tuple:
+                    stack.extend((v, None) for v in value if isinstance(v, Immutable))
+            continue
+
+        # All children have been processed, replace them with their index.
+        refs = []  # type: list[Any]
+        for i, value in enumerate(values):
+            if isinstance(value, Immutable):
+                values[i] = indexes[id(value)]
+                refs.append(i)
+            elif value.__class__ is tuple:
+                positions = [j for j, v in enumerate(value) if isinstance(v, Immutable)]
+                if positions:
+                    items = list(value)
+                    for j in positions:
+                        items[j] = indexes[id(items[j])]
+                    values[i] = tuple(items)
+                    refs.append((i, tuple(positions)))
+
+        indexes[id(obj)] = len(nodes)
+        nodes.append((obj.__base__(), tuple(values), tuple(refs)))
+
+    return _unpickle, (tuple(nodes),)
+
+
+def _unpickle(nodes: tuple[tuple[type[Immutable], tuple[Any, ...], tuple[Any, ...]], ...]) -> Immutable:
+    """Rebuild an immutable object from the flattened node table created by `_pickle`."""
+
+    objs: list[Immutable] = []
+    for cls, args, refs in nodes:
+        values = list(args)
+        for ref in refs:
+            if isinstance(ref, int):
+                values[ref] = objs[values[ref]]
+            else:
+                i, positions = ref
+                items = list(values[i])
+                for j in positions:
+                    items[j] = objs[items[j]]
+                values[i] = tuple(items)
+        objs.append(cls(*values))
+    return objs[-1]
 
 
 def pickle_register(obj: Any) -> None:
