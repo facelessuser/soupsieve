@@ -407,20 +407,25 @@ soup.select('span:first-of-type')
 Selects an element if any of the relative selectors passed as parameters (which are relative to the `:scope` of the
 given element), match at least one element.
 
-While the level 4 specifications state that [compound](./index.md#compound-selector) selectors are supported, complex
-selectors are planned for level 5 CSS selectors. Soup Sieve supports [complex](./index.md#complex-selector) selectors.
+According to the level 4 specifications, the `#!css :has()` selector is limited to only [compound](./index.md#compound-selector)
+selectors. It is possible that in the future `#!css :has()` could be extended to support [complex](./index.md#complex-selector).
+`#!css :has()` also does not allow the nesting of `#!css :has()` within another `#!css :has()`. These restriction are
+placed upon the selector for performance reasons.
 
-In addition to supporting complex selectors, Soup Sieve also supports nested `:has()` which has been excluded from the
-level 4 specifications to help encourage browsers to implement `:has()`. This exclusion helps to reduces complexity and
-improves performance in a live environment. As these performance concerns are not an issue in a scraping environment
-compared to a web browser, Soup Sieve has no intentions on restricting the nesting of `:has()`. Users can always choose
-not to nest `:has()` if there are concerns.
+> [!new] Change in 3.0
+> Prior Soup Sieve 3.0, `#!css :has()` allowed both [complex](./index.md#complex-selector) selectors and the nesting of
+> `#!css :has()`. While certainly powerful, it was not the best default for performance. To relax the rules as they were
+> previously to 3.0, you can pass in the `NOSTRICT` flag.
+> 
+> ```py
+> sv.select(':has(a ~ b)', flags=sv.NOSTRICT)
+> ```
 
 > [!note] Performance Considerations
-> Certain uses of the `:has()` pseudo-class can significantly impact performance.
+> Certain uses of the `#!css :has()` pseudo-class can significantly impact performance.
 >
-> The anchor selector (the `A` in `A:has(B)`) should not be an element that has too many children. Additionally, too
-> general an anchor, such as `*`, can cause `:has()` to be applied to every element.
+> The anchor selector (the `#!css A` in `#!css A:has(B)`) should not be an element that has too many children. Additionally, too
+> general an anchor, such as `*`, can cause `#!css :has()` to be applied to every element.
 >
 > > [!failure] Avoid
 > > ```css
@@ -437,8 +442,8 @@ not to nest `:has()` if there are concerns.
 > > .gallery:has(> img[data-loaded="false"])
 > > ```
 >
-> The inner selector (the `B` in `A:has(B)`) should use combinators like `>` or `+` to limit traversal. When the
-> selector inside `:has()` is not tightly constrained, Soup Sieve might need to traverse the entire subtree of the
+> The inner selector (the `#!css B` in `#!css A:has(B)`) should use combinators like `>` or `+` to limit traversal. When the
+> selector inside `#!css :has()` is not tightly constrained, Soup Sieve might need to traverse the entire subtree of the
 > anchor element to check if the condition holds.
 >
 > > [!failure] Avoid

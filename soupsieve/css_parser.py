@@ -223,7 +223,8 @@ def _cached_css_compile(
     namespaces: ct.Namespaces | None,
     custom: ct.CustomSelectors | None,
     ignore: tuple[str] | None = None,
-    flags: int = 0
+    flags: int = 0,
+    max_selectors: int = SELECTOR_LIMIT
 ) -> cm.SoupSieve:
     """Cached CSS compile."""
 
@@ -234,7 +235,8 @@ def _cached_css_compile(
             pattern,
             custom=custom_selectors,
             ignore=ignore,
-            flags=flags
+            flags=flags,
+            max_selectors=max_selectors
         ).process_selectors(),
         namespaces,
         custom,
@@ -761,23 +763,26 @@ class CSSParser:
         *,
         custom: dict[str, str | ct.SelectorList] | None = None,
         ignore: Iterable[str] | None = None,
-        flags: int = 0
+        flags: int = 0,
+        max_selectors: int = SELECTOR_LIMIT
     ) -> None:
         """Initialize."""
 
         self.pattern = selector.replace('\x00', '\ufffd')
         self.flags = flags
         self.debug = self.flags & util.DEBUG
+        self.nostrict = self.flags & util.NOSTRICT
         self.custom = {} if custom is None else custom
         self.ignore = frozenset([] if ignore is None else ignore)
         self.count = 0
+        self.maxsel = max_selectors
 
     def increment_count(self, increment: int = 1) -> None:
         """Check the current selector count."""
 
         self.count += increment
-        if self.count > SELECTOR_LIMIT:
-            raise ValueError(f'Selector exceeds pseudo-class nesting limit of {SELECTOR_LIMIT}')
+        if self.count > self.maxsel:
+            raise ValueError(f'Selector exceeds pseudo-class nesting limit of {self.maxsel}')
 
     def parse_attribute_selector(self, sel: _Selector, m: Match[str], has_selector: bool) -> bool:
         """Create attribute selector from the returned regex match."""
@@ -873,7 +878,11 @@ class CSSParser:
         if not isinstance(selector, ct.SelectorList):
             del self.custom[pseudo]
             selector = CSSParser(
-                selector, custom=self.custom, flags=self.flags, ignore=self.ignore
+                selector,
+                custom=self.custom,
+                flags=self.flags,
+                ignore=self.ignore,
+                max_selectors=self.maxsel - self.count
             ).process_selectors(flags=FLG_PSEUDO)
             self.custom[pseudo] = selector
 
@@ -887,7 +896,8 @@ class CSSParser:
         sel: _Selector,
         m: Match[str],
         has_selector: bool,
-        is_html: bool
+        is_html: bool,
+        is_relative: bool
     ) -> tuple[bool, bool, _SelectorContext | None]:
         """
         Parse pseudo class.
@@ -901,7 +911,7 @@ class CSSParser:
         if m.group('open'):
             complex_pseudo = True
         if complex_pseudo and pseudo in PSEUDO_COMPLEX:
-            context = self.parse_pseudo_open(pseudo, m.end(0), sel.selectors.append)
+            context = self.parse_pseudo_open(pseudo, m.end(0), sel.selectors.append, is_relative)
             has_selector = True
         elif not complex_pseudo and pseudo in PSEUDO_SIMPLE:
             if pseudo == ':root':
@@ -1042,7 +1052,8 @@ class CSSParser:
         self,
         name: str,
         index: int,
-        on_close: Callable[[ct.SelectorList], None] | None = None
+        on_close: Callable[[ct.SelectorList], None] | None = None,
+        is_relative: bool = False
     ) -> _SelectorContext:
         """Create a new context for nested pseudo-class selectors."""
 
@@ -1050,6 +1061,12 @@ class CSSParser:
         if name == ':not':
             flags |= FLG_NOT
         elif name == ':has':
+            if is_relative and not self.nostrict:
+                raise SelectorSyntaxError(
+                    f":has() was found to be nested under :has() at position {index}",
+                    self.pattern,
+                    index
+                )
             flags |= FLG_RELATIVE
         elif name in (':where', ':is'):
             flags |= FLG_FORGIVE
@@ -1095,10 +1112,16 @@ class CSSParser:
             rel_type = ":" + WS_COMBINATOR
             selectors.append(_Selector())
         else:
-            if has_selector:
+            if has_selector and self.nostrict:
                 # End the current selector and associate the leading combinator with this selector.
                 sel.rel_type = rel_type
                 selectors[-1].relations.append(sel)
+            elif has_selector:
+                raise SelectorSyntaxError(
+                    f'Using strict rules as proposed by CSS, the complex selectors at postition {index} is not allowed',
+                    self.pattern,
+                    index
+                )
             elif rel_type[1:] != WS_COMBINATOR:
                 # It's impossible to have two whitespace combinators after each other as the patterns
                 # will gobble up trailing whitespace. It is also impossible to have a whitespace
@@ -1256,7 +1279,7 @@ class CSSParser:
                 ctx.has_selector = self.parse_pseudo_class_custom(ctx.sel, m, ctx.has_selector)
             elif key == 'pseudo_class':
                 ctx.has_selector, ctx.is_html, child = self.parse_pseudo_class(
-                    ctx.sel, m, ctx.has_selector, ctx.is_html
+                    ctx.sel, m, ctx.has_selector, ctx.is_html, ctx.is_relative
                 )
             elif key == 'pseudo_element':
                 raise NotImplementedError(f"Pseudo-element found at position {m.start(0)}")

@@ -7,6 +7,7 @@ from typing import Callable, Any
 
 DEBUG = 0x00001
 NOCACHE = 0x00002
+NOSTRICT = 0x00004
 
 RE_PATTERN_LINE_SPLIT = re.compile(r'(?:\r\n|(?!\r\n)[\n\r])|$')
 

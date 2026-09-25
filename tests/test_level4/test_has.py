@@ -1,6 +1,6 @@
 """Test has selectors."""
 from .. import util
-from soupsieve import SelectorSyntaxError
+from soupsieve import SelectorSyntaxError, NOSTRICT
 
 
 class TestHas(util.TestCase):
@@ -52,7 +52,8 @@ class TestHas(util.TestCase):
             self.MARKUP,
             'div:not(.aaaa):has(.kkkk > p.llll)',
             ['4', '5', '6'],
-            flags=util.HTML | util.NOCACHE
+            flags=util.HTML | util.NOCACHE,
+            options=NOSTRICT
         )
 
     def test_has_next_sibling(self):
@@ -62,7 +63,8 @@ class TestHas(util.TestCase):
             self.MARKUP,
             'p:has(+ .dddd:has(+ div .jjjj))',
             ['2'],
-            flags=util.HTML | util.NOCACHE
+            flags=util.HTML | util.NOCACHE,
+            options=NOSTRICT
         )
 
     def test_has_subsequent_sibling(self):
@@ -92,7 +94,8 @@ class TestHas(util.TestCase):
             self.MARKUP,
             'div:NOT(.aaaa):HAS(.kkkk > p.llll)',
             ['4', '5', '6'],
-            flags=util.HTML | util.NOCACHE
+            flags=util.HTML | util.NOCACHE,
+            options=NOSTRICT
         )
 
     def test_has_mixed(self):
@@ -149,7 +152,12 @@ class TestHas(util.TestCase):
         for n in (1000, 2000, 4000, 8000):
             html = "<div>" + ("<a></a>" * n) + "</div>"
             soup = BeautifulSoup(html, "html.parser")
-            self.assertEqual(len(sv.select(selector, soup)), 0)
+            self.assertEqual(len(sv.select(selector, soup, flags=sv.NOSTRICT)), 0)
+
+    def test_strict_has(self):
+        """Test strict has behavior."""
+
+        self.assert_raises(':has(a ~ b)', SelectorSyntaxError)
 
     def test_has_empty(self):
         """Test has with empty slot due to no selectors."""
@@ -175,3 +183,24 @@ class TestHas(util.TestCase):
         """Test `:has()` fails with trailing combinator."""
 
         self.assert_raises(':has(> has >)', SelectorSyntaxError)
+
+    def test_nested_has(self):
+        """Test `:has()` being nested under `:has()`."""
+
+        from bs4 import BeautifulSoup
+
+        text = """
+        <div>
+        <!-- These are animals -->
+        <p class="a">Cat</p>
+        <p class="b">Dog</p>
+        <p class="c">Mouse</p>
+        </div>
+        """
+        soup = BeautifulSoup(text, 'html5lib')
+
+        with self.assertRaises(SelectorSyntaxError):
+            soup.select_one('div:has(> p:has(+ .b))')
+
+        tag = soup.select_one('div:has(> p:has(+ .b))', flags=NOSTRICT)
+        self.assertEqual(tag.name, 'div')
