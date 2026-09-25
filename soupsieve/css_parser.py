@@ -714,7 +714,6 @@ class CSSParser:
     def parse_attribute_selector(self, sel: _Selector, m: Match[str], has_selector: bool) -> bool:
         """Create attribute selector from the returned regex match."""
 
-        inverse = False
         op = m.group('cmp')
         case = util.lower(m.group('case')) if m.group('case') else None
         ns = css_unescape(m.group('attr_ns')[:-1]) if m.group('attr_ns') else ''
@@ -760,25 +759,19 @@ class CSSParser:
         elif op.startswith('|'):
             # Value starts with word in dash separated list
             pattern = re.compile(r'^%s(?:-.*)?$' % re.escape(value), flags)
+        elif op.startswith('!'):
+            # Value does not matches
+            pattern = re.compile(r'^(?!%s).*$' % re.escape(value), flags)
         else:
             # Value matches
             pattern = re.compile(r'^%s$' % re.escape(value), flags)
-            if op.startswith('!'):
-                # Equivalent to `:not([attr=value])`
-                inverse = True
+
         if is_type and pattern:
             pattern2 = re.compile(pattern.pattern)
 
         # Append the attribute selector
         sel_attr = ct.SelectorAttribute(attr, ns, pattern, pattern2)
-        if inverse:
-            # If we are using `!=`, we need to nest the pattern under a `:not()`.
-            sub_sel = _Selector()
-            sub_sel.attributes.append(sel_attr)
-            not_list = ct.SelectorList([sub_sel.freeze()], True, False)
-            sel.selectors.append(not_list)
-        else:
-            sel.attributes.append(sel_attr)
+        sel.attributes.append(sel_attr)
 
         has_selector = True
         return has_selector
