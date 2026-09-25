@@ -818,13 +818,11 @@ class CSSMatch(_DocumentNav):
         pkey: int | None = None
         key: tuple[int, int] | None = None
 
-        # Setup the cache by the parent if present
+        # Get the parent and use the ID for the cache key
         parent = self.get_parent(el)
         if parent is None:  # pragma: no cover
             return found
-
-        if parent:
-            pkey = id(parent)
+        pkey = id(parent)
 
         # Check the cache to see if we already know where the first sibling is,
         # and if we do, check if we are on the correct side of it.
@@ -1015,16 +1013,13 @@ class CSSMatch(_DocumentNav):
     def match_nth(self, el: bs4.Tag, nth: tuple[ct.SelectorNth, ...]) -> bool:
         """Match `nth` elements."""
 
-        # `nth` selectors are evaluated against siblings under the same parent.
-        parent = self.get_parent(el)  # type: bs4.Tag | None
-        pkey: int | None = None
         key: tuple[int, int, str | None, str | None] | None = None
         start = rindex = 0
         incr = rincr = 0
 
-        # Setup the cache by the parent, if parent a parent is present
-        if self.enable_cache and parent:
-            pkey = id(parent)
+        # Get the parent and use the ID for the cache key
+        parent = self.get_parent(el)
+        pkey = id(parent) if self.enable_cache and parent else None
 
         # Test element against the `nth` selectors.
         matched = True
