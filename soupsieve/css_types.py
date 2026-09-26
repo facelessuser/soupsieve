@@ -500,7 +500,7 @@ def _pickle(p: Immutable) -> Any:
             continue
 
         # All children have been processed, replace them with their index.
-        refs = []  # type: list[Any]
+        refs: list[Any] = []
         for i, value in enumerate(values):
             if isinstance(value, Immutable):
                 values[i] = indexes[id(value)]

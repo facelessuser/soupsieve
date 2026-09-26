@@ -367,7 +367,7 @@ class SpecialPseudoPattern(SelectorPattern):
             for pseudo in p[1]:
                 self.patterns[pseudo] = pattern
 
-        self.matched_name = None  # type: SelectorPattern | None
+        self.matched_name: SelectorPattern | None = None
 
     def get_name(self) -> str:
         """Get name."""
@@ -402,18 +402,18 @@ class _Selector:
     def __init__(self, **kwargs: Any) -> None:
         """Initialize."""
 
-        self.tag = kwargs.get('tag', None)  # type: ct.SelectorTag | None
-        self.ids = kwargs.get('ids', [])  # type: list[str]
-        self.classes = kwargs.get('classes', [])  # type: list[str]
-        self.attributes = kwargs.get('attributes', [])  # type: list[ct.SelectorAttribute]
-        self.nth = kwargs.get('nth', [])  # type: list[ct.SelectorNth]
-        self.selectors = kwargs.get('selectors', [])  # type: list[ct.SelectorList]
-        self.relations = kwargs.get('relations', [])  # type: list[_Selector]
-        self.rel_type = kwargs.get('rel_type', None)  # type: str | None
-        self.contains = kwargs.get('contains', [])  # type: list[ct.SelectorContains]
-        self.lang = kwargs.get('lang', [])  # type: list[ct.SelectorLang]
-        self.flags = kwargs.get('flags', 0)  # type: int
-        self.no_match = kwargs.get('no_match', False)  # type: bool
+        self.tag: ct.SelectorTag | None = kwargs.get('tag', None)
+        self.ids: list[str] = kwargs.get('ids', [])
+        self.classes: list[str] = kwargs.get('classes', [])
+        self.attributes: list[ct.SelectorAttribute] = kwargs.get('attributes', [])
+        self.nth: list[ct.SelectorNth] = kwargs.get('nth', [])
+        self.selectors: list[ct.SelectorList] = kwargs.get('selectors', [])
+        self.relations: list[_Selector] = kwargs.get('relations', [])
+        self.rel_type: str | None = kwargs.get('rel_type', None)
+        self.contains: list[ct.SelectorContains] = kwargs.get('contains', [])
+        self.lang: list[ct.SelectorLang] = kwargs.get('lang', [])
+        self.flags: int = kwargs.get('flags', 0)
+        self.no_match: bool = kwargs.get('no_match', False)
 
     def _freeze(self, relation: ct.SelectorList) -> ct.Selector | ct.SelectorNull:
         """Freeze self with an already frozen relation."""
@@ -444,7 +444,7 @@ class _Selector:
         frozen first, flatten the chain and then freeze it in reverse to avoid recursion.
         """
 
-        chain = []  # type: list[_Selector]
+        chain: list[_Selector] = []
         pending = [self]
         while pending:
             sel = pending.pop()

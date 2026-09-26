@@ -260,7 +260,7 @@ class _DocumentNav:
                         if child.next_sibling is not None:
                             next_good = child.next_sibling
                         else:
-                            last_child = child  # type: bs4.element.PageElement
+                            last_child: bs4.element.PageElement = child
                             while isinstance(last_child, bs4.Tag) and last_child.contents:
                                 last_child = last_child.contents[-1]
                             next_good = last_child.next_element
@@ -475,7 +475,7 @@ class Inputs:
     def parse_value(cls, itype: str, value: str | None) -> tuple[float, ...] | None:
         """Parse the input value."""
 
-        parsed = None  # type: tuple[float, ...] | None
+        parsed: tuple[float, ...] | None = None
         if value is None:
             return value
         if itype == "date":
@@ -541,11 +541,11 @@ class CSSMatch(_DocumentNav):
 
         self.assert_valid_input(scope)
         self.tag = scope
-        self.cached_meta_lang = []  # type: list[tuple[str, str]]
-        self.cached_default_forms = []  # type: list[tuple[bs4.Tag, bs4.Tag]]
-        self.cached_indeterminate_forms = []  # type: list[tuple[bs4.Tag, str, bool]]
+        self.cached_meta_lang: list[tuple[str, str]] = []
+        self.cached_default_forms: list[tuple[bs4.Tag, bs4.Tag]] = []
+        self.cached_indeterminate_forms: list[tuple[bs4.Tag, str, bool]] = []
         self.selectors = selectors
-        self.namespaces = {} if namespaces is None else namespaces  # type: ct.Namespaces | dict[str, str]
+        self.namespaces: ct.Namespaces | dict[str, str] = {} if namespaces is None else namespaces
         self.flags = flags
         self.enable_cache = not bool(self.flags & util.NOCACHE)
         self.iframe_restrict = False
@@ -558,7 +558,7 @@ class CSSMatch(_DocumentNav):
         while parent:
             doc = parent
             parent = self.get_parent(doc)
-        root = None  # type: bs4.Tag | None
+        root: bs4.Tag | None = None
         if not self.is_doc(doc):
             root = doc
         else:
@@ -992,7 +992,7 @@ class CSSMatch(_DocumentNav):
 
         is_root = self.is_root(el)
         if is_root:
-            sibling = self.get_previous(el)  # type: Any
+            sibling: Any = self.get_previous(el)
             while is_root and sibling is not None:
                 if (
                     self.is_tag(sibling) or (self.is_content_string(sibling) and sibling.strip()) or
@@ -1132,11 +1132,12 @@ class CSSMatch(_DocumentNav):
         """Check if element is empty (if requested)."""
 
         is_empty = True
+        child: Any
         for child in self.get_children(el):
             if self.is_tag(child):
                 is_empty = False
                 break
-            elif self.is_content_string(child) and RE_NOT_EMPTY.search(child):  # type: ignore[call-overload]
+            elif self.is_content_string(child) and RE_NOT_EMPTY.search(child):
                 is_empty = False
                 break
         return is_empty
@@ -1154,7 +1155,7 @@ class CSSMatch(_DocumentNav):
         """Match element if it contains text."""
 
         match = True
-        content = None  # type: str | Sequence[str] | None
+        content: str | Sequence[str] | None = None
         for contain_list in contains:
             if content is None:
                 if contain_list.own:
@@ -1184,7 +1185,7 @@ class CSSMatch(_DocumentNav):
         match = False
 
         # Find this input's form
-        form = None  # type: bs4.Tag | None
+        form: bs4.Tag | None = None
         parent = self.get_parent(el, no_iframe=True)
         while parent and form is None:
             if self.get_tag(parent) == 'form' and self.is_html_tag(parent):
@@ -1289,7 +1290,7 @@ class CSSMatch(_DocumentNav):
         has_html_namespace = self.has_html_namespace
 
         # Walk parents looking for `lang` (HTML) or `xml:lang` XML property.
-        parent = el  # type: bs4.Tag | None
+        parent: bs4.Tag | None = el
         found_lang = None
         last = None
         while not found_lang:
@@ -1646,7 +1647,7 @@ class CSSMatch(_DocumentNav):
     def closest(self) -> bs4.Tag | None:
         """Match closest ancestor."""
 
-        current = self.tag  # type: bs4.Tag | None
+        current: bs4.Tag | None = self.tag
         closest = None
         while closest is None and current is not None:
             if self.match(current):
