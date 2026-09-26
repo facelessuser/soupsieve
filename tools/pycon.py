@@ -150,6 +150,7 @@ def execute(cmd, no_except=True, init='', ipy=None, g=None):
         stmt = lines[start - 1: end]
         command = ''
         payload = '\n'.join(stmt)
+        block = False
         for i, line in enumerate(stmt, 0):
             if i == 0:
                 stmt[i] = '>>> ' + line
@@ -158,13 +159,14 @@ def execute(cmd, no_except=True, init='', ipy=None, g=None):
         if stmt:
             command += '\n'.join(stmt)
         if isinstance(node, AST_BLOCKS):
+            block = True
             command += '\n... '
 
         try:
             # Capture anything sent to standard out
             with StreamOut() as s:
                 # Execute code
-                ipy.runsource(payload)
+                ipy.runsource(payload, symbol='single' if not block else 'exec')
 
                 # Output captured standard out after statements
                 text = s.read()

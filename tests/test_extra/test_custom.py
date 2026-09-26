@@ -111,13 +111,8 @@ class TestCustomSelectors(util.TestCase):
             ":--parent": ":has(> *|*)"
         }
 
-        self.assert_selector(
-            self.MARKUP,
-            ':--parent-paragraph',
-            ['4'],
-            custom=custom_selectors,
-            flags=util.HTML
-        )
+        with self.assertRaises(sv.SelectorSyntaxError):
+            sv.compile(':--parent-paragraph', custom = custom_selectors)
 
     def test_custom_dependency_recursion(self):
         """Test that we fail on dependency recursion."""

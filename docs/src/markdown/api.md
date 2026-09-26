@@ -42,6 +42,8 @@ directly for more controlled tag selection if needed.
 > to prevent cases where impractical, massive selectors.
 >
 > Some selectors are defined as a series of other pre-defined selectors which also contribute towards the count.
+>
+> In 3.0, this has become a configurable option via the [`max_selectors`](#selector-limits) parameter.
 
 ## Flags
 
@@ -74,6 +76,34 @@ soup = BeautifulSoup(text, 'html5lib')
 import soupsieve as sv
 sv.select('p:nth-child(2n + 1)', soup)
 sv.select('p:nth-child(2n + 1)', soup, flags=sv.NOCACHE)
+```
+
+### `soupseive.NOSTRICT`
+
+> [!new] New in 3.0
+
+Soup Sieve provides more strict rules by default as of version 3.0. To relax these rules, at the cost of possible
+performance concerns, the `NOSTRICT` flag can be used to disable the strict rules and allow for some more flexible
+rules. Any selectors whose rules become relaxed with no `NOSTRICT` will specifically make mention of it.
+
+```py play session="example1" exceptions
+from bs4 import BeautifulSoup
+text = """
+<div>
+<!-- These are animals -->
+<p class="a">Cat</p>
+<p class="b">Dog</p>
+<p class="c">Mouse</p>
+</div>
+"""
+soup = BeautifulSoup(text, 'html5lib')
+
+import soupsieve as sv
+try:
+    sv.select('div:has(> p:has(+ .b + .c))', soup)
+except sv.SelectorSyntaxError:
+    print('Not allowed')
+sv.select('div:has(> p:has(+ .b + .c))', soup, flags=sv.NOSTRICT)
 ```
 
 ## `soupsieve.select_one()`
@@ -235,10 +265,12 @@ form, Soup Sieve allows assigning a complex selector to a custom pseudo-class na
 with `#!css :--` to avoid conflicts with any future pseudo-classes.
 
 To create custom selectors, you simply need to pass a dictionary containing the custom pseudo-class names (keys) with
-the associated CSS selectors that the pseudo-classes are meant to represent (values). It is important to remember that
-pseudo-class names are not case sensitive, so even though a dictionary will allow you to specify multiple keys with the
-same name (as long as the character cases are different), Soup Sieve will not and will throw an exception if you attempt
-to do so.
+the associated CSS selectors that the pseudo-classes are meant to represent (values). For best results, selectors should
+be pre-compiled with `#!py soupsieve.CustomSelectors` for best performance, especially if reusing these selectors.
+
+It is important to remember that pseudo-class names are not case sensitive, so even though a dictionary will allow you
+to specify multiple keys with the same name (as long as the character cases are different), Soup Sieve will not and will
+throw an exception if you attempt to do so.
 
 In the following example, we will define our own custom selector called `#!css :--header` that will be an alias for
 `#!css h1, h2, h3, h4, h5, h6`.
@@ -259,12 +291,15 @@ markup = """
 """
 
 soup = bs4.BeautifulSoup(markup, 'html5lib')
-sv.select(':--header', soup, custom={':--header': 'h1, h2, h3, h4, h5, h6'})
+sv.select(':--header', soup, custom=sv.CustomSelectors({':--header': 'h1, h2, h3, h4, h5, h6'}))
 ```
 
-Custom selectors can also be dependent upon other custom selectors. You don't have to worry about the order in the
-dictionary as custom selectors will be compiled "just in time" when they are needed. Be careful though, if you create
-a circular dependency, you will get a `#!py SelectorSyntaxError`.
+Custom selectors can also be dependent upon other custom selectors. The order is important, so if a selector depends on
+another custom selector, the selector should be defined after its dependency.
+
+> [!new] Change in Behavior 3.0
+> Previous to 3.0 order did not matter and custom selectors were compiled as needed recursively. Now all custom
+> custom selectors will be compiled up front and must be organized such that selector dependencies _must_ come first.
 
 Assuming the same markup as in the first example, we will now create a custom selector that should find any element that
 has child elements, we will call the selector `#!css :--parent`. Then we will create another selector called
@@ -272,10 +307,12 @@ has child elements, we will call the selector `#!css :--parent`. Then we will cr
 parents:
 
 ```py play session="example2"
-custom = {
-    ":--parent": ":has(> *|*)",
-    ":--parent-paragraph": "p:--parent"
-}
+custom = sv.CustomSelectors(
+    {
+        ":--parent": ":has(> *|*)",
+        ":--parent-paragraph": "p:--parent"
+    }
+)
 sv.select(':--parent-paragraph', soup, custom=custom)
 ```
 
@@ -319,11 +356,29 @@ exposed to untrusted user inputs. While Beautiful Soup (along with Soup Sieve) a
 critical, high performance systems, if you are in an environment where the risk of using a specific pseudo-class is not
 tolerable, you can use the `ignore` option to specify and fail if they are used.
 
-```py
+```py play exceptions
 import soupsieve as sv
+sv.compile('*:has(a)')
 try:
     sv.compile('*:has(a)', ignore=[':has'])
 except sv.SelectorSyntaxError:
-    # Captured disallowed usage of `:has`
-    pass
+    print('Not allowed')
+```
+
+## Selector Limits
+
+> [!new] New in 3.0
+
+By default, selectors are limited 8192 selectors (or `0x2000`). To give users more control, a new parameter called
+`max_selectors` has been added and can be used to override the default selector limit with whatever is most appropriate
+for the environment Soup Sieve is running in.
+
+
+```py play exceptions
+import soupsieve as sv
+sv.compile('.a, .b, .c')
+try:
+    sv.compile('.a, .b, .c', max_selectors=2)
+except ValueError:
+    print('Too many selectors')
 ```
