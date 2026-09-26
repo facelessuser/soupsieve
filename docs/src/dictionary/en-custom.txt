@@ -4,6 +4,7 @@ Aspell
 BCP
 BeautifulSoup
 CDATA
+CPython
 CSS
 CSS's
 CVE
@@ -22,6 +23,7 @@ NONINFRINGEMENT
 Precompile
 PyPI
 PyPI's
+PyPy
 PySpelling
 SVG
 TODO
@@ -67,11 +69,14 @@ namespaces
 newline
 parser's
 parsers
+performant
 postfix
 pre
 prerelease
 prereleases
 pytest
+recurse
+recursing
 regex
 sublicense
 substring
@@ -86,6 +91,7 @@ un
 unclosed
 unmatchable
 unpickle
+unpickling
 untagged
 untrusted
 unvisited

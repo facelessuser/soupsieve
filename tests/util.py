@@ -109,7 +109,7 @@ class TestCase(unittest.TestCase):
         with self.assertRaises(exception):
             self.compile_pattern(pattern, namespaces=namespace, custom=custom)
 
-    def assert_selector(self, markup, selectors, expected_ids, namespaces=None, custom=None, flags=0):
+    def assert_selector(self, markup, selectors, expected_ids, namespaces=None, custom=None, flags=0, options=0):
         """Assert selector."""
 
         if namespaces is None:
@@ -119,7 +119,7 @@ class TestCase(unittest.TestCase):
 
         print('----Running Selector Test----')
         for caching in cache_states:
-            selector = self.compile_pattern(selectors, namespaces, custom, flags=caching)
+            selector = self.compile_pattern(selectors, namespaces, custom, flags=caching | options)
             for parser in available_parsers(*parsers):
                 soup = self.soup(markup, parser)
                 # print(soup)

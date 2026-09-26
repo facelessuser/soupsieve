@@ -3,6 +3,16 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 3.0
+
+-   **BREAK**: `:has()`, by default, now behaves according to CSS more strictly, disallowing complex selectors that use
+    combinators and prevents nesting `:has()` within `:has()`. This gives a safer, more performant default for Soup
+    Sieve. If in a safe environment, these restrictions can be lifted by passing the new `NOSTRICT` flag restoring
+    behavior to before 3.0.
+-   **NEW**: Eliminate recursion within the parser and the matcher.
+-   **NEW**: Expose new parameter `max_selectors` that can be used to control the maximum allowed selectors in a given
+    input.
+
 ## 2.10
 
 -   **NEW**: Support Python 3.15.

@@ -42,6 +42,8 @@ directly for more controlled tag selection if needed.
 > to prevent cases where impractical, massive selectors.
 >
 > Some selectors are defined as a series of other pre-defined selectors which also contribute towards the count.
+>
+> In 3.0, this has become a configurable option via the [`max_selectors`](#selector-limits) parameter.
 
 ## Flags
 
@@ -74,6 +76,34 @@ soup = BeautifulSoup(text, 'html5lib')
 import soupsieve as sv
 sv.select('p:nth-child(2n + 1)', soup)
 sv.select('p:nth-child(2n + 1)', soup, flags=sv.NOCACHE)
+```
+
+### `soupseive.NOSTRICT`
+
+> [!new] New in 3.0
+
+Soup Sieve provides more strict rules by default as of version 3.0. To relax these rules, at the cost of possible
+performance concerns, the `NOSTRICT` flag can be used to disable the strict rules and allow for some more flexible
+rules. Any selectors whose rules become relaxed with no `NOSTRICT` will specifically make mention of it.
+
+```py play session="example1" exceptions
+from bs4 import BeautifulSoup
+text = """
+<div>
+<!-- These are animals -->
+<p class="a">Cat</p>
+<p class="b">Dog</p>
+<p class="c">Mouse</p>
+</div>
+"""
+soup = BeautifulSoup(text, 'html5lib')
+
+import soupsieve as sv
+try:
+    sv.select('div:has(> p:has(+ .b + .c))', soup)
+except sv.SelectorSyntaxError:
+    print('Not allowed')
+sv.select('div:has(> p:has(+ .b + .c))', soup, flags=sv.NOSTRICT)
 ```
 
 ## `soupsieve.select_one()`
@@ -319,11 +349,29 @@ exposed to untrusted user inputs. While Beautiful Soup (along with Soup Sieve) a
 critical, high performance systems, if you are in an environment where the risk of using a specific pseudo-class is not
 tolerable, you can use the `ignore` option to specify and fail if they are used.
 
-```py
+```py play exceptions
 import soupsieve as sv
+sv.compile('*:has(a)')
 try:
     sv.compile('*:has(a)', ignore=[':has'])
 except sv.SelectorSyntaxError:
-    # Captured disallowed usage of `:has`
-    pass
+    print('Not allowed')
+```
+
+## Selector Limits
+
+> [!new] New in 3.0
+
+By default, selectors are limited 8192 selectors (or `0x2000`). To give users more control, a new parameter called
+`max_selectors` has been added and can be used to override the default selector limit with whatever is most appropriate
+for the environment Soup Sieve is running in.
+
+
+```py play exceptions
+import soupsieve as sv
+sv.compile('.a, .b, .c')
+try:
+    sv.compile('.a, .b, .c', max_selectors=2)
+except ValueError:
+    print('Too many selectors')
 ```

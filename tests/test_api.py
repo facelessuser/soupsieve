@@ -453,6 +453,100 @@ class TestSoupSieve(util.TestCase):
         self.assertTrue(p5 == p3)
         self.assertTrue(p5 is not p4)
 
+    def test_pickle_nested(self):
+        """Test pickling selectors that contain nested selector objects."""
+
+        # Avoid "no match" pseudo-classes, such as `:focus`, as they reduce the entire compound
+        # selector to `ct.Null`, and none of the nested objects would be pickled.
+        markup = """
+        <div>
+        <p id="id" class="class a" lang="en">some text<span class="b"></span></p>
+        <p id="other" class="class" lang="en">some text<span class="b"></span></p>
+        </div>
+        <h1 id="header"></h1>
+        """
+
+        p1 = sv.compile(
+            'div > p.class#id[id]:nth-child(1 of .class):lang(en):-soup-contains("text"):has(> span:is(.a, .b)), '
+            ':--header',
+            {'html': 'http://www.w3.org/TR/html4/'},
+            custom={':--header': 'h1, h2'}
+        )
+        pp1 = pickle.loads(pickle.dumps(p1))
+        self.assertTrue(pp1 is not p1)
+        self.assertTrue(pp1 == p1)
+
+        # Deep copies are made in the same way as pickling.
+        p2 = copy.deepcopy(p1)
+        self.assertTrue(p2 is not p1)
+        self.assertTrue(p2 == p1)
+
+        soup = self.soup(markup, 'html.parser')
+        ids = ['id', 'header']
+        self.assertEqual([el.attrs['id'] for el in p1.select(soup)], ids)
+        self.assertEqual([el.attrs['id'] for el in pp1.select(soup)], ids)
+        self.assertEqual([el.attrs['id'] for el in p2.select(soup)], ids)
+
+    def test_pickle_null_and_selector(self):
+        """Test pickling a selector list that mixes null selectors with real selectors."""
+
+        # `:focus` can never match, so the first selector is `ct.Null`, while the second is a real selector.
+        p1 = sv.compile('p:focus, div')
+        self.assertTrue(p1.selectors[0] is sv.ct.Null)
+        self.assertTrue(isinstance(p1.selectors[1], sv.ct.Selector))
+
+        pp1 = pickle.loads(pickle.dumps(p1))
+        self.assertTrue(pp1 == p1)
+        self.assertTrue(pp1.selectors[0] is sv.ct.Null)
+        self.assertTrue(isinstance(pp1.selectors[1], sv.ct.Selector))
+        self.assertTrue(pp1.selectors[1] is not p1.selectors[1])
+
+    def test_pickle_shared(self):
+        """Test that objects shared within a selector are still shared after pickling."""
+
+        # The built-in selector list for `:checked` is reused each time it is referenced.
+        p1 = sv.compile(':checked:checked')
+        first, second = p1.selectors[0].selectors
+        self.assertTrue(first is second)
+
+        pp1 = pickle.loads(pickle.dumps(p1))
+        self.assertTrue(pp1 == p1)
+        first, second = pp1.selectors[0].selectors
+        self.assertTrue(first is second)
+        self.assertTrue(first is not p1.selectors[0].selectors[0])
+
+        # A shared object is only stored once, so referencing it twice doesn't add to what is pickled.
+        _, (nodes1,) = sv.ct._pickle(p1)
+        _, (nodes2,) = sv.ct._pickle(sv.compile(':checked'))
+        self.assertEqual(len(nodes1), len(nodes2))
+
+    def test_equal_shared(self):
+        """Test equality of distinct selectors that share nested objects."""
+
+        # Different namespaces cause separate compiles, but the built-in selector list for `:checked`
+        # is reused by both, so the comparison reaches the same nested object on both sides.
+        p1 = sv.compile(':checked').selectors
+        p2 = sv.compile(':checked', namespaces={'x': 'y'}).selectors
+        self.assertTrue(p1 is not p2)
+        self.assertTrue(p1[0].selectors[0] is p2[0].selectors[0])
+        self.assertTrue(p1 == p2)
+        self.assertFalse(p1 != p2)
+
+    @pytest.mark.skipif(hash(-1) != hash(-2), reason='requires `-1` and `-2` to have the same hash')
+    def test_equal_hash_collision(self):
+        """Test that selectors with the same hash, but different values, are not equal."""
+
+        # `-1` and `-2` have the same hash in CPython (and PyPy), so these selectors only differ by `a`
+        # in `an+b`, which isn't reflected in the hash. Equality must compare the values.
+        # This is an implementation detail, so the test is skipped where it doesn't hold.
+        p1 = sv.compile(':nth-child(-n+3)').selectors
+        p2 = sv.compile(':nth-child(-2n+3)').selectors
+        self.assertEqual(p1[0].nth[0].a, -1)
+        self.assertEqual(p2[0].nth[0].a, -2)
+        self.assertEqual(hash(p1), hash(p2))
+        self.assertFalse(p1 == p2)
+        self.assertTrue(p1 != p2)
+
     def test_cache(self):
         """Test cache."""
 

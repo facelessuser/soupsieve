@@ -395,7 +395,7 @@ contains whitespace or special characters, you should quote them with either sin
 /// define
 `#!css [attribute!=value]`:material-star:{: title="Custom" data-md-color-primary="green" .icon}
 
--   Equivalent to `#!css :not([attribute=value])`.
+-   Similar to `#!css :not([attribute=value])`.
 
     //// tab | Syntax
     ```css
