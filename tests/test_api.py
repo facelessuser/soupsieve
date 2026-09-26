@@ -642,7 +642,7 @@ class TestInvalid(util.TestCase):
         """Test custom selector has hashable value."""
 
         with self.assertRaises(TypeError):
-            sv.ct.CustomSelectors({'a': {}})
+            sv.ct.CustomSelectors({':--a': {}})
 
     def test_invalid_custom_hashable_key(self):
         """Test custom selector key is hashable."""

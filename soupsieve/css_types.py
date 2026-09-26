@@ -18,7 +18,6 @@ __all__ = (
     'CustomSelectors'
 )
 
-
 SEL_EMPTY = 0x1
 SEL_ROOT = 0x2
 SEL_DEFAULT = 0x4
@@ -445,23 +444,39 @@ class Namespaces(ImmutableDict[str, str]):
         """Validate arguments."""
 
         if not all(isinstance(k, str) and isinstance(v, str) for k, v in arg.items()):
-            raise TypeError(f'{self.__class__.__name__} values must be hashable')
+            raise TypeError(f'{self.__class__.__name__} keys and values must be strings')
 
 
-class CustomSelectors(ImmutableDict[str, str | SelectorList]):
+class CustomSelectors(ImmutableDict[str, SelectorList]):
     """Custom selectors."""
 
-    def __init__(self, arg: Mapping[str, str | SelectorList]) -> None:
+    def __init__(self, arg: Mapping[str, str | SelectorList], max_selectors: int | None = None) -> None:
         """Initialize."""
 
-        self._validate(arg)
-        super().__init__(arg)
+        from . import css_parser as cp
 
-    def _validate(self, arg: Mapping[str, str | SelectorList]) -> None:
-        """Validate arguments."""
+        if max_selectors is None:
+            max_selectors = cp.SELECTOR_LIMIT
 
-        if not all(isinstance(k, str) and isinstance(v, str) for k, v in arg.items()):
-            raise TypeError(f'{self.__class__.__name__} values must be hashable')
+        self._d = {}
+        for k, v in arg.items():
+            if not isinstance(k, str):
+                raise TypeError(f'{self.__class__.__name__} keys must be strings')
+            # Validate key
+            k = cp.css_unescape(k).lower()
+            if k in self._d:
+                raise KeyError(f'Custom selector {k} was defined twice')
+            if cp.RE_CUSTOM.match(k) is None:
+                raise cp.SelectorSyntaxError(f"The name '{k}' is not a valid custom pseudo-class name")
+            # Compile value
+            if isinstance(v, str):
+                v = cp.CSSParser(v, max_selectors=max_selectors, custom=self._d).process_selectors(flags=cp.FLG_PSEUDO)
+            elif not isinstance(v, SelectorList):
+                raise TypeError(f"Custom selector values must be either 'str' or 'SelectorList', not {type(v)}")
+            # Monitor count
+            max_selectors -= v.count
+            self._d[k] = v
+        self._hash = hash(tuple([(x, y) for x, y in sorted(self._d.items())] + [max_selectors]))
 
 
 def _pickle(p: Immutable) -> Any:

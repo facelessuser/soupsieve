@@ -9,6 +9,10 @@ icon: lucide/scroll-text
     combinators and prevents nesting `:has()` within `:has()`. This gives a safer, more performant default for Soup
     Sieve. If in a safe environment, these restrictions can be lifted by passing the new `NOSTRICT` flag restoring
     behavior to before 3.0.
+-   **BREAK**: Custom selectors must be provided in order. If one custom selector depends on another custom selector,
+    the custom selector dependency must be defined first in the dictionary. This eliminates recursive processing of
+    custom selectors. Users are encouraged to pre-compile custom selectors via
+    `my_selectors = soupsive.CustomSelectors({custm: selector, ...})`.
 -   **NEW**: Eliminate recursion within the parser and the matcher.
 -   **NEW**: Expose new parameter `max_selectors` that can be used to control the maximum allowed selectors in a given
     input.

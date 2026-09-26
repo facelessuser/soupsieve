@@ -7,10 +7,12 @@ from . import css_match as cm
 from . import css_types as ct
 from .util import SelectorSyntaxError
 import warnings
-from typing import Match, Any, Callable, Iterator, Iterable, cast
+from typing import Match, Any, Callable, Iterator, Iterable, Mapping, cast
 from dataclasses import dataclass
 from collections import UserDict
 import threading
+
+__all__ = ('SelectorSyntaxError',)
 
 RE_LOCK = threading.Lock()
 SEL_LOCK = threading.RLock()
@@ -228,12 +230,11 @@ def _cached_css_compile(
 ) -> cm.SoupSieve:
     """Cached CSS compile."""
 
-    custom_selectors = process_custom(custom)
     return cm.SoupSieve(
         pattern,
         CSSParser(
             pattern,
-            custom=custom_selectors,
+            custom=custom,
             ignore=ignore,
             flags=flags,
             max_selectors=max_selectors
@@ -248,21 +249,6 @@ def _purge_cache() -> None:
     """Purge the cache."""
 
     _cached_css_compile.cache_clear()
-
-
-def process_custom(custom: ct.CustomSelectors | None) -> dict[str, str | ct.SelectorList]:
-    """Process custom."""
-
-    custom_selectors = {}
-    if custom is not None:
-        for key, value in custom.items():
-            name = util.lower(key)
-            if RE_CUSTOM.match(name) is None:
-                raise SelectorSyntaxError(f"The name '{name}' is not a valid custom pseudo-class name")
-            if name in custom_selectors:
-                raise KeyError(f"The custom selector '{name}' has already been registered")
-            custom_selectors[css_unescape(name)] = value
-    return custom_selectors
 
 
 def css_unescape(content: str) -> str:
@@ -761,7 +747,7 @@ class CSSParser:
         self,
         selector: str,
         *,
-        custom: dict[str, str | ct.SelectorList] | None = None,
+        custom: Mapping[str, ct.SelectorList] | None = None,
         ignore: Iterable[str] | None = None,
         flags: int = 0,
         max_selectors: int = SELECTOR_LIMIT
@@ -772,7 +758,7 @@ class CSSParser:
         self.flags = flags
         self.debug = self.flags & util.DEBUG
         self.nostrict = self.flags & util.NOSTRICT
-        self.custom = {} if custom is None else custom
+        self.custom = custom
         self.ignore = frozenset([] if ignore is None else ignore)
         self.count = 0
         self.maxsel = max_selectors
@@ -867,24 +853,13 @@ class CSSParser:
         """
 
         pseudo = util.lower(css_unescape(m.group('name')))
-        selector = self.custom.get(pseudo)
+        selector = self.custom.get(pseudo) if self.custom is not None else None
         if selector is None:
             raise SelectorSyntaxError(
                 f"Undefined custom selector '{pseudo}' found at position {m.end(0)}",
                 self.pattern,
                 m.end(0)
             )
-
-        if not isinstance(selector, ct.SelectorList):
-            del self.custom[pseudo]
-            selector = CSSParser(
-                selector,
-                custom=self.custom,
-                flags=self.flags,
-                ignore=self.ignore,
-                max_selectors=self.maxsel - self.count
-            ).process_selectors(flags=FLG_PSEUDO)
-            self.custom[pseudo] = selector
 
         self.increment_count(selector.count)
         sel.selectors.append(selector)

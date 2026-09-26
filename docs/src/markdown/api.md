@@ -265,10 +265,12 @@ form, Soup Sieve allows assigning a complex selector to a custom pseudo-class na
 with `#!css :--` to avoid conflicts with any future pseudo-classes.
 
 To create custom selectors, you simply need to pass a dictionary containing the custom pseudo-class names (keys) with
-the associated CSS selectors that the pseudo-classes are meant to represent (values). It is important to remember that
-pseudo-class names are not case sensitive, so even though a dictionary will allow you to specify multiple keys with the
-same name (as long as the character cases are different), Soup Sieve will not and will throw an exception if you attempt
-to do so.
+the associated CSS selectors that the pseudo-classes are meant to represent (values). For best results, selectors should
+be pre-compiled with `#!py soupsieve.CustomSelectors` for best performance, especially if reusing these selectors.
+
+It is important to remember that pseudo-class names are not case sensitive, so even though a dictionary will allow you
+to specify multiple keys with the same name (as long as the character cases are different), Soup Sieve will not and will
+throw an exception if you attempt to do so.
 
 In the following example, we will define our own custom selector called `#!css :--header` that will be an alias for
 `#!css h1, h2, h3, h4, h5, h6`.
@@ -289,12 +291,15 @@ markup = """
 """
 
 soup = bs4.BeautifulSoup(markup, 'html5lib')
-sv.select(':--header', soup, custom={':--header': 'h1, h2, h3, h4, h5, h6'})
+sv.select(':--header', soup, custom=sv.CustomSelectors({':--header': 'h1, h2, h3, h4, h5, h6'}))
 ```
 
-Custom selectors can also be dependent upon other custom selectors. You don't have to worry about the order in the
-dictionary as custom selectors will be compiled "just in time" when they are needed. Be careful though, if you create
-a circular dependency, you will get a `#!py SelectorSyntaxError`.
+Custom selectors can also be dependent upon other custom selectors. The order is important, so if a selector depends on
+another custom selector, the selector should be defined after its dependency.
+
+> [!new] Change in Behavior 3.0
+> Previous to 3.0 order did not matter and custom selectors were compiled as needed recursively. Now all custom
+> custom selectors will be compiled up front and must be organized such that selector dependencies _must_ come first.
 
 Assuming the same markup as in the first example, we will now create a custom selector that should find any element that
 has child elements, we will call the selector `#!css :--parent`. Then we will create another selector called
@@ -302,10 +307,12 @@ has child elements, we will call the selector `#!css :--parent`. Then we will cr
 parents:
 
 ```py play session="example2"
-custom = {
-    ":--parent": ":has(> *|*)",
-    ":--parent-paragraph": "p:--parent"
-}
+custom = sv.CustomSelectors(
+    {
+        ":--parent": ":has(> *|*)",
+        ":--parent-paragraph": "p:--parent"
+    }
+)
 sv.select(':--parent-paragraph', soup, custom=custom)
 ```
 
