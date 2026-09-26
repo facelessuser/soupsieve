@@ -197,7 +197,7 @@ class TestHas(util.TestCase):
         <p class="c">Mouse</p>
         </div>
         """
-        soup = BeautifulSoup(text, 'html5lib')
+        soup = BeautifulSoup(text, 'html.parser')
 
         with self.assertRaises(SelectorSyntaxError):
             soup.select_one('div:has(> p:has(+ .b))')
