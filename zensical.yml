@@ -177,6 +177,8 @@ extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/facelessuser
+  zensical_pymdownx:
+    sponsor: https://github.com/sponsors/facelessuser
 
 plugins:
   - search:
