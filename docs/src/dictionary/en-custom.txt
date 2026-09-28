@@ -1,6 +1,7 @@
 API
 Accessors
 Aspell
+Autodetect
 BCP
 BeautifulSoup
 CDATA
@@ -30,6 +31,7 @@ TODO
 Tidelift
 Tox
 Twemoji
+URIs
 URL's
 UTF
 Unescape
