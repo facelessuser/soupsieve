@@ -16,6 +16,7 @@ icon: lucide/scroll-text
 -   **NEW**: Eliminate recursion within the parser and the matcher.
 -   **NEW**: Expose new parameter `max_selectors` that can be used to control the maximum allowed selectors in a given
     input.
+-   **FIX**: A CSS escape that is a surrogate, or past the Unicode range, is `U+FFFD`. (#307)
 
 ## 2.10
 
