@@ -24,7 +24,7 @@ class TestEscapes(util.TestCase):
         )
 
     def test_surrogate_escape_is_replacement(self):
-        """A surrogate escape is U+FFFD, and so is a code point past Unicode."""
+        """A surrogate escape is `U+FFFD`, and so is a code point past Unicode."""
 
         from soupsieve.css_parser import css_unescape
 

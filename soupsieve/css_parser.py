@@ -263,7 +263,7 @@ def css_unescape(content: str) -> str:
 
         if m.group(1):
             codepoint = int(m.group(1)[1:], 16)
-            # A surrogate, or a value past Unicode, is U+FFFD. Zero already is.
+            # A surrogate, or a value past Unicode, is `U+FFFD`. Zero already is.
             if (
                 codepoint == 0
                 or codepoint > 0x10FFFF
