@@ -5,6 +5,8 @@ icon: lucide/scroll-text
 
 ## 3.0
 
+-   **FIX**: A CSS escape that is a surrogate, or past the Unicode range, is U+FFFD.
+    https://github.com/facelessuser/soupsieve/issues/307
 -   **BREAK**: `:has()`, by default, now behaves according to CSS more strictly, disallowing complex selectors that use
     combinators and prevents nesting `:has()` within `:has()`. This gives a safer, more performant default for Soup
     Sieve. If in a safe environment, these restrictions can be lifted by passing the new `NOSTRICT` flag restoring
