@@ -13,6 +13,8 @@ icon: lucide/scroll-text
     the custom selector dependency must be defined first in the dictionary. This eliminates recursive processing of
     custom selectors. Users are encouraged to pre-compile custom selectors via
     `my_selectors = soupsive.CustomSelectors({custm: selector, ...})`.
+-   **NEW**: Drop Python 3.10.
+-   **NEW**: Aggressively use possessive quantifiers and atomic groups in CSS pattern parsing to reduce backtracking.
 -   **NEW**: Eliminate recursion within the parser and the matcher.
 -   **NEW**: Expose new parameter `max_selectors` that can be used to control the maximum allowed selectors in a given
     input.
@@ -21,8 +23,6 @@ icon: lucide/scroll-text
 ## 2.10
 
 -   **NEW**: Support Python 3.15.
--   **NEW**: Drop Python 3.10.
--   **NEW**: Aggressively use possessive quantifiers and atomic groups in CSS pattern parsing to reduce backtracking.
 -   **NEW**: Add new `ignore` option to API methods that allows the specification of specific pseudo-classes to be
     ignored.
 -   **NEW**: Tighten restrictions such that `namespaces` and `custom` objects must always be a Mapping, previously lists
