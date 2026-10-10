@@ -1709,7 +1709,7 @@ be considered matching.
 > > ```
 >
 > Additionally, using [`#!css anchor:-soup-contains-own()`](#:-soup-contains-own) can limit crawling to just the
-> immediate children under the anchor, providing better performance at the cost of of a more shallow search.
+> immediate children under the anchor, providing better performance at the cost of a more shallow search.
 >
 > If the risk of performance concerns from untrusted user input cannot be tolerated in a specific project,
 > `#!css :-soup-contains` can be disabled using the [`ignore`](../api.md#ignore-pseudo-class) option.
