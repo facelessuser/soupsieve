@@ -793,6 +793,8 @@ class CSSMatch(_DocumentNav):
             for a in attributes:
                 temp = self.match_attribute_name(el, a.attribute, a.prefix)
                 pattern = a.xml_type_pattern if self.is_xml and a.xml_type_pattern else a.pattern
+                if temp is None and a.inverse:
+                    continue
                 if temp is None:
                     match = False
                     break

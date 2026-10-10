@@ -90,3 +90,28 @@ class TestAttribute(util.TestCase):
             finally:
                 signal.alarm(0)
             self.assertTrue(passed)
+
+
+class TestAttributeEquivalence(util.TestCase):
+    """Test attribute selectors."""
+
+    MARKUP = """
+    <table id="0"><tr id="1"><td id="2">a</td><td id="3" class="center">b</td><td id="4" class="x y">c</td></tr></table>
+    """
+
+    def test_missing_attribute(self):
+        """Test missing attribute."""
+
+        # `[attr!=value]` == `:not([attr=value])`
+        self.assert_selector(
+            self.MARKUP,
+            'td[class!="center micro screen-only"]',
+            ["2", "3", "4"],
+            flags=util.HTML5
+        )
+        self.assert_selector(
+            self.MARKUP,
+            "td:not([class='center micro screen-only'])",
+            ["2", "3", "4"],
+            flags=util.HTML5
+        )
