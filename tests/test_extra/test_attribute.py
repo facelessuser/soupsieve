@@ -92,7 +92,7 @@ class TestAttribute(util.TestCase):
             self.assertTrue(passed)
 
 
-class TestAttribute(util.TestCase):
+class TestAttributeEquivalence(util.TestCase):
     """Test attribute selectors."""
 
     MARKUP = """
