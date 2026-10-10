@@ -3,6 +3,12 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 3.0.1
+
+-   **FIX**: Fix regression related to `[attribute!=value]` where previously it would match if the attribute was not
+    present and recent changes broke that. Essentially, `[attribute!=value]` should be the same as
+    `:not([attribute=value])`.
+
 ## 3.0
 
 -   **BREAK**: `:has()`, by default, now behaves according to CSS more strictly, disallowing complex selectors that use

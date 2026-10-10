@@ -785,6 +785,7 @@ class CSSParser:
         is_type = False
         pattern2 = None
         value = ''
+        inverse = False
 
         if case:
             flags = (re.I if case == 'i' else 0) | re.DOTALL
@@ -826,6 +827,7 @@ class CSSParser:
         elif op.startswith('!'):
             # Value does not matches
             pattern = re.compile(r'^(?!%s).*$' % re.escape(value), flags)
+            inverse = True
         else:
             # Value matches
             pattern = re.compile(r'^%s$' % re.escape(value), flags)
@@ -834,7 +836,7 @@ class CSSParser:
             pattern2 = re.compile(pattern.pattern)
 
         # Append the attribute selector
-        sel_attr = ct.SelectorAttribute(attr, ns, pattern, pattern2)
+        sel_attr = ct.SelectorAttribute(attr, ns, pattern, pattern2, inverse)
         sel.attributes.append(sel_attr)
 
         has_selector = True
