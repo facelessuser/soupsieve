@@ -1341,9 +1341,7 @@ class CSSMatch(_DocumentNav):
 
             # Search meta tags
             if found and parent is not None:
-                print('parent', parent)
                 for child2 in parent:
-                    print('child2', child2)
                     if isinstance(child2, bs4.Tag) and self.get_tag(child2) == 'meta' and self.is_html_tag(parent):
                         c_lang = False
                         content = None
