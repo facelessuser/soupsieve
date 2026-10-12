@@ -58,3 +58,11 @@ class TestChild(util.TestCase):
 
         self.assert_raises('> p', SelectorSyntaxError)
         self.assert_raises('div, > a', SelectorSyntaxError)
+
+    def test_document_object_not_parent(self):
+        """Test that the `BeautifulSoup` object is not counted as a parent."""
+
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup("<r><c></c></r>", "html.parser")
+        self.assertEqual(soup.select("* > r"), [])
+        self.assertEqual(soup.select("* > r:root"), [])
