@@ -204,3 +204,33 @@ class TestHas(util.TestCase):
 
         tag = soup.select_one('div:has(> p:has(+ .b))', flags=NOSTRICT)
         self.assertEqual(tag.name, 'div')
+
+    def test_only_later_siblings_valid(self):
+        """Test that earlier siblings do not count."""
+
+        self.assert_selector(
+            '<div id="1"><a id="2"></a><b id="3"></b><c id="4"></c></div>',
+            "div > :has(~ b)",
+            ['2'],
+            flags=util.HTML
+        )
+
+    def test_only_later_siblings_valid_preceding(self):
+        """Test that the sibling immediately before the match is not excluded."""
+
+        self.assert_selector(
+            '<div id="0"><x id="1"></x><a id="2"></a><b id="3"></b><c id="4"></c></div>',
+            "div > :has(~ b)",
+            ['1', '2'],
+            flags=util.HTML
+        )
+
+    def test_only_later_siblings_valid_multiple(self):
+        """Test general sibling matching with multiple candidate siblings."""
+
+        self.assert_selector(
+            '<div><a id="1"></a><b id="2"></b><a id="3"></a><b id="4"></b><a id="5"></a></div>',
+            "div > :has(~ b)",
+            ['1', '2', '3'],
+            flags=util.HTML
+        )

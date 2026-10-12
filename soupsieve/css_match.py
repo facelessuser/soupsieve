@@ -857,7 +857,7 @@ class CSSMatch(_DocumentNav):
             if key in self.sib_cache:
                 index = self.sib_cache[key]
                 if index >= 0:
-                    a, b = (index, start) if reverse else (start, index)
+                    a, b = (index + 1, start + 1) if reverse else (start, index)
                     return not within(el, parent, a, b)
                 else:
                     return False

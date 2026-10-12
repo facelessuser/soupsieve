@@ -6,6 +6,8 @@ icon: lucide/scroll-text
 ## 3.0.3
 
 -   **FIX**: When matching with `>`, the `BeautifulSoup` object should not count as a parent.
+-   **FIX**: Fix case where relative sibling matching under `:has(~)` would incorrectly match a sibling that came before
+    the target element.
 
 ## 3.0.2
 
