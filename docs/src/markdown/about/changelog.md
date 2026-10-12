@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 3.0.3
+
+-   **FIX**: When matching with `>`, the `BeautifulSoup` object should not count as a parent.
+
 ## 3.0.2
 
 -   **FIX**: Python versions less than 3.11.5 have broken possessive quantifiers, so require at least 3.11.5 for Soup
