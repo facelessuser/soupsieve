@@ -3,6 +3,12 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 3.0.2
+
+-   **FIX**: Python versions less than 3.11.5 have broken possessive quantifiers, so require at least 3.11.5 for Soup
+    Sieve 3.0+. 3.0 and 3.0.1 will be yanked from PyPI to avoid having the 3.0 series installed on Python < 3.11.5
+    which will cause the library to be broken.
+
 ## 3.0.1
 
 -   **FIX**: Fix regression related to `[attribute!=value]` where previously it would match if the attribute was not
