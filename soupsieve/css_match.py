@@ -1,6 +1,7 @@
 """CSS matcher."""
 from __future__ import annotations
 from datetime import datetime
+from math import isfinite
 from collections.abc import Hashable
 from . import util
 import re
@@ -55,7 +56,7 @@ DIR_MAP = {
     'auto': 0
 }
 
-RE_NUM = re.compile(r"^(?P<value>-?(?:[0-9]{1,}(\.[0-9]+)?|\.[0-9]+))$")
+RE_NUM = re.compile(r"^(?P<value>-?(?:[0-9]+(?:\.[0-9]+)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?)$")
 RE_TIME = re.compile(r'^(?P<hour>[0-9]{2}):(?P<minutes>[0-9]{2})$')
 RE_MONTH = re.compile(r'^(?P<year>[0-9]{4,})-(?P<month>[0-9]{2})$')
 RE_WEEK = re.compile(r'^(?P<year>[0-9]{4,})-W(?P<week>[0-9]{2})$')
@@ -525,7 +526,9 @@ class Inputs:
         elif itype in ("number", "range"):
             m = RE_NUM.match(value)
             if m:
-                parsed = (float(m.group('value')),)
+                number = float(m.group('value'))
+                if isfinite(number):
+                    parsed = (number,)
         return parsed
 
 
