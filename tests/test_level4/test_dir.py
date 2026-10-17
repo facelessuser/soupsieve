@@ -81,14 +81,14 @@ class TestDir(util.TestCase):
         self.assert_selector(
             self.MARKUP,
             "span:dir(rtl)",
-            ['2', '5', '7'],
+            ['2', '7'],
             flags=util.HTML
         )
 
         self.assert_selector(
             self.MARKUP,
             "span:dir(ltr)",
-            ['8'],
+            ['5', '8'],
             flags=util.HTML
         )
 
@@ -98,8 +98,40 @@ class TestDir(util.TestCase):
         self.assert_selector(
             self.MARKUP,
             ":is(input, textarea):dir(ltr)",
-            ['9', '10', '11', '12', '13'],
+            ['9', '10', '11', '12', '13', '15', '16', '18'],
             flags=util.HTML5
+        )
+
+    def test_dir_auto_nested(self):
+        """Test nested auto direction resolved from ancestors."""
+
+        markup = """
+        <html id="0">
+        <head></head>
+        <body>
+        <div id="1" dir="auto">עִבְרִית
+          <div id="2" dir="auto">()
+            <div id="3" dir="auto"><span id="4">()</span></div>
+          </div>
+          <div id="5" dir="auto">test<span id="6">()</span></div>
+          <span id="7">()</span>
+        </div>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            ":is(div, span):dir(rtl)",
+            ["1","7"],
+            flags=util.HTML | util.NOCACHE
+        )
+
+        self.assert_selector(
+            markup,
+            ":is(div, span):dir(ltr)",
+            ["2","3","4","5","6"],
+            flags=util.HTML | util.NOCACHE
         )
 
     def test_dir_on_root(self):
