@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## Unreleased
+
+-   **FIX**: Match numeric input ranges correctly when values or bounds use scientific notation.
+
 ## 3.0.3
 
 -   **FIX**: When matching with `>`, the `BeautifulSoup` object should not count as a parent.

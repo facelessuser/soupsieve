@@ -5,6 +5,31 @@ from .. import util
 class TestInRange(util.TestCase):
     """Test in range selectors."""
 
+    def test_in_range_numeric_exponents(self):
+        """Match numeric values and bounds written in scientific notation."""
+
+        markup = """
+        <input id="0" type="number" min="1e1" max="2E1" value="15">
+        <input id="1" type="number" min="1E-1" value="0.05">
+        <input id="2" type="number" max="2e+1" value="25">
+        <input id="3" type="number" min="0" max="10" value="1e2">
+        <input id="4" type="number" min="-20" max="-10" value="-1.5e1">
+        <input id="5" type="number" min="0" max="1" value=".5E+0">
+        <input id="6" type="number" min="0" max="10" value="1e">
+        <input id="7" type="number" min="0" max="10" value="1e9999">
+        <input id="8" type="number" min="1e+" max="2e-" value="5">
+        <input id="9" type="number" min="1e9999" max="10" value="5">
+        <input id="10" type="number" min="0" max="10" value="1E-1">
+        """
+
+        for itype in ('number', 'range'):
+            self.assert_selector(
+                markup.replace('type="number"', f'type="{itype}"'),
+                ':in-range',
+                ['0', '4', '5', '6', '7', '9', '10'],
+                flags=util.HTML
+            )
+
     def test_in_range_number(self):
         """Test in range number."""
 
