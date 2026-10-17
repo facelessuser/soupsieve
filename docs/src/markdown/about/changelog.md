@@ -7,6 +7,9 @@ icon: lucide/scroll-text
 
 -   **FIX**: Cache resolved directionality when matching `:dir()` to avoid quadratic time on deeply nested
     `dir="auto"` elements.
+-   **FIX**: Fix `auto` handling in regard to `:dir()` selector. When an element with `dir="auto"`` (or a `<bdi>``)
+    contains no strong direction characters, it should be assumed as left-to-right and not assume the direction of the
+    parent.
 -   **FIX**: Match numeric input ranges correctly when values or bounds use scientific notation.
 
 ## 3.0.3

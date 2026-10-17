@@ -81,14 +81,14 @@ class TestDir(util.TestCase):
         self.assert_selector(
             self.MARKUP,
             "span:dir(rtl)",
-            ['2', '5', '7'],
+            ['2', '7'],
             flags=util.HTML
         )
 
         self.assert_selector(
             self.MARKUP,
             "span:dir(ltr)",
-            ['8'],
+            ['5', '8'],
             flags=util.HTML
         )
 
@@ -98,7 +98,7 @@ class TestDir(util.TestCase):
         self.assert_selector(
             self.MARKUP,
             ":is(input, textarea):dir(ltr)",
-            ['9', '10', '11', '12', '13'],
+            ['9', '10', '11', '12', '13', '15', '16', '18'],
             flags=util.HTML5
         )
 
@@ -123,14 +123,14 @@ class TestDir(util.TestCase):
         self.assert_selector(
             markup,
             ":is(div, span):dir(rtl)",
-            ['1', '2', '3', '4', '7'],
+            ["1","7"],
             flags=util.HTML | util.NOCACHE
         )
 
         self.assert_selector(
             markup,
             ":is(div, span):dir(ltr)",
-            ['5', '6'],
+            ["2","3","4","5","6"],
             flags=util.HTML | util.NOCACHE
         )
 

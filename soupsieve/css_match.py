@@ -1432,27 +1432,21 @@ class CSSMatch(_DocumentNav):
                     )
                 else:
                     value = cast(str, self.get_attribute_by_name(el, 'value', ''))
-                if value:
-                    for c in value:
-                        bidi = unicodedata.bidirectional(c)
-                        if bidi in ('AL', 'R', 'L'):
-                            return ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
-                    # Assume left to right
-                    return ct.SEL_DIR_LTR
-                elif is_root:
-                    return ct.SEL_DIR_LTR
-                el = self.get_parent(el, no_iframe=True)
-                continue
+                for c in value:
+                    bidi = unicodedata.bidirectional(c)
+                    if bidi in ('AL', 'R', 'L'):
+                        direction = ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
+                        return ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
+                # No strong directional characters (or no value), assume left to right
+                return ct.SEL_DIR_LTR
 
             # Auto handling for `bdi` and other non text inputs.
             if (is_bdi and direction is None) or direction == 0:
                 direction = self.find_bidi(el)
                 if direction is not None:
                     return direction
-                elif is_root:
-                    return ct.SEL_DIR_LTR
-                el = self.get_parent(el, no_iframe=True)
-                continue
+                # Auto directionality could not be determined, assume left to right
+                return ct.SEL_DIR_LTR
 
             # Match parents direction
             el = self.get_parent(el, no_iframe=True)
