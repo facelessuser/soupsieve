@@ -3,10 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## 3.0.4
+## Unreleased
 
 -   **FIX**: Cache resolved directionality when matching `:dir()` to avoid quadratic time on deeply nested
     `dir="auto"` elements.
+-   **FIX**: Match numeric input ranges correctly when values or bounds use scientific notation.
 
 ## 3.0.3
 
