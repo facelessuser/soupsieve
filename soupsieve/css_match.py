@@ -556,6 +556,7 @@ class CSSMatch(_DocumentNav):
         self.iframe_restrict = False
         self.nth_cache: dict[Hashable, list[int]] = {}
         self.sib_cache: dict[Hashable, int] = {}
+        self.dir_cache: dict[int, int] = {}
 
         # Find the root element for the whole tree
         doc = scope
@@ -584,6 +585,7 @@ class CSSMatch(_DocumentNav):
 
         self.nth_cache.clear()
         self.sib_cache.clear()
+        self.dir_cache.clear()
 
     def supports_namespaces(self) -> bool:
         """Check if namespaces are supported in the HTML type."""
@@ -1381,19 +1383,36 @@ class CSSMatch(_DocumentNav):
         if directionality & ct.SEL_DIR_LTR and directionality & ct.SEL_DIR_RTL:
             return False
 
+        # Every element visited while resolving shares the resolved direction,
+        # so cache it to avoid walking the same ancestors again for each element.
+        visited: list[int] = []
+        direction = self.resolve_dir(el, visited)
+        if self.enable_cache:
+            for key in visited:
+                self.dir_cache[key] = direction
+        return direction == directionality
+
+    def resolve_dir(self, el: bs4.Tag | None, visited: list[int]) -> int:
+        """Resolve the direction of an element, returning `0` if it cannot be resolved."""
+
         while True:
             if el is None or not self.is_html_tag(el):
-                return False
+                return 0
+
+            key = id(el)
+            if key in self.dir_cache:
+                return self.dir_cache[key]
+            visited.append(key)
 
             # Element has defined direction of left to right or right to left
             direction = DIR_MAP.get(util.lower(self.get_attribute_by_name(el, 'dir', '')), None)
             if direction not in (None, 0):
-                return direction == directionality
+                return direction
 
             # Element is the document element (the root) and no direction assigned, assume left to right.
             is_root = self.is_root(el)
             if is_root and direction is None:
-                return ct.SEL_DIR_LTR == directionality
+                return ct.SEL_DIR_LTR
 
             # If `input[type=telephone]` and no direction is assigned, assume left to right.
             name = self.get_tag(el)
@@ -1402,7 +1421,7 @@ class CSSMatch(_DocumentNav):
             is_bdi = name == 'bdi'
             itype = util.lower(self.get_attribute_by_name(el, 'type', '')) if is_input else ''
             if is_input and itype == 'tel' and direction is None:
-                return ct.SEL_DIR_LTR == directionality
+                return ct.SEL_DIR_LTR
 
             # Auto handling for text inputs
             if ((is_input and itype in ('text', 'search', 'tel', 'url', 'email')) or is_textarea) and direction == 0:
@@ -1417,17 +1436,17 @@ class CSSMatch(_DocumentNav):
                     bidi = unicodedata.bidirectional(c)
                     if bidi in ('AL', 'R', 'L'):
                         direction = ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
-                        return direction == directionality
+                        return ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
                 # No strong directional characters (or no value), assume left to right
-                return ct.SEL_DIR_LTR == directionality
+                return ct.SEL_DIR_LTR
 
             # Auto handling for `bdi` and other non text inputs.
             if (is_bdi and direction is None) or direction == 0:
                 direction = self.find_bidi(el)
                 if direction is not None:
-                    return direction == directionality
+                    return direction
                 # Auto directionality could not be determined, assume left to right
-                return ct.SEL_DIR_LTR == directionality
+                return ct.SEL_DIR_LTR
 
             # Match parents direction
             el = self.get_parent(el, no_iframe=True)
