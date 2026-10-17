@@ -102,6 +102,38 @@ class TestDir(util.TestCase):
             flags=util.HTML5
         )
 
+    def test_dir_auto_nested(self):
+        """Test nested auto direction resolved from ancestors."""
+
+        markup = """
+        <html id="0">
+        <head></head>
+        <body>
+        <div id="1" dir="auto">עִבְרִית
+          <div id="2" dir="auto">()
+            <div id="3" dir="auto"><span id="4">()</span></div>
+          </div>
+          <div id="5" dir="auto">test<span id="6">()</span></div>
+          <span id="7">()</span>
+        </div>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            ":is(div, span):dir(rtl)",
+            ['1', '2', '3', '4', '7'],
+            flags=util.HTML | util.NOCACHE
+        )
+
+        self.assert_selector(
+            markup,
+            ":is(div, span):dir(ltr)",
+            ['5', '6'],
+            flags=util.HTML | util.NOCACHE
+        )
+
     def test_dir_on_root(self):
         """Test that the root is assumed left to right if not explicitly defined."""
 

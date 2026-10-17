@@ -3,6 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 3.0.4
+
+-   **FIX**: Cache resolved directionality when matching `:dir()` to avoid quadratic time on deeply nested
+    `dir="auto"` elements.
+
 ## 3.0.3
 
 -   **FIX**: When matching with `>`, the `BeautifulSoup` object should not count as a parent.
