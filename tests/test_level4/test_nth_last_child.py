@@ -31,3 +31,36 @@ class TestNthLastChild(util.TestCase):
             ['1', '3', '5', '7', '9', '11'],
             flags=util.HTML
         )
+
+    def test_nth_child_of_s_first_sibling_not_matching(self):
+        """Test `nth` last child with selector when the first sibling does not match the selector."""
+
+        markup = """
+        <body>
+        <p id="0"></p>
+        <p id="1" class="test"></p>
+        <p id="2" class="test"></p>
+        <p id="3" class="test"></p>
+        </body>
+        """
+
+        self.assert_selector(
+            markup,
+            ":nth-last-child(1 of .test)",
+            ['3'],
+            flags=util.HTML | util.NOCACHE
+        )
+
+        self.assert_selector(
+            markup,
+            ":nth-last-child(2 of .test)",
+            ['2'],
+            flags=util.HTML | util.NOCACHE
+        )
+
+        self.assert_selector(
+            markup,
+            ":nth-last-child(odd of .test)",
+            ['1', '3'],
+            flags=util.HTML | util.NOCACHE
+        )
