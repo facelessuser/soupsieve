@@ -59,6 +59,7 @@ iterables
 linter
 lookahead
 lookaheads
+lookups
 lxml
 matchable
 matcher
