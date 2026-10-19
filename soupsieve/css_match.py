@@ -1108,6 +1108,10 @@ class CSSMatch(_DocumentNav):
                     (n.of_type and not self.match_nth_tag_type(el, child))
                 ):
                     if child is el:
+                        # Cached "last" lookups count down from `rindex`, so it must be the
+                        # position `el` would have had, even though `el` did not match.
+                        if last:
+                            rindex += 1
                         break
                     continue
 

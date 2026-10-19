@@ -11,6 +11,8 @@ icon: lucide/scroll-text
     contains no strong direction characters, it should be assumed as left-to-right and not assume the direction of the
     parent.
 -   **FIX**: Match numeric input ranges correctly when values or bounds use scientific notation.
+-   **FIX**: Fix `:nth-last-child(an+b of S)` matching the wrong elements when the first sibling tested does not
+    match `S`.
 
 ## 3.0.3
 
