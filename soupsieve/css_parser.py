@@ -301,7 +301,7 @@ def escape(ident: str) -> str:
             codepoint = ord(c)
             if codepoint == 0x00:
                 string.append('\ufffd')
-            elif (0x01 <= codepoint <= 0x1F) or codepoint == 0x7F:
+            elif (0x01 <= codepoint <= 0x1F) or (0x7F <= codepoint <= 0x9F):
                 string.append(f'\\{codepoint:x} ')
             elif (index == 0 or (start_dash and index == 1)) and (0x30 <= codepoint <= 0x39):
                 string.append(f'\\{codepoint:x} ')

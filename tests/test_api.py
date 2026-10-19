@@ -398,6 +398,14 @@ class TestSoupSieve(util.TestCase):
 
         self.assertEqual(r'\1 test', sv.escape('\x01test'))
 
+    def test_escape_del_c1_ctrl(self):
+        """Test escape DEL and C1 control characters."""
+
+        for codepoint in range(0x7F, 0xA0):
+            ident = f'a{chr(codepoint)}b'
+            soup = self.soup(f'<p id="{ident}"></p>', 'html.parser')
+            self.assertTrue(sv.match('#' + sv.escape(ident), soup.p))
+
     def test_escape_special(self):
         """Test escape special character."""
 

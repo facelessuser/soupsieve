@@ -13,6 +13,8 @@ icon: lucide/scroll-text
 -   **FIX**: Match numeric input ranges correctly when values or bounds use scientific notation.
 -   **FIX**: Fix `:nth-last-child(an+b of S)` matching the wrong elements when the first sibling tested does not
     match `S`.
+-   **FIX**: Fix `escape()` not escaping the control characters `U+0080` through `U+009F`. They cannot be used as is in
+    an identifier, so using the result in a selector raised `SelectorSyntaxError`.
 
 ## 3.0.3
 
