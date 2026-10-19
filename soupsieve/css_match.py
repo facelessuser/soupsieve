@@ -447,7 +447,11 @@ class Inputs:
         # be week 53; if Dec 31 is a Monday and that week is counted as
         # week 1 of the next year, Dec 28 still belongs to the final
         # week of the current ISO year and yields the correct max week.
-        max_week = datetime(year, 12, 28).isocalendar()[1]
+        #
+        # `datetime` stops at year 9999, but the calendar repeats every 400
+        # years (a whole number of weeks), so use the matching year from 2000
+        # to 2399, as `calendar.weekday()` does.
+        max_week = datetime(2000 + year % 400, 12, 28).isocalendar()[1]
         return 1 <= week <= max_week
 
     @staticmethod

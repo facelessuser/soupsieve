@@ -139,10 +139,12 @@ class TestOutOfRange(util.TestCase):
         <input id="7" type="week" min="1980-W53" max="2004-W20">
         <input id="8" type="week" min="1980-W53" max="2004-W20" value="1979-W53">
         <input id="9" type="week" min="1980-W53" max="2004-W20" value="1980-W52">
+        <input id="14" type="week" min="10000-W01" max="10000-W52" value="10000-W53">
 
         <!-- These should match -->
         <input id="10" type="week" min="1980-W53" max="2004-W20" value="2005-W20">
         <input id="11" type="week" min="1980-W53" max="2004-W20" value="2004-W21">
+        <input id="15" type="week" min="10004-W01" max="10004-W52" value="10004-W53">
 
         <!-- These cannot match -->
         <input id="12" type="week" value="1999-W05">
@@ -152,7 +154,7 @@ class TestOutOfRange(util.TestCase):
         self.assert_selector(
             markup,
             ":out-of-range",
-            ['10', '11'],
+            ['10', '11', '15'],
             flags=util.HTML
         )
 
