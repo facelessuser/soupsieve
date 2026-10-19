@@ -11,6 +11,8 @@ icon: lucide/scroll-text
     contains no strong direction characters, it should be assumed as left-to-right and not assume the direction of the
     parent.
 -   **FIX**: Match numeric input ranges correctly when values or bounds use scientific notation.
+-   **FIX**: Fix `:in-range` and `:out-of-range` raising `ValueError` for `week` inputs whose week-year is 10000 or
+    greater.
 -   **FIX**: Fix `:nth-last-child(an+b of S)` matching the wrong elements when the first sibling tested does not
     match `S`.
 -   **FIX**: `escape()` now only leaves non-ASCII identifier code points unescaped, as defined by the CSS specification.
