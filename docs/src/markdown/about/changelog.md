@@ -6,7 +6,6 @@ icon: lucide/scroll-text
 ## Unreleased
 
 -   **FIX**: Keep own and descendant text separate when combining `:-soup-contains()` and `:-soup-contains-own()`.
-
 -   **FIX**: Cache resolved directionality when matching `:dir()` to avoid quadratic time on deeply nested
     `dir="auto"` elements.
 -   **FIX**: Fix `auto` handling in regard to `:dir()` selector. When an element with `dir="auto"`` (or a `<bdi>``)
