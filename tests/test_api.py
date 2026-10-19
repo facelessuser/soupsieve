@@ -408,6 +408,57 @@ class TestSoupSieve(util.TestCase):
 
         self.assertEqual('Emoji\\ \U0001F60D', sv.escape('Emoji \U0001F60D'))
 
+    def test_escape_non_ascii_ident(self):
+        """Test that non-ASCII identifier code points are not escaped."""
+
+        for c in (
+            '\u00b7', '\u00c0', '\u00f8', '\u037f', '\u200c', '\u203f',
+            '\u2070', '\u2c00', '\u3001', '\uf900', '\ufdf0', '\ufffd'
+        ):
+            self.assertEqual(c, sv.escape(c))
+
+    def test_escape_non_ascii_non_ident(self):
+        """Test that non-ASCII code points that are not identifier code points are escaped."""
+
+        for c in (
+            '\x80', '\x9f', '\u00a0', '\u00d7', '\u00f7', '\u037e',
+            '\u2000', '\u2028', '\u3000', '\ue000', '\ufdd0', '\ufffe'
+        ):
+            self.assertEqual('\\' + c, sv.escape(c))
+
+    def test_escape_round_trip(self):
+        """Test that escaped identifiers can be parsed and match the original value."""
+
+        soup = self.soup('<div></div>', 'html.parser')
+        el = soup.div
+        for cp in range(0x01, 0x10000):
+            if 0xD800 <= cp <= 0xDFFF:
+                continue
+            value = f'a{chr(cp)}'
+            el['id'] = value
+            self.assertTrue(sv.match(f'#{sv.escape(value)}', el), f'Failed to round trip U+{cp:04X}')
+
+    def test_unescaped_non_ascii_identifiers(self):
+        """Test that, like browsers, any unescaped non-ASCII code point is allowed in an identifier."""
+
+        soup = self.soup('<div></div>', 'html.parser')
+        el = soup.div
+        for cp in range(0x80, 0x10000):
+            if 0xD800 <= cp <= 0xDFFF:
+                continue
+            c = chr(cp)
+            for value in (c, f'-{c}', f'a{c}b'):
+                el['id'] = value
+                self.assertTrue(sv.match(f'#{value}', el), f'Failed to match unescaped U+{cp:04X} in {value!r}')
+
+    def test_escape_del_c1_ctrl(self):
+        """Test escape DEL and C1 control characters."""
+
+        for codepoint in range(0x7F, 0xA0):
+            ident = f'a{chr(codepoint)}b'
+            soup = self.soup(f'<p id="{ident}"></p>', 'html.parser')
+            self.assertTrue(sv.match('#' + sv.escape(ident), soup.p))
+
     def test_copy_pickle(self):
         """Test copy and pickle."""
 

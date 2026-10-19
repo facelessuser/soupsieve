@@ -90,6 +90,7 @@ tuple
 tuples
 un
 unclosed
+unescaped
 unmatchable
 unpickle
 unpickling

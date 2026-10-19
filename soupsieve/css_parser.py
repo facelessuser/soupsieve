@@ -19,6 +19,23 @@ SEL_LOCK = threading.RLock()
 
 UNICODE_REPLACEMENT_CHAR = 0xFFFD
 
+# Non-ASCII identifier code point ranges (inclusive): https://drafts.csswg.org/css-syntax-3/#non-ascii-ident-code-point
+NON_ASCII_IDENT_RANGES = (
+    (0x00B7, 0x00B7),
+    (0x00C0, 0x00D6),
+    (0x00D8, 0x00F6),
+    (0x00F8, 0x037D),
+    (0x037F, 0x1FFF),
+    (0x200C, 0x200D),
+    (0x203F, 0x2040),
+    (0x2070, 0x218F),
+    (0x2C00, 0x2FEF),
+    (0x3001, 0xD7FF),
+    (0xF900, 0xFDCF),
+    (0xFDF0, 0xFFFD),
+    (0x10000, 0x10FFFF)
+)
+
 SELECTOR_LIMIT = 8192
 
 # Simple pseudo classes that take no parameters
@@ -120,10 +137,13 @@ WSC = fr'(?:{WS}|{COMMENTS})'
 # CSS escapes
 CSS_ESCAPES = fr'(?:\\(?:[a-f0-9]{{1,6}}+{WS}?+|[^\r\n\f]|$))'
 CSS_STRING_ESCAPES = fr'(?:\\(?:[a-f0-9]{{1,6}}+{WS}?+|{NEWLINE}|[^\r\n\f]|$))'
+# CSS identifier code points (browsers treat all non-ASCII code points as identifier code points)
+IDENT_START = r'[A-Za-z_\x80-\U0010ffff]'
+IDENT_CHAR = r'[-0-9A-Za-z_\x80-\U0010ffff]'
 # CSS Identifier
 IDENTIFIER = fr'''
-(?:(?:--|-?+(?:[^\x00-\x2f\x30-\x40\x5B-\x5E\x60\x7B-\x9f]|{CSS_ESCAPES}))
-(?:[^\x00-\x2c\x2e\x2f\x3A-\x40\x5B-\x5E\x60\x7B-\x9f]|{CSS_ESCAPES})*+)
+(?:(?:--|-?+(?:{IDENT_START}|{CSS_ESCAPES}))
+(?:{IDENT_CHAR}|{CSS_ESCAPES})*+)
 '''
 # `nth` content
 NTH = fr'[-+]?+(?:[0-9]++n?+|n)(?:(?<=n){WSC}*+[-+]{WSC}*+[0-9]++)?+'
@@ -306,8 +326,9 @@ def escape(ident: str) -> str:
             elif (index == 0 or (start_dash and index == 1)) and (0x30 <= codepoint <= 0x39):
                 string.append(f'\\{codepoint:x} ')
             elif (
-                codepoint in (0x2D, 0x5F) or codepoint >= 0x80 or (0x30 <= codepoint <= 0x39) or
-                (0x30 <= codepoint <= 0x39) or (0x41 <= codepoint <= 0x5A) or (0x61 <= codepoint <= 0x7A)
+                codepoint in (0x2D, 0x5F) or (0x30 <= codepoint <= 0x39) or
+                (0x41 <= codepoint <= 0x5A) or (0x61 <= codepoint <= 0x7A) or
+                (codepoint >= 0x80 and any(start <= codepoint <= end for start, end in NON_ASCII_IDENT_RANGES))
             ):
                 string.append(c)
             else:
