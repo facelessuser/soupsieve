@@ -19,6 +19,8 @@ icon: lucide/scroll-text
 -   **FIX**: `escape()` now only leaves non-ASCII identifier code points unescaped, as defined by the CSS specification.
     All other non-ASCII characters are escaped.
 -   **FIX**: Allow unescaped U+0080 - U+009F characters in identifiers to match browser behavior.
+-   **FIX**: Fix `:in-range` and `:out-of-range` treating `time` and `datetime-local` values with seconds as
+    invalid.
 
 ## 3.0.3
 

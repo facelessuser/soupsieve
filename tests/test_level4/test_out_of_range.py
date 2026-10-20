@@ -203,6 +203,9 @@ class TestOutOfRange(util.TestCase):
         <input id="4" type="datetime-local" max="2004-08-14T18:45" value="1999-05-16T20:20">
         <input id="5" type="datetime-local" min="1980-02-20T01:30" max="2004-08-14T18:45" value="1999-05-16T24:20">
         <input id="6" type="datetime-local" min="1980-02-20T01:30" max="2004-08-14T18:45">
+        <input id="19" type="datetime-local" min="1980-02-20T01:30" max="2004-08-14T18:45" value="2004-08-14T18:45:00">
+        <input id="20" type="datetime-local" max="2004-08-14T18:45:30.5" value="2004-08-14T18:45:30.25">
+        <input id="21" type="datetime-local" min="1980-02-20T01:30" max="2004-08-14T18:45" value="2004-08-14T18:45:60">
 
         <!-- These should match -->
         <input id="7" type="datetime-local" min="1980-02-20T01:30" max="2004-08-14T18:45" value="1979-02-20T01:30">
@@ -215,6 +218,9 @@ class TestOutOfRange(util.TestCase):
         <input id="14" type="datetime-local" min="1980-02-20T01:30" max="2004-08-14T18:45" value="2004-08-15T18:45">
         <input id="15" type="datetime-local" min="1980-02-20T01:30" max="2004-08-14T18:45" value="2004-08-14T19:45">
         <input id="16" type="datetime-local" min="1980-02-20T01:30" max="2004-08-14T18:45" value="2004-08-14T18:46">
+        <input id="22" type="datetime-local" min="1980-02-20T01:30" max="2004-08-14T18:45" value="2004-08-14T18:45:01">
+        <input id="23" type="datetime-local" min="1980-02-20T01:30:30" value="1980-02-20T01:30:29">
+        <input id="24" type="datetime-local" max="2004-08-14T18:45:30.5" value="2004-08-14T18:45:30.75">
 
         <!-- These cannot match -->
         <input id="17" type="datetime-local" value="1999-05-16T20:20">
@@ -224,7 +230,7 @@ class TestOutOfRange(util.TestCase):
         self.assert_selector(
             markup,
             ":out-of-range",
-            ['7', '8', '9', '10', '11', '12', '13', '14', '15', '16'],
+            ['7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '22', '23', '24'],
             flags=util.HTML
         )
 
@@ -241,6 +247,9 @@ class TestOutOfRange(util.TestCase):
         <input id="5" type="time" max="18:45" value="10:20">
         <input id="6" type="time" min="01:30" max="18:45" value="24:20">
         <input id="7" type="time" min="01:30" max="18:45">
+        <input id="17" type="time" min="01:30" max="18:45" value="18:45:00">
+        <input id="18" type="time" min="01:30:30" max="18:45:30.5" value="18:45:30.25">
+        <input id="19" type="time" min="01:30" max="18:45" value="18:45:60">
 
         <!-- These should match -->
         <input id="8" type="time" min="01:30" max="18:45" value="00:30">
@@ -250,6 +259,11 @@ class TestOutOfRange(util.TestCase):
         <input id="12" type="time" max="01:30" min="18:45" value="02:30">
         <input id="13" type="time" max="01:30" min="18:45" value="17:45">
         <input id="14" type="time" max="01:30" min="18:45" value="18:44">
+        <input id="20" type="time" min="01:30" max="18:45" value="18:45:01">
+        <input id="21" type="time" min="01:30" max="18:45" value="01:29:59">
+        <input id="22" type="time" min="01:30:30" max="18:45:30.5" value="01:30:29.999">
+        <input id="23" type="time" max="01:30" min="18:45" value="18:44:59">
+        <input id="24" type="time" min="01:30:30" max="18:45:30.5" value="18:45:30.75">
 
         <!-- These cannot match -->
         <input id="15" type="time" value="10:20">
@@ -259,6 +273,6 @@ class TestOutOfRange(util.TestCase):
         self.assert_selector(
             markup,
             ":out-of-range",
-            ['8', '9', '10', '11', '12', '13', '14'],
+            ['8', '9', '10', '11', '12', '13', '14', '20', '21', '22', '23', '24'],
             flags=util.HTML
         )

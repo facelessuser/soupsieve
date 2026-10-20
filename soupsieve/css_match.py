@@ -57,12 +57,13 @@ DIR_MAP = {
 }
 
 RE_NUM = re.compile(r"^(?P<value>-?(?:[0-9]+(?:\.[0-9]+)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?)$")
-RE_TIME = re.compile(r'^(?P<hour>[0-9]{2}):(?P<minutes>[0-9]{2})$')
+RE_TIME = re.compile(r'^(?P<hour>[0-9]{2}):(?P<minutes>[0-9]{2})(?::(?P<seconds>[0-9]{2}(?:\.[0-9]{1,3})?))?$')
 RE_MONTH = re.compile(r'^(?P<year>[0-9]{4,})-(?P<month>[0-9]{2})$')
 RE_WEEK = re.compile(r'^(?P<year>[0-9]{4,})-W(?P<week>[0-9]{2})$')
 RE_DATE = re.compile(r'^(?P<year>[0-9]{4,})-(?P<month>[0-9]{2})-(?P<day>[0-9]{2})$')
 RE_DATETIME = re.compile(
-    r'^(?P<year>[0-9]{4,})-(?P<month>[0-9]{2})-(?P<day>[0-9]{2})T(?P<hour>[0-9]{2}):(?P<minutes>[0-9]{2})$'
+    r'^(?P<year>[0-9]{4,})-(?P<month>[0-9]{2})-(?P<day>[0-9]{2})T(?P<hour>[0-9]{2}):(?P<minutes>[0-9]{2})'
+    r'(?::(?P<seconds>[0-9]{2}(?:\.[0-9]{1,3})?))?$'
 )
 RE_WILD_STRIP = re.compile(r'(?:(?:-\*-)(?:\*(?:-|$))*|-\*$)')
 
@@ -478,6 +479,12 @@ class Inputs:
 
         return 0 <= minutes <= 59
 
+    @staticmethod
+    def validate_seconds(seconds: float) -> bool:
+        """Validate seconds."""
+
+        return 0 <= seconds < 60
+
     @classmethod
     def parse_value(cls, itype: str, value: str | None) -> tuple[float, ...] | None:
         """Parse the input value."""
@@ -512,8 +519,9 @@ class Inputs:
             if m:
                 hour = int(m.group('hour'), 10)
                 minutes = int(m.group('minutes'), 10)
-                if cls.validate_hour(hour) and cls.validate_minutes(minutes):
-                    parsed = (hour, minutes)
+                seconds = float(m.group('seconds') or 0)
+                if cls.validate_hour(hour) and cls.validate_minutes(minutes) and cls.validate_seconds(seconds):
+                    parsed = (hour, minutes, seconds)
         elif itype == "datetime-local":
             m = RE_DATETIME.match(value)
             if m:
@@ -522,11 +530,12 @@ class Inputs:
                 day = int(m.group('day'), 10)
                 hour = int(m.group('hour'), 10)
                 minutes = int(m.group('minutes'), 10)
+                seconds = float(m.group('seconds') or 0)
                 if (
                     cls.validate_year(year) and cls.validate_month(month) and cls.validate_day(year, month, day) and
-                    cls.validate_hour(hour) and cls.validate_minutes(minutes)
+                    cls.validate_hour(hour) and cls.validate_minutes(minutes) and cls.validate_seconds(seconds)
                 ):
-                    parsed = (year, month, day, hour, minutes)
+                    parsed = (year, month, day, hour, minutes, seconds)
         elif itype in ("number", "range"):
             m = RE_NUM.match(value)
             if m:
