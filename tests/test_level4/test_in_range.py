@@ -276,3 +276,20 @@ class TestInRange(util.TestCase):
             ['0', '1', '2', '3', '4', '5', '6', '7', '17', '18', '19'],
             flags=util.HTML
         )
+
+    def test_in_range_untyped_input(self):
+        """Inputs without a `type` attribute are text inputs, which are never in range."""
+
+        markup = """
+        <input id="0" min="0" max="10" value="50">
+        <input id="1" type="number" min="0" max="10" value="5">
+        <input id="2" type="number" min="0" max="10" value="50">
+        <input id="3" name="q">
+        """
+
+        self.assert_selector(
+            markup,
+            ":in-range",
+            ['1'],
+            flags=util.HTML
+        )

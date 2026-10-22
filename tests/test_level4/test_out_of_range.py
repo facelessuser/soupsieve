@@ -276,3 +276,20 @@ class TestOutOfRange(util.TestCase):
             ['8', '9', '10', '11', '12', '13', '14', '20', '21', '22', '23', '24'],
             flags=util.HTML
         )
+
+    def test_out_of_range_untyped_input(self):
+        """Inputs without a `type` attribute are text inputs, which are never out of range."""
+
+        markup = """
+        <input id="0" min="0" max="10" value="50">
+        <input id="1" type="number" min="0" max="10" value="5">
+        <input id="2" type="number" min="0" max="10" value="50">
+        <input id="3" name="q">
+        """
+
+        self.assert_selector(
+            markup,
+            ":out-of-range",
+            ['2'],
+            flags=util.HTML
+        )
