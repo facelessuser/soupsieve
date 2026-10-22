@@ -3,7 +3,7 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## Unreleased
+## 3.0.4
 
 -   **FIX**: Keep own and descendant text separate when combining `:-soup-contains()` and `:-soup-contains-own()`.
 -   **FIX**: Cache resolved directionality when matching `:dir()` to avoid quadratic time on deeply nested
