@@ -584,7 +584,10 @@ CSS_DEFAULT = CSSPattern(
     This pattern must be at the end.
     Special logic is applied to the last selector.
     */
-    html|form html|*:is(button, input)[type="submit"]
+    html|form html|*:is(
+        button:is([type=submit], :not([type=button], [type=reset], [commandfor], [command])),
+        input:is([type=submit], [type=image])
+    )
     ''',
     FLG_PSEUDO | FLG_HTML | FLG_DEFAULT
 )

@@ -79,6 +79,58 @@ class TestDefault(util.TestCase):
             flags=util.HTML
         )
 
+    def test_default_submit_buttons(self):
+        """
+        Test submit buttons that are not `type="submit"`.
+
+        A `button` with a missing or invalid `type` is a submit button unless it invokes a command or is a child of
+        a `select`, and an `input` with `type="image"` is a submit button as well.
+        """
+
+        markup = """
+        <form>
+        <input type="button">
+        <button type="RESET">reset</button>
+        <button type="button">button</button>
+        <button id="d1">default1</button>
+        <button id="s1" type="submit">submit</button>
+        </form>
+
+        <form>
+        <input id="d2" type="IMAGE" src="image.png">
+        <button id="s2" type="submit">submit</button>
+        </form>
+
+        <form>
+        <button commandfor="dialog">command1</button>
+        <button command="show-modal">command2</button>
+        <select><button>select</button><option>option</option></select>
+        <button id="d3">default3</button>
+        </form>
+
+        <form>
+        <button id="d4" type="submit" commandfor="dialog">default4</button>
+        <button id="s4">button</button>
+        </form>
+
+        <form>
+        <button id="d5" type="bogus">default5</button>
+        </form>
+
+        <form>
+        <input type="text">
+        <input type="checkbox">
+        <button type="button">button</button>
+        </form>
+        """
+
+        self.assert_selector(
+            markup,
+            ":default",
+            ['d1', 'd2', 'd3', 'd4', 'd5'],
+            flags=util.HTML
+        )
+
     def test_iframe(self):
         """Test with `iframe`."""
 

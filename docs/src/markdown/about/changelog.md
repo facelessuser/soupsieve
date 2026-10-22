@@ -7,6 +7,8 @@ icon: lucide/scroll-text
 
 -   **NEW**: Update `:disabled` and `:enabled` to treat `option` and `optgroup` elements inside a disabled `select` as
     disabled, following a recent HTML specification update.
+-   **FIX**: Fix `:default` to treat a `button` with a missing or invalid `type`, and an `input` with `type="image"`,
+    as submit buttons.
 -   **FIX**: Fix `:in-range` and `:out-of-range` raising `TypeError` when the document contains an `input` without a
     `type` attribute.
 
