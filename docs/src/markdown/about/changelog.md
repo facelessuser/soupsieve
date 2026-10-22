@@ -3,6 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## Unreleased
+
+-   **NEW**: Update `:disabled` and `:enabled` to treat `option` and `optgroup` elements inside a disabled `select` as
+    disabled, following a recent HTML specification update.
+
 ## 3.0.4
 
 -   **FIX**: Keep own and descendant text separate when combining `:-soup-contains()` and `:-soup-contains-own()`.
