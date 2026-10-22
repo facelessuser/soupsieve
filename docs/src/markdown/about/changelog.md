@@ -11,6 +11,8 @@ icon: lucide/scroll-text
     as submit buttons.
 -   **FIX**: Fix `:in-range` and `:out-of-range` raising `TypeError` when the document contains an `input` without a
     `type` attribute.
+-   **FIX**: `:read-write` (and `:read-only`) now treat `contenteditable="plaintext-only"` elements as editing hosts and
+    match the editable elements inside an editing host, following the nearest `contenteditable` state.
 
 ## 3.0.4
 

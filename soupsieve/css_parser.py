@@ -234,6 +234,7 @@ FLG_IN_RANGE = 0x80
 FLG_OUT_OF_RANGE = 0x100
 FLG_PLACEHOLDER_SHOWN = 0x200
 FLG_FORGIVE = 0x400
+FLG_EDITABLE = 0x800
 
 # Maximum cached patterns to store
 _MAXCACHE = 500
@@ -522,6 +523,7 @@ class _SelectorContext:
         self.is_out_of_range = bool(flags & FLG_OUT_OF_RANGE)
         self.is_placeholder_shown = bool(flags & FLG_PLACEHOLDER_SHOWN)
         self.is_forgive = bool(flags & FLG_FORGIVE)
+        self.is_editable = bool(flags & FLG_EDITABLE)
 
         # The algorithm for relative selectors require an initial selector in the selector list
         if self.is_relative:
@@ -532,7 +534,7 @@ class _SelectorContext:
 
         for name in (
             'is_pseudo', 'is_open', 'is_relative', 'is_not', 'is_html', 'is_default', 'is_indeterminate',
-            'is_in_range', 'is_out_of_range', 'is_placeholder_shown', 'is_forgive'
+            'is_in_range', 'is_out_of_range', 'is_placeholder_shown', 'is_forgive', 'is_editable'
         ):
             if getattr(self, name):
                 print(f'    {name}: True')
@@ -673,9 +675,9 @@ CSS_READ_WRITE = CSSPattern(
             [type=week]
         )
     ):not([readonly], :disabled),
-    html|*:is([contenteditable=""], [contenteditable="true" i])
+    html|*:not(input, textarea)
     ''',
-    FLG_PSEUDO | FLG_HTML
+    FLG_PSEUDO | FLG_HTML | FLG_EDITABLE
 )
 # CSS pattern for `:read-only`
 CSS_READ_ONLY = CSSPattern('html|*:not(:read-write)', FLG_PSEUDO | FLG_HTML)
@@ -1418,6 +1420,8 @@ class CSSParser:
             selectors[-1].flags = ct.SEL_OUT_OF_RANGE
         if ctx.is_placeholder_shown:
             selectors[-1].flags = ct.SEL_PLACEHOLDER_SHOWN
+        if ctx.is_editable:
+            selectors[-1].flags = ct.SEL_EDITABLE
 
         # Return selector list
         return ct.SelectorList([s.freeze() for s in selectors], ctx.is_not, ctx.is_html, self.count - ctx.count)

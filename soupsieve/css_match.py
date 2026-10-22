@@ -1557,6 +1557,27 @@ class CSSMatch(_DocumentNav):
 
         return match
 
+    def match_editable(self, el: bs4.Tag) -> bool:
+        """
+        Match editing hosts and the elements that are editable inside them.
+
+        The nearest `contenteditable` attribute with a valid state decides: an empty value, `true` and
+        `plaintext-only` make the element editable, and `false` does not. Any other value inherits
+        the state of the parent.
+        """
+
+        node = el  # type: bs4.Tag | None
+        while node is not None:
+            state = self.get_attribute_by_name(node, 'contenteditable')
+            if isinstance(state, str):
+                state = util.lower(state)
+                if state in ('', 'true', 'plaintext-only'):
+                    return True
+                if state == 'false':
+                    return False
+            node = self.get_parent(node)
+        return False
+
     def match_selectors(self, el: bs4.Tag, selectors: ct.SelectorList) -> bool:
         """
         Check if element matches one of the selectors.
@@ -1628,6 +1649,9 @@ class CSSMatch(_DocumentNav):
                     continue
                 # Verify element has placeholder shown
                 if selector.flags & ct.SEL_PLACEHOLDER_SHOWN and not self.match_placeholder_shown(el):
+                    continue
+                # Verify element is an editing host or editable
+                if selector.flags & ct.SEL_EDITABLE and not self.match_editable(el):
                     continue
                 # Verify `nth` matches
                 if selector.nth and not (yield from self.match_nth(el, selector.nth)):

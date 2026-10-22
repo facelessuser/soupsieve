@@ -59,3 +59,26 @@ class TestReadWrite(util.TestCase):
             ],
             flags=util.HTML
         )
+
+    def test_read_write_editable(self):
+        """Test that editing hosts, including `plaintext-only` ones, and the editable elements inside them match."""
+
+        markup = """
+        <body>
+        <div id="0" contenteditable="plaintext-only"><span id="1">Text</span></div>
+        <div id="2" contenteditable="PLAINTEXT-ONLY">Text</div>
+        <div id="3" contenteditable><p id="4"><b id="5">Text</b></p></div>
+        <div id="6" contenteditable="true"><p id="7" contenteditable="false"><b id="8">Text</b></p></div>
+        <div id="9" contenteditable="false"><p id="10" contenteditable><b id="11">Text</b></p></div>
+        <div id="12" contenteditable><p id="13" contenteditable="bogus"><b id="14">Text</b></p></div>
+        <div id="15" contenteditable><input id="16" readonly><input id="17"><select id="18"></select></div>
+        <p id="19" contenteditable=" true">Text</p>
+        </body>
+        """
+
+        self.assert_selector(
+            markup,
+            "body :read-write",
+            ['0', '1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '17', '18'],
+            flags=util.HTML
+        )
