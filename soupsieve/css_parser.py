@@ -675,7 +675,7 @@ CSS_READ_WRITE = CSSPattern(
             [type=week]
         )
     ):not([readonly], :disabled),
-    html|*:not(input, textarea)
+    html|*:not(input, textarea, [contenteditable="false" i])
     ''',
     FLG_PSEUDO | FLG_HTML | FLG_EDITABLE
 )
