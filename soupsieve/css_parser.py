@@ -610,7 +610,12 @@ CSS_DISABLED = CSSPattern(
     html|optgroup[disabled] > html|option,
     html|fieldset[disabled] > html|*:is(input:not([type=hidden]), button, select, textarea, fieldset),
     html|fieldset[disabled] >
-        html|*:not(legend:nth-of-type(1)) html|*:is(input:not([type=hidden]), button, select, textarea, fieldset)
+        html|*:not(legend:nth-of-type(1)) html|*:is(input:not([type=hidden]), button, select, textarea, fieldset),
+    html|*:is(
+        html|select[disabled],
+        html|fieldset[disabled] > html|select,
+        html|fieldset[disabled] > html|*:not(legend:nth-of-type(1)) html|select
+    ) html|*:is(optgroup, option)
     ''',
     FLG_PSEUDO | FLG_HTML
 )

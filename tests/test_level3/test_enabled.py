@@ -144,3 +144,33 @@ class TestEnabled(util.TestCase):
             ['1', '2', 'opt-enable', 'b', '3'],
             flags=util.PYHTML
         )
+
+    def test_enable_select(self):
+        """Test `:enabled` skips the `option` and `optgroup` elements of a disabled `select`."""
+
+        self.assert_selector(
+            """
+            <form>
+            <select id="0" disabled>
+              <option id="1"></option>
+              <optgroup id="2">
+                <option id="3"></option>
+              </optgroup>
+            </select>
+            <select id="4">
+              <option id="5"></option>
+              <optgroup id="6">
+                <option id="7"></option>
+              </optgroup>
+            </select>
+            <fieldset id="8" disabled>
+              <select id="9">
+                <option id="10"></option>
+              </select>
+            </fieldset>
+            </form>
+            """,
+            ":enabled",
+            ['4', '5', '6', '7'],
+            flags=util.HTML
+        )
