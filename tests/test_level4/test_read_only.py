@@ -61,3 +61,26 @@ class TestReadOnly(util.TestCase):
             ],
             flags=util.HTML
         )
+
+    def test_read_only_editable(self):
+        """Test that elements inside an editing host only match when a `contenteditable="false"` is nearer."""
+
+        markup = """
+        <body>
+        <div id="0" contenteditable="plaintext-only"><span id="1">Text</span></div>
+        <div id="2" contenteditable="PLAINTEXT-ONLY">Text</div>
+        <div id="3" contenteditable><p id="4"><b id="5">Text</b></p></div>
+        <div id="6" contenteditable="true"><p id="7" contenteditable="false"><b id="8">Text</b></p></div>
+        <div id="9" contenteditable="false"><p id="10" contenteditable><b id="11">Text</b></p></div>
+        <div id="12" contenteditable><p id="13" contenteditable="bogus"><b id="14">Text</b></p></div>
+        <div id="15" contenteditable><input id="16" readonly><input id="17"><select id="18"></select></div>
+        <p id="19" contenteditable=" true">Text</p>
+        </body>
+        """
+
+        self.assert_selector(
+            markup,
+            "body :read-only",
+            ['7', '8', '9', '16', '19'],
+            flags=util.HTML
+        )

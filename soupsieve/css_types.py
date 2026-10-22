@@ -29,6 +29,7 @@ SEL_IN_RANGE = 0x80
 SEL_OUT_OF_RANGE = 0x100
 SEL_DEFINED = 0x200
 SEL_PLACEHOLDER_SHOWN = 0x400
+SEL_EDITABLE = 0x800
 
 
 def _repr_expand(value: Any) -> bool:  # pragma: no cover

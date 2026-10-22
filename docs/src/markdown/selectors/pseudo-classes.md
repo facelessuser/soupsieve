@@ -1495,7 +1495,8 @@ soup.select('body :read-only')
 
 Selects elements (such as `#!html <input>` or `#!html <textarea>`) that are editable by the user. This does not just
 apply to form elements as it applies to **any** element that can be edited by the user, such as a `#!html <p>` element
-with `contenteditable` set on it.
+with `contenteditable` set on it, and the elements inside it unless a nearer `contenteditable="false"` turns editing
+off.
 
 /// tab | Syntax
 ```css
