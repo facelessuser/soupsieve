@@ -1237,8 +1237,19 @@ class CSSMatch(_DocumentNav):
                     if name == 'form':  # pragma: no cover
                         break
                     if name in ('input', 'button'):
-                        v = self.get_attribute_by_name(child, 'type', '')
-                        if v and util.lower(v) == 'submit':
+                        v = util.lower(cast(str, self.get_attribute_by_name(child, 'type', '')))
+                        if name == 'input':
+                            submit = v in ('submit', 'image')
+                        else:
+                            # A button with a missing or invalid `type` submits, unless it invokes a command or is
+                            # a child of a `select`.
+                            submit = v == 'submit' or (
+                                v not in ('button', 'reset') and
+                                self.get_attribute_by_name(child, 'command') is None and
+                                self.get_attribute_by_name(child, 'commandfor') is None and
+                                self.get_tag(self.get_parent(child, no_iframe=True)) != 'select'
+                            )
+                        if submit:
                             self.cached_default_forms.append((form, child))
                             if el is child:
                                 match = True
