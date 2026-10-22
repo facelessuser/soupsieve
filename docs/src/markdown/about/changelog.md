@@ -9,6 +9,8 @@ icon: lucide/scroll-text
     disabled, following a recent HTML specification update.
 -   **FIX**: Fix `:default` to treat a `button` with a missing or invalid `type`, and an `input` with `type="image"`,
     as submit buttons.
+-   **FIX**: Fix `:in-range` and `:out-of-range` raising `TypeError` when the document contains an `input` without a
+    `type` attribute.
 
 ## 3.0.4
 

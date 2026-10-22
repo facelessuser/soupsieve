@@ -1491,7 +1491,7 @@ class CSSMatch(_DocumentNav):
 
         out_of_range = False
 
-        itype = util.lower(self.get_attribute_by_name(el, 'type'))
+        itype = util.lower(cast(str, self.get_attribute_by_name(el, 'type', '')))
         mn = Inputs.parse_value(itype, cast(str, self.get_attribute_by_name(el, 'min', None)))
         mx = Inputs.parse_value(itype, cast(str, self.get_attribute_by_name(el, 'max', None)))
 
