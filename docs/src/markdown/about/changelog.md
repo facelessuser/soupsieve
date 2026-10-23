@@ -13,6 +13,8 @@ icon: lucide/scroll-text
     `type` attribute.
 -   **FIX**: `:read-write` (and `:read-only`) now treat `contenteditable="plaintext-only"` elements as editing hosts and
     match the editable elements inside an editing host, following the nearest `contenteditable` state.
+-   **FIX**: Fix `[attribute!=value]` excluding values that only start with the specified value, and in XML documents,
+    `type` values that contain a newline.
 
 ## 3.0.4
 
