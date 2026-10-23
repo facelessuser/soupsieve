@@ -99,6 +99,53 @@ class TestAttributeEquivalence(util.TestCase):
     <table id="0"><tr id="1"><td id="2">a</td><td id="3" class="center">b</td><td id="4" class="x y">c</td></tr></table>
     """
 
+    def test_attribute_not_equal_values(self):
+        """Test unequal attribute values."""
+
+        self.assert_selector(
+            self.MARKUP,
+            'td[class!="c"]',
+            ["2", "3", "4"],
+            flags=util.HTML
+        )
+        self.assert_selector(
+            self.MARKUP,
+            'td:not([class="c"])',
+            ["2", "3", "4"],
+            flags=util.HTML
+        )
+        self.assert_selector(
+            self.MARKUP,
+            'td[class!="C" i]',
+            ["2", "3", "4"],
+            flags=util.HTML
+        )
+        self.assert_selector(
+            self.MARKUP,
+            'td:not([class="C" i])',
+            ["2", "3", "4"],
+            flags=util.HTML
+        )
+
+        self.assert_selector(
+            self.MARKUP,
+            'td[class!="CENTER" i]',
+            ["2", "4"],
+            flags=util.HTML
+        )
+        self.assert_selector(
+            self.MARKUP,
+            'td[class!="c.*"]',
+            ["2", "3", "4"],
+            flags=util.HTML
+        )
+        self.assert_selector(
+            '<r><p id="0" type="a"/><p id="1" type="a&#10;&#10;"/><p id="2" type="&#10;a"/></r>',
+            'p[type!="a"]',
+            ["1", "2"],
+            flags=util.XML
+        )
+
     def test_missing_attribute(self):
         """Test missing attribute."""
 

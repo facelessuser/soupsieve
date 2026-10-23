@@ -857,7 +857,7 @@ class CSSParser:
             pattern = re.compile(r'^%s(?:-.*)?$' % re.escape(value), flags)
         elif op.startswith('!'):
             # Value does not matches
-            pattern = re.compile(r'^(?!%s).*$' % re.escape(value), flags)
+            pattern = re.compile(r'^(?!%s$)' % re.escape(value), flags)
             inverse = True
         else:
             # Value matches
