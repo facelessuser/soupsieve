@@ -812,7 +812,12 @@ class CSSMatch(_DocumentNav):
         if attributes:
             for a in attributes:
                 temp = self.match_attribute_name(el, a.attribute, a.prefix)
-                pattern = a.xml_type_pattern if self.is_xml and a.xml_type_pattern else a.pattern
+                # The case insensitive pattern only applies to HTML elements in HTML documents
+                pattern = (
+                    a.xml_type_pattern
+                    if a.xml_type_pattern and (self.is_xml or not self.is_html_tag(el))
+                    else a.pattern
+                )
                 if temp is None and a.inverse:
                     continue
                 if temp is None:

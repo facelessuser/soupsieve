@@ -15,6 +15,9 @@ icon: lucide/scroll-text
     match the editable elements inside an editing host, following the nearest `contenteditable` state.
 -   **FIX**: Fix `[attribute!=value]` excluding values that only start with the specified value, and in XML documents,
     `type` values that contain a newline.
+-   **FIX**: Match the values of every attribute that the HTML specification lists as case insensitive (`rel`,
+    `method`, `lang`, `dir`, ...) without case sensitivity on HTML elements in HTML documents, not just `type`. SVG
+    and MathML elements are matched case sensitively.
 
 ## 3.0.4
 
