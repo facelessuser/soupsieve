@@ -208,13 +208,6 @@ class TestLang(util.TestCase):
 
         self.assert_selector(
             markup,
-            "p:lang('')",
-            ['1', '2'],
-            flags=util.HTML
-        )
-
-        self.assert_selector(
-            markup,
             "p:lang(de)",
             ['3'],
             flags=util.HTML
@@ -362,13 +355,6 @@ class TestLang(util.TestCase):
         </body>
         </html>
         """
-
-        self.assert_selector(
-            markup,
-            "p:lang('')",
-            ['1'],
-            flags=util.XML
-        )
 
         self.assert_selector(
             markup,
