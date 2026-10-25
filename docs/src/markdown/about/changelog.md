@@ -15,6 +15,8 @@ icon: lucide/scroll-text
     match the editable elements inside an editing host, following the nearest `contenteditable` state.
 -   **FIX**: Fix `[attribute!=value]` excluding values that only start with the specified value, and in XML documents,
     `type` values that contain a newline.
+-   **FIX**: Fix `:lang()` treating an element with an empty `lang` or `xml:lang` attribute as having the language of
+    a tagged ancestor.
 
 ## 3.0.4
 
