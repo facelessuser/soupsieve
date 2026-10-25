@@ -1452,7 +1452,10 @@ class CSSMatch(_DocumentNav):
                 return ct.SEL_DIR_LTR
 
             # Auto handling for text inputs
-            if ((is_input and itype in ('text', 'search', 'tel', 'url', 'email')) or is_textarea) and direction == 0:
+            if (
+                ((is_input and itype in ('', 'text', 'search', 'tel', 'url', 'email')) or is_textarea) and
+                direction == 0
+            ):
                 if is_textarea:
                     value = ''.join(
                         node for node in self.get_contents(el, no_iframe=True)  # type: ignore[misc]

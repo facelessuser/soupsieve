@@ -15,6 +15,7 @@ icon: lucide/scroll-text
     match the editable elements inside an editing host, following the nearest `contenteditable` state.
 -   **FIX**: Fix `[attribute!=value]` excluding values that only start with the specified value, and in XML documents,
     `type` values that contain a newline.
+-   **FIX**: Fix `:dir()` ignoring the value of an `input` with `dir="auto"` and a missing or empty `type`.
 
 ## 3.0.4
 
