@@ -16,6 +16,8 @@ icon: lucide/scroll-text
 -   **FIX**: Fix `[attribute!=value]` excluding values that only start with the specified value, and in XML documents,
     `type` values that contain a newline.
 -   **FIX**: Fix `:dir()` ignoring the value of an `input` with `dir="auto"` and a missing or empty `type`.
+-   **FIX**: Fix `:lang()` treating an element with an empty `lang` or `xml:lang` attribute as having the language of
+    a tagged ancestor.
 
 ## 3.0.4
 

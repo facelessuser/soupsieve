@@ -1330,7 +1330,7 @@ class CSSMatch(_DocumentNav):
         parent: bs4.Tag | None = el
         found_lang = None
         last = None
-        while not found_lang:
+        while found_lang is None:
             has_html_ns = self.has_html_ns(parent)
             for k, v in self.iter_attributes(parent):
                 attr_ns, attr = self.split_namespace(parent, k)
