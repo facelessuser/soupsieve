@@ -266,7 +266,7 @@ class TestAttribute(util.TestCase):
         self.assert_selector(markup, '[rel~="stylesheet"]', [], flags=util.HTML5)
 
     def test_attribute_xml_fallback_matches_across_newlines(self):
-        """The case-sensitive fallback retains DOTALL for XML attribute values."""
+        """The case-sensitive fallback matches across newlines in XML attribute values."""
 
         markup = '<r><a id="x" rel="pre&#10;match"/></r>'
         self.assert_selector(markup, '[rel*="match"]', ["x"], flags=util.XML)
