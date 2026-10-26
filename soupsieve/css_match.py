@@ -560,7 +560,7 @@ class CSSMatch(_DocumentNav):
         self.assert_valid_input(scope)
         self.tag = scope
         self.cached_meta_lang: list[tuple[str, str]] = []
-        self.cached_default_forms: list[tuple[bs4.Tag, bs4.Tag]] = []
+        self.cached_default_forms: list[tuple[bs4.Tag, bs4.Tag | None]] = []
         self.cached_indeterminate_forms: list[tuple[bs4.Tag, str, bool]] = []
         self.selectors = selectors
         self.namespaces: ct.Namespaces | dict[str, str] = {} if namespaces is None else namespaces
@@ -1231,6 +1231,7 @@ class CSSMatch(_DocumentNav):
 
             # We didn't have the form cached, so look for its default button
             if not found_form:
+                default = None
                 for child in self.get_tag_descendants(form, no_iframe=True):
                     name = self.get_tag(child)
                     # Can't do nested forms (haven't figured out why we never hit this)
@@ -1250,10 +1251,12 @@ class CSSMatch(_DocumentNav):
                                 self.get_tag(self.get_parent(child, no_iframe=True)) != 'select'
                             )
                         if submit:
-                            self.cached_default_forms.append((form, child))
-                            if el is child:
-                                match = True
+                            default = child
                             break
+                # Cache the form even if it has no default button so we don't search it again for every candidate
+                self.cached_default_forms.append((form, default))
+                if el is default:
+                    match = True
         return match
 
     def match_indeterminate(self, el: bs4.Tag) -> bool:

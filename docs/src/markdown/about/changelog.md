@@ -18,6 +18,8 @@ icon: lucide/scroll-text
 -   **FIX**: Fix `:dir()` ignoring the value of an `input` with `dir="auto"` and a missing or empty `type`.
 -   **FIX**: Fix `:lang()` treating an element with an empty `lang` or `xml:lang` attribute as having the language of
     a tagged ancestor.
+-   **FIX**: Cache forms without a default button when matching `:default` to avoid quadratic time on forms with
+    many non-default submit candidates.
 
 ## 3.0.4
 
