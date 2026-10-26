@@ -833,7 +833,7 @@ class CSSParser:
         if case:
             flags = (re.I if case == 'i' else 0) | re.DOTALL
         elif util.lower(attr) in HTML_CASE_INSENSITIVE_ATTRIBUTES:
-            flags = re.I | re.DOTALL
+            flags = re.I | re.ASCII | re.DOTALL
             html_insensitive = True
         else:
             flags = re.DOTALL
@@ -876,7 +876,7 @@ class CSSParser:
             pattern = re.compile(r'^%s$' % re.escape(value), flags)
 
         if html_insensitive and pattern:
-            pattern2 = re.compile(pattern.pattern)
+            pattern2 = re.compile(pattern.pattern, re.DOTALL)
 
         # Append the attribute selector
         sel_attr = ct.SelectorAttribute(attr, ns, pattern, pattern2, inverse)

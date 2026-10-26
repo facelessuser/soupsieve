@@ -259,6 +259,18 @@ class TestAttribute(util.TestCase):
         self.assert_selector(markup, '[type="fractalNoise"]', ["1"], flags=util.HTML5)
         self.assert_selector(markup, '[rel="nofollow"]', [], flags=util.HTML5)
 
+    def test_attribute_html_case_insensitive_values_are_ascii_only(self):
+        """Default HTML attribute folding does not equate non-ASCII letters to ASCII ones."""
+
+        markup = '<a id="x" rel="\u017ftylesheet"></a>'
+        self.assert_selector(markup, '[rel~="stylesheet"]', [], flags=util.HTML5)
+
+    def test_attribute_xml_fallback_matches_across_newlines(self):
+        """The case-sensitive fallback retains DOTALL for XML attribute values."""
+
+        markup = '<r><a id="x" rel="pre&#10;match"/></r>'
+        self.assert_selector(markup, '[rel*="match"]', ["x"], flags=util.XML)
+
     def test_attribute_type_xml(self):
         """Type is treated as case sensitive in XML."""
 
