@@ -30,6 +30,8 @@ class TestDir(util.TestCase):
       <input id="16" type="search" dir="auto">
       <textarea id="17" dir="auto">עִבְרִית</textarea>
       <textarea id="18" dir="auto"></textarea>
+      <input id="19" dir="auto" value="עִבְרִית">
+      <input id="20" type="" dir="auto" value="עִבְרִית">
     </div>
     </body>
     </html>
@@ -99,6 +101,13 @@ class TestDir(util.TestCase):
             self.MARKUP,
             ":is(input, textarea):dir(ltr)",
             ['9', '10', '11', '12', '13', '15', '16', '18'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            self.MARKUP,
+            ":is(input, textarea):dir(rtl)",
+            ['14', '17', '19', '20'],
             flags=util.HTML5
         )
 

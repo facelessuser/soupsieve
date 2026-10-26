@@ -1335,7 +1335,7 @@ class CSSMatch(_DocumentNav):
         parent: bs4.Tag | None = el
         found_lang = None
         last = None
-        while not found_lang:
+        while found_lang is None:
             has_html_ns = self.has_html_ns(parent)
             for k, v in self.iter_attributes(parent):
                 attr_ns, attr = self.split_namespace(parent, k)
@@ -1457,7 +1457,10 @@ class CSSMatch(_DocumentNav):
                 return ct.SEL_DIR_LTR
 
             # Auto handling for text inputs
-            if ((is_input and itype in ('text', 'search', 'tel', 'url', 'email')) or is_textarea) and direction == 0:
+            if (
+                ((is_input and itype in ('', 'text', 'search', 'tel', 'url', 'email')) or is_textarea) and
+                direction == 0
+            ):
                 if is_textarea:
                     value = ''.join(
                         node for node in self.get_contents(el, no_iframe=True)  # type: ignore[misc]
