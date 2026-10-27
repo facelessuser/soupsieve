@@ -15,11 +15,16 @@ icon: lucide/scroll-text
     match the editable elements inside an editing host, following the nearest `contenteditable` state.
 -   **FIX**: Fix `[attribute!=value]` excluding values that only start with the specified value, and in XML documents,
     `type` values that contain a newline.
+-   **FIX**: Match the values of every attribute that the HTML specification lists as ASCII case insensitive (`rel`,
+    `method`, `lang`, `dir`, ...) without ASCII case sensitivity on HTML elements in HTML documents, not just `type`.
+    Non-HTML elements are matched case sensitively.
 -   **FIX**: Fix `:dir()` ignoring the value of an `input` with `dir="auto"` and a missing or empty `type`.
 -   **FIX**: Fix `:lang()` treating an element with an empty `lang` or `xml:lang` attribute as having the language of
     a tagged ancestor.
 -   **FIX**: Cache forms without a default button when matching `:default` to avoid quadratic time on forms with
     many non-default submit candidates.
+-   **FIX**: Fix `:in-range` and `:out-of-range` raising `ValueError` when a date, month, week, or local date and
+    time `input` has a year with more digits than Python will convert; such a year is now treated as invalid.
 
 ## 3.0.4
 

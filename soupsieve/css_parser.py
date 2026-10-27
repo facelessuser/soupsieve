@@ -96,6 +96,18 @@ PSEUDO_SIMPLE_NO_MATCH = {
     ':visited'
 }
 
+# Attributes whose values are matched case insensitively on HTML elements in HTML documents
+# https://html.spec.whatwg.org/multipage/semantics-other.html#case-sensitivity-of-selectors
+HTML_CASE_INSENSITIVE_ATTRIBUTES = frozenset(
+    (
+        'accept', 'accept-charset', 'align', 'alink', 'axis', 'bgcolor', 'charset', 'checked', 'clear',
+        'codetype', 'color', 'compact', 'declare', 'defer', 'dir', 'direction', 'disabled', 'enctype',
+        'face', 'frame', 'hreflang', 'http-equiv', 'lang', 'language', 'link', 'media', 'method',
+        'multiple', 'nohref', 'noresize', 'noshade', 'nowrap', 'readonly', 'rel', 'rev', 'rules', 'scope',
+        'scrolling', 'selected', 'shape', 'target', 'text', 'type', 'valign', 'valuetype', 'vlink'
+    )
+)
+
 # Complex pseudo classes that take selector lists
 PSEUDO_COMPLEX = {
     ':contains',
@@ -813,16 +825,16 @@ class CSSParser:
         case = util.lower(m.group('case')) if m.group('case') else None
         ns = css_unescape(m.group('attr_ns')[:-1]) if m.group('attr_ns') else ''
         attr = css_unescape(m.group('attr_name'))
-        is_type = False
+        html_insensitive = False
         pattern2 = None
         value = ''
         inverse = False
 
         if case:
             flags = (re.I if case == 'i' else 0) | re.DOTALL
-        elif util.lower(attr) == 'type':
-            flags = re.I | re.DOTALL
-            is_type = True
+        elif util.lower(attr) in HTML_CASE_INSENSITIVE_ATTRIBUTES:
+            flags = re.I | re.ASCII | re.DOTALL
+            html_insensitive = True
         else:
             flags = re.DOTALL
 
@@ -863,8 +875,8 @@ class CSSParser:
             # Value matches
             pattern = re.compile(r'^%s$' % re.escape(value), flags)
 
-        if is_type and pattern:
-            pattern2 = re.compile(pattern.pattern)
+        if html_insensitive and pattern:
+            pattern2 = re.compile(pattern.pattern, re.DOTALL)
 
         # Append the attribute selector
         sel_attr = ct.SelectorAttribute(attr, ns, pattern, pattern2, inverse)
