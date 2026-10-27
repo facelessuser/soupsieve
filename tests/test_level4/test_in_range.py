@@ -1,4 +1,5 @@
 """Test in range selectors."""
+import sys
 from .. import util
 
 
@@ -291,5 +292,26 @@ class TestInRange(util.TestCase):
             markup,
             ":in-range",
             ['1'],
+            flags=util.HTML
+        )
+
+    def test_in_range_long_year(self):
+        """A year with more digits than `int()` will convert is invalid, so it is neither in nor out of range."""
+
+        year = '1' * (sys.get_int_max_str_digits() + 1)
+        markup = f"""
+        <input id="0" type="date" min="2000-01-01" max="2100-01-01" value="{year}-01-01">
+        <input id="1" type="date" min="{year}-01-01" value="2000-01-01">
+        <input id="2" type="month" min="2000-01" max="2100-01" value="{year}-01">
+        <input id="3" type="week" min="2000-W01" max="2100-W01" value="{year}-W01">
+        <input id="4" type="datetime-local" min="2000-01-01T00:00" max="2100-01-01T00:00" value="{year}-01-01T00:00">
+        <input id="5" type="date" min="2000-01-01" max="2100-01-01" value="2050-01-01">
+        <input id="6" type="date" min="2000-01-01" max="2100-01-01" value="2200-01-01">
+        """
+
+        self.assert_selector(
+            markup,
+            ":in-range",
+            ['0', '2', '3', '4', '5'],
             flags=util.HTML
         )

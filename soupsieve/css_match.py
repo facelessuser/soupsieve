@@ -468,6 +468,20 @@ class Inputs:
         return 1 <= year
 
     @staticmethod
+    def parse_year(year: str) -> int:
+        """
+        Parse year.
+
+        A year is four or more digits with no upper limit, but `int()` refuses digit strings longer than
+        `sys.get_int_max_str_digits()`, so treat a year that long as invalid.
+        """
+
+        try:
+            return int(year, 10)
+        except ValueError:
+            return 0
+
+    @staticmethod
     def validate_hour(hour: int) -> bool:
         """Validate hour."""
 
@@ -495,7 +509,7 @@ class Inputs:
         if itype == "date":
             m = RE_DATE.match(value)
             if m:
-                year = int(m.group('year'), 10)
+                year = cls.parse_year(m.group('year'))
                 month = int(m.group('month'), 10)
                 day = int(m.group('day'), 10)
                 if cls.validate_year(year) and cls.validate_month(month) and cls.validate_day(year, month, day):
@@ -503,14 +517,14 @@ class Inputs:
         elif itype == "month":
             m = RE_MONTH.match(value)
             if m:
-                year = int(m.group('year'), 10)
+                year = cls.parse_year(m.group('year'))
                 month = int(m.group('month'), 10)
                 if cls.validate_year(year) and cls.validate_month(month):
                     parsed = (year, month)
         elif itype == "week":
             m = RE_WEEK.match(value)
             if m:
-                year = int(m.group('year'), 10)
+                year = cls.parse_year(m.group('year'))
                 week = int(m.group('week'), 10)
                 if cls.validate_year(year) and cls.validate_week(year, week):
                     parsed = (year, week)
@@ -525,7 +539,7 @@ class Inputs:
         elif itype == "datetime-local":
             m = RE_DATETIME.match(value)
             if m:
-                year = int(m.group('year'), 10)
+                year = cls.parse_year(m.group('year'))
                 month = int(m.group('month'), 10)
                 day = int(m.group('day'), 10)
                 hour = int(m.group('hour'), 10)
