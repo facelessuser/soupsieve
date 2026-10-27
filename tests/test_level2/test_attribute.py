@@ -228,6 +228,49 @@ class TestAttribute(util.TestCase):
             flags=util.HTML
         )
 
+    def test_attribute_html_case_insensitive_values(self):
+        """Values of the attributes listed by the HTML specification are case insensitive in HTML."""
+
+        markup = """
+        <form id="0" method="POST"></form>
+        <a id="1" rel="NoFollow" href="#">Link</a>
+        <p id="2" lang="EN-us" dir="RTL">Text</p>
+        <div id="3" title="ABC"></div>
+        """
+
+        self.assert_selector(markup, '[method="post"]', ["0"], flags=util.HTML)
+        self.assert_selector(markup, '[rel~="nofollow"]', ["1"], flags=util.HTML)
+        self.assert_selector(markup, '[lang|="en"][dir="rtl"]', ["2"], flags=util.HTML)
+        self.assert_selector(markup, '[title="abc"]', [], flags=util.HTML)
+
+    def test_attribute_html_case_insensitive_values_foreign(self):
+        """Case insensitive attribute values only apply to HTML elements."""
+
+        markup = """
+        <input id="0" type="CheckBox">
+        <svg>
+        <filter><feTurbulence id="1" type="fractalNoise"></feTurbulence></filter>
+        <a id="2" rel="NoFollow"></a>
+        </svg>
+        """
+
+        self.assert_selector(markup, '[type="checkbox"]', ["0"], flags=util.HTML5)
+        self.assert_selector(markup, '[type="fractalnoise"]', [], flags=util.HTML5)
+        self.assert_selector(markup, '[type="fractalNoise"]', ["1"], flags=util.HTML5)
+        self.assert_selector(markup, '[rel="nofollow"]', [], flags=util.HTML5)
+
+    def test_attribute_html_case_insensitive_values_are_ascii_only(self):
+        """Default HTML attribute folding does not equate non-ASCII letters to ASCII ones."""
+
+        markup = '<a id="x" rel="\u017ftylesheet"></a>'
+        self.assert_selector(markup, '[rel~="stylesheet"]', [], flags=util.HTML5)
+
+    def test_attribute_xml_fallback_matches_across_newlines(self):
+        """The case-sensitive fallback matches across newlines in XML attribute values."""
+
+        markup = '<r><a id="x" rel="pre&#10;match"/></r>'
+        self.assert_selector(markup, '[rel*="match"]', ["x"], flags=util.XML)
+
     def test_attribute_type_xml(self):
         """Type is treated as case sensitive in XML."""
 
