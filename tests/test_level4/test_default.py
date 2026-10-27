@@ -259,3 +259,28 @@ class TestDefault(util.TestCase):
             [],
             flags=util.HTML
         )
+
+    def test_default_cached_none(self):
+        """Test that a form without a default button is cached and not searched again for every candidate."""
+
+        markup = """
+        <form>
+        <select>
+        <button id="b1">button1</button>
+        <button id="b2">button2</button>
+        <button id="b3">button3</button>
+        </select>
+        </form>
+
+        <form>
+        <select><button id="b4">button4</button></select>
+        <button id="d1">default1</button>
+        </form>
+        """
+
+        self.assert_selector(
+            markup,
+            ":default",
+            ['d1'],
+            flags=util.HTML
+        )
