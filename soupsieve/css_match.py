@@ -46,6 +46,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 NS_XHTML = 'http://www.w3.org/1999/xhtml'
 NS_XML = 'http://www.w3.org/XML/1998/namespace'
+NS_SVG = 'http://www.w3.org/2000/svg'
 
 DIR_FLAGS = ct.SEL_DIR_LTR | ct.SEL_DIR_RTL
 RANGES = ct.SEL_IN_RANGE | ct.SEL_OUT_OF_RANGE
@@ -1354,6 +1355,9 @@ class CSSMatch(_DocumentNav):
         last = None
         while found_lang is None:
             has_html_ns = self.has_html_ns(parent)
+            # SVG elements also use a `lang` attribute in no namespace, but `xml:lang` takes precedence.
+            has_svg_ns = has_ns and getattr(parent, 'namespace', None) == NS_SVG
+            svg_lang = None
             for k, v in self.iter_attributes(parent):
                 attr_ns, attr = self.split_namespace(parent, k)
                 if (
@@ -1365,6 +1369,10 @@ class CSSMatch(_DocumentNav):
                 ):
                     found_lang = v
                     break
+                if has_svg_ns and attr_ns is None and (util.lower(k) if not self.is_xml else k) == 'lang':
+                    svg_lang = v
+            if found_lang is None:
+                found_lang = svg_lang
             last = parent
             parent = self.get_parent(parent, no_iframe=self.is_html)
 

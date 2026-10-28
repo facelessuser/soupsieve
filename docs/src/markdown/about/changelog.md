@@ -25,6 +25,8 @@ icon: lucide/scroll-text
     many non-default submit candidates.
 -   **FIX**: Fix `:in-range` and `:out-of-range` raising `ValueError` when a date, month, week, or local date and
     time `input` has a year with more digits than Python will convert; such a year is now treated as invalid.
+-   **FIX**: `:lang()` now uses the `lang` attribute of SVG elements, as the HTML specification does (with `xml:lang`
+    taking precedence). Previously only `xml:lang` was considered for elements outside the HTML namespace.
 
 ## 3.0.4
 
