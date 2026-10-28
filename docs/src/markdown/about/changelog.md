@@ -25,6 +25,8 @@ icon: lucide/scroll-text
     many non-default submit candidates.
 -   **FIX**: Fix `:in-range` and `:out-of-range` raising `ValueError` when a date, month, week, or local date and
     time `input` has a year with more digits than Python will convert; such a year is now treated as invalid.
+-   **FIX**: Cache the index of each child when matching the general sibling combinator (`a ~ b` and `:has(~ b)`) to
+    avoid quadratic time when the first matching sibling is far into a long list of siblings.
 
 ## 3.0.4
 
