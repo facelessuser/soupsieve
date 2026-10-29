@@ -831,7 +831,7 @@ class CSSParser:
         inverse = False
 
         if case:
-            flags = (re.I if case == 'i' else 0) | re.DOTALL
+            flags = (re.I | re.ASCII if case == 'i' else 0) | re.DOTALL
         elif util.lower(attr) in HTML_CASE_INSENSITIVE_ATTRIBUTES:
             flags = re.I | re.ASCII | re.DOTALL
             html_insensitive = True
