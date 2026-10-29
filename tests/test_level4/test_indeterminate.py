@@ -74,3 +74,29 @@ class TestIndeterminate(util.TestCase):
             ['radio1'] if IFRAME_TEXT else ['radio1', 'radio3'],
             flags=util.PYHTML
         )
+
+    def test_indeterminate_many_groups(self):
+        """Test indeterminate with several radio button groups in one form, which is only searched once."""
+
+        markup = """
+        <form>
+            <input type="radio" name="a" id="radio1">
+            <input type="radio" name="b" id="radio2">
+            <input type="radio" name="b" id="radio3" checked>
+            <input type="radio" name="c" id="radio4">
+            <input type="checkbox" name="d" id="checkbox1" checked>
+            <input type="radio" name="d" id="radio5">
+            <input type="radio" name="e" id="radio6">
+        </form>
+        <form>
+            <input type="radio" name="a" id="radio7" checked>
+            <input type="radio" name="e" id="radio8">
+        </form>
+        """
+
+        self.assert_selector(
+            markup,
+            ":indeterminate",
+            ['radio1', 'radio4', 'radio5', 'radio6', 'radio8'],
+            flags=util.HTML
+        )

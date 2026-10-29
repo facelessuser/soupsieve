@@ -25,6 +25,8 @@ icon: lucide/scroll-text
     many non-default submit candidates.
 -   **FIX**: Fix `:in-range` and `:out-of-range` raising `ValueError` when a date, month, week, or local date and
     time `input` has a year with more digits than Python will convert; such a year is now treated as invalid.
+-   **FIX**: Search a form only once for checked radio buttons when matching `:indeterminate` to avoid quadratic time
+    on forms with many radio button groups.
 
 ## 3.0.4
 

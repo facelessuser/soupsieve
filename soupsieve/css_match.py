@@ -575,7 +575,7 @@ class CSSMatch(_DocumentNav):
         self.tag = scope
         self.cached_meta_lang: list[tuple[str, str]] = []
         self.cached_default_forms: list[tuple[bs4.Tag, bs4.Tag | None]] = []
-        self.cached_indeterminate_forms: list[tuple[bs4.Tag, str, bool]] = []
+        self.cached_indeterminate_forms: dict[int, set[str]] = {}
         self.selectors = selectors
         self.namespaces: ct.Namespaces | dict[str, str] = {} if namespaces is None else namespaces
         self.flags = flags
@@ -1301,42 +1301,36 @@ class CSSMatch(_DocumentNav):
 
         form = get_parent_form(el)
 
-        # Look in form cache to see if we've already evaluated that its fellow radio buttons are indeterminate
+        # Look in form cache to see which radio button groups of the form have a checked button
         if form is not None:
-            found_form = False
-            for f, n, i in self.cached_indeterminate_forms:
-                if f is form and n == name:
-                    found_form = True
-                    if i is True:
-                        match = True
-                    break
+            key = id(form)
+            checked_names = self.cached_indeterminate_forms.get(key)
 
-            # We didn't have the form cached, so validate that the radio button is indeterminate
-            if not found_form:
-                checked = False
+            # We didn't have the form cached, so collect the names of its checked radio buttons in a single pass
+            # instead of searching the form again for every radio button group.
+            if checked_names is None:
+                checked_names = set()
                 for child in self.get_tag_descendants(form, no_iframe=True):
-                    if child is el:
-                        continue
                     tag_name = self.get_tag(child)
                     if tag_name == 'input':
                         is_radio = False
                         check = False
-                        has_name = False
+                        child_name = None
                         for k, v in self.iter_attributes(child):
                             if util.lower(k) == 'type' and util.lower(v) == 'radio':
                                 is_radio = True
-                            elif util.lower(k) == 'name' and v == name:
-                                has_name = True
+                            elif util.lower(k) == 'name':
+                                child_name = v
                             elif util.lower(k) == 'checked':
                                 check = True
-                            if is_radio and check and has_name and get_parent_form(child) is form:
-                                checked = True
-                                break
-                    if checked:
-                        break
-                if not checked:
-                    match = True
-                self.cached_indeterminate_forms.append((form, name, match))
+                        if (
+                            is_radio and check and isinstance(child_name, str) and
+                            child_name not in checked_names and get_parent_form(child) is form
+                        ):
+                            checked_names.add(child_name)
+                self.cached_indeterminate_forms[key] = checked_names
+
+            match = name not in checked_names
 
         return match
 
