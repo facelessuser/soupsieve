@@ -1562,6 +1562,8 @@ class CSSMatch(_DocumentNav):
         - If the document is XML (not XHTML), all tags will match.
         - Tags that are not custom (don't have a hyphen) are marked defined.
         - If the tag has a prefix (without or without a namespace), it will not match.
+        - HTML elements with an `is` attribute (customized built-in elements) are created as undefined,
+          like custom tags, so they don't match.
 
         This is of course requires the parser to provide us with the proper prefix and namespace info,
         if it doesn't, there is nothing we can do.
@@ -1570,11 +1572,16 @@ class CSSMatch(_DocumentNav):
         name = self.get_tag(el)
         return (
             name is not None and (
-                name.find('-') == -1 or
+                (name.find('-') == -1 and not self.is_customized_builtin(el)) or
                 name.find(':') != -1 or
                 self.get_prefix(el) is not None
             )
         )
+
+    def is_customized_builtin(self, el: bs4.Tag) -> bool:
+        """Check if an HTML element has an `is` attribute, which makes it a customized built-in element."""
+
+        return self.is_html_tag(el) and self.get_attribute_by_name(el, 'is') is not None
 
     def match_placeholder_shown(self, el: bs4.Tag) -> bool:
         """

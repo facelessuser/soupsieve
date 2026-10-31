@@ -143,8 +143,9 @@ soup.select(':default')
 
 In a browser environment, this represents *defined* elements (names without hyphens) and custom elements (names with
 hyphens) that have been properly added to the custom element registry. Since elements cannot be added to a custom
-element registry in Beautiful Soup, this will select all elements that are not custom tags. `:defined` is a HTML
-specific selector, so it doesn't apply to XML.
+element registry in Beautiful Soup, this will select all elements that are not custom tags. HTML elements with an `is`
+attribute (customized built-in elements) are treated the same way as custom tags and are not matched. `:defined` is a
+HTML specific selector, so it doesn't apply to XML.
 
 /// tab | Syntax
 ```css

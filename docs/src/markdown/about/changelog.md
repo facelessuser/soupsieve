@@ -25,6 +25,8 @@ icon: lucide/scroll-text
     many non-default submit candidates.
 -   **FIX**: Fix `:in-range` and `:out-of-range` raising `ValueError` when a date, month, week, or local date and
     time `input` has a year with more digits than Python will convert; such a year is now treated as invalid.
+-   **FIX**: `:defined` no longer matches HTML elements with an `is` attribute (customized built-in elements), which,
+    like custom elements, are undefined until they are registered.
 -   **FIX**: Cache the index of each child when matching the general sibling combinator (`a ~ b` and `:has(~ b)`) to
     avoid quadratic time when the first matching sibling is far into a long list of siblings.
 -   **FIX**: Match attribute values with the `i` modifier using ASCII case insensitivity.
