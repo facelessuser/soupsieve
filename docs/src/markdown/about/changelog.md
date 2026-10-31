@@ -3,7 +3,7 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## Unreleased
+## 3.1
 
 -   **NEW**: Update `:disabled` and `:enabled` to treat `option` and `optgroup` elements inside a disabled `select` as
     disabled, following a recent HTML specification update.
