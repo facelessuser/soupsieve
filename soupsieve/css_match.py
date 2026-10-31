@@ -1342,7 +1342,7 @@ class CSSMatch(_DocumentNav):
                             elif util.lower(k) == 'checked':
                                 check = True
                         if (
-                            is_radio and check and isinstance(child_name, str) and
+                            is_radio and check and child_name is not None and
                             child_name not in checked_names and get_parent_form(child) is form
                         ):
                             checked_names.add(child_name)
