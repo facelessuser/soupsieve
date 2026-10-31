@@ -17,6 +17,7 @@ GitHub
 Gitter
 Hashable
 JQuery
+MathML
 MERCHANTABILITY
 MkDocs
 NONINFRINGEMENT

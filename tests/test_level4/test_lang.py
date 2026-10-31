@@ -285,6 +285,41 @@ class TestLang(util.TestCase):
             flags=util.HTML
         )
 
+    def test_svg_language_in_html5(self):
+        """Test that SVG elements use a `lang` attribute, but MathML elements don't."""
+
+        markup = """
+        <div lang="fr">
+            <svg id="1" lang="en">
+                <g id="2"></g>
+                <foreignObject id="3"><p id="4"></p></foreignObject>
+            </svg>
+            <svg id="5" lang="en" xml:lang="de"><g id="6"></g></svg>
+            <math id="7" lang="en"><mi id="8"></mi></math>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            ":lang(en)",
+            ['1', '2', '3', '4'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            ":lang(de)",
+            ['5', '6'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "[id]:lang(fr)",
+            ['7', '8'],
+            flags=util.HTML5
+        )
+
     def test_xml_style_language_in_html5(self):
         """Test XML style language when out of HTML5 namespace."""
 

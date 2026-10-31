@@ -580,6 +580,16 @@ class PseudoSelectorMap(UserDict[str, CSSPattern | ct.SelectorList]):
         return value
 
 
+# An `input` is in the Text state when its `type` is missing, `text`, or not one of
+# the other keywords, so an invalid value like `type="foo"` is a text input:
+# https://html.spec.whatwg.org/multipage/input.html#attr-input-type
+INPUT_TEXT_STATE = (
+    ':not([type=hidden], [type=search], [type=tel], [type=url], [type=email], [type=password], '
+    '[type=date], [type=month], [type=week], [type=time], [type=datetime-local], [type=number], '
+    '[type=range], [type=color], [type=checkbox], [type=radio], [type=file], [type=submit], '
+    '[type=image], [type=reset], [type=button])'
+)
+
 # CSS pattern for `:link` and `:any-link`
 CSS_LINK = CSSPattern('html|*:is(a, area)[href]', FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:checked`
@@ -649,11 +659,9 @@ CSS_REQUIRED = CSSPattern('html|*:is(input, textarea, select)[required]', FLG_PS
 CSS_OPTIONAL = CSSPattern('html|*:is(input, textarea, select):not([required])', FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:placeholder-shown`
 CSS_PLACEHOLDER_SHOWN = CSSPattern(
-    '''
+    f'''
     html|input:is(
-        :not([type]),
-        [type=""],
-        [type=text],
+        {INPUT_TEXT_STATE},
         [type=search],
         [type=url],
         [type=tel],
@@ -667,13 +675,11 @@ CSS_PLACEHOLDER_SHOWN = CSSPattern(
 )
 # CSS pattern for `:read-write` (CSS_DISABLED must be compiled first)
 CSS_READ_WRITE = CSSPattern(
-    '''
+    f'''
     html|*:is(
         textarea,
         input:is(
-            :not([type]),
-            [type=""],
-            [type=text],
+            {INPUT_TEXT_STATE},
             [type=search],
             [type=url],
             [type=tel],
@@ -831,7 +837,7 @@ class CSSParser:
         inverse = False
 
         if case:
-            flags = (re.I if case == 'i' else 0) | re.DOTALL
+            flags = (re.I | re.ASCII if case == 'i' else 0) | re.DOTALL
         elif util.lower(attr) in HTML_CASE_INSENSITIVE_ATTRIBUTES:
             flags = re.I | re.ASCII | re.DOTALL
             html_insensitive = True

@@ -315,3 +315,33 @@ class TestInRange(util.TestCase):
             ['0', '2', '3', '4', '5'],
             flags=util.HTML
         )
+
+    def test_range_trailing_newline(self):
+        """A value or boundary with a trailing newline is not valid; an invalid value is treated like a missing one."""
+
+        markup = """
+        <input id="0" type="number" min="0" max="10" value="50&#10;">
+        <input id="1" type="number" min="100&#10;" max="200" value="50">
+        <input id="2" type="date" min="2000-01-01" max="2100-01-01" value="2200-01-01&#10;">
+        <input id="3" type="month" min="2000-01" max="2100-01" value="2200-01&#10;">
+        <input id="4" type="week" min="2000-W01" max="2100-W01" value="2200-W01&#10;">
+        <input id="5" type="time" min="00:00" max="12:00" value="23:30&#10;">
+        <input id="6" type="number" min="0" max="10" value="50">
+        """
+
+        # An invalid value is treated like a missing value, which browsers
+        # evaluate as in range, and an invalid bound is treated as absent.
+        self.assert_selector(
+            markup,
+            ":in-range",
+            ['0', '1', '2', '3', '4', '5'],
+            flags=util.HTML
+        )
+
+        # None of the trailing-newline values may be evaluated out of range.
+        self.assert_selector(
+            markup,
+            ":out-of-range",
+            ['6'],
+            flags=util.HTML
+        )
