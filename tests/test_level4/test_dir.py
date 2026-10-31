@@ -111,6 +111,35 @@ class TestDir(util.TestCase):
             flags=util.HTML5
         )
 
+    def test_dir_on_input_unknown_type(self):
+        """Test that `dir="auto"` uses the value of an `input` with an unknown `type`."""
+
+        markup = """
+        <html id="0">
+        <head></head>
+        <body>
+        <input id="1" type="foo" dir="auto" value="עִבְרִית">
+        <input id="2" type="datetime" dir="auto" value="עִבְרִית">
+        <input id="3" type="foo" dir="auto" value="English">
+        <input id="4" type="color" dir="auto" value="עִבְרִית">
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            "input:dir(rtl)",
+            ['1', '2'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "input:dir(ltr)",
+            ['3', '4'],
+            flags=util.HTML5
+        )
+
     def test_dir_auto_nested(self):
         """Test nested auto direction resolved from ancestors."""
 

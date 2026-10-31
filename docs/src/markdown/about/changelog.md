@@ -34,6 +34,8 @@ icon: lucide/scroll-text
 -   **FIX**: Cache the index of each child when matching the general sibling combinator (`a ~ b` and `:has(~ b)`) to
     avoid quadratic time when the first matching sibling is far into a long list of siblings.
 -   **FIX**: Match attribute values with the `i` modifier using ASCII case insensitivity.
+-   **FIX**: Treat an `input` with an unknown `type`, such as `type="foo"`, as a text input in `:placeholder-shown`,
+    `:read-write`, `:read-only` and `:dir()`, as an invalid `type` is in the Text state in the HTML specification.
 
 ## 3.0.4
 

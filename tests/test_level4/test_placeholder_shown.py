@@ -69,3 +69,20 @@ class TestPlaceholderShown(util.TestCase):
             ['0', '1', '4', '5', '6', '7', '8', '9', '10', '11', '12', '28', '32'],
             flags=util.HTML
         )
+
+    def test_placeholder_shown_unknown_type(self):
+        """Test that an `input` with an unknown `type` is a text input."""
+
+        markup = """
+        <input id="0" type="foo" placeholder="This is some text">
+        <input id="1" type="datetime" placeholder="This is some text">
+        <input id="2" type=" text" placeholder="This is some text">
+        <input id="3" type="CHECKBOX" placeholder="This is some text">
+        """
+
+        self.assert_selector(
+            markup,
+            ":placeholder-shown",
+            ['0', '1', '2'],
+            flags=util.HTML
+        )

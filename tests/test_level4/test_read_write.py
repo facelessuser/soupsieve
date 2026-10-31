@@ -82,3 +82,28 @@ class TestReadWrite(util.TestCase):
             ['0', '1', '2', '3', '4', '5', '6', '10', '11', '12', '13', '14', '15', '17', '18'],
             flags=util.HTML
         )
+
+    def test_read_write_unknown_type(self):
+        """Test that an `input` with an unknown `type` is a text input."""
+
+        markup = """
+        <input id="0" type="foo">
+        <input id="1" type="datetime">
+        <input id="2" type="foo" readonly>
+        <input id="3" type="foo" disabled>
+        <input id="4" type="Color">
+        """
+
+        self.assert_selector(
+            markup,
+            "input:read-write",
+            ['0', '1'],
+            flags=util.HTML
+        )
+
+        self.assert_selector(
+            markup,
+            "input:read-only",
+            ['2', '3', '4'],
+            flags=util.HTML
+        )
