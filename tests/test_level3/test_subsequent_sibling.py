@@ -37,3 +37,15 @@ class TestSubsequentSibling(util.TestCase):
             html = "<div>" + ("<a></a>" * n) + "</div>"
             soup = BeautifulSoup(html, "html.parser")
             self.assertEqual(len(sv.select(selector, soup)), 0)
+
+    def test_many_siblings_late_match(self):
+        """Test many siblings case where the first matching sibling is in the middle."""
+
+        import soupsieve as sv
+        from bs4 import BeautifulSoup
+
+        selector = "b ~ a"
+        for n in (1000, 2000, 4000, 8000):
+            html = "<div>" + ("<a></a> " * n) + "<b></b> " + ("<a></a> " * n) + "</div>"
+            soup = BeautifulSoup(html, "html.parser")
+            self.assertEqual(len(sv.select(selector, soup)), n)
