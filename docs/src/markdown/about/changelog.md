@@ -27,6 +27,11 @@ icon: lucide/scroll-text
     time `input` has a year with more digits than Python will convert; such a year is now treated as invalid.
 -   **FIX**: `:lang()` now uses the `lang` attribute of SVG elements, as the HTML specification does (with `xml:lang`
     taking precedence). Previously only `xml:lang` was considered for elements outside the HTML namespace.
+-   **FIX**: `:defined` no longer matches HTML elements with an `is` attribute (customized built-in elements), which,
+    like custom elements, are undefined until they are registered.
+-   **FIX**: Cache the index of each child when matching the general sibling combinator (`a ~ b` and `:has(~ b)`) to
+    avoid quadratic time when the first matching sibling is far into a long list of siblings.
+-   **FIX**: Match attribute values with the `i` modifier using ASCII case insensitivity.
 
 ## 3.0.4
 

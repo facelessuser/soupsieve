@@ -29,6 +29,52 @@ class TestDefined(util.TestCase):
             flags=util.HTML
         )
 
+    def test_defined_customized_builtin(self):
+        """Test that HTML elements with an `is` attribute are not defined."""
+
+        markup = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+        </head>
+        <body>
+        <button id="0"></button>
+        <button id="1" is="fancy-button"></button>
+        <button id="2" is=""></button>
+        <p id="3" IS="fancy-paragraph"></p>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            'body :defined',
+            ['0'],
+            flags=util.HTML
+        )
+
+    def test_defined_is_attribute_foreign(self):
+        """Test that an `is` attribute does not affect elements outside the HTML namespace."""
+
+        markup = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+        </head>
+        <body>
+        <svg id="0" is="fancy-svg"></svg>
+        <math id="1" is="fancy-math"></math>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            'body :defined',
+            ['0', '1'],
+            flags=util.HTML5
+        )
+
     @util.skip_no_lxml
     def test_defined_xhtml(self):
         """Test defined XHTML."""

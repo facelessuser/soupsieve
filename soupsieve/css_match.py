@@ -77,13 +77,6 @@ FEB_LEAP_MONTH = 29
 DAYS_IN_WEEK = 7
 
 
-def within(target: bs4.Tag, parent: bs4.Tag | bs4.BeautifulSoup, start: int, end: int | None = None) -> bool:
-    """Check if target is within data."""
-
-    contents = parent.contents
-    return any(contents[i] is target for i in range(start, end if end is not None else len(contents)))
-
-
 class _DocumentNav:
     """Navigate a Beautiful Soup document."""
 
@@ -585,6 +578,7 @@ class CSSMatch(_DocumentNav):
         self.nth_cache: dict[Hashable, list[int]] = {}
         self.sib_cache: dict[Hashable, int] = {}
         self.dir_cache: dict[int, int] = {}
+        self.index_cache: dict[int, dict[int, int]] = {}
 
         # Find the root element for the whole tree
         doc = scope
@@ -614,6 +608,7 @@ class CSSMatch(_DocumentNav):
         self.nth_cache.clear()
         self.sib_cache.clear()
         self.dir_cache.clear()
+        self.index_cache.clear()
 
     def supports_namespaces(self) -> bool:
         """Check if namespaces are supported in the HTML type."""
@@ -867,6 +862,20 @@ class CSSMatch(_DocumentNav):
                 match = False
         return match
 
+    def within(self, target: bs4.Tag, parent: bs4.Tag | bs4.BeautifulSoup, start: int, end: int | None = None) -> bool:
+        """
+        Check if target is within the parent's contents from `start` up to `end`.
+
+        Searching the contents for every target is quadratic on parents with many children,
+        so cache the index of each child the first time a parent is checked.
+        """
+
+        key = id(parent)
+        if key not in self.index_cache:
+            self.index_cache[key] = {id(child): i for i, child in enumerate(parent.contents)}
+        index = self.index_cache[key].get(id(target), -1)
+        return start <= index < (end if end is not None else len(parent.contents))
+
     def match_general_sibling(self, el: bs4.Tag, relation: ct.SelectorList) -> MatchGenerator:
         """Match general sibling combinator."""
 
@@ -896,7 +905,7 @@ class CSSMatch(_DocumentNav):
                 index = self.sib_cache[key]
                 if index >= 0:
                     a, b = (index + 1, start + 1) if reverse else (start, index)
-                    return not within(el, parent, a, b)
+                    return not self.within(el, parent, a, b)
                 else:
                     return False
             self.sib_cache[key] = start
@@ -1099,7 +1108,7 @@ class CSSMatch(_DocumentNav):
                 valid = False
                 if key and key in self.nth_cache:
                     start, rindex = self.nth_cache[key]
-                    if within(el, parent, start):
+                    if self.within(el, parent, start):
                         last = False
                         rincr = -1 if n.last else 1
                         valid = True
@@ -1561,6 +1570,8 @@ class CSSMatch(_DocumentNav):
         - If the document is XML (not XHTML), all tags will match.
         - Tags that are not custom (don't have a hyphen) are marked defined.
         - If the tag has a prefix (without or without a namespace), it will not match.
+        - HTML elements with an `is` attribute (customized built-in elements) are created as undefined,
+          like custom tags, so they don't match.
 
         This is of course requires the parser to provide us with the proper prefix and namespace info,
         if it doesn't, there is nothing we can do.
@@ -1569,11 +1580,16 @@ class CSSMatch(_DocumentNav):
         name = self.get_tag(el)
         return (
             name is not None and (
-                name.find('-') == -1 or
+                (name.find('-') == -1 and not self.is_customized_builtin(el)) or
                 name.find(':') != -1 or
                 self.get_prefix(el) is not None
             )
         )
+
+    def is_customized_builtin(self, el: bs4.Tag) -> bool:
+        """Check if an HTML element has an `is` attribute, which makes it a customized built-in element."""
+
+        return self.is_html_tag(el) and self.get_attribute_by_name(el, 'is') is not None
 
     def match_placeholder_shown(self, el: bs4.Tag) -> bool:
         """
