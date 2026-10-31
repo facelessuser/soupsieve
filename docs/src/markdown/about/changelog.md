@@ -23,6 +23,8 @@ icon: lucide/scroll-text
     a tagged ancestor.
 -   **FIX**: Cache forms without a default button when matching `:default` to avoid quadratic time on forms with
     many non-default submit candidates.
+-   **FIX**: Fix `:in-range` and `:out-of-range` matching elements whose value, `min`, or `max` has a trailing newline;
+    per HTML, such values are not valid, so they are treated like a missing value and cannot be out of range.
 -   **FIX**: Fix `:in-range` and `:out-of-range` raising `ValueError` when a date, month, week, or local date and
     time `input` has a year with more digits than Python will convert; such a year is now treated as invalid.
 -   **FIX**: `:lang()` now uses the `lang` attribute of SVG elements, as the HTML specification does (with `xml:lang`

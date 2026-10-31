@@ -57,14 +57,14 @@ DIR_MAP = {
     'auto': 0
 }
 
-RE_NUM = re.compile(r"^(?P<value>-?(?:[0-9]+(?:\.[0-9]+)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?)$")
-RE_TIME = re.compile(r'^(?P<hour>[0-9]{2}):(?P<minutes>[0-9]{2})(?::(?P<seconds>[0-9]{2}(?:\.[0-9]{1,3})?))?$')
-RE_MONTH = re.compile(r'^(?P<year>[0-9]{4,})-(?P<month>[0-9]{2})$')
-RE_WEEK = re.compile(r'^(?P<year>[0-9]{4,})-W(?P<week>[0-9]{2})$')
-RE_DATE = re.compile(r'^(?P<year>[0-9]{4,})-(?P<month>[0-9]{2})-(?P<day>[0-9]{2})$')
+RE_NUM = re.compile(r"^(?P<value>-?(?:[0-9]+(?:\.[0-9]+)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?)\Z")
+RE_TIME = re.compile(r'^(?P<hour>[0-9]{2}):(?P<minutes>[0-9]{2})(?::(?P<seconds>[0-9]{2}(?:\.[0-9]{1,3})?))?\Z')
+RE_MONTH = re.compile(r'^(?P<year>[0-9]{4,})-(?P<month>[0-9]{2})\Z')
+RE_WEEK = re.compile(r'^(?P<year>[0-9]{4,})-W(?P<week>[0-9]{2})\Z')
+RE_DATE = re.compile(r'^(?P<year>[0-9]{4,})-(?P<month>[0-9]{2})-(?P<day>[0-9]{2})\Z')
 RE_DATETIME = re.compile(
     r'^(?P<year>[0-9]{4,})-(?P<month>[0-9]{2})-(?P<day>[0-9]{2})T(?P<hour>[0-9]{2}):(?P<minutes>[0-9]{2})'
-    r'(?::(?P<seconds>[0-9]{2}(?:\.[0-9]{1,3})?))?$'
+    r'(?::(?P<seconds>[0-9]{2}(?:\.[0-9]{1,3})?))?\Z'
 )
 RE_WILD_STRIP = re.compile(r'(?:(?:-\*-)(?:\*(?:-|$))*|-\*$)')
 
