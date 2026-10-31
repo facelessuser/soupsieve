@@ -633,11 +633,11 @@ CSS_INDETERMINATE = CSSPattern(
 # CSS pattern for `:disabled`
 CSS_DISABLED = CSSPattern(
     '''
-    html|*:is(input:not([type=hidden]), button, select, textarea, fieldset, optgroup, option, fieldset)[disabled],
+    html|*:is(input, button, select, textarea, fieldset, optgroup, option, fieldset)[disabled],
     html|optgroup[disabled] > html|option,
-    html|fieldset[disabled] > html|*:is(input:not([type=hidden]), button, select, textarea, fieldset),
+    html|fieldset[disabled] > html|*:is(input, button, select, textarea, fieldset),
     html|fieldset[disabled] >
-        html|*:not(legend:nth-of-type(1)) html|*:is(input:not([type=hidden]), button, select, textarea, fieldset),
+        html|*:not(legend:nth-of-type(1)) html|*:is(input, button, select, textarea, fieldset),
     html|*:is(
         html|select[disabled],
         html|fieldset[disabled] > html|select,
@@ -649,7 +649,7 @@ CSS_DISABLED = CSSPattern(
 # CSS pattern for `:enabled`
 CSS_ENABLED = CSSPattern(
     '''
-    html|*:is(input:not([type=hidden]), button, select, textarea, fieldset, optgroup, option, fieldset):not(:disabled)
+    html|*:is(input, button, select, textarea, fieldset, optgroup, option, fieldset):not(:disabled)
     ''',
     FLG_PSEUDO | FLG_HTML
 )

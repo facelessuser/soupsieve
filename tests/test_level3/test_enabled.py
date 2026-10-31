@@ -174,3 +174,25 @@ class TestEnabled(util.TestCase):
             ['4', '5', '6', '7'],
             flags=util.HTML
         )
+
+    def test_enable_hidden_input(self):
+        """Test `:enabled` matches a hidden `input` that is not disabled."""
+
+        self.assert_selector(
+            """
+            <form>
+            <input type="hidden" id="0">
+            <input type="HIDDEN" id="1">
+            <input type="hidden" id="2" disabled>
+            <fieldset id="3" disabled>
+              <input type="hidden" id="4">
+            </fieldset>
+            <fieldset id="5" disabled>
+              <legend><input type="hidden" id="6"></legend>
+            </fieldset>
+            </form>
+            """,
+            ":enabled",
+            ['0', '1', '6'],
+            flags=util.HTML
+        )

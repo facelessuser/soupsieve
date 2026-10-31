@@ -209,3 +209,25 @@ class TestDisabled(util.TestCase):
             ['0', '1', '2', '3', '8', '11', '12', '13', '14', '15', '18', '19'],
             flags=util.HTML
         )
+
+    def test_disabled_hidden_input(self):
+        """Test `:disabled` matches a hidden `input` that is disabled directly or by a disabled `fieldset`."""
+
+        self.assert_selector(
+            """
+            <form>
+            <input type="hidden" id="0">
+            <input type="HIDDEN" id="1">
+            <input type="hidden" id="2" disabled>
+            <fieldset id="3" disabled>
+              <input type="hidden" id="4">
+            </fieldset>
+            <fieldset id="5" disabled>
+              <legend><input type="hidden" id="6"></legend>
+            </fieldset>
+            </form>
+            """,
+            ":disabled",
+            ['2', '3', '4', '5'],
+            flags=util.HTML
+        )
