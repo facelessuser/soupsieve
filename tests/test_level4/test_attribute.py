@@ -2,7 +2,6 @@
 import bs4
 import pytest
 import soupsieve
-
 from .. import util
 from soupsieve import SelectorSyntaxError
 
