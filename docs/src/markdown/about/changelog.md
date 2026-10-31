@@ -5,7 +5,6 @@ icon: lucide/scroll-text
 
 ## Unreleased
 
--   **FIX**: Match attribute values with the `i` modifier using ASCII case insensitivity.
 -   **NEW**: Update `:disabled` and `:enabled` to treat `option` and `optgroup` elements inside a disabled `select` as
     disabled, following a recent HTML specification update.
 -   **FIX**: Fix `:default` to treat a `button` with a missing or invalid `type`, and an `input` with `type="image"`,
@@ -26,6 +25,7 @@ icon: lucide/scroll-text
     many non-default submit candidates.
 -   **FIX**: Fix `:in-range` and `:out-of-range` raising `ValueError` when a date, month, week, or local date and
     time `input` has a year with more digits than Python will convert; such a year is now treated as invalid.
+-   **FIX**: Match attribute values with the `i` modifier using ASCII case insensitivity.
 
 ## 3.0.4
 
