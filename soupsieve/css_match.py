@@ -48,6 +48,14 @@ NS_XHTML = 'http://www.w3.org/1999/xhtml'
 NS_XML = 'http://www.w3.org/XML/1998/namespace'
 NS_SVG = 'http://www.w3.org/2000/svg'
 
+# Values of `type` that put an `input` in a state other than Text. A missing or
+# invalid value is the Text state.
+NON_TEXT_INPUT_TYPES = frozenset((
+    'hidden', 'search', 'tel', 'url', 'email', 'password', 'date', 'month', 'week', 'time',
+    'datetime-local', 'number', 'range', 'color', 'checkbox', 'radio', 'file', 'submit',
+    'image', 'reset', 'button'
+))
+
 DIR_FLAGS = ct.SEL_DIR_LTR | ct.SEL_DIR_RTL
 RANGES = ct.SEL_IN_RANGE | ct.SEL_OUT_OF_RANGE
 
@@ -1492,7 +1500,13 @@ class CSSMatch(_DocumentNav):
 
             # Auto handling for text inputs
             if (
-                ((is_input and itype in ('', 'text', 'search', 'tel', 'url', 'email')) or is_textarea) and
+                (
+                    (
+                        is_input and
+                        (itype in ('', 'text', 'search', 'tel', 'url', 'email') or itype not in NON_TEXT_INPUT_TYPES)
+                    ) or
+                    is_textarea
+                ) and
                 direction == 0
             ):
                 if is_textarea:
