@@ -25,6 +25,7 @@ icon: lucide/scroll-text
     many non-default submit candidates.
 -   **FIX**: Fix `:in-range` and `:out-of-range` raising `ValueError` when a date, month, week, or local date and
     time `input` has a year with more digits than Python will convert; such a year is now treated as invalid.
+-   **FIX**: Match attribute values with the `i` modifier using ASCII case insensitivity.
 
 ## 3.0.4
 
