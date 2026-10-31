@@ -1501,7 +1501,10 @@ class CSSMatch(_DocumentNav):
             # Auto handling for text inputs
             if (
                 (
-                    (is_input and (itype in ('search', 'tel', 'url', 'email') or itype not in NON_TEXT_INPUT_TYPES)) or
+                    (
+                        is_input and
+                        (itype in ('', 'text', 'search', 'tel', 'url', 'email') or itype not in NON_TEXT_INPUT_TYPES)
+                    ) or
                     is_textarea
                 ) and
                 direction == 0
