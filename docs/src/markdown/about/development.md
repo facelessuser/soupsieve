@@ -100,6 +100,16 @@ $ coverage erase
 Then run each unit test environment to and coverage will be calculated. All the data from each run is merged together.
 HTML is output for each file in `.cov`.  You can use these to see areas that are not covered/exercised yet with testing.
 
+## Updating Unicode Data
+
+`:dir()` finds the direction of text with `soupsieve/bidi.py`, a table generated from the Unicode Character Database so
+that results do not depend on the Unicode version of the Python in use. To update to a new Unicode version, generate the
+table again, providing the version or omitting it for the latest. Unicode 15.0 is the earliest version supported.
+
+```console
+$ python tools/gen_bidi.py 18.0.0
+```
+
 ## Code Documentation
 
 The Soup Sieve module is laid out in the following structure:

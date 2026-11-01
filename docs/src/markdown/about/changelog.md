@@ -22,6 +22,8 @@ icon: lucide/scroll-text
     parent (the `dir` attribute only applies to HTML elements), and HTML elements inside them, such as in an SVG
     `foreignObject`, by the direction of their ancestors.
 -   **FIX**: Fix `:dir()` ignoring the value of an `input` with `dir="auto"` and a missing or empty `type`.
+-   **FIX**: `:dir()` now uses a table generated from Unicode 18 instead of `unicodedata`, so results no longer depend
+    on the Unicode version of the Python in use, and unassigned code points use their default direction.
 -   **FIX**: `:dir()` now uses the value of an `input` with `dir="auto"` when `type` is `hidden`, `password`, `submit`,
     `reset`, or `button`, as the HTML specification does.
 -   **FIX**: `dir="auto"` and `bdi` now analyze the text of non-HTML elements, such as SVG and MathML, and only ignore

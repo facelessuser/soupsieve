@@ -1,12 +1,13 @@
 """CSS matcher."""
 from __future__ import annotations
+from bisect import bisect_right
 from datetime import datetime
 from math import isfinite
 from collections.abc import Hashable
+from . import bidi
 from . import util
 import re
 from . import css_types as ct
-import unicodedata
 import bs4
 from typing import (
     Generator,
@@ -662,6 +663,16 @@ class CSSMatch(_DocumentNav):
         prefix = self.get_prefix_name(el)
         return util.lower(prefix) if prefix is not None and not self.is_xml else prefix
 
+    @staticmethod
+    def find_text_dir(text: str) -> int | None:
+        """Get directionality from the first character of the text with a strong direction."""
+
+        for c in text:
+            direction = bidi.DIRECTIONS[bisect_right(bidi.STARTS, ord(c)) - 1]
+            if direction != 'N':
+                return ct.SEL_DIR_LTR if direction == 'L' else ct.SEL_DIR_RTL
+        return None
+
     def find_bidi(self, el: bs4.Tag) -> int | None:
         """Get directionality from element text."""
 
@@ -697,10 +708,9 @@ class CSSMatch(_DocumentNav):
                     continue
 
                 # Analyze text nodes for directionality.
-                for c in cast('bs4.element.NavigableString', node):
-                    bidi = unicodedata.bidirectional(c)
-                    if bidi in ('AL', 'R', 'L'):
-                        return ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
+                direction = self.find_text_dir(cast('bs4.element.NavigableString', node))
+                if direction is not None:
+                    return direction
             else:
                 # All children have been analyzed and direction could not be determined.
                 stack.pop()
@@ -1510,13 +1520,9 @@ class CSSMatch(_DocumentNav):
                         )
                     else:
                         value = cast(str, self.get_attribute_by_name(el, 'value', ''))
-                    for c in value:
-                        bidi = unicodedata.bidirectional(c)
-                        if bidi in ('AL', 'R', 'L'):
-                            direction = ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
-                            return ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
+                    direction = self.find_text_dir(value)
                     # No strong directional characters (or no value), assume left to right
-                    return ct.SEL_DIR_LTR
+                    return direction if direction is not None else ct.SEL_DIR_LTR
 
                 # Auto handling for `bdi` and other non text inputs.
                 if (is_bdi and direction is None) or direction == 0:

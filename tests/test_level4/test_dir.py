@@ -1,7 +1,7 @@
 """Test direction selectors."""
 from .. import util
 import soupsieve as sv
-from soupsieve import SelectorSyntaxError
+from soupsieve import bidi, SelectorSyntaxError
 from bs4 import BeautifulSoup
 
 IFRAME_TEXT = BeautifulSoup('<iframe><div></div></iframe>', 'html.parser').iframe.text == '<div></div>'
@@ -284,6 +284,60 @@ class TestDir(util.TestCase):
             ['2'],
             flags=util.HTML5
         )
+
+    def test_auto_unassigned_code_points(self):
+        """Test that unassigned code points use their default direction."""
+
+        markup = """
+        <html>
+        <head></head>
+        <body>
+        <div id="1" dir="auto">͸א</div>
+        <div id="2" dir="auto">֐abc</div>
+        <div id="3" dir="auto">\U0001eeffabc</div>
+        <div id="4" dir="auto">﷐א</div>
+        <div id="5" dir="auto">⁥א</div>
+        <div id="6" dir="auto">⃏א</div>
+        <div id="7" dir="auto">\U000e0fffא</div>
+        <div id="8" dir="auto">\U0001fffeא</div>
+        <div id="9" dir="auto">\U0010fffdא</div>
+        <input id="10" dir="auto" value="֐abc">
+        <textarea id="11" dir="auto">͸א</textarea>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            "[id]:dir(rtl)",
+            ['2', '3', '4', '5', '6', '7', '8', '10'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "[id]:dir(ltr)",
+            ['1', '9', '11'],
+            flags=util.HTML5
+        )
+
+    def test_auto_independent_of_python_unicode_version(self):
+        """Test that characters newer than the Unicode version of Python are known (Unicode 17 symbol)."""
+
+        self.assert_selector(
+            """<div id="1" dir="auto">\U0001cebaא</div>""",
+            "div:dir(rtl)",
+            ['1'],
+            flags=util.HTML5
+        )
+
+    def test_bidi_table(self):
+        """Test that the generated table covers all code points and can be searched."""
+
+        self.assertEqual(bidi.STARTS[0], 0)
+        self.assertEqual(len(bidi.STARTS), len(bidi.DIRECTIONS))
+        self.assertEqual(list(bidi.STARTS), sorted(set(bidi.STARTS)))
+        self.assertEqual(set(bidi.DIRECTIONS), {'L', 'R', 'N'})
 
     def test_auto_non_html_elements(self):
         """Test that `dir="auto"` analyzes the text of non-HTML elements, and only ignores HTML elements."""
