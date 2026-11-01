@@ -36,6 +36,9 @@ icon: lucide/scroll-text
     all but the first top level element of a fragment parsed with `html.parser` never matched.
 -   **FIX**: `:dir()` now accepts any identifier, as CSS requires, including escaped ones. Values other than `ltr` and
     `rtl` do not match anything.
+-   **FIX**: Respect namespaces provided by the parser when the root is not an HTML element, such as an `svg` element
+    extracted from an `html5lib` document. Previously every element in such a tree was treated as an HTML element,
+    which affected namespace selectors, namespaced attributes, and HTML specific pseudo-classes.
 -   **FIX**: Fix `:lang()` treating an element with an empty `lang` or `xml:lang` attribute as having the language of
     a tagged ancestor.
 -   **FIX**: Cache forms without a default button when matching `:default` to avoid quadratic time on forms with
