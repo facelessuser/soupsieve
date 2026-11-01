@@ -1465,13 +1465,19 @@ class CSSMatch(_DocumentNav):
         """Resolve the direction of an element, returning `0` if it cannot be resolved."""
 
         while True:
-            if el is None or not self.is_html_tag(el):
+            if el is None or not self.is_html:
                 return 0
 
             key = id(el)
             if key in self.dir_cache:
                 return self.dir_cache[key]
             visited.append(key)
+
+            # `dir` is only defined for HTML elements, so other elements (SVG, MathML, etc.)
+            # inherit the direction of their parent.
+            if not self.is_html_tag(el):
+                el = self.get_parent(el, no_iframe=True)
+                continue
 
             # Element has defined direction of left to right or right to left
             direction = DIR_MAP.get(util.lower(self.get_attribute_by_name(el, 'dir', '')), None)
