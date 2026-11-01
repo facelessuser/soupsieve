@@ -1,8 +1,35 @@
 """Test indeterminate selectors."""
 from .. import util
+import soupsieve as sv
 from bs4 import BeautifulSoup
 
 IFRAME_TEXT = BeautifulSoup('<iframe><div></div></iframe>', 'html.parser').iframe.text == '<div></div>'
+
+
+class TestIndeterminateGroups(util.TestCase):
+    """Test the extent of radio button groups that do not have a form."""
+
+    def test_no_form(self):
+        """Test that a group without a form extends across the whole tree."""
+
+        self.assert_selector(
+            """
+            <div><input id="1" type="radio" name="a"></div>
+            <div><input id="2" type="radio" name="a" checked></div>
+            <input id="3" type="radio" name="b">
+            <div><input id="4" type="radio" name="c"></div>
+            """,
+            ":indeterminate",
+            ['3', '4'],
+            flags=util.PYHTML | util.NOCACHE
+        )
+
+    def test_detached(self):
+        """Test that a detached radio button is its own group."""
+
+        for parser in util.available_parsers('html.parser', 'lxml', 'html5lib'):
+            el = self.soup('<input type="radio" name="a">', parser).input.extract()
+            self.assertTrue(sv.match(':indeterminate', el))
 
 
 class TestIndeterminate(util.TestCase):

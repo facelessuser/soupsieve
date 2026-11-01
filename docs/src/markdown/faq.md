@@ -15,7 +15,42 @@ bringing back these behaviors.
 For more details on specific changes, and the reasoning why a specific change is considered a good change, or simply a
 feature that Soup Sieve cannot/will not support, see [Beautiful Soup Differences](./differences.md).
 
-## How does `#!html <iframe>` handling work?
+## How does `#!html <template>` handling work? {#how-does-template-handling-work}
+
+The contents of an HTML `#!html <template>` are not part of the document. They are held for later use, and in a web
+browser, they are kept in a separate document fragment that is available from the `content` property of the element.
+Soup Sieve treats them the same way: selectors do not descend into a `#!html <template>`, and elements inside one can't
+see anything outside of it. This is true of everything, including combinators and pseudo-classes like
+[`#!css :lang()`](./selectors/pseudo-classes.md#:lang), [`#!css :disabled`](./selectors/pseudo-classes.md#:disabled),
+and [`#!css :default`](./selectors/pseudo-classes.md#:default). A `#!html <template>` itself is an element like any
+other that can be selected, but it is considered to have no children.
+
+Beautiful Soup has no `content` property, so to select the contents, call `select` on the `#!html <template>`.
+
+```py play
+from bs4 import BeautifulSoup as bs
+html = """
+<html>
+<head></head>
+<body>
+<div>
+<template><p>Template content</p></template>
+</div>
+</body>
+</html>
+"""
+soup = bs(html, 'html5lib')
+print(soup.select('p'))
+print(soup.template.select('p'))
+print(soup.template.select('div p'))
+```
+
+Any `#!html <template>` within the contents is not entered, select from that `#!html <template>` to get its contents.
+
+This only applies to HTML elements. Something like `#!html <svg><template>` is not an HTML `#!html <template>`, so it
+has normal children, but only parsers that provide namespaces can make that distinction.
+
+## How does `#!html <iframe>` handling work? {#how-does-iframe-handling-work}
 
 > [!note]
 > Recent versions of Python's `html.parser`, `lxml`, and `html5lib` all seem to escape `iframe` content.
