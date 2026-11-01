@@ -18,6 +18,9 @@ icon: lucide/scroll-text
 -   **FIX**: Match the values of every attribute that the HTML specification lists as ASCII case insensitive (`rel`,
     `method`, `lang`, `dir`, ...) without ASCII case sensitivity on HTML elements in HTML documents, not just `type`.
     Non-HTML elements are matched case sensitively.
+-   **FIX**: `:dir()` now matches non-HTML elements, such as SVG and MathML, by the direction they inherit from their
+    parent (the `dir` attribute only applies to HTML elements), and HTML elements inside them, such as in an SVG
+    `foreignObject`, by the direction of their ancestors.
 -   **FIX**: Fix `:dir()` ignoring the value of an `input` with `dir="auto"` and a missing or empty `type`.
 -   **FIX**: Fix `:lang()` treating an element with an empty `lang` or `xml:lang` attribute as having the language of
     a tagged ancestor.

@@ -283,3 +283,33 @@ class TestDir(util.TestCase):
             [],
             flags=util.HTML5
         )
+
+    def test_non_html_elements_inherit_direction(self):
+        """Test that non-HTML elements, which have no `dir` attribute, inherit the direction of their parent."""
+
+        markup = """
+        <html>
+        <head></head>
+        <body>
+        <div dir="rtl">
+        <svg id="1"><g id="2"></g><foreignObject id="3"><p id="4">text</p></foreignObject></svg>
+        <math id="5"><mi id="6">x</mi></math>
+        </div>
+        <svg id="7" dir="rtl"><g id="8"></g></svg>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            "[id]:dir(rtl)",
+            ['1', '2', '3', '4', '5', '6'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "[id]:dir(ltr)",
+            ['7', '8'],
+            flags=util.HTML5
+        )
