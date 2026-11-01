@@ -17,8 +17,8 @@ GitHub
 Gitter
 Hashable
 JQuery
-MathML
 MERCHANTABILITY
+MathML
 MkDocs
 NONINFRINGEMENT
 Precompile
@@ -67,6 +67,7 @@ matcher
 matchers
 multiline
 namespace
+namespaced
 namespaces
 newline
 parser's
