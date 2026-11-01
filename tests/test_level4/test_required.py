@@ -36,3 +36,27 @@ class TestRequired(util.TestCase):
             ['1', '2'],
             flags=util.HTML
         )
+
+    def test_required_does_not_apply(self):
+        """Test that `required` is ignored on input types it does not apply to."""
+
+        markup = """
+        <input id="1" type="hidden" required>
+        <input id="2" type="range" required>
+        <input id="3" type="color" required>
+        <input id="4" type="submit" required>
+        <input id="5" type="image" required>
+        <input id="6" type="reset" required>
+        <input id="7" type="BUTTON" required>
+        <input id="8" type="text" required>
+        <input id="9" type="radio" required>
+        <input id="10" type="file" required>
+        <input id="11" type="unknown" required>
+        """
+
+        self.assert_selector(
+            markup,
+            ":required",
+            ['8', '9', '10', '11'],
+            flags=util.HTML
+        )

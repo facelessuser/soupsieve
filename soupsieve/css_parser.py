@@ -654,9 +654,25 @@ CSS_ENABLED = CSSPattern(
     FLG_PSEUDO | FLG_HTML
 )
 # CSS pattern for `:required`
-CSS_REQUIRED = CSSPattern('html|*:is(input, textarea, select)[required]', FLG_PSEUDO | FLG_HTML)
+# The `required` attribute does not apply to `input` elements of these types.
+INPUT_REQUIRED_NOT_APPLIES = (
+    '[type=hidden], [type=range], [type=color], [type=submit], [type=image], [type=reset], [type=button]'
+)
+CSS_REQUIRED = CSSPattern(
+    f'''
+    html|input:not({INPUT_REQUIRED_NOT_APPLIES})[required],
+    html|*:is(textarea, select)[required]
+    ''',
+    FLG_PSEUDO | FLG_HTML
+)
 # CSS pattern for `:optional`
-CSS_OPTIONAL = CSSPattern('html|*:is(input, textarea, select):not([required])', FLG_PSEUDO | FLG_HTML)
+CSS_OPTIONAL = CSSPattern(
+    f'''
+    html|*:is(input, textarea, select):not([required]),
+    html|input:is({INPUT_REQUIRED_NOT_APPLIES})
+    ''',
+    FLG_PSEUDO | FLG_HTML
+)
 # CSS pattern for `:placeholder-shown`
 CSS_PLACEHOLDER_SHOWN = CSSPattern(
     f'''
