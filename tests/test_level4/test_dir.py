@@ -506,6 +506,7 @@ class TestDir(util.TestCase):
             flags=util.PYHTML
         )
 
+    @util.requires_html5lib
     def test_top_level_non_html_elements(self):
         """Test that a non-HTML element without a parent element is left to right."""
 
