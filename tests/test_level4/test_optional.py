@@ -36,3 +36,27 @@ class TestOptional(util.TestCase):
             ['3'],
             flags=util.HTML
         )
+
+    def test_optional_required_does_not_apply(self):
+        """Test that input types `required` does not apply to are optional even with `required`."""
+
+        markup = """
+        <input id="1" type="hidden" required>
+        <input id="2" type="range" required>
+        <input id="3" type="color" required>
+        <input id="4" type="submit" required>
+        <input id="5" type="image" required>
+        <input id="6" type="reset" required>
+        <input id="7" type="BUTTON" required>
+        <input id="8" type="text" required>
+        <input id="9" type="radio" required>
+        <input id="10" type="file" required>
+        <input id="11" type="unknown" required>
+        """
+
+        self.assert_selector(
+            markup,
+            ":optional",
+            ['1', '2', '3', '4', '5', '6', '7'],
+            flags=util.HTML
+        )
