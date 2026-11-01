@@ -3,7 +3,7 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## 3.1
+## 4.0
 
 -   **BREAK**: The contents of an HTML `template` are no longer treated as part of the document. Selectors do not
     descend into a `template`, and elements inside one can't see beyond it, which also applies to pseudo-classes such
