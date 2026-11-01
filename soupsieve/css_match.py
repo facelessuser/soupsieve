@@ -1,12 +1,13 @@
 """CSS matcher."""
 from __future__ import annotations
+from bisect import bisect_right
 from datetime import datetime
 from math import isfinite
 from collections.abc import Hashable
+from . import bidi
 from . import util
 import re
 from . import css_types as ct
-import unicodedata
 import bs4
 from typing import (
     Generator,
@@ -48,13 +49,15 @@ NS_XHTML = 'http://www.w3.org/1999/xhtml'
 NS_XML = 'http://www.w3.org/XML/1998/namespace'
 NS_SVG = 'http://www.w3.org/2000/svg'
 
-# Values of `type` that put an `input` in a state other than Text. A missing or
-# invalid value is the Text state.
-NON_TEXT_INPUT_TYPES = frozenset((
-    'hidden', 'search', 'tel', 'url', 'email', 'password', 'date', 'month', 'week', 'time',
-    'datetime-local', 'number', 'range', 'color', 'checkbox', 'radio', 'file', 'submit',
-    'image', 'reset', 'button'
+# Values of `type` that put an `input` in a state that does not use its value for `dir="auto"`.
+# A missing or invalid value is the Text state, which does.
+NON_AUTO_DIR_INPUT_TYPES = frozenset((
+    'date', 'month', 'week', 'time', 'datetime-local', 'number', 'range', 'color', 'checkbox',
+    'radio', 'file', 'image'
 ))
+
+# HTML elements whose text is ignored when resolving `dir="auto"` on an ancestor.
+AUTO_DIR_IGNORED_ELEMENTS = frozenset(('bdi', 'script', 'style', 'textarea', 'template'))
 
 DIR_FLAGS = ct.SEL_DIR_LTR | ct.SEL_DIR_RTL
 RANGES = ct.SEL_IN_RANGE | ct.SEL_OUT_OF_RANGE
@@ -643,6 +646,11 @@ class CSSMatch(_DocumentNav):
 
         return self.get_tag_ns(el) == NS_XHTML
 
+    def is_template(self, el: bs4.Tag) -> bool:
+        """Check if element is an HTML `template`."""
+
+        return self.is_html_tag(el) and self.get_tag(el) == 'template'
+
     def get_tag(self, el: bs4.Tag | None) -> str | None:
         """Get tag."""
 
@@ -655,8 +663,22 @@ class CSSMatch(_DocumentNav):
         prefix = self.get_prefix_name(el)
         return util.lower(prefix) if prefix is not None and not self.is_xml else prefix
 
+    @staticmethod
+    def find_text_dir(text: str) -> int | None:
+        """Get directionality from the first character of the text with a strong direction."""
+
+        for c in text:
+            direction = bidi.DIRECTIONS[bisect_right(bidi.STARTS, ord(c)) - 1]
+            if direction != 'N':
+                return ct.SEL_DIR_LTR if direction == 'L' else ct.SEL_DIR_RTL
+        return None
+
     def find_bidi(self, el: bs4.Tag) -> int | None:
         """Get directionality from element text."""
+
+        # The contents of a `template` are not part of the document.
+        if self.is_template(el):
+            return None
 
         stack = [self.get_children(el)]
         while stack:
@@ -665,13 +687,15 @@ class CSSMatch(_DocumentNav):
                 # Analyze child text nodes
                 if self.is_tag(node):
 
-                    # Avoid analyzing certain elements specified in the specification.
-                    direction = DIR_MAP.get(util.lower(self.get_attribute_by_name(node, 'dir', '')), None)
-                    name = self.get_tag(node)
-                    if (
-                        (name and name in ('bdi', 'script', 'style', 'textarea', 'iframe')) or
-                        not self.is_html_tag(node) or
-                        direction is not None
+                    # Elements in an `iframe` belong to another document, though text directly in it does not.
+                    if self.is_iframe(self.get_parent(node)):
+                        continue
+
+                    # Avoid analyzing certain elements specified in the specification. This only applies
+                    # to HTML elements: the text of others (SVG, MathML, etc.) is analyzed like any other.
+                    if self.is_html_tag(node) and (
+                        self.get_tag(node) in AUTO_DIR_IGNORED_ELEMENTS or
+                        DIR_MAP.get(util.lower(self.get_attribute_by_name(node, 'dir', '')), None) is not None
                     ):
                         continue  # pragma: no cover
 
@@ -684,10 +708,9 @@ class CSSMatch(_DocumentNav):
                     continue
 
                 # Analyze text nodes for directionality.
-                for c in cast('bs4.element.NavigableString', node):
-                    bidi = unicodedata.bidirectional(c)
-                    if bidi in ('AL', 'R', 'L'):
-                        return ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
+                direction = self.find_text_dir(cast('bs4.element.NavigableString', node))
+                if direction is not None:
+                    return direction
             else:
                 # All children have been analyzed and direction could not be determined.
                 stack.pop()
@@ -1471,66 +1494,51 @@ class CSSMatch(_DocumentNav):
             visited.append(key)
 
             # `dir` is only defined for HTML elements, so other elements (SVG, MathML, etc.)
-            # inherit the direction of their parent. They always have one, as the root is an HTML element.
-            if not self.is_html_tag(el):
-                el = cast('bs4.Tag', self.get_parent(el, no_iframe=True))
-                continue
+            # always inherit the direction of their parent.
+            if self.is_html_tag(el):
 
-            # Element has defined direction of left to right or right to left
-            direction = DIR_MAP.get(util.lower(self.get_attribute_by_name(el, 'dir', '')), None)
-            if direction not in (None, 0):
-                return direction
-
-            # Element is the document element (the root) and no direction assigned, assume left to right.
-            is_root = self.is_root(el)
-            if is_root and direction is None:
-                return ct.SEL_DIR_LTR
-
-            # If `input[type=telephone]` and no direction is assigned, assume left to right.
-            name = self.get_tag(el)
-            is_input = name == 'input'
-            is_textarea = name == 'textarea'
-            is_bdi = name == 'bdi'
-            itype = util.lower(self.get_attribute_by_name(el, 'type', '')) if is_input else ''
-            if is_input and itype == 'tel' and direction is None:
-                return ct.SEL_DIR_LTR
-
-            # Auto handling for text inputs
-            if (
-                (
-                    (
-                        is_input and
-                        (itype in ('', 'text', 'search', 'tel', 'url', 'email') or itype not in NON_TEXT_INPUT_TYPES)
-                    ) or
-                    is_textarea
-                ) and
-                direction == 0
-            ):
-                if is_textarea:
-                    value = ''.join(
-                        node for node in self.get_contents(el, no_iframe=True)  # type: ignore[misc]
-                        if self.is_content_string(node)
-                    )
-                else:
-                    value = cast(str, self.get_attribute_by_name(el, 'value', ''))
-                for c in value:
-                    bidi = unicodedata.bidirectional(c)
-                    if bidi in ('AL', 'R', 'L'):
-                        direction = ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
-                        return ct.SEL_DIR_LTR if bidi == 'L' else ct.SEL_DIR_RTL
-                # No strong directional characters (or no value), assume left to right
-                return ct.SEL_DIR_LTR
-
-            # Auto handling for `bdi` and other non text inputs.
-            if (is_bdi and direction is None) or direction == 0:
-                direction = self.find_bidi(el)
-                if direction is not None:
+                # Element has defined direction of left to right or right to left
+                direction = DIR_MAP.get(util.lower(self.get_attribute_by_name(el, 'dir', '')), None)
+                if direction not in (None, 0):
                     return direction
-                # Auto directionality could not be determined, assume left to right
-                return ct.SEL_DIR_LTR
 
-            # Match parents direction (the root always resolves above, so there is always a parent)
-            el = cast('bs4.Tag', self.get_parent(el, no_iframe=True))
+                # If `input[type=telephone]` and no direction is assigned, assume left to right.
+                name = self.get_tag(el)
+                is_input = name == 'input'
+                is_textarea = name == 'textarea'
+                is_bdi = name == 'bdi'
+                itype = util.lower(self.get_attribute_by_name(el, 'type', '')) if is_input else ''
+                if is_input and itype == 'tel' and direction is None:
+                    return ct.SEL_DIR_LTR
+
+                # Auto handling for inputs whose value is used
+                if ((is_input and itype not in NON_AUTO_DIR_INPUT_TYPES) or is_textarea) and direction == 0:
+                    if is_textarea:
+                        value = ''.join(
+                            node for node in self.get_contents(el, no_iframe=True)  # type: ignore[misc]
+                            if self.is_content_string(node)
+                        )
+                    else:
+                        value = cast(str, self.get_attribute_by_name(el, 'value', ''))
+                    direction = self.find_text_dir(value)
+                    # No strong directional characters (or no value), assume left to right
+                    return direction if direction is not None else ct.SEL_DIR_LTR
+
+                # Auto handling for `bdi` and other non text inputs.
+                if (is_bdi and direction is None) or direction == 0:
+                    direction = self.find_bidi(el)
+                    if direction is not None:
+                        return direction
+                    # Auto directionality could not be determined, assume left to right
+                    return ct.SEL_DIR_LTR
+
+            # Match parents direction. There may be no parent element, and not just for the root:
+            # a fragment can have many top level elements, and the contents of a `template` are
+            # not its children in the DOM. Without one, assume left to right.
+            parent = self.get_parent(el, no_iframe=True)
+            if parent is None or self.is_template(parent):
+                return ct.SEL_DIR_LTR
+            el = parent
 
     def match_range(self, el: bs4.Tag, condition: int) -> bool:
         """

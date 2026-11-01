@@ -22,6 +22,20 @@ icon: lucide/scroll-text
     parent (the `dir` attribute only applies to HTML elements), and HTML elements inside them, such as in an SVG
     `foreignObject`, by the direction of their ancestors.
 -   **FIX**: Fix `:dir()` ignoring the value of an `input` with `dir="auto"` and a missing or empty `type`.
+-   **FIX**: `:dir()` now uses a table generated from Unicode 18 instead of `unicodedata`, so results no longer depend
+    on the Unicode version of the Python in use, and unassigned code points use their default direction.
+-   **FIX**: `:dir()` now uses the value of an `input` with `dir="auto"` when `type` is `hidden`, `password`, `submit`,
+    `reset`, or `button`, as the HTML specification does.
+-   **FIX**: `dir="auto"` and `bdi` now analyze the text of non-HTML elements, such as SVG and MathML, and only ignore
+    HTML elements such as `script`, `style`, and `bdi`. The text directly in an `iframe` is analyzed as well, and the
+    contents of a `template`, which are not part of the document, are not.
+-   **FIX**: `:dir()` no longer lets the contents of a `template` inherit direction from the `template` or its
+    ancestors, as they are not part of the document. They are left to right unless they specify otherwise.
+-   **FIX**: `:dir()` now matches a `bdi` element that is the root by its text instead of assuming left to right.
+-   **FIX**: `:dir()` now treats any element without a parent element as left to right, not just the root. Before,
+    all but the first top level element of a fragment parsed with `html.parser` never matched.
+-   **FIX**: `:dir()` now accepts any identifier, as CSS requires, including escaped ones. Values other than `ltr` and
+    `rtl` do not match anything.
 -   **FIX**: Fix `:lang()` treating an element with an empty `lang` or `xml:lang` attribute as having the language of
     a tagged ancestor.
 -   **FIX**: Cache forms without a default button when matching `:default` to avoid quadratic time on forms with
