@@ -1,5 +1,6 @@
 """Test namespace selectors."""
 from .. import util
+import soupsieve as sv
 
 
 class TestNamespace(util.TestCase):
@@ -325,3 +326,34 @@ class TestNamespace(util.TestCase):
             namespaces={"xlink": "http://www.w3.org/1999/xlink"},
             flags=util.XHTML
         )
+
+    @util.requires_html5lib
+    def test_non_html_root(self):
+        """Test that the namespaces a parser provides are used when the root is not an HTML element."""
+
+        namespaces = {
+            "svg": "http://www.w3.org/2000/svg",
+            "html": "http://www.w3.org/1999/xhtml",
+            "xlink": "http://www.w3.org/1999/xlink"
+        }
+        markup = """
+        <svg id="1" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <a id="2" xlink:href="target"></a>
+        <foreignObject id="3"><a id="4" href="target"></a></foreignObject>
+        </svg>
+        """
+        svg = self.soup(markup, 'html5lib').svg.extract()
+
+        for selector, expected in (('svg|a', ['2']), ('html|a', ['4']), ('[xlink|href]', ['2'])):
+            self.assertEqual([el['id'] for el in sv.select(selector, svg, namespaces=namespaces)], expected)
+
+    def test_non_html_root_no_namespaces(self):
+        """Test that everything is treated as HTML when a parser does not provide namespaces."""
+
+        namespaces = {"svg": "http://www.w3.org/2000/svg", "html": "http://www.w3.org/1999/xhtml"}
+        markup = """<svg id="1"><a id="2"></a><foreignObject id="3"><a id="4"></a></foreignObject></svg>"""
+
+        for parser in util.available_parsers('html.parser', 'lxml'):
+            svg = self.soup(markup, parser).svg.extract()
+            self.assertEqual(sv.select('svg|a', svg, namespaces=namespaces), [])
+            self.assertEqual([el['id'] for el in sv.select('html|a', svg, namespaces=namespaces)], ['2', '4'])

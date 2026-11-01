@@ -517,6 +517,22 @@ class TestDir(util.TestCase):
 
         self.assertEqual([el['id'] for el in sv.select(':dir(ltr)[id]', soup)], ['1', '2'])
 
+    @util.requires_html5lib
+    def test_non_html_root(self):
+        """Test that `dir` is ignored on a non-HTML element that is the root."""
+
+        markup = """
+        <svg id="1" dir="rtl">
+        <g id="2"></g>
+        <foreignObject id="3"><p id="4" dir="rtl"><span id="5"></span></p></foreignObject>
+        </svg>
+        """
+        svg = self.soup(markup, 'html5lib').svg.extract()
+
+        self.assertTrue(sv.match(':dir(ltr)', svg))
+        self.assertEqual([el['id'] for el in sv.select(':dir(ltr)', svg)], ['2', '3'])
+        self.assertEqual([el['id'] for el in sv.select(':dir(rtl)', svg)], ['4', '5'])
+
     def test_bdi_on_root(self):
         """Test that `bdi` uses its text for direction when it is the root."""
 

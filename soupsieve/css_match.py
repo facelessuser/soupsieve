@@ -609,6 +609,10 @@ class CSSMatch(_DocumentNav):
         self.scope = scope if scope is not doc else root
         self.has_html_namespace = self.has_html_ns(root)
 
+        # Parsers either record a namespace for every element or for none. The root
+        # alone can't be expected to be HTML as a non-HTML element may have been detached.
+        self.has_namespaces = bool(self.get_uri(root))
+
         # A document can be both XML and HTML (XHTML)
         self.is_xml = self.is_xml_tree(doc)
         self.is_html = not self.is_xml or self.has_html_namespace
@@ -624,7 +628,7 @@ class CSSMatch(_DocumentNav):
     def supports_namespaces(self) -> bool:
         """Check if namespaces are supported in the HTML type."""
 
-        return self.is_xml or self.has_html_namespace
+        return self.is_xml or self.has_namespaces
 
     def get_tag_ns(self, el: bs4.Tag | None) -> str:
         """Get tag namespace."""
