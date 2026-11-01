@@ -351,6 +351,40 @@ class TestDir(util.TestCase):
             flags=util.HTML5
         )
 
+    def test_template_contents(self):
+        """Test that the contents of a `template` do not inherit from it, but still resolve among themselves."""
+
+        markup = """
+        <html id="0" dir="rtl">
+        <head></head>
+        <body>
+        <template id="1"><p id="2"><span id="3"></span></p></template>
+        <template id="4" dir="rtl"><p id="5"></p><svg id="6"><g id="7"></g></svg></template>
+        <template id="8">
+        <div id="9" dir="rtl"><p id="10"></p><template id="11"><p id="12"></p></template></div>
+        </template>
+        <template id="13"><div id="14" dir="auto">עִבְרִית<p id="15"></p></div></template>
+        <template id="16"><bdi id="17">עִבְרִית</bdi></template>
+        <div id="18" dir="auto">עִבְרִית<template id="19"><p id="20"></p></template></div>
+        <svg id="21"><template id="22"><g id="23"></g></template></svg>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            "[id]:dir(ltr)",
+            ['2', '3', '5', '6', '7', '12', '20'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "[id]:dir(rtl)",
+            ['0', '1', '4', '8', '9', '10', '11', '13', '14', '15', '16', '17', '18', '19', '21', '22', '23'],
+            flags=util.HTML5
+        )
+
     def test_auto_iframe_text(self):
         """Test that `dir="auto"` analyzes the text of an `iframe`, which is just a text node in a browser."""
 

@@ -645,6 +645,11 @@ class CSSMatch(_DocumentNav):
 
         return self.get_tag_ns(el) == NS_XHTML
 
+    def is_template(self, el: bs4.Tag) -> bool:
+        """Check if element is an HTML `template`."""
+
+        return self.is_html_tag(el) and self.get_tag(el) == 'template'
+
     def get_tag(self, el: bs4.Tag | None) -> str | None:
         """Get tag."""
 
@@ -661,7 +666,7 @@ class CSSMatch(_DocumentNav):
         """Get directionality from element text."""
 
         # The contents of a `template` are not part of the document.
-        if self.get_tag(el) == 'template':
+        if self.is_template(el):
             return None
 
         stack = [self.get_children(el)]
@@ -1522,9 +1527,10 @@ class CSSMatch(_DocumentNav):
                     return ct.SEL_DIR_LTR
 
             # Match parents direction. There may be no parent element, and not just for the root:
-            # a fragment can have many top level elements. Without one, assume left to right.
+            # a fragment can have many top level elements, and the contents of a `template` are
+            # not its children in the DOM. Without one, assume left to right.
             parent = self.get_parent(el, no_iframe=True)
-            if parent is None:
+            if parent is None or self.is_template(parent):
                 return ct.SEL_DIR_LTR
             el = parent
 

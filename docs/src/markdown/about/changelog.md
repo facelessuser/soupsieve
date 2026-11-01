@@ -27,6 +27,8 @@ icon: lucide/scroll-text
 -   **FIX**: `dir="auto"` and `bdi` now analyze the text of non-HTML elements, such as SVG and MathML, and only ignore
     HTML elements such as `script`, `style`, and `bdi`. The text directly in an `iframe` is analyzed as well, and the
     contents of a `template`, which are not part of the document, are not.
+-   **FIX**: `:dir()` no longer lets the contents of a `template` inherit direction from the `template` or its
+    ancestors, as they are not part of the document. They are left to right unless they specify otherwise.
 -   **FIX**: `:dir()` now matches a `bdi` element that is the root by its text instead of assuming left to right.
 -   **FIX**: `:dir()` now treats any element without a parent element as left to right, not just the root. Before,
     all but the first top level element of a fragment parsed with `html.parser` never matched.
