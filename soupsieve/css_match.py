@@ -57,7 +57,7 @@ NON_AUTO_DIR_INPUT_TYPES = frozenset((
 ))
 
 # HTML elements whose text is ignored when resolving `dir="auto"` on an ancestor.
-AUTO_DIR_IGNORED_ELEMENTS = frozenset(('bdi', 'script', 'style', 'textarea', 'template'))
+AUTO_DIR_IGNORED_ELEMENTS = frozenset(('bdi', 'script', 'style', 'textarea'))
 
 DIR_FLAGS = ct.SEL_DIR_LTR | ct.SEL_DIR_RTL
 RANGES = ct.SEL_IN_RANGE | ct.SEL_OUT_OF_RANGE
@@ -157,6 +157,22 @@ class _DocumentNav:
             self.is_html_tag(el)  # type: ignore[attr-defined]
         )
 
+    def is_template(self, el: bs4.Tag) -> bool:
+        """
+        Check if element is an HTML `template`.
+
+        The contents of a `template` are not part of the document, so navigation stops at one in both directions.
+        This is called for every element that is navigated, so avoid normalizing names that can't match.
+        """
+
+        if len(el.name) != 8:
+            return False
+
+        return bool(
+            ((el.name if self.is_xml_tree(el) else util.lower(el.name)) == 'template') and
+            self.is_html_tag(el)  # type: ignore[attr-defined]
+        )
+
     def is_root(self, el: bs4.Tag) -> bool:
         """
         Return whether element is a root element.
@@ -171,12 +187,25 @@ class _DocumentNav:
             root = parent is not None and self.is_html and self.is_iframe(parent)  # type: ignore[attr-defined]
         return root
 
-    def get_contents(self, el: bs4.Tag | None, no_iframe: bool = False) -> Iterator[bs4.element.PageElement]:
+    def has_contents(self, el: bs4.Tag | None, no_iframe: bool, template_contents: bool) -> bool:
+        """Check if the contents of an element should be navigated."""
+
+        return (
+            el is not None and
+            (not no_iframe or not self.is_iframe(el)) and
+            (template_contents or not self.is_template(el))
+        )
+
+    def get_contents(
+        self,
+        el: bs4.Tag | None,
+        no_iframe: bool = False,
+        template_contents: bool = False
+    ) -> Iterator[bs4.element.PageElement]:
         """Get contents or contents in reverse."""
 
-        if el is not None:
-            if not no_iframe or not self.is_iframe(el):
-                yield from el.contents
+        if self.has_contents(el, no_iframe, template_contents):
+            yield from cast('bs4.Tag', el).contents
 
     def get_tag_children(
         self,
@@ -196,7 +225,8 @@ class _DocumentNav:
         start: int | None = None,
         reverse: bool = False,
         tags: Literal[True] = ...,
-        no_iframe: bool = False
+        no_iframe: bool = False,
+        template_contents: bool = False
     ) -> Iterator[bs4.Tag]:
         ...
 
@@ -207,7 +237,8 @@ class _DocumentNav:
         start: int | None = None,
         reverse: bool = False,
         tags: Literal[False] = ...,
-        no_iframe: bool = False
+        no_iframe: bool = False,
+        template_contents: bool = False
     ) -> Iterator[bs4.element.PageElement]:
         ...
 
@@ -217,11 +248,12 @@ class _DocumentNav:
         start: int | None = None,
         reverse: bool = False,
         tags: Literal[True] | Literal[False] = False,
-        no_iframe: bool = False
+        no_iframe: bool = False,
+        template_contents: bool = False
     ) -> Iterator[bs4.element.PageElement]:
         """Get children."""
 
-        if el is not None and (not no_iframe or not self.is_iframe(el)):
+        if el is not None and self.has_contents(el, no_iframe, template_contents):
             last = len(el.contents) - 1
             if start is None:
                 index = last if reverse else 0
@@ -239,21 +271,29 @@ class _DocumentNav:
     def get_tag_descendants(
         self,
         el: bs4.Tag | None,
-        no_iframe: bool = False
+        no_iframe: bool = False,
+        template_contents: bool = False
     ) -> Iterator[bs4.Tag]:
         """Specifically get tag descendants."""
 
-        yield from self.get_descendants(el, tags=True, no_iframe=no_iframe)  # type: ignore[misc]
+        yield from self.get_descendants(  # type: ignore[misc]
+            el, tags=True, no_iframe=no_iframe, template_contents=template_contents
+        )
 
     def get_descendants(
         self,
         el: bs4.Tag | None,
         tags: bool = False,
-        no_iframe: bool = False
+        no_iframe: bool = False,
+        template_contents: bool = False
     ) -> Iterator[bs4.element.PageElement]:
-        """Get descendants."""
+        """
+        Get descendants.
 
-        if el is not None and (not no_iframe or not self.is_iframe(el)):
+        `template_contents` only allows entering `el`, any `template` found within it is still not entered.
+        """
+
+        if el is not None and self.has_contents(el, no_iframe, template_contents):
             next_good = None
             for child in el.descendants:
 
@@ -263,7 +303,7 @@ class _DocumentNav:
                     next_good = None
 
                 if isinstance(child, bs4.Tag):
-                    if no_iframe and self.is_iframe(child):
+                    if (no_iframe and self.is_iframe(child)) or self.is_template(child):
                         if child.next_sibling is not None:
                             next_good = child.next_sibling
                         else:
@@ -281,11 +321,19 @@ class _DocumentNav:
                 elif not tags:
                     yield child
 
-    def get_parent(self, el: bs4.Tag | None, no_iframe: bool = False, no_doc: bool = True) -> bs4.Tag | None:
+    def get_parent(
+        self,
+        el: bs4.Tag | None,
+        no_iframe: bool = False,
+        no_doc: bool = True,
+        no_template: bool = True
+    ) -> bs4.Tag | None:
         """Get parent."""
 
         parent = el.parent if el is not None else None
         if no_iframe and parent is not None and self.is_iframe(parent):  # pragma: no cover
+            parent = None
+        if no_template and parent is not None and self.is_template(parent):
             parent = None
         if no_doc and self.is_doc(parent):
             parent = None
@@ -593,10 +641,10 @@ class CSSMatch(_DocumentNav):
 
         # Find the root element for the whole tree
         doc = scope
-        parent = self.get_parent(doc)
+        parent = self.get_parent(doc, no_template=False)
         while parent:
             doc = parent
-            parent = self.get_parent(doc)
+            parent = self.get_parent(doc, no_template=False)
         root: bs4.Tag | None = None
         if not self.is_doc(doc):
             root = doc
@@ -650,11 +698,6 @@ class CSSMatch(_DocumentNav):
 
         return self.get_tag_ns(el) == NS_XHTML
 
-    def is_template(self, el: bs4.Tag) -> bool:
-        """Check if element is an HTML `template`."""
-
-        return self.is_html_tag(el) and self.get_tag(el) == 'template'
-
     def get_tag(self, el: bs4.Tag | None) -> str | None:
         """Get tag."""
 
@@ -679,10 +722,6 @@ class CSSMatch(_DocumentNav):
 
     def find_bidi(self, el: bs4.Tag) -> int | None:
         """Get directionality from element text."""
-
-        # The contents of a `template` are not part of the document.
-        if self.is_template(el):
-            return None
 
         stack = [self.get_children(el)]
         while stack:
@@ -922,9 +961,11 @@ class CSSMatch(_DocumentNav):
         pkey: int | None = None
         key: tuple[int, int] | None = None
 
-        # Get the parent and use the ID for the cache key
-        parent = self.get_parent(el)
-        if parent is None:  # pragma: no cover
+        # Get the parent and use the ID for the cache key. Siblings do not need a parent element:
+        # they can be top level elements in the document or the top level contents of a `template`.
+        # Only an element that has been detached has no parent, and it has no siblings.
+        parent = self.get_parent(el, no_doc=False, no_template=False)
+        if parent is None:
             return found
         pkey = id(parent)
 
@@ -949,7 +990,7 @@ class CSSMatch(_DocumentNav):
         # The current element counts as a sibling, but will not cause a match.
         passed = False
         incr = -1 if reverse else 1
-        for child in self.get_children(parent, start=start, reverse=reverse):
+        for child in self.get_children(parent, start=start, reverse=reverse, template_contents=True):
             start += incr
             if not isinstance(child, bs4.Tag):
                 continue
@@ -1119,8 +1160,9 @@ class CSSMatch(_DocumentNav):
         start = rindex = 0
         incr = rincr = 0
 
-        # Get the parent and use the ID for the cache key
-        parent = self.get_parent(el, no_doc=False)
+        # Get the parent and use the ID for the cache key. The top level
+        # contents of a `template` have no parent element, but they do have siblings.
+        parent = self.get_parent(el, no_doc=False, no_template=False)
         pkey = id(parent) if self.enable_cache and parent else None
 
         # Test element against the `nth` selectors.
@@ -1155,14 +1197,14 @@ class CSSMatch(_DocumentNav):
                     rincr = 1
 
                 incr = 1 if not last else -1
-                children = self.get_children(parent, start=start, reverse=last)
+                children = self.get_children(parent, start=start, reverse=last, template_contents=True)
 
             # Non-cached handling of parented element
             elif parent:
                 rindex = 0
                 start = len(parent) - 1 if last else 0
                 rincr = incr = 1
-                children = self.get_children(parent, start=start, reverse=last)
+                children = self.get_children(parent, start=start, reverse=last, template_contents=True)
 
             # No parent, just evaluate the element against the selectors
             else:
@@ -1326,58 +1368,54 @@ class CSSMatch(_DocumentNav):
     def match_indeterminate(self, el: bs4.Tag) -> bool:
         """Match default."""
 
-        match = False
         name = cast(str, self.get_attribute_by_name(el, 'name'))
 
-        def get_parent_form(el: bs4.Tag) -> bs4.Tag | None:
-            """Find this input's form."""
-            form = None
-            parent = self.get_parent(el, no_iframe=True)
-            while form is None:
-                if self.get_tag(parent) == 'form' and self.is_html_tag(parent):
-                    form = parent
-                    break
-                last_parent = parent
-                parent = self.get_parent(parent, no_iframe=True)
+        def get_parent_form(el: bs4.Tag) -> bs4.Tag:
+            """Find this input's form, or the tree it is in if it doesn't have one, as that is where its group is."""
+            parent: bs4.Tag | None = el
+            while True:
+                top = cast('bs4.Tag', parent)
+                parent = self.get_parent(top, no_iframe=True, no_doc=False, no_template=False)
                 if parent is None:
-                    form = last_parent
-                    break
-            return form
+                    return top
+                if (
+                    self.is_doc(parent) or
+                    self.is_template(parent) or
+                    (self.get_tag(parent) == 'form' and self.is_html_tag(parent))
+                ):
+                    return parent
 
         form = get_parent_form(el)
 
         # Look in form cache to see which radio button groups of the form have a checked button
-        if form is not None:
-            key = id(form)
-            checked_names = self.cached_indeterminate_forms.get(key)
+        key = id(form)
+        checked_names = self.cached_indeterminate_forms.get(key)
 
-            # We didn't have the form cached, so collect the names of its checked radio buttons in a single pass
-            # instead of searching the form again for every radio button group.
-            if checked_names is None:
-                checked_names = set()
-                for child in self.get_tag_descendants(form, no_iframe=True):
-                    tag_name = self.get_tag(child)
-                    if tag_name == 'input':
-                        is_radio = False
-                        check = False
-                        child_name = None
-                        for k, v in self.iter_attributes(child):
-                            if util.lower(k) == 'type' and util.lower(v) == 'radio':
-                                is_radio = True
-                            elif util.lower(k) == 'name':
-                                child_name = v
-                            elif util.lower(k) == 'checked':
-                                check = True
-                        if (
-                            is_radio and check and isinstance(child_name, str) and
-                            child_name not in checked_names and get_parent_form(child) is form
-                        ):
-                            checked_names.add(child_name)
-                self.cached_indeterminate_forms[key] = checked_names
+        # We didn't have the form cached, so collect the names of its checked radio buttons in a single pass
+        # instead of searching the form again for every radio button group.
+        if checked_names is None:
+            checked_names = set()
+            for child in self.get_tag_descendants(form, no_iframe=True, template_contents=True):
+                tag_name = self.get_tag(child)
+                if tag_name == 'input':
+                    is_radio = False
+                    check = False
+                    child_name = None
+                    for k, v in self.iter_attributes(child):
+                        if util.lower(k) == 'type' and util.lower(v) == 'radio':
+                            is_radio = True
+                        elif util.lower(k) == 'name':
+                            child_name = v
+                        elif util.lower(k) == 'checked':
+                            check = True
+                    if (
+                        is_radio and check and isinstance(child_name, str) and
+                        child_name not in checked_names and get_parent_form(child) is form
+                    ):
+                        checked_names.add(child_name)
+            self.cached_indeterminate_forms[key] = checked_names
 
-            match = name not in checked_names
-
-        return match
+        return name not in checked_names
 
     def match_lang(self, el: bs4.Tag, langs: tuple[ct.SelectorLang, ...]) -> bool:
         """Match languages."""
@@ -1537,10 +1575,10 @@ class CSSMatch(_DocumentNav):
                     return ct.SEL_DIR_LTR
 
             # Match parents direction. There may be no parent element, and not just for the root:
-            # a fragment can have many top level elements, and the contents of a `template` are
-            # not its children in the DOM. Without one, assume left to right.
+            # a fragment can have many top level elements, and a `template` has its own contents.
+            # Without one, assume left to right.
             parent = self.get_parent(el, no_iframe=True)
-            if parent is None or self.is_template(parent):
+            if parent is None:
                 return ct.SEL_DIR_LTR
             el = parent
 
@@ -1779,7 +1817,8 @@ class CSSMatch(_DocumentNav):
 
         lim = None if limit < 1 else limit
 
-        for child in self.get_tag_descendants(self.tag):
+        # Selecting from a `template` is how its contents are reached, but only for that `template`.
+        for child in self.get_tag_descendants(self.tag, template_contents=True):
             if self.match(child):
                 yield child
                 if lim is not None:
@@ -1803,7 +1842,7 @@ class CSSMatch(_DocumentNav):
         """Filter tag's children."""
 
         return [
-            tag for tag in self.get_contents(self.tag)
+            tag for tag in self.get_contents(self.tag, template_contents=True)
             if isinstance(tag, bs4.Tag) and self.match(tag)
         ]
 

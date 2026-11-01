@@ -3,10 +3,19 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## 3.1
+## 4.0
 
+-   **BREAK**: The contents of an HTML `template` are no longer treated as part of the document. Selectors do not
+    descend into a `template`, and elements inside one can't see beyond it, which also applies to pseudo-classes such
+    as `:lang()`, `:disabled`, and `:default`. `select` and `filter` will still reach the contents of a `template` when
+    they are called on the `template` itself, for example `soup.template.select('p')`. See the
+    [FAQ](../faq.md#how-does-template-handling-work) for more information.
 -   **NEW**: Update `:disabled` and `:enabled` to treat `option` and `optgroup` elements inside a disabled `select` as
     disabled, following a recent HTML specification update.
+-   **FIX**: Fix the subsequent-sibling combinator and `:has(~ ...)` never matching top level elements of a fragment
+    that has no root element, unless caching was disabled.
+-   **FIX**: `:indeterminate` now treats a radio button group without a form as extending across the whole document
+    instead of the top level element that contains it, and it no longer ignores radio buttons at the top level.
 -   **FIX**: Fix `:default` to treat a `button` with a missing or invalid `type`, and an `input` with `type="image"`,
     as submit buttons.
 -   **FIX**: Fix `:in-range` and `:out-of-range` raising `TypeError` when the document contains an `input` without a

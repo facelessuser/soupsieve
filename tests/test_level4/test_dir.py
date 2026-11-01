@@ -405,6 +405,7 @@ class TestDir(util.TestCase):
             flags=util.HTML5
         )
 
+    @util.requires_html5lib
     def test_template_contents(self):
         """Test that the contents of a `template` do not inherit from it, but still resolve among themselves."""
 
@@ -425,19 +426,19 @@ class TestDir(util.TestCase):
         </html>
         """
 
-        self.assert_selector(
-            markup,
-            "[id]:dir(ltr)",
-            ['2', '3', '5', '6', '7', '12', '20'],
-            flags=util.HTML5
-        )
+        for flags in (0, sv.NOCACHE):
+            soup = self.soup(markup, 'html5lib')
+            tags = soup.find_all(id=True)
 
-        self.assert_selector(
-            markup,
-            "[id]:dir(rtl)",
-            ['0', '1', '4', '8', '9', '10', '11', '13', '14', '15', '16', '17', '18', '19', '21', '22', '23'],
-            flags=util.HTML5
-        )
+            self.assertEqual(
+                [el['id'] for el in tags if sv.match(':dir(ltr)', el, flags=flags)],
+                ['2', '3', '5', '6', '7', '12', '20']
+            )
+
+            self.assertEqual(
+                [el['id'] for el in tags if sv.match(':dir(rtl)', el, flags=flags)],
+                ['0', '1', '4', '8', '9', '10', '11', '13', '14', '15', '16', '17', '18', '19', '21', '22', '23']
+            )
 
     def test_auto_iframe_text(self):
         """Test that `dir="auto"` analyzes the text of an `iframe`, which is just a text node in a browser."""
