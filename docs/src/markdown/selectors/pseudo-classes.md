@@ -176,7 +176,7 @@ soup.select('body > *:defined')
 ## `#!css :dir()`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:dir}
 
 Selects elements based on text directionality. Accepts either `ltr` or `rtl` for "left to right" and "right to left"
-respectively.
+respectively. Any other identifier is valid, but will not match anything.
 
 /// tab | Syntax
 ```css

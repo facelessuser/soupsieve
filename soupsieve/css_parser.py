@@ -204,7 +204,7 @@ PAT_PSEUDO_NTH_TYPE = fr'''
 # Pseudo class language (`:lang("*-de", en)`)
 PAT_PSEUDO_LANG = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*+,{WSC}*+{VALUE})*+){WSC}*+\)'
 # Pseudo class direction (`:dir(ltr)`)
-PAT_PSEUDO_DIR = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<dir>ltr|rtl){WSC}*+\)'
+PAT_PSEUDO_DIR = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<dir>{IDENTIFIER}){WSC}*+\)'
 # Combining characters (`>`, `~`, ` `, `+`, `,`)
 PAT_COMBINE = fr'{COMMENTS}*+(?={WS}|[,+>~]){WSC}*+(?P<relation>[,+>~])?+{WSC}*+'
 # Extra: Contains (`:contains(text)`)
@@ -1281,8 +1281,14 @@ class CSSParser:
     def parse_pseudo_dir(self, sel: _Selector, m: Match[str], has_selector: bool) -> bool:
         """Parse pseudo direction."""
 
-        value = ct.SEL_DIR_LTR if util.lower(m.group('dir')) == 'ltr' else ct.SEL_DIR_RTL
-        sel.flags |= value
+        value = util.lower(css_unescape(m.group('dir')))
+        if value == 'ltr':
+            sel.flags |= ct.SEL_DIR_LTR
+        elif value == 'rtl':
+            sel.flags |= ct.SEL_DIR_RTL
+        else:
+            # Any other identifier is valid, but does not match anything.
+            sel.no_match = True
         has_selector = True
         return has_selector
 

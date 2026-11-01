@@ -1,6 +1,7 @@
 """Test direction selectors."""
 from .. import util
 import soupsieve as sv
+from soupsieve import SelectorSyntaxError
 from bs4 import BeautifulSoup
 
 IFRAME_TEXT = BeautifulSoup('<iframe><div></div></iframe>', 'html.parser').iframe.text == '<div></div>'
@@ -254,7 +255,7 @@ class TestDir(util.TestCase):
         <head></head>
         <body>
         <div id="1" dir="auto">
-        <math>
+        <math id="2">
         <!-- comment -->עִבְרִית
         </math>
         other text
@@ -266,23 +267,255 @@ class TestDir(util.TestCase):
         self.assert_selector(
             markup,
             "div:dir(ltr)",
-            ['1'],
+            [],
             flags=util.HTML5
         )
 
         self.assert_selector(
             markup,
             "div:dir(rtl)",
-            [],
+            ['1'],
             flags=util.HTML5
         )
 
         self.assert_selector(
             markup,
             "math:dir(rtl)",
-            [],
+            ['2'],
             flags=util.HTML5
         )
+
+    def test_auto_non_html_elements(self):
+        """Test that `dir="auto"` analyzes the text of non-HTML elements, and only ignores HTML elements."""
+
+        markup = """
+        <html>
+        <head></head>
+        <body>
+        <div id="1" dir="auto"><svg dir="ltr"><text>עִבְרִית</text></svg>text</div>
+        <div id="2" dir="auto"><math dir="ltr"><mi>עִבְרִית</mi></math>text</div>
+        <div id="3" dir="auto"><svg><style>עִבְרִית</style></svg>text</div>
+        <div id="4" dir="auto"><svg><script>עִבְרִית</script></svg>text</div>
+        <div id="5" dir="auto"><svg><bdi>עִבְרִית</bdi></svg>text</div>
+        <div id="6" dir="auto"><svg><textarea>עִבְרִית</textarea></svg>text</div>
+        <div id="7" dir="auto"><svg><foreignObject><p>עִבְרִית</p></foreignObject></svg>text</div>
+        <div id="8" dir="auto"><svg><foreignObject><p dir="ltr">עִבְרִית</p></foreignObject></svg>text</div>
+        <div id="9" dir="auto"><svg><foreignObject><bdi>עִבְרִית</bdi></foreignObject></svg>text</div>
+        <bdi id="10"><math>עִבְרִית</math></bdi>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            "[id]:dir(rtl)",
+            ['1', '2', '3', '4', '5', '6', '7', '10'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "[id]:dir(ltr)",
+            ['8', '9'],
+            flags=util.HTML5
+        )
+
+    def test_auto_template(self):
+        """Test that `dir="auto"` does not analyze the contents of a `template`."""
+
+        markup = """
+        <html>
+        <head></head>
+        <body>
+        <div id="1" dir="auto"><template>עִבְרִית</template>text</div>
+        <div id="2" dir="auto"><template><p>עִבְרִית</p></template></div>
+        <bdi id="3"><template>עִבְרִית</template>text</bdi>
+        <div dir="rtl"><template id="4" dir="auto">עִבְרִית</template></div>
+        <svg><template id="5"></template></svg>
+        <div id="6" dir="auto"><svg><template>עִבְרִית</template></svg>text</div>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            ":is(div, bdi, template)[id]:dir(ltr)",
+            ['1', '2', '3', '4', '5'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "div[id]:dir(rtl)",
+            ['6'],
+            flags=util.HTML5
+        )
+
+    def test_auto_iframe_text(self):
+        """Test that `dir="auto"` analyzes the text of an `iframe`, which is just a text node in a browser."""
+
+        markup = """
+        <html>
+        <head></head>
+        <body>
+        <div id="1" dir="auto"><iframe>עִבְרִית</iframe>text</div>
+        <div dir="ltr"><iframe id="2" dir="auto">עִבְרִית</iframe></div>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            "[id]:dir(rtl)",
+            ['1', '2'],
+            flags=util.HTML5
+        )
+
+    def test_auto_iframe_elements(self):
+        """Test that `dir="auto"` does not analyze elements in an `iframe`, as they are in another document."""
+
+        soup = self.soup('<div id="1" dir="auto"><iframe id="2" dir="auto"></iframe>text</div>', 'html.parser')
+        for name in ('p', 'span'):
+            tag = soup.new_tag(name)
+            tag.string = 'עִבְרִית'
+            soup.iframe.append(tag)
+
+        self.assertTrue(sv.match(':dir(ltr)', soup.div))
+        self.assertTrue(sv.match(':dir(ltr)', soup.iframe))
+
+    def test_iframe_top_level_elements(self):
+        """Test that elements directly in an `iframe` do not inherit, even if there are many of them."""
+
+        soup = self.soup('<div dir="rtl"><iframe></iframe></div>', 'html.parser')
+        for name in ('p', 'span'):
+            soup.iframe.append(soup.new_tag(name))
+
+        self.assertTrue(sv.match(':dir(rtl)', soup.iframe))
+        self.assertTrue(sv.match(':dir(ltr)', soup.p))
+        self.assertTrue(sv.match(':dir(ltr)', soup.span))
+
+    def test_top_level_elements(self):
+        """Test that elements without a parent element are left to right when there is no single root."""
+
+        markup = """
+        <div id="1"><span id="2"></span></div>
+        <div id="3" dir="rtl"><span id="4"></span></div>
+        <div id="5"></div>
+        <bdi id="6">עִבְרִית</bdi>
+        """
+
+        self.assert_selector(
+            markup,
+            "[id]:dir(ltr)",
+            ['1', '2', '5'],
+            flags=util.PYHTML
+        )
+
+        self.assert_selector(
+            markup,
+            "[id]:dir(rtl)",
+            ['3', '4', '6'],
+            flags=util.PYHTML
+        )
+
+    def test_top_level_non_html_elements(self):
+        """Test that a non-HTML element without a parent element is left to right."""
+
+        markup = '<html id="1"><head></head><body></body></html>'
+        soup = self.soup(markup, 'html5lib')
+        svg = soup.new_tag('svg', namespace='http://www.w3.org/2000/svg', attrs={'id': '2'})
+        soup.append(svg)
+
+        self.assertEqual([el['id'] for el in sv.select(':dir(ltr)[id]', soup)], ['1', '2'])
+
+    def test_bdi_on_root(self):
+        """Test that `bdi` uses its text for direction when it is the root."""
+
+        markup = """<bdi id="1">עִבְרִית<span id="2"></span></bdi>"""
+        for parser in util.available_parsers('html.parser', 'lxml', 'html5lib'):
+            soup = self.soup(markup, parser)
+            fragment = soup.bdi.extract()
+            self.assertTrue(sv.match(':root:dir(rtl)', fragment))
+            self.assertTrue(sv.match(':dir(rtl)', fragment.span))
+
+    def test_dir_auto_input_value_states(self):
+        """Test the `input` states that use their value for `dir="auto"`, and those that do not."""
+
+        markup = """
+        <html>
+        <head></head>
+        <body>
+        <input id="1" type="hidden" dir="auto" value="עִבְרִית">
+        <input id="2" type="password" dir="auto" value="עִבְרִית">
+        <input id="3" type="submit" dir="auto" value="עִבְרִית">
+        <input id="4" type="reset" dir="auto" value="עִבְרִית">
+        <input id="5" type="button" dir="auto" value="עִבְרִית">
+        <input id="6" type="SUBMIT" dir="auto" value="עִבְרִית">
+        <input id="7" type="date" dir="auto" value="עִבְרִית">
+        <input id="8" type="number" dir="auto" value="עִבְרִית">
+        <input id="9" type="range" dir="auto" value="עִבְרִית">
+        <input id="10" type="checkbox" dir="auto" value="עִבְרִית">
+        <input id="11" type="radio" dir="auto" value="עִבְרִית">
+        <input id="12" type="file" dir="auto" value="עִבְרִית">
+        <input id="13" type="image" dir="auto" value="עִבְרִית">
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            "input:dir(rtl)",
+            ['1', '2', '3', '4', '5', '6'],
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "input:dir(ltr)",
+            ['7', '8', '9', '10', '11', '12', '13'],
+            flags=util.HTML5
+        )
+
+    def test_dir_unknown_value(self):
+        """Test that an identifier other than `ltr` and `rtl` is valid, but does not match anything."""
+
+        for selector in (':dir(foo)', ':dir(auto)', ':dir(ltrx)', ':dir(-x)', ':dir(--x)'):
+            self.assert_selector(
+                self.MARKUP,
+                selector,
+                [],
+                flags=util.HTML
+            )
+
+        self.assert_selector(
+            self.MARKUP,
+            "span:not(:dir(foo))",
+            ['2', '5', '7', '8'],
+            flags=util.HTML
+        )
+
+    def test_dir_escaped_value(self):
+        """Test that the value can be escaped and is not case sensitive."""
+
+        self.assert_selector(
+            self.MARKUP,
+            r"span:dir(\72 tl)",
+            ['2', '7'],
+            flags=util.HTML
+        )
+
+        self.assert_selector(
+            self.MARKUP,
+            r"span:dir(\4c TR)",
+            ['5', '8'],
+            flags=util.HTML
+        )
+
+    def test_dir_invalid_value(self):
+        """Test that the value must be a single identifier."""
+
+        for selector in (':dir()', ':dir( )', ':dir(ltr rtl)', ':dir(ltr, rtl)', ':dir("ltr")', ':dir(1)', ':dir(*)'):
+            self.assert_raises(selector, SelectorSyntaxError)
 
     def test_non_html_elements_inherit_direction(self):
         """Test that non-HTML elements, which have no `dir` attribute, inherit the direction of their parent."""
