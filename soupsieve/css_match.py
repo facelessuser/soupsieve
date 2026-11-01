@@ -1445,7 +1445,7 @@ class CSSMatch(_DocumentNav):
 
         return match
 
-    def match_dir(self, el: bs4.Tag | None, directionality: int) -> bool:
+    def match_dir(self, el: bs4.Tag, directionality: int) -> bool:
         """Check directionality."""
 
         # If we have to match both left and right, we can't match either.
@@ -1461,22 +1461,19 @@ class CSSMatch(_DocumentNav):
                 self.dir_cache[key] = direction
         return direction == directionality
 
-    def resolve_dir(self, el: bs4.Tag | None, visited: list[int]) -> int:
-        """Resolve the direction of an element, returning `0` if it cannot be resolved."""
+    def resolve_dir(self, el: bs4.Tag, visited: list[int]) -> int:
+        """Resolve the direction of an element."""
 
         while True:
-            if el is None or not self.is_html:
-                return 0
-
             key = id(el)
             if key in self.dir_cache:
                 return self.dir_cache[key]
             visited.append(key)
 
             # `dir` is only defined for HTML elements, so other elements (SVG, MathML, etc.)
-            # inherit the direction of their parent.
+            # inherit the direction of their parent. They always have one, as the root is an HTML element.
             if not self.is_html_tag(el):
-                el = self.get_parent(el, no_iframe=True)
+                el = cast('bs4.Tag', self.get_parent(el, no_iframe=True))
                 continue
 
             # Element has defined direction of left to right or right to left
@@ -1532,8 +1529,8 @@ class CSSMatch(_DocumentNav):
                 # Auto directionality could not be determined, assume left to right
                 return ct.SEL_DIR_LTR
 
-            # Match parents direction
-            el = self.get_parent(el, no_iframe=True)
+            # Match parents direction (the root always resolves above, so there is always a parent)
+            el = cast('bs4.Tag', self.get_parent(el, no_iframe=True))
 
     def match_range(self, el: bs4.Tag, condition: int) -> bool:
         """
