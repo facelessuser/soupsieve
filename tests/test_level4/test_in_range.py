@@ -345,3 +345,38 @@ class TestInRange(util.TestCase):
             ['6'],
             flags=util.HTML
         )
+
+    def test_range_datetime_local_separator(self):
+        """A local date and time may separate the date and time with a single `T` or a single space."""
+
+        markup = """
+        <input id="0" type="datetime-local" min="2026-01-01T12:00" max="2026-12-31T12:00" value="2026-06-01 12:00">
+        <input id="1" type="datetime-local" min="2026-01-01T12:00" value="2025-12-31 12:00">
+        <input id="2" type="datetime-local" max="2026-01-01T12:00" value="2026-12-31 12:00">
+        <input id="3" type="datetime-local" min="2026-01-01 12:00" value="2025-12-31T12:00">
+        <input id="4" type="datetime-local" max="2026-01-01 12:00" value="2026-12-31T12:00">
+        <input id="5" type="datetime-local" min="2026-06-01 12:00:30" value="2026-06-01 12:00:30.5">
+        <input id="6" type="datetime-local" min="2026-01-01 12:00" value="2026-01-01T12:00">
+        <input id="7" type="datetime-local" min="2026-01-01T12:00" value="2025-12-31  12:00">
+        <input id="8" type="datetime-local" min="2026-01-01T12:00" value="2025-12-31&#9;12:00">
+        <input id="9" type="datetime-local" min="2026-01-01T12:00" value="2025-12-31&#10;12:00">
+        <input id="10" type="datetime-local" min="2026-01-01T12:00" value="2025-12-31t12:00">
+        <input id="11" type="datetime-local" min="2026-01-01T12:00" value="2025-12-31&#160;12:00">
+        <input id="12" type="datetime-local" min="2026-01-01  12:00" value="2025-12-31T12:00">
+        """
+
+        # Any other separator is invalid: an invalid value is treated like a
+        # missing value, and with only an invalid bound there is no range.
+        self.assert_selector(
+            markup,
+            ":in-range",
+            ['0', '5', '6', '7', '8', '9', '10', '11'],
+            flags=util.HTML
+        )
+
+        self.assert_selector(
+            markup,
+            ":out-of-range",
+            ['1', '2', '3', '4'],
+            flags=util.HTML
+        )
