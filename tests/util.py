@@ -26,18 +26,6 @@ LXML_HTML = 0x20
 NOCACHE = 0x100
 
 
-def skip_no_lxml(func):
-    """Decorator that skips lxml is not available."""
-
-    def skip_if(self, *args, **kwargs):
-        """Skip conditional wrapper."""
-
-        if LXML_PRESENT:
-            return func(self, *args, **kwargs)
-        else:
-            raise pytest.skip('lxml is not found')
-
-
 class TestCase(unittest.TestCase):
     """Test case."""
 

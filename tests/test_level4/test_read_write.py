@@ -1,5 +1,6 @@
 """Test read write selectors."""
 from .. import util
+import soupsieve as sv
 
 
 class TestReadWrite(util.TestCase):
@@ -107,3 +108,57 @@ class TestReadWrite(util.TestCase):
             ['2', '3', '4'],
             flags=util.HTML
         )
+
+    def test_read_write_foreign_contenteditable(self):
+        """Test that `contenteditable` is ignored on non-HTML elements, which inherit the state of their parent."""
+
+        markup = """
+        <body>
+        <svg id="0" contenteditable><foreignObject id="1" contenteditable="true"><p id="2">Text</p>
+        </foreignObject></svg>
+        <svg id="3"><foreignObject id="4" contenteditable><div id="5">Text</div></foreignObject></svg>
+        <div id="6" contenteditable="false">
+        <svg id="7"><foreignObject id="8" contenteditable="plaintext-only"><p id="9">Text</p></foreignObject></svg>
+        </div>
+        <div id="10" contenteditable>
+        <svg id="11"><foreignObject id="12" contenteditable="false"><p id="13">Text</p></foreignObject></svg>
+        </div>
+        <div id="14" contenteditable>
+        <svg id="15"><foreignObject id="16"><p id="17" contenteditable="false"><b id="18" contenteditable></b></p>
+        </foreignObject></svg>
+        </div>
+        <math id="19" contenteditable><mtext id="20" contenteditable><b id="21">Text</b></mtext></math>
+        </body>
+        """
+
+        self.assert_selector(
+            markup,
+            "body :read-write",
+            ['10', '13', '14', '18'],
+            flags=util.HTML5
+        )
+
+    def test_read_write_contenteditable_no_namespaces(self):
+        """Test that all elements are HTML elements, and can be editing hosts, if the parser has no namespaces."""
+
+        markup = """
+        <svg id="0" contenteditable><p id="1">Text</p></svg>
+        """
+
+        self.assert_selector(
+            markup,
+            ":read-write",
+            ['0', '1'],
+            flags=util.PYHTML
+        )
+
+    def test_read_write_iframe(self):
+        """Test that the contents of an `iframe` do not inherit `contenteditable`, as they are in another document."""
+
+        soup = self.soup('<div id="0" contenteditable><iframe id="1"></iframe></div>', 'html.parser')
+        div = soup.new_tag('div', attrs={'id': '2'})
+        div.append(soup.new_tag('p', attrs={'id': '3'}))
+        soup.iframe.append(div)
+        soup.iframe.append(soup.new_tag('p', attrs={'id': '4', 'contenteditable': ''}))
+
+        self.assertEqual([el['id'] for el in sv.select(':read-write', soup)], ['0', '1', '4'])

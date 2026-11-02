@@ -22,6 +22,26 @@ icon: lucide/scroll-text
     `type` attribute.
 -   **FIX**: `:read-write` (and `:read-only`) now treat `contenteditable="plaintext-only"` elements as editing hosts and
     match the editable elements inside an editing host, following the nearest `contenteditable` state.
+-   **FIX**: `:read-write` (and `:read-only`) now ignore `contenteditable` on non-HTML elements, such as an SVG
+    `foreignObject`, as the attribute only applies to HTML elements. Such elements inherit the state of their parent.
+-   **FIX**: `:checked` now only matches the last radio button with a `checked` attribute in a radio button group, as
+    in a browser, where a group is the radio buttons with the same `name` and form, including the `form` attribute.
+    `:default` still matches all of them, and the contents of a `template` are unaffected as they are not connected.
+-   **FIX**: `:dir()` and `:defined` no longer affect the rest of the selector list they are in. Previously, a selector
+    list that used either of them could not have its combinators cross an `iframe`, ignored the specified namespaces,
+    and matched nothing in XML, not even the parts that didn't use them. They still do not match in XML, but
+    `:not(:dir(ltr))` and `:not(:defined)` now do.
+-   **FIX**: `:default` and `:indeterminate` now honor the `form` attribute, which can associate a submit button or
+    radio button with a form it is not in, or leave it without a form. It is ignored in a `template`, as in the HTML
+    specification. Submit buttons outside of a form can now be its default button.
+-   **FIX**: `:default`, `:checked`, and `:indeterminate` now handle a form inside a form like a browser. In HTML, a
+    browser ignores the nested form and takes its end tag for that of the parent, which matters for parsers that keep
+    the nested form, such as `html.parser`. In XHTML and in a `template`, nested forms are real forms.
+-   **FIX**: `:checked` now matches the `option` that a browser would select. Without `multiple`, that is only the
+    last `option` with a `selected` attribute in a `select`, and if there are none and the `select` shows a single
+    option, the first `option` that is not disabled. `:default` still only considers the `selected` attribute.
+-   **FIX**: `:read-write` (and `:read-only`) no longer let the contents of an `iframe` inherit `contenteditable` from
+    outside of the `iframe`, as they are in another document.
 -   **FIX**: Fix `[attribute!=value]` excluding values that only start with the specified value, and in XML documents,
     `type` values that contain a newline.
 -   **FIX**: Match the values of every attribute that the HTML specification lists as ASCII case insensitive (`rel`,

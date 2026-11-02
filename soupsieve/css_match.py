@@ -18,6 +18,7 @@ from typing import (
     Sequence,
     overload,
     Literal,
+    NamedTuple,
     cast,
     TYPE_CHECKING
 )  # noqa: F401, F811
@@ -77,6 +78,7 @@ RE_DATETIME = re.compile(
     r'^(?P<year>[0-9]{4,})-(?P<month>[0-9]{2})-(?P<day>[0-9]{2})[T ](?P<hour>[0-9]{2}):(?P<minutes>[0-9]{2})'
     r'(?::(?P<seconds>[0-9]{2}(?:\.[0-9]{1,3})?))?\Z'
 )
+RE_SIZE = re.compile(r'[ \t\r\n\f]*\+?(?P<value>[0-9]+)')
 RE_WILD_STRIP = re.compile(r'(?:(?:-\*-)(?:\*(?:-|$))*|-\*$)')
 
 MONTHS_30 = (4, 6, 9, 11)  # April, June, September, and November
@@ -86,6 +88,17 @@ LONG_MONTH = 31
 FEB_MONTH = 28
 FEB_LEAP_MONTH = 29
 DAYS_IN_WEEK = 7
+
+
+class TreeForms(NamedTuple):
+    """The form information of a tree. Elements are tracked by `id()` as `bs4` hashes them by their content."""
+
+    # The form owner of each `input` and `button`
+    owners: dict[int, bs4.Tag | None]
+    # The default button of each form
+    defaults: dict[int, bs4.Tag]
+    # The last radio button with a `checked` attribute of each radio button group, by form owner and name
+    checked: dict[tuple[int, str], bs4.Tag]
 
 
 class _DocumentNav:
@@ -627,8 +640,8 @@ class CSSMatch(_DocumentNav):
         self.assert_valid_input(scope)
         self.tag = scope
         self.cached_meta_lang: list[tuple[str, str]] = []
-        self.cached_default_forms: list[tuple[bs4.Tag, bs4.Tag | None]] = []
-        self.cached_indeterminate_forms: dict[int, set[str]] = {}
+        self.cached_forms: dict[int, TreeForms] = {}
+        self.cached_options: dict[int, dict[int, bool]] = {}
         self.selectors = selectors
         self.namespaces: ct.Namespaces | dict[str, str] = {} if namespaces is None else namespaces
         self.flags = flags
@@ -1311,111 +1324,210 @@ class CSSMatch(_DocumentNav):
                 match = False
         return match
 
-    def match_default(self, el: bs4.Tag) -> bool:
-        """Match default."""
+    def get_tree(self, el: bs4.Tag) -> bs4.Tag:
+        """Get the top of the tree that an element is in: its document, `iframe`, or `template`."""
 
-        match = False
+        top = el
+        parent = self.get_parent(top, no_doc=False, no_template=False)
+        while parent is not None:
+            top = parent
+            if self.is_iframe(top) or self.is_template(top):
+                break
+            parent = self.get_parent(top, no_doc=False, no_template=False)
+        return top
 
-        # Find this input's form
-        form: bs4.Tag | None = None
-        parent = self.get_parent(el, no_iframe=True)
-        while parent and form is None:
-            if self.get_tag(parent) == 'form' and self.is_html_tag(parent):
-                form = parent
+    def is_submit_button(self, el: bs4.Tag) -> bool:
+        """Check if an `input` or `button` is a submit button."""
+
+        v = util.lower(cast(str, self.get_attribute_by_name(el, 'type', '')))
+        if self.get_tag(el) == 'input':
+            return v in ('submit', 'image')
+
+        # A button with a missing or invalid `type` submits, unless it invokes a command or is
+        # a child of a `select`.
+        return v == 'submit' or (
+            v not in ('button', 'reset') and
+            self.get_attribute_by_name(el, 'command') is None and
+            self.get_attribute_by_name(el, 'commandfor') is None and
+            self.get_tag(self.get_parent(el, no_iframe=True)) != 'select'
+        )
+
+    def get_forms(self, tree: bs4.Tag) -> TreeForms:
+        """
+        Get the form information of a tree.
+
+        A form owner is the form that the `form` attribute refers to, if there is one, otherwise the nearest
+        ancestor form. The attribute is only used by elements connected to a document, which the contents of
+        a `template` are not. An `iframe` or `template` holds its own tree, so they are not entered.
+
+        This requires a pass through the whole tree as the `form` attribute can refer to any form, so it is
+        cached instead of searching the tree again for every element.
+
+        A form in a form only exists in XML and in a `template`. Anywhere else, it can only have come from a
+        parser that doesn't follow the HTML specification. A browser's parser would have ignored the nested
+        form and taken its end tag for that of the parent, so what it holds belongs to the parent, and
+        what follows it does not.
+        """
+
+        key = id(tree)
+        forms = self.cached_forms.get(key)
+        if forms is not None:
+            return forms
+
+        ids: dict[str, bs4.Tag] = {}
+        controls: list[tuple[bs4.Tag, bs4.Tag | None]] = []
+        closed: set[int] = set()
+        nesting = self.is_xml or self.is_template(tree)
+        stack: list[tuple[bs4.Tag | None, bs4.Tag | None]] = [
+            (el, None) for el in self.get_children(tree, reverse=True, tags=True, template_contents=True)
+        ]
+        while stack:
+            el, form = stack.pop()
+
+            # The end of a nested form, which ends the form it is in
+            if el is None:
+                closed.add(id(form))
+                continue
+
+            if id(form) in closed:
+                form = None
+            name = self.get_tag(el) if self.is_html_tag(el) else None
+            if name == 'form' and form is not None and not nesting:
+                stack.append((None, form))
             else:
-                parent = self.get_parent(parent, no_iframe=True)
+                el_id = cast(str, self.get_attribute_by_name(el, 'id', ''))
+                if el_id:
+                    ids.setdefault(el_id, el)
+                if name == 'form':
+                    form = el
+                elif name in ('input', 'button'):
+                    controls.append((el, form))
+            stack.extend((child, form) for child in self.get_tag_children(el, reverse=True, no_iframe=True))
 
-        if form is not None:
-            # Look in form cache to see if we've already located its default button
-            found_form = False
-            for f, t in self.cached_default_forms:
-                if f is form:
-                    found_form = True
-                    if t is el:
-                        match = True
-                    break
+        forms = TreeForms({}, {}, {})
+        connected = not self.is_template(tree)
+        for el, form in controls:
+            form_id = self.get_attribute_by_name(el, 'form')
+            if connected and form_id is not None:
+                form = ids.get(cast(str, form_id))
+                if form is not None and not (self.get_tag(form) == 'form' and self.is_html_tag(form)):
+                    form = None
+            forms.owners[id(el)] = form
 
-            # We didn't have the form cached, so look for its default button
-            if not found_form:
-                default = None
-                for child in self.get_tag_descendants(form, no_iframe=True):
-                    name = self.get_tag(child)
-                    # Can't do nested forms (haven't figured out why we never hit this)
-                    if name == 'form':  # pragma: no cover
-                        break
-                    if name in ('input', 'button'):
-                        v = util.lower(cast(str, self.get_attribute_by_name(child, 'type', '')))
-                        if name == 'input':
-                            submit = v in ('submit', 'image')
-                        else:
-                            # A button with a missing or invalid `type` submits, unless it invokes a command or is
-                            # a child of a `select`.
-                            submit = v == 'submit' or (
-                                v not in ('button', 'reset') and
-                                self.get_attribute_by_name(child, 'command') is None and
-                                self.get_attribute_by_name(child, 'commandfor') is None and
-                                self.get_tag(self.get_parent(child, no_iframe=True)) != 'select'
-                            )
-                        if submit:
-                            default = child
-                            break
-                # Cache the form even if it has no default button so we don't search it again for every candidate
-                self.cached_default_forms.append((form, default))
-                if el is default:
-                    match = True
-        return match
+            # Controls are in tree order, so the first submit button of a form is its default button,
+            # and the last radio button with `checked` in a radio button group is the one left checked.
+            radio_name = cast(str, self.get_attribute_by_name(el, 'name', ''))
+            if form is not None and self.is_submit_button(el):
+                forms.defaults.setdefault(id(form), el)
+            elif (
+                radio_name and
+                self.get_attribute_by_name(el, 'checked') is not None and
+                util.lower(cast(str, self.get_attribute_by_name(el, 'type', ''))) == 'radio'
+            ):
+                forms.checked[(id(form), radio_name)] = el
+
+        self.cached_forms[key] = forms
+        return forms
+
+    def match_default(self, el: bs4.Tag) -> bool:
+        """Match the default button of a form, which is the first submit button in the tree that it owns."""
+
+        forms = self.get_forms(self.get_tree(el))
+        form = forms.owners.get(id(el))
+        return form is not None and forms.defaults.get(id(form)) is el
+
+    def get_radio_group(self, el: bs4.Tag, forms: TreeForms) -> tuple[int, str]:
+        """Get the key of the radio button group of a radio button with a name."""
+
+        return id(forms.owners.get(id(el))), cast(str, self.get_attribute_by_name(el, 'name'))
 
     def match_indeterminate(self, el: bs4.Tag) -> bool:
-        """Match default."""
+        """Match a radio button in a radio button group that has no checked radio buttons."""
 
-        name = cast(str, self.get_attribute_by_name(el, 'name'))
+        forms = self.get_forms(self.get_tree(el))
+        return self.get_radio_group(el, forms) not in forms.checked
 
-        def get_parent_form(el: bs4.Tag) -> bs4.Tag:
-            """Find this input's form, or the tree it is in if it doesn't have one, as that is where its group is."""
-            parent: bs4.Tag | None = el
-            while True:
-                top = cast('bs4.Tag', parent)
-                parent = self.get_parent(top, no_iframe=True, no_doc=False, no_template=False)
-                if parent is None:
-                    return top
-                if (
-                    self.is_doc(parent) or
-                    self.is_template(parent) or
-                    (self.get_tag(parent) == 'form' and self.is_html_tag(parent))
-                ):
-                    return parent
+    def match_checked_radio(self, el: bs4.Tag) -> bool:
+        """
+        Match a radio button with a `checked` attribute if it is still checked.
 
-        form = get_parent_form(el)
+        A radio button that is checked unchecks the others in its group when it is added to a document, so
+        only the last one is left checked. The contents of a `template` are never added to a document,
+        so all of them stay checked.
+        """
 
-        # Look in form cache to see which radio button groups of the form have a checked button
-        key = id(form)
-        checked_names = self.cached_indeterminate_forms.get(key)
+        if not self.get_attribute_by_name(el, 'name'):
+            return True
 
-        # We didn't have the form cached, so collect the names of its checked radio buttons in a single pass
-        # instead of searching the form again for every radio button group.
-        if checked_names is None:
-            checked_names = set()
-            for child in self.get_tag_descendants(form, no_iframe=True, template_contents=True):
-                tag_name = self.get_tag(child)
-                if tag_name == 'input':
-                    is_radio = False
-                    check = False
-                    child_name = None
-                    for k, v in self.iter_attributes(child):
-                        if util.lower(k) == 'type' and util.lower(v) == 'radio':
-                            is_radio = True
-                        elif util.lower(k) == 'name':
-                            child_name = v
-                        elif util.lower(k) == 'checked':
-                            check = True
-                    if (
-                        is_radio and check and isinstance(child_name, str) and
-                        child_name not in checked_names and get_parent_form(child) is form
-                    ):
-                        checked_names.add(child_name)
-            self.cached_indeterminate_forms[key] = checked_names
+        tree = self.get_tree(el)
+        if self.is_template(tree):
+            return True
 
-        return name not in checked_names
+        forms = self.get_forms(tree)
+        return forms.checked.get(self.get_radio_group(el, forms)) is el
+
+    def get_options(self, select: bs4.Tag) -> dict[int, bool]:
+        """
+        Get the selectedness of each option in the list of options of a `select`.
+
+        An option that is not in a `select` with `multiple` is left selected if it is the last one with
+        a `selected` attribute, and if there are none, the first enabled option is selected when
+        the `select` shows a single option.
+
+        Other than in XML, a nested `option`, `optgroup`, or `select` can only have come from a parser that
+        doesn't follow the HTML specification. A browser's parser would have ended the first one, so
+        an `option` or `optgroup` is treated as a sibling, and a `select` ends the list of options.
+        """
+
+        key = id(select)
+        selectedness = self.cached_options.get(key)
+        if selectedness is not None:
+            return selectedness
+
+        options: list[tuple[bs4.Tag, bool]] = []
+        stack: list[tuple[bs4.Tag, bool | None]] = [
+            (el, None) for el in self.get_tag_children(select, reverse=True, no_iframe=True)
+        ]
+        while stack:
+            el, group = stack.pop()
+            name = self.get_tag(el) if self.is_html_tag(el) else None
+            if name == 'select' and not self.is_xml:
+                break
+            if name == 'option':
+                options.append((el, bool(group)))
+            if name in ('select', 'hr', 'datalist') or (
+                self.is_xml and (name == 'option' or (name == 'optgroup' and group is not None))
+            ):
+                continue
+            if name == 'optgroup':
+                group = self.get_attribute_by_name(el, 'disabled') is not None
+            stack.extend((child, group) for child in self.get_tag_children(el, reverse=True, no_iframe=True))
+
+        marked = [el for el, _ in options if self.get_attribute_by_name(el, 'selected') is not None]
+        if self.get_attribute_by_name(select, 'multiple') is None:
+            size = RE_SIZE.match(cast(str, self.get_attribute_by_name(select, 'size', '')))
+            if marked:
+                marked = marked[-1:]
+            elif size is None or size.group('value').lstrip('0') in ('', '1'):
+                marked = [
+                    el for el, disabled in options
+                    if not disabled and self.get_attribute_by_name(el, 'disabled') is None
+                ][:1]
+
+        selected = {id(el) for el in marked}
+        selectedness = {id(el): id(el) in selected for el, _ in options}
+        self.cached_options[key] = selectedness
+        return selectedness
+
+    def match_checked_option(self, el: bs4.Tag) -> bool:
+        """Match a selected option. Without a `select`, an option is only selected by its `selected` attribute."""
+
+        parent = self.get_parent(el, no_iframe=True)
+        while parent is not None and not (self.get_tag(parent) == 'select' and self.is_html_tag(parent)):
+            parent = self.get_parent(parent, no_iframe=True)
+
+        selected = self.get_options(parent).get(id(el)) if parent is not None else None
+        return self.get_attribute_by_name(el, 'selected') is not None if selected is None else selected
 
     def match_lang(self, el: bs4.Tag, langs: tuple[ct.SelectorLang, ...]) -> bool:
         """Match languages."""
@@ -1512,6 +1624,10 @@ class CSSMatch(_DocumentNav):
 
     def match_dir(self, el: bs4.Tag, directionality: int) -> bool:
         """Check directionality."""
+
+        # Direction is only supported in HTML documents.
+        if not self.is_html:
+            return False
 
         # If we have to match both left and right, we can't match either.
         if directionality & ct.SEL_DIR_LTR and directionality & ct.SEL_DIR_RTL:
@@ -1628,7 +1744,7 @@ class CSSMatch(_DocumentNav):
 
         `:defined` is related to custom elements in a browser.
 
-        - If the document is XML (not XHTML), all tags will match.
+        - If the document is XML (not XHTML), no tags will match.
         - Tags that are not custom (don't have a hyphen) are marked defined.
         - If the tag has a prefix (without or without a namespace), it will not match.
         - HTML elements with an `is` attribute (customized built-in elements) are created as undefined,
@@ -1640,7 +1756,7 @@ class CSSMatch(_DocumentNav):
 
         name = self.get_tag(el)
         return (
-            name is not None and (
+            self.is_html and name is not None and (
                 (name.find('-') == -1 and not self.is_customized_builtin(el)) or
                 name.find(':') != -1 or
                 self.get_prefix(el) is not None
@@ -1673,19 +1789,20 @@ class CSSMatch(_DocumentNav):
 
         The nearest `contenteditable` attribute with a valid state decides: an empty value, `true` and
         `plaintext-only` make the element editable, and `false` does not. Any other value inherits
-        the state of the parent.
+        the state of the parent. The attribute only applies to HTML elements, others (SVG, MathML,
+        etc.) always inherit the state of their parent.
         """
 
         node = el  # type: bs4.Tag | None
         while node is not None:
-            state = self.get_attribute_by_name(node, 'contenteditable')
+            state = self.get_attribute_by_name(node, 'contenteditable') if self.is_html_tag(node) else None
             if isinstance(state, str):
                 state = util.lower(state)
                 if state in ('', 'true', 'plaintext-only'):
                     return True
                 if state == 'false':
                     return False
-            node = self.get_parent(node)
+            node = self.get_parent(node, no_iframe=True)
         return False
 
     def match_selectors(self, el: bs4.Tag, selectors: ct.SelectorList) -> bool:
@@ -1795,6 +1912,11 @@ class CSSMatch(_DocumentNav):
                 # Validate that the unset radio button is among radio buttons with the same name in a form that are
                 # also not set.
                 if selector.flags & ct.SEL_INDETERMINATE and not self.match_indeterminate(el):
+                    continue
+                # Validate that the radio button is left checked in its group or that the option is selected.
+                if selector.flags & ct.SEL_CHECKED and not (
+                    self.match_checked_option(el) if self.get_tag(el) == 'option' else self.match_checked_radio(el)
+                ):
                     continue
                 # Validate element directionality
                 if selector.flags & DIR_FLAGS and not self.match_dir(el, selector.flags & DIR_FLAGS):

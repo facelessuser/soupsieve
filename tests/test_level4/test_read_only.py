@@ -1,5 +1,6 @@
 """Test read only selectors."""
 from .. import util
+import soupsieve as sv
 
 
 class TestReadOnly(util.TestCase):
@@ -84,3 +85,57 @@ class TestReadOnly(util.TestCase):
             ['7', '8', '9', '16', '19'],
             flags=util.HTML
         )
+
+    def test_read_only_foreign_contenteditable(self):
+        """Test that `contenteditable` on non-HTML elements does not make HTML elements inside them editable."""
+
+        markup = """
+        <body>
+        <svg id="0" contenteditable><foreignObject id="1" contenteditable="true"><p id="2">Text</p>
+        </foreignObject></svg>
+        <svg id="3"><foreignObject id="4" contenteditable><div id="5">Text</div></foreignObject></svg>
+        <div id="6" contenteditable="false">
+        <svg id="7"><foreignObject id="8" contenteditable="plaintext-only"><p id="9">Text</p></foreignObject></svg>
+        </div>
+        <div id="10" contenteditable>
+        <svg id="11"><foreignObject id="12" contenteditable="false"><p id="13">Text</p></foreignObject></svg>
+        </div>
+        <div id="14" contenteditable>
+        <svg id="15"><foreignObject id="16"><p id="17" contenteditable="false"><b id="18" contenteditable></b></p>
+        </foreignObject></svg>
+        </div>
+        <math id="19" contenteditable><mtext id="20" contenteditable><b id="21">Text</b></mtext></math>
+        </body>
+        """
+
+        self.assert_selector(
+            markup,
+            "body :read-only",
+            ['2', '5', '6', '9', '17', '21'],
+            flags=util.HTML5
+        )
+
+    def test_read_only_non_html(self):
+        """Test that only HTML elements match, as the HTML specification states (browsers do not agree on this)."""
+
+        markup = """
+        <body>
+        <svg id="0"><circle id="1"></circle><foreignObject id="2"><p id="3">Text</p></foreignObject></svg>
+        <math id="4"><mi id="5">x</mi></math>
+        </body>
+        """
+
+        self.assert_selector(
+            markup,
+            "body :read-only",
+            ['3'],
+            flags=util.HTML5
+        )
+
+    def test_read_only_iframe(self):
+        """Test that the contents of an `iframe` do not inherit `contenteditable`, as they are in another document."""
+
+        soup = self.soup('<div id="0" contenteditable><iframe id="1"></iframe></div>', 'html.parser')
+        soup.iframe.append(soup.new_tag('p', attrs={'id': '2'}))
+
+        self.assertEqual([el['id'] for el in sv.select(':read-only', soup)], ['2'])

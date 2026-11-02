@@ -127,3 +127,163 @@ class TestIndeterminate(util.TestCase):
             ['radio1', 'radio4', 'radio5', 'radio6', 'radio8'],
             flags=util.HTML
         )
+
+    def test_form_attribute_joins_form(self):
+        """Test that a radio button is in the group of the form that its `form` attribute refers to."""
+
+        self.assert_selector(
+            """
+            <body>
+            <form id="f"></form>
+            <input form="f" type="radio" name="a" id="1">
+            <input type="radio" name="a" id="2" checked>
+            </body>
+            """,
+            ":indeterminate",
+            ['1'],
+            flags=util.HTML
+        )
+
+        self.assert_selector(
+            """
+            <body>
+            <form id="f"><input type="radio" name="a" id="1" checked></form>
+            <input form="f" type="radio" name="a" id="2">
+            </body>
+            """,
+            ":indeterminate",
+            [],
+            flags=util.HTML
+        )
+
+    def test_form_attribute_later_form(self):
+        """Test that the `form` attribute can refer to a form that comes later."""
+
+        markup = """
+        <body>
+        <input form="f" type="radio" name="a" id="1">
+        <form id="f"><input type="radio" name="a" id="2" checked></form>
+        </body>
+        """
+
+        self.assert_selector(
+            markup,
+            ":indeterminate",
+            [],
+            flags=util.HTML
+        )
+
+    def test_form_attribute_leaves_form(self):
+        """Test that a radio button with a `form` attribute is not in the group of its ancestor form."""
+
+        markup = """
+        <body>
+        <form id="f">
+        <input type="radio" name="a" id="1" checked>
+        <input form="g" type="radio" name="a" id="2">
+        <input form="h" type="radio" name="a" id="3">
+        </form>
+        <form id="g"></form>
+        <form id="h"><input type="radio" name="a" id="4" checked></form>
+        </body>
+        """
+
+        self.assert_selector(
+            markup,
+            ":indeterminate",
+            ['2'],
+            flags=util.HTML
+        )
+
+    def test_form_attribute_no_form(self):
+        """Test that a `form` attribute that doesn't refer to a form leaves a radio button without a form."""
+
+        markup = """
+        <body>
+        <div id="d"></div>
+        <form>
+        <input form="{}" type="radio" name="a" id="1">
+        <input type="radio" name="a" id="2" checked>
+        </form>
+        </body>
+        """
+
+        for value in ('d', 'nope', ''):
+            self.assert_selector(
+                markup.format(value),
+                ":indeterminate",
+                ['1'],
+                flags=util.HTML
+            )
+
+        markup = """
+        <body>
+        <form><input form="nope" type="radio" name="a" id="1"></form>
+        <input type="radio" name="a" id="2" checked>
+        </body>
+        """
+
+        self.assert_selector(
+            markup,
+            ":indeterminate",
+            [],
+            flags=util.HTML
+        )
+
+    def test_form_attribute_template(self):
+        """Test that the `form` attribute is ignored in a `template`, whose contents are not connected."""
+
+        markup = """
+        <body>
+        <template>
+        <form id="f"></form>
+        <input form="f" type="radio" name="a" id="1">
+        <form id="g">
+        <input form="nope" type="radio" name="a" id="2">
+        <input type="radio" name="a" id="3" checked>
+        </form>
+        </template>
+        </body>
+        """
+
+        for parser in util.available_parsers('html.parser', 'lxml', 'html5lib'):
+            soup = self.soup(markup, parser)
+            self.assertEqual([el['id'] for el in sv.select(':indeterminate', soup.template)], ['1'])
+
+    def test_nested_form(self):
+        """Test that the contents of a nested form belong to the parent form, as a browser ignores nested forms."""
+
+        markup = """
+        <body>
+        <form>
+        <input type="radio" name="a" id="1">
+        <form><input type="radio" name="a" id="2" checked></form>
+        </form>
+        </body>
+        """
+
+        # `lxml` turns this into sibling forms, which can't be told apart from real ones.
+        for flags in (util.PYHTML, util.HTML5):
+            self.assert_selector(
+                markup,
+                ":indeterminate",
+                [],
+                flags=flags
+            )
+
+    def test_nested_form_xhtml(self):
+        """Test that nested forms are real forms in XHTML, as there is nothing to prevent them."""
+
+        markup = self.wrap_xhtml("""
+        <form>
+        <input type="radio" name="a" id="1"/>
+        <form><input type="radio" name="a" id="2" checked="checked"/></form>
+        </form>
+        """)
+
+        self.assert_selector(
+            markup,
+            ":indeterminate",
+            ['1'],
+            flags=util.XHTML
+        )

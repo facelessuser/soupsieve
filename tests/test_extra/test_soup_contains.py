@@ -175,22 +175,19 @@ class TestSoupContains(util.TestCase):
             flags=util.PYHTML
         )
 
-    @util.skip_no_lxml
+    @util.requires_lxml
     def test_contains_cdata_lxml_html(self):
         """Test contains CDATA in `lxml` HTML parser."""
-
-        from lxml import etree
-        libxml_ver = etree.LIBXML_VERSION
 
         markup = """
         <body><div id="1">Testing that <span id="2"><![CDATA[that]]></span>contains works.</div></body>
         """
 
-        results = ['1', '2'] if libxml_ver >= (2, 9, 11) else ['1']
+        # CDATA is not text in HTML: `libxml2` drops it, or as of 2.14, turns it into a comment.
         self.assert_selector(
             markup,
             'body *:-soup-contains("that")',
-            results,
+            ['1'],
             flags=util.LXML_HTML
         )
 

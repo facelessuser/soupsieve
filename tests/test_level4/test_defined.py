@@ -1,5 +1,6 @@
 """Test defined selectors."""
 from .. import util
+import soupsieve as sv
 
 
 class TestDefined(util.TestCase):
@@ -75,7 +76,7 @@ class TestDefined(util.TestCase):
             flags=util.HTML5
         )
 
-    @util.skip_no_lxml
+    @util.requires_lxml
     def test_defined_xhtml(self):
         """Test defined XHTML."""
 
@@ -135,4 +136,57 @@ class TestDefined(util.TestCase):
             'body :defined',
             [],
             flags=util.XML
+        )
+
+    def test_defined_xml_only_applies_to_compound(self):
+        """Test that `:defined` not matching in XML only affects the selector it is part of."""
+
+        markup = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <root>
+        <a id="1"/>
+        <b id="2"/>
+        </root>
+        """
+
+        self.assert_selector(
+            markup,
+            "a:defined, b",
+            ['2'],
+            flags=util.XML
+        )
+
+        self.assert_selector(
+            markup,
+            "[id]:not(:defined)",
+            ['1', '2'],
+            flags=util.XML
+        )
+
+    def test_defined_iframe_combinators(self):
+        """Test that `:defined` does not stop combinators from crossing an `iframe`."""
+
+        soup = self.soup('<div><iframe></iframe></div>', 'html.parser')
+        soup.iframe.append(soup.new_tag('p', attrs={'id': 'inner'}))
+
+        self.assertEqual([el['id'] for el in sv.select('iframe > p:defined', soup)], ['inner'])
+
+    def test_defined_namespaces(self):
+        """Test that `:defined` does not stop the other selectors from using the specified namespaces."""
+
+        markup = """
+        <html>
+        <body>
+        <svg id="1"><a id="2"></a></svg>
+        <a id="3"></a>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            "svg|a:defined",
+            ['2'],
+            namespaces={'svg': 'http://www.w3.org/2000/svg'},
+            flags=util.HTML5
         )

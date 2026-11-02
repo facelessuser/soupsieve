@@ -652,3 +652,77 @@ class TestDir(util.TestCase):
             ['7', '8'],
             flags=util.HTML5
         )
+
+    def test_iframe_combinators(self):
+        """Test that `:dir()` does not stop combinators from crossing an `iframe`."""
+
+        soup = self.soup('<div id="outer"><iframe id="frame"></iframe></div>', 'html.parser')
+        soup.iframe.append(soup.new_tag('p', attrs={'id': 'inner'}))
+
+        for selector in ('iframe > p:dir(ltr)', '#outer p:dir(ltr)', ':is(iframe > p:dir(ltr))'):
+            self.assertEqual([el['id'] for el in sv.select(selector, soup)], ['inner'])
+
+        self.assertEqual(
+            [el['id'] for el in sv.select('iframe:has(> p:dir(ltr)), div:has(p:dir(ltr))', soup)],
+            ['outer', 'frame']
+        )
+
+    def test_namespaces(self):
+        """Test that `:dir()` does not stop the other selectors from using the specified namespaces."""
+
+        markup = """
+        <html>
+        <body>
+        <svg id="1"><a id="2"></a></svg>
+        <a id="3"></a>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            "svg|a:dir(ltr)",
+            ['2'],
+            namespaces={'svg': 'http://www.w3.org/2000/svg'},
+            flags=util.HTML5
+        )
+
+        self.assert_selector(
+            markup,
+            "a:dir(ltr)",
+            ['2'],
+            namespaces={'': 'http://www.w3.org/2000/svg'},
+            flags=util.HTML5
+        )
+
+    def test_xml_only_applies_to_compound(self):
+        """Test that `:dir()` not matching in XML only affects the selector it is part of."""
+
+        markup = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <root>
+        <a id="1"/>
+        <b id="2"/>
+        </root>
+        """
+
+        self.assert_selector(
+            markup,
+            "a:dir(ltr), b",
+            ['2'],
+            flags=util.XML
+        )
+
+        self.assert_selector(
+            markup,
+            "a:dir(ltr)",
+            [],
+            flags=util.XML
+        )
+
+        self.assert_selector(
+            markup,
+            "[id]:not(:dir(ltr))",
+            ['1', '2'],
+            flags=util.XML
+        )

@@ -67,12 +67,15 @@ Soup Sieve isn't entirely unaware of `#!html <iframe>` elements though. In Soup 
 pseudo-classes behaved in unexpected ways without awareness to `#!html <iframe>`, this was fixed in 1.9.1.
 Pseudo-classes such as [`#!css :default`](./selectors/pseudo-classes.md#:default),
 [`#!css :indeterminate`](./selectors/pseudo-classes.md#:indeterminate), [`#!css :dir()`](./selectors/pseudo-classes.md#:dir),
-[`:lang()`](./selectors/pseudo-classes.md#:lang), [`#!css :root`](./selectors/pseudo-classes.md#:root), and
+[`:lang()`](./selectors/pseudo-classes.md#:lang), [`#!css :read-write`](./selectors/pseudo-classes.md#:read-write),
+[`#!css :root`](./selectors/pseudo-classes.md#:root), and
 [`#!css :contains()`](./selectors/pseudo-classes.md#:-soup-contains) were given awareness of `#!html <iframe>` elements
 to ensure they behaved properly and returned the expected elements. This doesn't mean that `select` won't return
 elements in an `#!html <iframe>`, but it won't allow something like `#!css :default` to select a `#!html <button>` in an
 `#!html <iframe>` whose parent `#!html <form>` is outside the `#!html <iframe>`. Or better put, a default
-`#!html <button>` will be evaluated in the context of the document it is in.
+`#!html <button>` will be evaluated in the context of the document it is in. Combinators in the rest of the selector are
+not affected, so `#!css iframe > p:dir(ltr)` will still cross the `#!html <iframe>` boundary to find the `#!html <p>`,
+but the `#!html <p>` will get its direction from the document it is in.
 
 With all of this said, if your selectors have issues with `#!html <iframe>` elements, it is most likely because
 `#!html <iframe>` elements are handled differently by different parsers. `html.parser` will usually parse

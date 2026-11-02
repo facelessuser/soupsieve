@@ -47,6 +47,13 @@ soup.select(':any-link')
 Selects any `#!html <input type="radio"/>`, `#!html <input type="checkbox"/>`, or `#!html <option>` element (in a
 `#!html <select>` element) that is checked or toggled to an on state.
 
+Like in a browser, only one radio button can be checked in a radio button group, so if more than one has the `checked`
+attribute, only the last one matches. A group is made up of the radio buttons with the same `name` and the same form.
+
+The same is true of `#!html <option>` elements with the `selected` attribute in a `#!html <select>`, unless it has the
+`multiple` attribute. If none are selected, and the `#!html <select>` shows a single option, the first `#!html <option>`
+that is not disabled is matched.
+
 /// tab | Syntax
 ```css
 :checked
@@ -90,6 +97,9 @@ soup.select(':checked')
 
 Selects any form element that is the default among a group of related elements, including: `#!html <button>`,
 `#!html <input type="checkbox">`, `#!html <input type="radio">`, `#!html <option>` elements.
+
+The default `#!html <button>` of a form is the first submit button that belongs to it, which can be outside of the form
+if it refers to the form with the `form` attribute.
 
 /// tab | Syntax
 ```css
@@ -255,6 +265,10 @@ soup.select('input:disabled')
 ## `#!css :empty`:material-flask:{: title="Experimental" data-md-color-primary="purple" .icon} {:#:empty}
 
 Selects elements that have no children and no text (whitespace is ignored).
+
+> [!note]
+> Ignoring whitespace is what the Selectors Level 4 draft specifies, and the behavior is intentional, but browsers still
+> follow the older definition in which whitespace prevents an element from being empty.
 
 /// tab | Syntax
 ```css
@@ -530,8 +544,8 @@ Selects all form elements whose are in an indeterminate state.
 An element is considered indeterminate if:
 
 -   The element is of type `#!html <input type="checkbox"/>` and the `indeterminate` attribute is set.
--   The element is of type `#!html <input type="radio"/>` and all other radio controls with the same name are not
-    selected.
+-   The element is of type `#!html <input type="radio"/>` and all other radio controls with the same name and form
+    (including the form specified by the `form` attribute) are not selected.
 -   The element is of type `#!html <progress>` with no value.
 
 /// tab | Syntax
@@ -1271,7 +1285,8 @@ soup.select('details:open')
 ## `#!css :optional`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:optional}
 
 Selects any `#!html <input>`, `#!html <select>`, or `#!html <textarea>` element that does not have the `required`
-attribute set on it.
+attribute set on it. As the HTML specification does not list `#!html <button>`, it is not matched, even though some
+browsers do.
 
 /// tab | Syntax
 ```css
@@ -1457,6 +1472,8 @@ soup.select(':placeholder-shown')
 
 Selects elements (such as `#!html <input>` or `#!html <textarea>`) that are *not* editable by the user. This does not
 just apply to form elements with `readonly` set, but it applies to **any** element that cannot be edited by the user.
+As the HTML specification states, this is only for HTML elements, so SVG and MathML elements are not matched, even
+though some browsers do.
 
 /// tab | Syntax
 ```css
@@ -1497,7 +1514,8 @@ soup.select('body :read-only')
 Selects elements (such as `#!html <input>` or `#!html <textarea>`) that are editable by the user. This does not just
 apply to form elements as it applies to **any** element that can be edited by the user, such as a `#!html <p>` element
 with `contenteditable` set on it, and the elements inside it unless a nearer `contenteditable="false"` turns editing
-off.
+off. `contenteditable` only applies to HTML elements, so it is ignored on elements such as those in SVG and MathML, but
+this requires a parser that provides namespaces.
 
 /// tab | Syntax
 ```css

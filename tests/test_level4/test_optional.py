@@ -60,3 +60,19 @@ class TestOptional(util.TestCase):
             ['1', '2', '3', '4', '5', '6', '7'],
             flags=util.HTML
         )
+
+    def test_optional_button(self):
+        """Test that a `button` is not optional, as `required` does not apply to it (browsers do not agree on this)."""
+
+        markup = """
+        <button id="1"></button>
+        <button id="2" type="submit"></button>
+        <button id="3" required></button>
+        """
+
+        self.assert_selector(
+            markup,
+            ":optional",
+            [],
+            flags=util.HTML
+        )

@@ -81,6 +81,7 @@ pytest
 recurse
 recursing
 regex
+selectedness
 sublicense
 substring
 subtag
@@ -91,6 +92,7 @@ traceback
 tuple
 tuples
 un
+unchecks
 unclosed
 unescaped
 unmatchable

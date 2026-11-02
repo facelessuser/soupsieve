@@ -397,7 +397,7 @@ class TestTemplate(util.TestCase):
             self.assertEqual(self.ids(sv.select('p', soup.template, flags=flags)), ['2'])
             self.assertFalse(sv.match('svg p', soup.p, flags=flags))
 
-    @util.skip_no_lxml
+    @util.requires_lxml
     def test_xhtml(self):
         """Test that the `template` boundary applies to XHTML, where names are case sensitive."""
 
@@ -419,7 +419,7 @@ class TestTemplate(util.TestCase):
             self.assertEqual(self.ids(sv.select('p', soup.find(id='1'), flags=flags)), ['2'])
             self.assertEqual(self.ids(sv.select('p', soup.find(id='3'), flags=flags)), ['4'])
 
-    @util.skip_no_lxml
+    @util.requires_lxml
     def test_not_html(self):
         """Test that an element named `template` in XML has normal children."""
 
