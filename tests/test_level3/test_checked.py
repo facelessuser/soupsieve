@@ -278,7 +278,7 @@ class TestChecked(util.TestCase):
         )
 
     def test_radio_group_iframe(self):
-        """Test that the contents of an `iframe` are not in the same tree as its parent document."""
+        """Test that the radio buttons in an `iframe` are in the same radio button group as those outside it."""
 
         soup = self.soup('<input type="radio" name="a" id="1" checked><iframe></iframe>', 'html.parser')
         for value in ('2', '3'):
@@ -286,10 +286,7 @@ class TestChecked(util.TestCase):
                 soup.new_tag('input', attrs={'type': 'radio', 'name': 'a', 'id': value, 'checked': ''})
             )
 
-        self.assertEqual(
-            sorted(el['id'] for el in sv.select(':checked', soup)),
-            ['1', '3']
-        )
+        self.assertEqual([el['id'] for el in sv.select(':checked', soup)], ['3'])
 
     def test_radio_group_template(self):
         """Test that the contents of a `template` are all checked as they never become connected."""
@@ -626,12 +623,12 @@ class TestChecked(util.TestCase):
         )
 
     def test_option_iframe(self):
-        """Test that an option in an `iframe` does not belong to a `select` outside of it."""
+        """Test that an option in an `iframe` belongs to the `select` around it."""
 
         soup = self.soup('<select><option id="1"></option><iframe></iframe></select>', 'html.parser')
         soup.iframe.append(soup.new_tag('option', attrs={'id': '2', 'selected': ''}))
 
-        self.assertEqual([el['id'] for el in sv.select(':checked', soup)], ['1', '2'])
+        self.assertEqual([el['id'] for el in sv.select(':checked', soup)], ['2'])
 
     def test_option_template(self):
         """Test that a `select` in a `template` selects options, as this does not require being connected."""

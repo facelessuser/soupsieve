@@ -159,17 +159,6 @@ class _DocumentNav:
 
         return el is not None and bool(el._is_xml)
 
-    def is_iframe(self, el: bs4.Tag | None) -> bool:
-        """Check if element is an `iframe`."""
-
-        if el is None:  # pragma: no cover
-            return False
-
-        return bool(
-            ((el.name if self.is_xml_tree(el) else util.lower(el.name)) == 'iframe') and
-            self.is_html_tag(el)  # type: ignore[attr-defined]
-        )
-
     def is_template(self, el: bs4.Tag) -> bool:
         """
         Check if element is an HTML `template`.
@@ -187,49 +176,34 @@ class _DocumentNav:
         )
 
     def is_root(self, el: bs4.Tag) -> bool:
-        """
-        Return whether element is a root element.
+        """Return whether element is the root of the tree (which we have already pre-calculated)."""
 
-        We check that the element is the root of the tree (which we have already pre-calculated),
-        and we check if it is the root element under an `iframe`.
-        """
+        return bool(self.root and self.root is el)  # type: ignore[attr-defined]
 
-        root = self.root and self.root is el  # type: ignore[attr-defined]
-        if not root:
-            parent = self.get_parent(el)
-            root = parent is not None and self.is_html and self.is_iframe(parent)  # type: ignore[attr-defined]
-        return root
-
-    def has_contents(self, el: bs4.Tag | None, no_iframe: bool, template_contents: bool) -> bool:
+    def has_contents(self, el: bs4.Tag | None, template_contents: bool) -> bool:
         """Check if the contents of an element should be navigated."""
 
-        return (
-            el is not None and
-            (not no_iframe or not self.is_iframe(el)) and
-            (template_contents or not self.is_template(el))
-        )
+        return el is not None and (template_contents or not self.is_template(el))
 
     def get_contents(
         self,
         el: bs4.Tag | None,
-        no_iframe: bool = False,
         template_contents: bool = False
     ) -> Iterator[bs4.element.PageElement]:
         """Get contents or contents in reverse."""
 
-        if self.has_contents(el, no_iframe, template_contents):
+        if self.has_contents(el, template_contents):
             yield from cast('bs4.Tag', el).contents
 
     def get_tag_children(
         self,
         el: bs4.Tag | None,
         start: int | None = None,
-        reverse: bool = False,
-        no_iframe: bool = False
+        reverse: bool = False
     ) -> Iterator[bs4.Tag]:
         """Get tag children."""
 
-        return self.get_children(el, start, reverse, True, no_iframe)
+        return self.get_children(el, start, reverse, True)
 
     @overload
     def get_children(
@@ -238,7 +212,6 @@ class _DocumentNav:
         start: int | None = None,
         reverse: bool = False,
         tags: Literal[True] = ...,
-        no_iframe: bool = False,
         template_contents: bool = False
     ) -> Iterator[bs4.Tag]:
         ...
@@ -250,7 +223,6 @@ class _DocumentNav:
         start: int | None = None,
         reverse: bool = False,
         tags: Literal[False] = ...,
-        no_iframe: bool = False,
         template_contents: bool = False
     ) -> Iterator[bs4.element.PageElement]:
         ...
@@ -261,12 +233,11 @@ class _DocumentNav:
         start: int | None = None,
         reverse: bool = False,
         tags: Literal[True] | Literal[False] = False,
-        no_iframe: bool = False,
         template_contents: bool = False
     ) -> Iterator[bs4.element.PageElement]:
         """Get children."""
 
-        if el is not None and self.has_contents(el, no_iframe, template_contents):
+        if el is not None and self.has_contents(el, template_contents):
             last = len(el.contents) - 1
             if start is None:
                 index = last if reverse else 0
@@ -284,20 +255,18 @@ class _DocumentNav:
     def get_tag_descendants(
         self,
         el: bs4.Tag | None,
-        no_iframe: bool = False,
         template_contents: bool = False
     ) -> Iterator[bs4.Tag]:
         """Specifically get tag descendants."""
 
         yield from self.get_descendants(  # type: ignore[misc]
-            el, tags=True, no_iframe=no_iframe, template_contents=template_contents
+            el, tags=True, template_contents=template_contents
         )
 
     def get_descendants(
         self,
         el: bs4.Tag | None,
         tags: bool = False,
-        no_iframe: bool = False,
         template_contents: bool = False
     ) -> Iterator[bs4.element.PageElement]:
         """
@@ -306,7 +275,7 @@ class _DocumentNav:
         `template_contents` only allows entering `el`, any `template` found within it is still not entered.
         """
 
-        if el is not None and self.has_contents(el, no_iframe, template_contents):
+        if el is not None and self.has_contents(el, template_contents):
             next_good = None
             for child in el.descendants:
 
@@ -316,7 +285,7 @@ class _DocumentNav:
                     next_good = None
 
                 if isinstance(child, bs4.Tag):
-                    if (no_iframe and self.is_iframe(child)) or self.is_template(child):
+                    if self.is_template(child):
                         if child.next_sibling is not None:
                             next_good = child.next_sibling
                         else:
@@ -337,15 +306,12 @@ class _DocumentNav:
     def get_parent(
         self,
         el: bs4.Tag | None,
-        no_iframe: bool = False,
         no_doc: bool = True,
         no_template: bool = True
     ) -> bs4.Tag | None:
         """Get parent."""
 
         parent = el.parent if el is not None else None
-        if no_iframe and parent is not None and self.is_iframe(parent):  # pragma: no cover
-            parent = None
         if no_template and parent is not None and self.is_template(parent):
             parent = None
         if no_doc and self.is_doc(parent):
@@ -467,21 +433,21 @@ class _DocumentNav:
             classes = RE_NOT_WS.findall(classes)
         return cast(Sequence[str], classes)
 
-    def get_text(self, el: bs4.Tag, no_iframe: bool = False) -> str:
+    def get_text(self, el: bs4.Tag) -> str:
         """Get text."""
 
         return ''.join(
             [
-                node for node in self.get_descendants(el, no_iframe=no_iframe)  # type: ignore[misc]
+                node for node in self.get_descendants(el)  # type: ignore[misc]
                 if self.is_content_string(node)
             ]
         )
 
-    def get_own_text(self, el: bs4.Tag, no_iframe: bool = False) -> list[str]:
+    def get_own_text(self, el: bs4.Tag) -> list[str]:
         """Get Own Text."""
 
         return [
-            node for node in self.get_contents(el, no_iframe=no_iframe) if self.is_content_string(node)  # type: ignore[misc]
+            node for node in self.get_contents(el) if self.is_content_string(node)  # type: ignore[misc]
         ]
 
 
@@ -646,7 +612,6 @@ class CSSMatch(_DocumentNav):
         self.namespaces: ct.Namespaces | dict[str, str] = {} if namespaces is None else namespaces
         self.flags = flags
         self.enable_cache = not bool(self.flags & util.NOCACHE)
-        self.iframe_restrict = False
         self.nth_cache: dict[Hashable, list[int]] = {}
         self.sib_cache: dict[Hashable, int] = {}
         self.dir_cache: dict[int, int] = {}
@@ -742,10 +707,6 @@ class CSSMatch(_DocumentNav):
 
                 # Analyze child text nodes
                 if self.is_tag(node):
-
-                    # Elements in an `iframe` belong to another document, though text directly in it does not.
-                    if self.is_iframe(self.get_parent(node)):
-                        continue
 
                     # Avoid analyzing certain elements specified in the specification. This only applies
                     # to HTML elements: the text of others (SVG, MathML, etc.) is analyzed like any other.
@@ -1038,10 +999,10 @@ class CSSMatch(_DocumentNav):
 
         if relation[0].rel_type == REL_PARENT:
             parent: bs4.Tag | None = el
-            while not found and parent and (parent := self.get_parent(parent, no_iframe=self.iframe_restrict)):
+            while not found and parent and (parent := self.get_parent(parent)):
                 found = parent is not None and (yield parent, relation)
         elif relation[0].rel_type == REL_CLOSE_PARENT:
-            parent = self.get_parent(el, no_iframe=self.iframe_restrict)
+            parent = self.get_parent(el)
             found = parent is not None and (yield parent, relation)
         elif relation[0].rel_type == REL_SIBLING:
             if self.enable_cache:
@@ -1068,7 +1029,7 @@ class CSSMatch(_DocumentNav):
             children: Callable[..., Iterator[bs4.Tag]] = self.get_tag_descendants
         else:
             children = self.get_tag_children
-        for child in children(parent, no_iframe=self.iframe_restrict):
+        for child in children(parent):
             if (yield child, relation):
                 match = True
                 break
@@ -1307,7 +1268,7 @@ class CSSMatch(_DocumentNav):
             for text in contain_list.text:
                 if contain_list.own:
                     if own_content is None:
-                        own_content = self.get_own_text(el, no_iframe=self.is_html)
+                        own_content = self.get_own_text(el)
                     for c in own_content:
                         if text in c:
                             found = True
@@ -1316,7 +1277,7 @@ class CSSMatch(_DocumentNav):
                         break
                 else:
                     if content is None:
-                        content = self.get_text(el, no_iframe=self.is_html)
+                        content = self.get_text(el)
                     if text in content:
                         found = True
                         break
@@ -1325,13 +1286,13 @@ class CSSMatch(_DocumentNav):
         return match
 
     def get_tree(self, el: bs4.Tag) -> bs4.Tag:
-        """Get the top of the tree that an element is in: its document, `iframe`, or `template`."""
+        """Get the top of the tree that an element is in: its document or `template`."""
 
         top = el
         parent = self.get_parent(top, no_doc=False, no_template=False)
         while parent is not None:
             top = parent
-            if self.is_iframe(top) or self.is_template(top):
+            if self.is_template(top):
                 break
             parent = self.get_parent(top, no_doc=False, no_template=False)
         return top
@@ -1349,7 +1310,7 @@ class CSSMatch(_DocumentNav):
             v not in ('button', 'reset') and
             self.get_attribute_by_name(el, 'command') is None and
             self.get_attribute_by_name(el, 'commandfor') is None and
-            self.get_tag(self.get_parent(el, no_iframe=True)) != 'select'
+            self.get_tag(self.get_parent(el)) != 'select'
         )
 
     def get_forms(self, tree: bs4.Tag) -> TreeForms:
@@ -1358,7 +1319,7 @@ class CSSMatch(_DocumentNav):
 
         A form owner is the form that the `form` attribute refers to, if there is one, otherwise the nearest
         ancestor form. The attribute is only used by elements connected to a document, which the contents of
-        a `template` are not. An `iframe` or `template` holds its own tree, so they are not entered.
+        a `template` are not. A `template` holds its own tree, so it is not entered.
 
         This requires a pass through the whole tree as the `form` attribute can refer to any form, so it is
         cached instead of searching the tree again for every element.
@@ -1402,7 +1363,7 @@ class CSSMatch(_DocumentNav):
                     form = el
                 elif name in ('input', 'button'):
                     controls.append((el, form))
-            stack.extend((child, form) for child in self.get_tag_children(el, reverse=True, no_iframe=True))
+            stack.extend((child, form) for child in self.get_tag_children(el, reverse=True))
 
         forms = TreeForms({}, {}, {})
         connected = not self.is_template(tree)
@@ -1486,7 +1447,7 @@ class CSSMatch(_DocumentNav):
 
         options: list[tuple[bs4.Tag, bool]] = []
         stack: list[tuple[bs4.Tag, bool | None]] = [
-            (el, None) for el in self.get_tag_children(select, reverse=True, no_iframe=True)
+            (el, None) for el in self.get_tag_children(select, reverse=True)
         ]
         while stack:
             el, group = stack.pop()
@@ -1501,7 +1462,7 @@ class CSSMatch(_DocumentNav):
                 continue
             if name == 'optgroup':
                 group = self.get_attribute_by_name(el, 'disabled') is not None
-            stack.extend((child, group) for child in self.get_tag_children(el, reverse=True, no_iframe=True))
+            stack.extend((child, group) for child in self.get_tag_children(el, reverse=True))
 
         marked = [el for el, _ in options if self.get_attribute_by_name(el, 'selected') is not None]
         if self.get_attribute_by_name(select, 'multiple') is None:
@@ -1522,9 +1483,9 @@ class CSSMatch(_DocumentNav):
     def match_checked_option(self, el: bs4.Tag) -> bool:
         """Match a selected option. Without a `select`, an option is only selected by its `selected` attribute."""
 
-        parent = self.get_parent(el, no_iframe=True)
+        parent = self.get_parent(el)
         while parent is not None and not (self.get_tag(parent) == 'select' and self.is_html_tag(parent)):
-            parent = self.get_parent(parent, no_iframe=True)
+            parent = self.get_parent(parent)
 
         selected = self.get_options(parent).get(id(el)) if parent is not None else None
         return self.get_attribute_by_name(el, 'selected') is not None if selected is None else selected
@@ -1562,7 +1523,7 @@ class CSSMatch(_DocumentNav):
             if found_lang is None:
                 found_lang = svg_lang
             last = parent
-            parent = self.get_parent(parent, no_iframe=self.is_html)
+            parent = self.get_parent(parent)
 
             if parent is None:
                 root = last
@@ -1582,7 +1543,7 @@ class CSSMatch(_DocumentNav):
             found = False
             for tag in ('html', 'head'):
                 found = False
-                for child in self.get_tag_children(parent, no_iframe=self.is_html):
+                for child in self.get_tag_children(parent):
                     if self.get_tag(child) == tag and self.is_html_tag(child):
                         found = True
                         parent = child
@@ -1673,7 +1634,7 @@ class CSSMatch(_DocumentNav):
                 if ((is_input and itype not in NON_AUTO_DIR_INPUT_TYPES) or is_textarea) and direction == 0:
                     if is_textarea:
                         value = ''.join(
-                            node for node in self.get_contents(el, no_iframe=True)  # type: ignore[misc]
+                            node for node in self.get_contents(el)  # type: ignore[misc]
                             if self.is_content_string(node)
                         )
                     else:
@@ -1693,7 +1654,7 @@ class CSSMatch(_DocumentNav):
             # Match parents direction. There may be no parent element, and not just for the root:
             # a fragment can have many top level elements, and a `template` has its own contents.
             # Without one, assume left to right.
-            parent = self.get_parent(el, no_iframe=True)
+            parent = self.get_parent(el)
             if parent is None:
                 return ct.SEL_DIR_LTR
             el = parent
@@ -1802,7 +1763,7 @@ class CSSMatch(_DocumentNav):
                     return True
                 if state == 'false':
                     return False
-            node = self.get_parent(node, no_iframe=True)
+            node = self.get_parent(node)
         return False
 
     def match_selectors(self, el: bs4.Tag, selectors: ct.SelectorList) -> bool:
@@ -1852,9 +1813,7 @@ class CSSMatch(_DocumentNav):
         # Internal selector lists that use the HTML flag, will automatically get the `html` namespace.
         if is_html:
             namespaces = self.namespaces
-            iframe_restrict = self.iframe_restrict
             self.namespaces = {'html': NS_XHTML}
-            self.iframe_restrict = True
 
         if not is_html or self.is_html:
             for selector in selectors:
@@ -1930,7 +1889,6 @@ class CSSMatch(_DocumentNav):
         # Restore actual namespaces being used for external selector lists
         if is_html:
             self.namespaces = namespaces
-            self.iframe_restrict = iframe_restrict
 
         yield match
 

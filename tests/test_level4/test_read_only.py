@@ -133,9 +133,10 @@ class TestReadOnly(util.TestCase):
         )
 
     def test_read_only_iframe(self):
-        """Test that the contents of an `iframe` do not inherit `contenteditable`, as they are in another document."""
+        """Test that the contents of an `iframe` inherit `contenteditable`."""
 
         soup = self.soup('<div id="0" contenteditable><iframe id="1"></iframe></div>', 'html.parser')
         soup.iframe.append(soup.new_tag('p', attrs={'id': '2'}))
 
-        self.assertEqual([el['id'] for el in sv.select(':read-only', soup)], ['2'])
+        self.assertEqual(sv.select('[id]:read-only', soup), [])
+        self.assertTrue(sv.match(':read-write', soup.p))

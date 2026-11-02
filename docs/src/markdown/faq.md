@@ -17,6 +17,8 @@ feature that Soup Sieve cannot/will not support, see [Beautiful Soup Differences
 
 ## How does `#!html <template>` handling work? {#how-does-template-handling-work}
 
+> [!new] New in 4.0
+
 The contents of an HTML `#!html <template>` are not part of the document. They are held for later use, and in a web
 browser, they are kept in a separate document fragment that is available from the `content` property of the element.
 Soup Sieve treats them the same way: selectors do not descend into a `#!html <template>`, and elements inside one can't
@@ -52,38 +54,40 @@ has normal children, but only parsers that provide namespaces can make that dist
 
 ## How does `#!html <iframe>` handling work? {#how-does-iframe-handling-work}
 
-> [!note]
-> Recent versions of Python's `html.parser`, `lxml`, and `html5lib` all seem to escape `iframe` content.
+> [!new] Changed in 4.0
 
-In web browsers, CSS selectors do not usually select content inside an `#!html <iframe>` element if the selector is
-called on an element outside of the `iframe`. Each HTML document is usually encapsulated and CSS selector leakage across
-this `#!html <iframe>` boundary is usually prevented.
+In a web browser, the document that an `#!html <iframe>` displays comes from its `src` or `srcdoc` attribute and is
+kept separately from the document the `#!html <iframe>` is in. It is not the content of the `#!html <iframe>` element,
+and selectors called on the outer document never reach it. Beautiful Soup does not load these documents, so Soup Sieve
+never sees them.
 
-In it's current iteration, Soup Sieve is not aware of the origin of the documents in the `#!html <iframe>`, and Soup
-Sieve will not prevent selectors from crossing these boundaries. Soup Sieve is not used to style documents, but to
-scrape documents. For this reason, it seems to be more helpful to allow selector combinators to cross these boundaries.
+What is between `#!html <iframe>` and `#!html </iframe>` is something else. Browsers parse it as text, and recent
+versions of Python's `html.parser`, `lxml`, and `html5lib` do the same, so in HTML, an `#!html <iframe>` only ever
+contains text. Like in a browser, that text is part of the `#!html <iframe>`: the `#!html <iframe>` is not
+[`#!css :empty`](./selectors/pseudo-classes.md#:empty), the text is used to find the direction of an element with
+`#!html dir="auto"`, and [`#!css :-soup-contains()`](./selectors/pseudo-classes.md#:-soup-contains) sees it.
 
-Soup Sieve isn't entirely unaware of `#!html <iframe>` elements though. In Soup Sieve 1.9.1, it was noticed that some
-pseudo-classes behaved in unexpected ways without awareness to `#!html <iframe>`, this was fixed in 1.9.1.
-Pseudo-classes such as [`#!css :default`](./selectors/pseudo-classes.md#:default),
-[`#!css :indeterminate`](./selectors/pseudo-classes.md#:indeterminate), [`#!css :dir()`](./selectors/pseudo-classes.md#:dir),
-[`:lang()`](./selectors/pseudo-classes.md#:lang), [`#!css :read-write`](./selectors/pseudo-classes.md#:read-write),
-[`#!css :root`](./selectors/pseudo-classes.md#:root), and
-[`#!css :contains()`](./selectors/pseudo-classes.md#:-soup-contains) were given awareness of `#!html <iframe>` elements
-to ensure they behaved properly and returned the expected elements. This doesn't mean that `select` won't return
-elements in an `#!html <iframe>`, but it won't allow something like `#!css :default` to select a `#!html <button>` in an
-`#!html <iframe>` whose parent `#!html <form>` is outside the `#!html <iframe>`. Or better put, a default
-`#!html <button>` will be evaluated in the context of the document it is in. Combinators in the rest of the selector are
-not affected, so `#!css iframe > p:dir(ltr)` will still cross the `#!html <iframe>` boundary to find the `#!html <p>`,
-but the `#!html <p>` will get its direction from the document it is in.
+Older versions of Python may have an `html.parser` that still does not escape this content, in those cases, the raw
+elements under it will be treated like normal children.
 
-With all of this said, if your selectors have issues with `#!html <iframe>` elements, it is most likely because
-`#!html <iframe>` elements are handled differently by different parsers. `html.parser` will usually parse
-`#!html <iframe>` elements as it sees them. `lxml` parser will often remove `#!html <html>` and `#!html <body>` tags of
-an `#!html <iframe>` HTML document. `lxml-xml` will simply ignore the content in a XHTML document. And `html5lib` will
-HTML escape the content of an `#!html <iframe>` making traversal impossible.
+```py play
+from bs4 import BeautifulSoup as bs
+html = """
+<html>
+<head></head>
+<body>
+<div>
+<iframe><p>Frame content</p></iframe>
+</div>
+</body>
+</html>
+"""
+soup = bs(html, 'html.parser')
+print(soup.select('iframe p'))
+print(soup.select('iframe:-soup-contains("<p>")'))
+```
 
-In short, Soup Sieve will return elements from all documents, even `#!html <iframe>` elements. But certain
-pseudo-classes may take into consideration the context of the document they are in. But even with all of this, a
-parser's handling of `#!html <iframe>` elements may make handling its content difficult if it doesn't parse it as HTML
-	elements, or augments its structure.
+Elements only end up inside an `#!html <iframe>` in XHTML, older versions of Python, or when they are added to the tree
+by hand. Browsers treat these as normal children of the `#!html <iframe>`, and so does Soup Sieve. They can be selected
+with combinators like any other element, and they are part of the same document, so they inherit things like the
+language, direction, and editability of the elements around them, and they belong to the forms around them.

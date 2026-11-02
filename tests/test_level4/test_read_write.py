@@ -153,7 +153,7 @@ class TestReadWrite(util.TestCase):
         )
 
     def test_read_write_iframe(self):
-        """Test that the contents of an `iframe` do not inherit `contenteditable`, as they are in another document."""
+        """Test that the contents of an `iframe` inherit `contenteditable`."""
 
         soup = self.soup('<div id="0" contenteditable><iframe id="1"></iframe></div>', 'html.parser')
         div = soup.new_tag('div', attrs={'id': '2'})
@@ -161,4 +161,4 @@ class TestReadWrite(util.TestCase):
         soup.iframe.append(div)
         soup.iframe.append(soup.new_tag('p', attrs={'id': '4', 'contenteditable': ''}))
 
-        self.assertEqual([el['id'] for el in sv.select(':read-write', soup)], ['0', '1', '4'])
+        self.assertEqual([el['id'] for el in sv.select(':read-write', soup)], ['0', '1', '2', '3', '4'])

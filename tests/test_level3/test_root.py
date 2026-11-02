@@ -1,10 +1,6 @@
 """Test root selectors."""
 from .. import util
 import soupsieve as sv
-from bs4 import BeautifulSoup
-import pytest
-
-IFRAME_TEXT = BeautifulSoup('<iframe><div></div></iframe>', 'html.parser').iframe.text == '<div></div>'
 
 
 class TestRoot(util.TestCase):
@@ -69,7 +65,7 @@ class TestRoot(util.TestCase):
         self.assert_selector(
             self.MARKUP_IFRAME,
             ":root",
-            ["root"] if IFRAME_TEXT else ["root", "root2"],
+            ["root"],
             flags=util.PYHTML
         )
 
@@ -89,34 +85,30 @@ class TestRoot(util.TestCase):
         self.assert_selector(
             self.MARKUP_IFRAME,
             ":root div",
-            ["div", "other-div"] if IFRAME_TEXT else ["div", "div2", "other-div"],
+            ["div", "other-div"] if util.PYHTML_ESCAPES_IFRAME else ["div", "div2", "other-div"],
             flags=util.PYHTML
         )
 
         self.assert_selector(
             self.MARKUP_IFRAME,
             ":root > body > div",
-            ["div", "other-div"] if IFRAME_TEXT else ["div", "div2", "other-div"],
+            ["div", "other-div"],
             flags=util.PYHTML
         )
 
-    @pytest.mark.skipif(IFRAME_TEXT, reason="Requires old Python HTML handling")
     def test_iframe(self):
-        """
-        Test that we only count `iframe` as root since the scoped element is the root.
-
-        Not all the parsers treat `iframe` content the same. `html5lib` for instance
-        will escape the content in the `iframe`, so we are just going to test the builtin
-        Python parser.
-        """
+        """Test that the elements in an `iframe` are not a root, even when selecting from the `iframe`."""
 
         soup = self.soup(self.MARKUP_IFRAME, 'html.parser')
+        markup = '<html id="root2"><head></head><body><div id="div2"></div></body></html>'
+        soup.iframe.clear()
+        soup.iframe.append(self.soup(markup, 'html.parser').html.extract())
 
-        ids = [el['id'] for el in sv.select(':root div', soup.iframe.html)]
-        self.assertEqual(sorted(ids), sorted(['div2']))
+        self.assertEqual([el['id'] for el in sv.select(':root', soup)], ['root'])
+        self.assertEqual(sv.select(':root', soup.iframe), [])
+        self.assertEqual([el['id'] for el in sv.select(':root div', soup)], ['div', 'div2', 'other-div'])
+        self.assertEqual([el['id'] for el in sv.select(':root > body > div', soup)], ['div', 'other-div'])
 
-        ids = [el['id'] for el in sv.select(':root > body > div', soup.iframe.html)]
-        self.assertEqual(sorted(ids), sorted(['div2']))
     def test_no_root_double_tag(self):
         """Test when there is no root due to double root tags."""
 

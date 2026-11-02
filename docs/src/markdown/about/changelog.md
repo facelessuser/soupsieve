@@ -10,6 +10,13 @@ icon: lucide/scroll-text
     as `:lang()`, `:disabled`, and `:default`. `select` and `filter` will still reach the contents of a `template` when
     they are called on the `template` itself, for example `soup.template.select('p')`. See the
     [FAQ](../faq.md#how-does-template-handling-work) for more information.
+-   **BREAK**: The contents of an `iframe` are no longer treated as a separate document, as they are not one in a
+    browser. Elements in an `iframe` are normal children, so `:root` does not match them, and `:default`,
+    `:indeterminate`, `:checked`, `:dir()`, `:lang()`, and `:read-write` treat them like any other element. Recent
+    versions of `html.parser`, `lxml`, and `html5lib` all escape the contents of an `iframe` like a browser does, so
+    this mostly affects XHTML, Python versions that still don't escape such content in their specific `html.parser`,
+    and elements added to an `iframe` by hand. `:-soup-contains()` now also includes the escaped text in an `iframe`.
+    See the [FAQ](../faq.md#how-does-iframe-handling-work) for more information.
 -   **NEW**: Update `:disabled` and `:enabled` to treat `option` and `optgroup` elements inside a disabled `select` as
     disabled, following a recent HTML specification update.
 -   **FIX**: Fix the subsequent-sibling combinator and `:has(~ ...)` never matching top level elements of a fragment
@@ -40,8 +47,6 @@ icon: lucide/scroll-text
 -   **FIX**: `:checked` now matches the `option` that a browser would select. Without `multiple`, that is only the
     last `option` with a `selected` attribute in a `select`, and if there are none and the `select` shows a single
     option, the first `option` that is not disabled. `:default` still only considers the `selected` attribute.
--   **FIX**: `:read-write` (and `:read-only`) no longer let the contents of an `iframe` inherit `contenteditable` from
-    outside of the `iframe`, as they are in another document.
 -   **FIX**: Fix `[attribute!=value]` excluding values that only start with the specified value, and in XML documents,
     `type` values that contain a newline.
 -   **FIX**: Match the values of every attribute that the HTML specification lists as ASCII case insensitive (`rel`,

@@ -25,6 +25,10 @@ PYHTML = 0x10
 LXML_HTML = 0x20
 NOCACHE = 0x100
 
+# Like a browser, recent versions of Python's `html.parser` escape the contents of an `iframe`, so it only has text.
+# Older versions parse the contents as elements, which are then normal children of the `iframe`.
+PYHTML_ESCAPES_IFRAME = bs4.BeautifulSoup('<iframe><p></p></iframe>', 'html.parser').iframe.p is None
+
 
 class TestCase(unittest.TestCase):
     """Test case."""

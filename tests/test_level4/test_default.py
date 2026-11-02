@@ -1,9 +1,6 @@
 """Test default selectors."""
 from .. import util
 import soupsieve as sv
-from bs4 import BeautifulSoup
-
-IFRAME_TEXT = BeautifulSoup('<iframe><div></div></iframe>', 'html.parser').iframe.text == '<div></div>'
 
 
 class TestDefault(util.TestCase):
@@ -169,7 +166,7 @@ class TestDefault(util.TestCase):
         self.assert_selector(
             markup,
             ":default",
-            ['d1', 'd3'] if IFRAME_TEXT else ['d1', 'd3', 'd4'],
+            ['d1', 'd3'] if util.PYHTML_ESCAPES_IFRAME else ['d1', 'd2', 'd4'],
             flags=util.PYHTML
         )
 
@@ -470,12 +467,12 @@ class TestDefault(util.TestCase):
         )
 
     def test_form_attribute_iframe(self):
-        """Test that the `form` attribute does not see forms outside an `iframe`."""
+        """Test that the `form` attribute sees forms outside an `iframe`."""
 
         soup = self.soup('<form id="f"></form><iframe></iframe>', 'html.parser')
         soup.iframe.append(soup.new_tag('button', attrs={'form': 'f', 'id': '1'}))
 
-        self.assertEqual(sv.select(':default', soup), [])
+        self.assertEqual([el['id'] for el in sv.select(':default', soup)], ['1'])
 
     def test_form_attribute_template(self):
         """Test that the `form` attribute is ignored in a `template`, whose contents are not connected."""

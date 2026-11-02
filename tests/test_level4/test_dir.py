@@ -2,9 +2,6 @@
 from .. import util
 import soupsieve as sv
 from soupsieve import bidi, SelectorSyntaxError
-from bs4 import BeautifulSoup
-
-IFRAME_TEXT = BeautifulSoup('<iframe><div></div></iframe>', 'html.parser').iframe.text == '<div></div>'
 
 
 class TestDir(util.TestCase):
@@ -243,7 +240,7 @@ class TestDir(util.TestCase):
         self.assert_selector(
             markup,
             "div:dir(rtl)",
-            [] if IFRAME_TEXT else ['2'],
+            [] if util.PYHTML_ESCAPES_IFRAME else ['2'],
             flags=util.PYHTML
         )
 
@@ -461,27 +458,27 @@ class TestDir(util.TestCase):
         )
 
     def test_auto_iframe_elements(self):
-        """Test that `dir="auto"` does not analyze elements in an `iframe`, as they are in another document."""
+        """Test that `dir="auto"` analyzes the elements in an `iframe` like any other."""
 
-        soup = self.soup('<div id="1" dir="auto"><iframe id="2" dir="auto"></iframe>text</div>', 'html.parser')
+        soup = self.soup('<div id="1" dir="auto"><iframe id="2"></iframe>text</div>', 'html.parser')
         for name in ('p', 'span'):
             tag = soup.new_tag(name)
             tag.string = 'עִבְרִית'
             soup.iframe.append(tag)
 
-        self.assertTrue(sv.match(':dir(ltr)', soup.div))
-        self.assertTrue(sv.match(':dir(ltr)', soup.iframe))
+        self.assertTrue(sv.match(':dir(rtl)', soup.div))
+        self.assertTrue(sv.match(':dir(rtl)', soup.iframe))
 
     def test_iframe_top_level_elements(self):
-        """Test that elements directly in an `iframe` do not inherit, even if there are many of them."""
+        """Test that elements directly in an `iframe` inherit its direction."""
 
         soup = self.soup('<div dir="rtl"><iframe></iframe></div>', 'html.parser')
         for name in ('p', 'span'):
             soup.iframe.append(soup.new_tag(name))
 
         self.assertTrue(sv.match(':dir(rtl)', soup.iframe))
-        self.assertTrue(sv.match(':dir(ltr)', soup.p))
-        self.assertTrue(sv.match(':dir(ltr)', soup.span))
+        self.assertTrue(sv.match(':dir(rtl)', soup.p))
+        self.assertTrue(sv.match(':dir(rtl)', soup.span))
 
     def test_top_level_elements(self):
         """Test that elements without a parent element are left to right when there is no single root."""

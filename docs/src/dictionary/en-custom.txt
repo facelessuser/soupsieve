@@ -51,6 +51,7 @@ deprecations
 deregister
 dev
 directionality
+editability
 formatter
 fullscreen
 hashable

@@ -324,14 +324,15 @@ class TestTemplate(util.TestCase):
             self.assertEqual(self.ids(sv.select('div p', el, flags=flags)), ['p'])
 
     def test_iframe_in_template(self):
-        """Test that a document in an `iframe` is contained in the `template` as well."""
+        """Test that the elements in an `iframe` in a `template` are part of the contents."""
 
         soup = self.soup('<template id="t"><iframe></iframe></template>', 'html.parser')
         soup.iframe.append(self.soup('<html><body><p id="1"></p></body></html>', 'html.parser').html.extract())
 
         self.assertEqual(sv.select('p', soup), [])
         self.assertEqual(self.ids(sv.select('p', soup.template)), ['1'])
-        self.assertTrue(sv.match(':root', soup.html))
+        self.assertTrue(sv.match('iframe p', soup.p))
+        self.assertFalse(sv.match('template p', soup.p))
 
     def test_template_in_iframe(self):
         """Test that the contents of a `template` in an `iframe` are not reached."""
