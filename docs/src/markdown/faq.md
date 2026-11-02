@@ -67,8 +67,9 @@ contains text. Like in a browser, that text is part of the `#!html <iframe>`: th
 [`#!css :empty`](./selectors/pseudo-classes.md#:empty), the text is used to find the direction of an element with
 `#!html dir="auto"`, and [`#!css :-soup-contains()`](./selectors/pseudo-classes.md#:-soup-contains) sees it.
 
-Older versions of Python may have an `html.parser` that still does not escape this content, in those cases, the raw
-elements under it will be treated like normal children.
+> [!note]
+> Older versions of parsers may not escape raw HTML under `#!html <iframe>` elements. In those cases, the raw elements
+> under it will be treated like normal children.
 
 ```py play
 from bs4 import BeautifulSoup as bs
@@ -87,7 +88,7 @@ print(soup.select('iframe p'))
 print(soup.select('iframe:-soup-contains("<p>")'))
 ```
 
-Elements only end up inside an `#!html <iframe>` in XHTML, older versions of Python, or when they are added to the tree
-by hand. Browsers treat these as normal children of the `#!html <iframe>`, and so does Soup Sieve. They can be selected
-with combinators like any other element, and they are part of the same document, so they inherit things like the
-language, direction, and editability of the elements around them, and they belong to the forms around them.
+Elements only end up inside an `#!html <iframe>` in XHTML, older versions of a parser, or when they are added to the
+tree by hand. Browsers treat these as normal children of the `#!html <iframe>`, and so does Soup Sieve. They can be
+selected with combinators like any other element, and they are part of the same document, so they inherit things like
+the language, direction, and editability of the elements around them, and they belong to the forms around them.
