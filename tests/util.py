@@ -25,9 +25,18 @@ PYHTML = 0x10
 LXML_HTML = 0x20
 NOCACHE = 0x100
 
-# Like a browser, recent versions of Python's `html.parser` escape the contents of an `iframe`, so it only has text.
-# Older versions parse the contents as elements, which are then normal children of the `iframe`.
-PYHTML_ESCAPES_IFRAME = bs4.BeautifulSoup('<iframe><p></p></iframe>', 'html.parser').iframe.p is None
+
+def escapes_iframe(parser):
+    """Check if a parser escapes the contents of an `iframe`."""
+
+    return bs4.BeautifulSoup('<iframe><p></p></iframe>', parser).iframe.p is None
+
+
+# Like a browser, `html5lib` and recent versions of Python's `html.parser` and `lxml` (`libxml2` 2.14+) escape
+# the contents of an `iframe`, so it only has text. Older versions parse the contents as elements, which are then
+# normal children of the `iframe`. Before `lxml` 7, Windows wheels of `lxml` use an older `libxml2`.
+PYHTML_ESCAPES_IFRAME = escapes_iframe('html.parser')
+LXML_ESCAPES_IFRAME = LXML_PRESENT and escapes_iframe('lxml')
 
 
 class TestCase(unittest.TestCase):

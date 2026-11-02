@@ -33,6 +33,17 @@ class TestIframe(util.TestCase):
     """  # noqa: E501
 
     @staticmethod
+    def iframe_parsers(escapes):
+        """Get the flags of the installed HTML parsers that either escape the contents of an `iframe` or don't."""
+
+        parsers = [(util.PYHTML, util.PYHTML_ESCAPES_IFRAME)]
+        if util.HTML5LIB_PRESENT:
+            parsers.append((util.HTML5, True))
+        if util.LXML_PRESENT:
+            parsers.append((util.LXML_HTML, util.LXML_ESCAPES_IFRAME))
+        return [flags for flags, escaped in parsers if escaped == escapes]
+
+    @staticmethod
     def ids(elements):
         """Get the IDs of the elements."""
 
@@ -71,9 +82,8 @@ class TestIframe(util.TestCase):
     def test_parsers_escape_contents(self):
         """Test that HTML parsers escape the contents of an `iframe`, so it only has text."""
 
-        escaping = (util.HTML5, util.LXML_HTML) + ((util.PYHTML,) if util.PYHTML_ESCAPES_IFRAME else ())
         markup = '<div id="1"><iframe id="2"><p id="3">text</p></iframe></div>'
-        for flags in escaping:
+        for flags in self.iframe_parsers(True):
             self.assert_selector(markup, 'p', [], flags=flags)
             self.assert_selector(markup, 'iframe', ['2'], flags=flags)
             self.assert_selector(markup, 'iframe:empty', [], flags=flags)
@@ -87,16 +97,19 @@ class TestIframe(util.TestCase):
 
         self.assert_selector(markup, '[dir=auto]:dir(rtl)', ['1', '2'], flags=util.HTML)
 
-    @pytest.mark.skipif(util.PYHTML_ESCAPES_IFRAME, reason="requires an `html.parser` that doesn't escape `iframe`")
-    def test_parser_does_not_escape_contents(self):
-        """Test that older versions of Python's `html.parser` parse the contents of an `iframe` as normal children."""
+    def test_parsers_do_not_escape_contents(self):
+        """Test that the contents of an `iframe` are normal children with older parsers that parse them as elements."""
+
+        parsers = self.iframe_parsers(False)
+        if not parsers:
+            pytest.skip("requires a parser that doesn't escape the contents of an `iframe`")
 
         markup = '<div id="1"><iframe id="2"><p id="3">text</p></iframe></div>'
-
-        self.assert_selector(markup, 'iframe > p', ['3'], flags=util.PYHTML)
-        self.assert_selector(markup, 'div p', ['3'], flags=util.PYHTML)
-        self.assert_selector(markup, 'iframe:empty', [], flags=util.PYHTML)
-        self.assert_selector(markup, '[id]:-soup-contains("text")', ['1', '2', '3'], flags=util.PYHTML)
+        for flags in parsers:
+            self.assert_selector(markup, 'iframe > p', ['3'], flags=flags)
+            self.assert_selector(markup, 'div p', ['3'], flags=flags)
+            self.assert_selector(markup, 'iframe:empty', [], flags=flags)
+            self.assert_selector(markup, '[id]:-soup-contains("text")', ['1', '2', '3'], flags=flags)
 
     def test_contents_are_children(self):
         """Test that the elements in an `iframe` are selected like any other children."""
