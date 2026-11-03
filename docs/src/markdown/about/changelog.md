@@ -99,6 +99,8 @@ icon: lucide/scroll-text
     (`hidden`, `range`, `color`, `submit`, `image`, `reset` and `button`). Like in browsers, they match `:optional`.
 -   **FIX**: Cache whether an element is or has a matching ancestor when matching the descendant combinator (`a b`) to
     avoid time that grows with the depth of the document to the power of the number of combinators.
+-   **FIX**: Cache whether an element is or has a matching descendant when matching `:has()` to avoid quadratic time
+    on deeply nested documents.
 
 ## 3.0.4
 
