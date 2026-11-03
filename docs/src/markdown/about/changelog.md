@@ -97,6 +97,8 @@ icon: lucide/scroll-text
 -   **FIX**: Fix `:enabled` and `:disabled` never matching `input` elements with `type="hidden"`.
 -   **FIX**: `:required` no longer matches `input` elements of types the `required` attribute does not apply to
     (`hidden`, `range`, `color`, `submit`, `image`, `reset` and `button`). Like in browsers, they match `:optional`.
+-   **FIX**: Cache whether an element is or has a matching ancestor when matching the descendant combinator (`a b`) to
+    avoid time that grows with the depth of the document to the power of the number of combinators.
 
 ## 3.0.4
 
