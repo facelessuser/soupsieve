@@ -66,3 +66,32 @@ class TestChild(util.TestCase):
         soup = BeautifulSoup("<r><c></c></r>", "html.parser")
         self.assertEqual(soup.select("* > r"), [])
         self.assertEqual(soup.select("* > r:root"), [])
+
+    def test_shared_parent(self):
+        """Test that the result for a parent does not leak into elements that have other parents."""
+
+        markup = """
+        <div id="1"><p id="2"></p><span id="3"></span><span id="4"></span></div>
+        <div id="5"><span id="6"></span><span id="7"></span></div>
+        <section id="8"><p id="9"></p><span id="10"></span></section>
+        """
+
+        for flags in (util.HTML, util.HTML | util.NOCACHE):
+            self.assert_selector(markup, "div:has(> p) > span", ["3", "4"], flags=flags)
+            self.assert_selector(markup, ":has(> p) > span", ["3", "4", "10"], flags=flags)
+            self.assert_selector(markup, "div:not(:has(> p)) > span", ["6", "7"], flags=flags)
+            self.assert_selector(markup, "div > span, div:has(> p) > span", ["3", "4", "6", "7"], flags=flags)
+
+    def test_many_children(self):
+        """Test that the parent is matched once for all of its children."""
+
+        import soupsieve as sv
+        from bs4 import BeautifulSoup
+        from unittest import mock
+
+        n = 64
+        soup = BeautifulSoup("<div>" + "<span></span>" * n + "</div>", "html.parser")
+        match = sv.css_match.CSSMatch._match_selectors
+        with mock.patch.object(sv.css_match.CSSMatch, "_match_selectors", autospec=True, side_effect=match) as patched:
+            self.assertEqual(len(sv.select("div:has(> p) > span", soup)), 0)
+        self.assertLessEqual(patched.call_count, 3 * n)

@@ -1035,7 +1035,19 @@ class CSSMatch(_DocumentNav):
                     found = parent is not None and (yield parent, relation)
         elif relation[0].rel_type == REL_CLOSE_PARENT:
             parent = self.get_parent(el)
-            found = parent is not None and (yield parent, relation)
+            if parent is None:
+                pass
+            elif self.enable_cache:
+                # Siblings share the parent, so cache whether it matches to avoid evaluating it again for every child.
+                # This is inlined, instead of going through `match_ancestor`, as an extra generator is costly on
+                # documents where most parents have a single child and the cache rarely gets a hit.
+                key = (id(parent), id(relation))
+                cached = self.anc_cache.get(key)
+                if cached is None:
+                    cached = self.anc_cache[key] = yield parent, relation
+                found = cached
+            else:
+                found = yield parent, relation
         elif relation[0].rel_type == REL_SIBLING:
             if self.enable_cache:
                 found = yield from self.match_general_sibling(el, relation)

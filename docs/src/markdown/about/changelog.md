@@ -7,6 +7,8 @@ icon: lucide/scroll-text
 
 -   **FIX**: Cache whether an element is or has a matching descendant when matching `:has()` to avoid quadratic time
     on deeply nested documents.
+-   **FIX**: Cache whether the parent matches when matching the child combinator (`a > b`) so it is matched once for
+    all of its children, avoiding quadratic time when the parent is expensive, such as `div:has(> p) > span`.
 
 ## 4.0
 
