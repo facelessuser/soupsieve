@@ -3,7 +3,7 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## Unreleased
+## 4.0.1
 
 -   **FIX**: Cache whether an element is or has a matching descendant when matching `:has()` to avoid quadratic time
     on deeply nested documents.
