@@ -3,6 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## Unreleased
+
+-   **FIX**: Cache whether an element is or has a matching descendant when matching `:has()` to avoid quadratic time
+    on deeply nested documents.
+
 ## 4.0
 
 -   **BREAK**: The contents of an HTML `template` are no longer treated as part of the document. Selectors do not

@@ -166,6 +166,50 @@ class TestHas(util.TestCase):
             soup = BeautifulSoup(html, "html.parser")
             self.assertEqual(len(sv.select(selector, soup)), n)
 
+    def test_shared_descendants(self):
+        """Test that the result for a descendant does not leak into elements that have other descendants."""
+
+        markup = """
+        <section id="1">
+          <div id="2"><p id="3"><span id="4"></span></p></div>
+          <p id="5"></p>
+        </section>
+        <div id="6"><p id="7"><span id="8"></span></p></div>
+        <div id="9"><section id="10"><p id="11"><span id="12"></span></p></section></div>
+        """
+
+        self.assert_selector(markup, "div:has(span)", ["2", "6", "9"], flags=util.HTML | util.NOCACHE)
+        self.assert_selector(markup, "section:has(div)", ["1"], flags=util.HTML | util.NOCACHE)
+        self.assert_selector(markup, "section:has(p)", ["1", "10"], flags=util.HTML | util.NOCACHE)
+        self.assert_selector(markup, "div:has(div)", [], flags=util.HTML | util.NOCACHE)
+        self.assert_selector(markup, ":has(> p)", ["1", "2", "6", "10"], flags=util.HTML | util.NOCACHE)
+        self.assert_selector(markup, "div :not(:has(span))", ["4", "8", "12"], flags=util.HTML | util.NOCACHE)
+        self.assert_selector(
+            markup, "div:has(span), p:has(span)", ["2", "3", "6", "7", "9", "11"], flags=util.HTML | util.NOCACHE
+        )
+        self.assert_selector(markup, "div:has(span):has(+ p)", ["2"], flags=util.HTML | util.NOCACHE)
+
+    def test_many_nested_has(self):
+        """Test that `:has()` searches each descendant once in a deeply nested document."""
+
+        import soupsieve as sv
+        from bs4 import BeautifulSoup
+        from unittest import mock
+
+        n = 32
+        match = sv.css_match.CSSMatch._match_selectors
+        for markup, selector, matches in (
+            ("<div>" * n, "div:has(p)", 0),
+            ("<div>" * n + "<span></span>", "div:has(span)", n),
+            ("<div>" * n, "div:not(:has(p))", n)
+        ):
+            soup = BeautifulSoup(markup, "html.parser")
+            with mock.patch.object(
+                sv.css_match.CSSMatch, "_match_selectors", autospec=True, side_effect=match
+            ) as patched:
+                self.assertEqual(len(sv.select(selector, soup)), matches)
+            self.assertLessEqual(patched.call_count, 5 * n)
+
     def test_strict_has(self):
         """Test strict has behavior."""
 
