@@ -6,6 +6,7 @@ icon: lucide/scroll-text
 ## 4.0.2
 
 -   **FIX**: Fix issue where trailing whitespace and comments can sometimes fail to be consumed properly.
+-   **FIX**: Custom selector names should be checked with ASCII only lowercase.
 
 ## 4.0.1
 

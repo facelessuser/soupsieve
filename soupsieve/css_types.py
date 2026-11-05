@@ -3,6 +3,7 @@ from __future__ import annotations
 from enum import Enum
 import copyreg
 from .pretty import pretty
+from . import util
 from typing import Any, Iterator, Pattern, Iterable, Mapping, TypeVar, overload
 
 __all__ = (
@@ -468,7 +469,7 @@ class CustomSelectors(ImmutableDict[str, SelectorList]):
             if not isinstance(k, str):
                 raise TypeError(f'{self.__class__.__name__} keys must be strings')
             # Validate key
-            k = cp.css_unescape(k).lower()
+            k = util.lower(cp.css_unescape(k))
             if k in self._d:
                 raise KeyError(f'Custom selector {k} was defined twice')
             if cp.RE_CUSTOM.match(k) is None:
