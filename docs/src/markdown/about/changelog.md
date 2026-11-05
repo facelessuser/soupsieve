@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 4.0.2
+
+-   **FIX**: Fix issue where trailing whitespace and comments can sometimes fail to be consumed properly.
+
 ## 4.0.1
 
 -   **FIX**: Cache whether an element is or has a matching descendant when matching `:has()` to avoid quadratic time

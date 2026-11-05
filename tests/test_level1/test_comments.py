@@ -49,3 +49,27 @@ class TestComments(util.TestCase):
             ['1', '4', '5', '6'],
             flags=util.HTML
         )
+
+    def test_comments_itrailing(self):
+        """Test comments trailing."""
+
+        self.assert_selector(
+            self.MARKUP,
+            """
+            span /* ok */
+            """,
+            ['1', '3', '4', '5', '6'],
+            flags=util.HTML
+        )
+
+    def test_comments_complex_trailing(self):
+        """Test complex comments trailing."""
+
+        self.assert_selector(
+            self.MARKUP,
+            """
+            div /* a /* b */ span
+            """,
+            ['1', '3', '4', '5', '6'],
+            flags=util.HTML
+        )

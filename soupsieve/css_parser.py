@@ -220,8 +220,6 @@ RE_NTH = re.compile(fr'(?P<s1>[-+])?+(?P<a>[0-9]++n?+|n)(?:(?<=n){WSC}*+(?P<s2>[
 RE_VALUES = re.compile(fr'(?:(?P<value>{VALUE})|(?P<split>{WSC}*+,{WSC}*+))', re.X)
 # Whitespace checks
 RE_WS = re.compile(WS)
-RE_WS_BEGIN = re.compile(fr'^{WSC}*+')
-RE_WS_END = re.compile(fr'^(?:[ \t]|(?>\n\r|[\n\f\r])|{COMMENTS})*+')
 RE_CUSTOM = re.compile(fr'^{PAT_PSEUDO_CLASS_CUSTOM}$', re.X)
 RE_PSEUDO_CLASS_SPECIAL = re.compile(PAT_PSEUDO_CLASS_SPECIAL, re.I | re.X | re.U)
 RE_PSEUDO_IGNORE = re.compile(PAT_PSEUDO_CLASS, re.X | re.I | re.U)
@@ -359,6 +357,13 @@ class SelectorPattern:
         self.name = name
         self.pattern = pattern
         self._re_pattern: re.Pattern[str] | None = None
+        self._consume_only = False
+
+    @property
+    def consume_only(self) -> bool:
+        """Consume content without processing further."""
+
+        return self._consume_only
 
     @property
     def re_pattern(self) -> re.Pattern[str]:
@@ -380,6 +385,32 @@ class SelectorPattern:
         return self.re_pattern.match(selector, index)
 
 
+class SelectorPatternCombinator(SelectorPattern):
+    """A space might be a combinator or a space, process all combinators except normal white space."""
+
+    def get_name(self) -> str:
+        """Get name."""
+
+        return self.name if not self._consume_only else "whitespace"
+
+    def match(self, selector: str, index: int, flags: int) -> Match[str] | None:
+        """
+        Match the selector.
+
+        If we match at the start or end of the string and have a non-whitespace combinator, the match is bogus.
+        If we are at the start or end and the combinator is white space, then it can be consumed with no further
+        processing.
+        """
+
+        self._consume_only = False
+        m = self.re_pattern.match(selector, index)
+        if m is not None and (m.start(0) == 0 or m.end(0) == len(selector)):
+            if m.group('relation'):
+                return None
+            self._consume_only = True
+        return m
+
+
 class SpecialPseudoPattern(SelectorPattern):
     """Selector pattern."""
 
@@ -393,6 +424,7 @@ class SpecialPseudoPattern(SelectorPattern):
             for pseudo in p[1]:
                 self.patterns[pseudo] = pattern
 
+        self._consume_only = False
         self.matched_name: SelectorPattern | None = None
 
     def get_name(self) -> str:
@@ -796,7 +828,7 @@ class CSSParser:
         SelectorPattern("class", PAT_CLASS),
         SelectorPattern("tag", PAT_TAG),
         SelectorPattern("attribute", PAT_ATTR),
-        SelectorPattern("combine", PAT_COMBINE)
+        SelectorPatternCombinator("combine", PAT_COMBINE)
     )
 
     # Pseudos that expand to selectors
@@ -1474,12 +1506,8 @@ class CSSParser:
     def selector_iter(self, pattern: str) -> Iterator[tuple[str, Match[str]]]:
         """Iterate selector tokens."""
 
-        # Ignore whitespace and comments at start and end of pattern
-        m = RE_WS_BEGIN.search(pattern)
-        index = m.end(0) if m else 0
-        m = RE_WS_END.search(pattern[::-1])
-        offset = m.end(0) if m else 0
-        end = len(pattern) - (1 + offset)
+        index = 0
+        end = len(pattern) - 1
 
         if self.debug:  # pragma: no cover
             print(f'## PARSING: {pattern!r}')
@@ -1492,6 +1520,8 @@ class CSSParser:
                     if self.debug:  # pragma: no cover
                         print(f"TOKEN: '{name}' --> {m.group(0)!r} at position {m.start(0)}")
                     index = m.end(0)
+                    if v.consume_only:
+                        continue
                     yield name, m
                     break
             if m is None:
