@@ -911,32 +911,32 @@ class CSSParser:
             # Value start with
             # `^=` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
             value = r'(?!)' if not value else re.escape(value)
-            pattern = re.compile(r'^%s.*' % value, flags)
+            pattern = re.compile(fr'^{value}.*', flags)
         elif op.startswith('$'):
             # Value ends with
             # `$=` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
             value = r'(?!)' if not value else re.escape(value)
-            pattern = re.compile(r'.*?%s$' % value, flags)
+            pattern = re.compile(fr'.*?{value}$', flags)
         elif op.startswith('*'):
             # Value contains
             # `*=` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
             value = r'(?!)' if not value else re.escape(value)
-            pattern = re.compile(r'.*?%s.*' % value, flags)
+            pattern = re.compile(fr'.*?{value}.*', flags)
         elif op.startswith('~'):
             # Value contains word within space separated list
             # `*~` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
             value = r'(?!)' if not value or RE_WS.search(value) else re.escape(value)
-            pattern = re.compile(r'.*?(?:(?<=^)|(?<=[ \t\r\n\f]))%s(?=(?:[ \t\r\n\f]|$)).*' % value, flags)
+            pattern = re.compile(fr'.*?(?:(?<=^)|(?<=[ \t\r\n\f])){value}(?=(?:[ \t\r\n\f]|$)).*', flags)
         elif op.startswith('|'):
             # Value starts with word in dash separated list
-            pattern = re.compile(r'^%s(?:-.*)?$' % re.escape(value), flags)
+            pattern = re.compile(fr'^{re.escape(value)}(?:-.*)?$', flags)
         elif op.startswith('!'):
             # Value does not matches
-            pattern = re.compile(r'^(?!%s$)' % re.escape(value), flags)
+            pattern = re.compile(fr'^(?!{re.escape(value)}$)', flags)
             inverse = True
         else:
             # Value matches
-            pattern = re.compile(r'^%s$' % re.escape(value), flags)
+            pattern = re.compile(fr'^{re.escape(value)}$', flags)
 
         if html_insensitive and pattern:
             pattern2 = re.compile(pattern.pattern, re.DOTALL)
