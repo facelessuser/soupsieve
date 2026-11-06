@@ -14,7 +14,7 @@ import threading
 
 __all__ = ('SelectorSyntaxError',)
 
-RE_LOCK = threading.Lock()
+RE_LOCK = threading.RLock()
 SEL_LOCK = threading.RLock()
 
 UNICODE_REPLACEMENT_CHAR = 0xFFFD
@@ -1514,16 +1514,24 @@ class CSSParser:
         while index <= end:
             m = None
             for v in self.CSS_TOKENS:
-                m = v.match(pattern, index, self.flags)
-                if m:
-                    name = v.get_name()
-                    if self.debug:  # pragma: no cover
-                        print(f"TOKEN: '{name}' --> {m.group(0)!r} at position {m.start(0)}")
-                    index = m.end(0)
-                    if v.consume_only:
-                        continue
-                    yield name, m
-                    break
+                # Tokens are shared across concurrent parses, and some communicate per-match
+                # state through instance attributes. The match and the state read must be
+                # atomic, or another thread's parse can change that state in between and
+                # corrupt this parse. `RE_LOCK` is reentrant, as `match` uses it as well.
+                with RE_LOCK:
+                    m = v.match(pattern, index, self.flags)
+                    if m:
+                        name = v.get_name()
+                        if self.debug:  # pragma: no cover
+                            print(f"TOKEN: '{name}' --> {m.group(0)!r} at position {m.start(0)}")
+                        index = m.end(0)
+                        consume_only = v.consume_only
+                if m is None:
+                    continue
+                if consume_only:
+                    continue
+                yield name, m
+                break
             if m is None:
                 c = pattern[index]
                 # If the character represents the start of one of the known selector types,
