@@ -7,6 +7,11 @@ icon: lucide/scroll-text
 
 -   **FIX**: Fix issue where trailing whitespace and comments can sometimes fail to be consumed properly.
 -   **FIX**: Custom selector names should be checked with ASCII only lowercase.
+-   **FIX**: Cache the language, the `contenteditable` state, the `select` of an `option`, and the tree that an element
+    is in, as found from its ancestors, when matching `:lang()`, `:read-write`, `:read-only`, `:checked`, `:default`,
+    and `:indeterminate` to avoid quadratic time on deeply nested documents.
+-   **FIX**: Fix `:lang('')` matching elements without a language, other than the first one checked, in a document
+    whose `head` has no `content-language` `meta`.
 
 ## 4.0.1
 
