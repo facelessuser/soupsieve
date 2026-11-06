@@ -206,7 +206,8 @@ PAT_PSEUDO_LANG = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*+,{WSC
 # Pseudo class direction (`:dir(ltr)`)
 PAT_PSEUDO_DIR = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<dir>{IDENTIFIER}){WSC}*+\)'
 # Combining characters (`>`, `~`, ` `, `+`, `,`)
-PAT_COMBINE = fr'{COMMENTS}*+(?={WS}|[,+>~]){WSC}*+(?P<relation>[,+>~])?+{WSC}*+'
+# A comment may end the pattern directly after a selector (`div/*c*/`), hence `$` in the lookahead.
+PAT_COMBINE = fr'{COMMENTS}*+(?={WS}|[,+>~]|$){WSC}*+(?P<relation>[,+>~])?+{WSC}*+'
 # Extra: Contains (`:contains(text)`)
 PAT_PSEUDO_CONTAINS = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*+,{WSC}*+{VALUE})*+){WSC}*+\)'
 
@@ -220,6 +221,8 @@ RE_NTH = re.compile(fr'(?P<s1>[-+])?+(?P<a>[0-9]++n?+|n)(?:(?<=n){WSC}*+(?P<s2>[
 RE_VALUES = re.compile(fr'(?:(?P<value>{VALUE})|(?P<split>{WSC}*+,{WSC}*+))', re.X)
 # Whitespace checks
 RE_WS = re.compile(WS)
+# Comments (with whitespace) at the very start of a pattern, even when a selector directly follows
+RE_LEADING_COMMENTS = re.compile(fr'(?:{WSC})++', re.I | re.X | re.U)
 RE_CUSTOM = re.compile(fr'^{PAT_PSEUDO_CLASS_CUSTOM}$', re.X)
 RE_PSEUDO_CLASS_SPECIAL = re.compile(PAT_PSEUDO_CLASS_SPECIAL, re.I | re.X | re.U)
 RE_PSEUDO_IGNORE = re.compile(PAT_PSEUDO_CLASS, re.X | re.I | re.U)
@@ -404,6 +407,13 @@ class SelectorPatternCombinator(SelectorPattern):
 
         self._consume_only = False
         m = self.re_pattern.match(selector, index)
+        if m is None and index == 0:
+            # Mid-pattern, a comment must be followed by whitespace or a combinator, but at the very
+            # start of a pattern a comment may directly precede a selector, such as `/* comment */div`.
+            m = RE_LEADING_COMMENTS.match(selector, index)
+            if m is not None:
+                self._consume_only = True
+                return m
         if m is not None and (m.start(0) == 0 or m.end(0) == len(selector)):
             if m.group('relation'):
                 return None

@@ -3,6 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## Unreleased
+
+-   **FIX**: A comment no longer fails to parse when it directly abuts a selector without whitespace in between,
+    such as a leading `/* comment */div` or a trailing `div/* comment */`, restoring the pre-4.0.2 behavior.
+
 ## 4.0.2
 
 -   **FIX**: Fix issue where trailing whitespace and comments can sometimes fail to be consumed properly.

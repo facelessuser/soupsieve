@@ -50,6 +50,56 @@ class TestComments(util.TestCase):
             flags=util.HTML
         )
 
+    def test_comments_leading(self):
+        """Test a comment directly leading a selector."""
+
+        self.assert_selector(
+            self.MARKUP,
+            """/* Start comment */span""",
+            ['1', '3', '4', '5', '6'],
+            flags=util.HTML
+        )
+
+    def test_comments_leading_multiple(self):
+        """Test comments directly leading a selector."""
+
+        self.assert_selector(
+            self.MARKUP,
+            """/*a*//*b*/span""",
+            ['1', '3', '4', '5', '6'],
+            flags=util.HTML
+        )
+
+    def test_comments_leading_combinator(self):
+        """Test a comment directly leading a selector with combinators."""
+
+        self.assert_selector(
+            self.MARKUP,
+            """/* comment */div span""",
+            ['1', '3', '4', '5', '6'],
+            flags=util.HTML
+        )
+
+    def test_comments_trailing_no_space(self):
+        """Test a comment directly trailing a selector."""
+
+        self.assert_selector(
+            self.MARKUP,
+            """span/* ok */""",
+            ['1', '3', '4', '5', '6'],
+            flags=util.HTML
+        )
+
+    def test_comments_trailing_complex_no_space(self):
+        """Test a comment directly trailing a complex selector."""
+
+        self.assert_selector(
+            self.MARKUP,
+            """div span/* ok */""",
+            ['1', '3', '4', '5', '6'],
+            flags=util.HTML
+        )
+
     def test_comments_itrailing(self):
         """Test comments trailing."""
 
