@@ -478,3 +478,51 @@ class TestLang(util.TestCase):
             [],
             flags=util.XHTML
         )
+
+    def test_language_shared_ancestors(self):
+        """Test that the language of an ancestor does not leak into elements that have another language."""
+
+        markup = """
+        <div id="1" lang="en">
+            <p id="2"><span id="3"></span></p>
+            <div id="4" lang="fr"><p id="5"><span id="6"></span></p></div>
+            <p id="7"><span id="8" lang="fr"></span></p>
+        </div>
+        <div id="9"><p id="10" lang="en"><span id="11"></span></p></div>
+        """
+
+        self.assert_selector(markup, ":lang(en)", ['1', '2', '3', '7', '10', '11'], flags=util.HTML | util.NOCACHE)
+        self.assert_selector(markup, ":lang(fr)", ['4', '5', '6', '8'], flags=util.HTML | util.NOCACHE)
+
+    def test_no_language_in_header(self):
+        """Test that elements without a language are not given one when the header has none."""
+
+        markup = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <meta charset="utf-8">
+        </head>
+        <body>
+        <div id="1"></div>
+        <div id="2"><p id="3"></p></div>
+        <div id="4" lang=""></div>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(markup, "[id]:lang('')", ['4'], flags=util.HTML | util.NOCACHE)
+
+    def test_deeply_nested_language(self):
+        """Test that each ancestor is checked once for the language of a deeply nested document."""
+
+        import soupsieve as sv
+        from bs4 import BeautifulSoup
+        from unittest import mock
+
+        n = 32
+        soup = BeautifulSoup("<ul>" + "<li>" * n, "html.parser")
+        get_parent = sv.css_match.CSSMatch.get_parent
+        with mock.patch.object(sv.css_match.CSSMatch, "get_parent", autospec=True, side_effect=get_parent) as patched:
+            self.assertEqual(len(sv.select("li:lang(en)", soup)), 0)
+        self.assertLessEqual(patched.call_count, 2 * n)

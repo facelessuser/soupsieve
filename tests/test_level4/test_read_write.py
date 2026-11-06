@@ -162,3 +162,37 @@ class TestReadWrite(util.TestCase):
         soup.iframe.append(soup.new_tag('p', attrs={'id': '4', 'contenteditable': ''}))
 
         self.assertEqual([el['id'] for el in sv.select(':read-write', soup)], ['0', '1', '2', '3', '4'])
+
+    def test_read_write_shared_ancestors(self):
+        """Test that the state of an ancestor does not leak into elements that have another state."""
+
+        markup = """
+        <body>
+        <div id="0" contenteditable>
+            <p id="1"><b id="2">Text</b></p>
+            <div id="3" contenteditable="false"><p id="4"><b id="5">Text</b></p></div>
+            <p id="6" contenteditable="bogus"><b id="7">Text</b></p>
+        </div>
+        <div id="8"><p id="9" contenteditable="true"><b id="10">Text</b></p><p id="11"></p></div>
+        </body>
+        """
+
+        self.assert_selector(
+            markup,
+            "body :read-write",
+            ['0', '1', '2', '6', '7', '9', '10'],
+            flags=util.HTML | util.NOCACHE
+        )
+
+    def test_read_write_deeply_nested(self):
+        """Test that each ancestor is checked once for `contenteditable` in a deeply nested document."""
+
+        from bs4 import BeautifulSoup
+        from unittest import mock
+
+        n = 32
+        soup = BeautifulSoup("<ul>" + "<li>" * n, "html.parser")
+        get_parent = sv.css_match.CSSMatch.get_parent
+        with mock.patch.object(sv.css_match.CSSMatch, "get_parent", autospec=True, side_effect=get_parent) as patched:
+            self.assertEqual(len(sv.select(":read-write", soup)), 0)
+        self.assertLessEqual(patched.call_count, 2 * n)
