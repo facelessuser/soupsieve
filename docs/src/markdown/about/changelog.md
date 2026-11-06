@@ -3,6 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## Unreleased
+
+-   **FIX**: Guard the shared token match state against concurrent parses so that compiling selectors in
+    multiple threads cannot corrupt a parse with a spurious syntax error or a dropped combinator.
+
 ## 4.0.2
 
 -   **FIX**: Fix issue where trailing whitespace and comments can sometimes fail to be consumed properly.
