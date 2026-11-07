@@ -904,7 +904,6 @@ class CSSParser:
         if op:
             value = css_unescape(m.group('value'))
 
-        # The end of the value is anchored with `\Z` as `$` also matches before a trailing newline.
         if not op:
             # Attribute name
             pattern = None
