@@ -239,13 +239,14 @@ class SelectorTag(Immutable):
 class SelectorAttribute(Immutable):
     """Selector attribute rule."""
 
-    __slots__ = ("attribute", "prefix", "pattern", "xml_type_pattern", "inverse", "_hash")
+    __slots__ = ("attribute", "prefix", "pattern", "xml_type_pattern", "inverse", "ignore_case", "_hash")
 
     attribute: str
     prefix: str
     pattern: Pattern[str] | None
     xml_type_pattern: Pattern[str] | None
     inverse: bool
+    ignore_case: bool
 
     def __init__(
         self,
@@ -253,16 +254,23 @@ class SelectorAttribute(Immutable):
         prefix: str,
         pattern: Pattern[str] | None,
         xml_type_pattern: Pattern[str] | None,
-        inverse: bool
+        inverse: bool,
+        ignore_case: bool = False
     ) -> None:
-        """Initialize."""
+        """
+        Initialize.
+
+        When `ignore_case` is set, `pattern` matches the attribute value converted to ASCII lowercase.
+        `xml_type_pattern` is always case sensitive.
+        """
 
         super().__init__(
             attribute=attribute,
             prefix=prefix,
             pattern=pattern,
             xml_type_pattern=xml_type_pattern,
-            inverse=inverse
+            inverse=inverse,
+            ignore_case=ignore_case
         )
 
 

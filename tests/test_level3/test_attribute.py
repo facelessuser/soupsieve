@@ -153,3 +153,44 @@ class TestAttribute(util.TestCase):
             ["1", "2"],
             flags=util.HTML
         )
+
+    def test_attribute_patterns_scan_for_value(self):
+        """
+        Test that attribute patterns can find the value with a literal scan.
+
+        A leading `.*?`, or `re.I`, makes the regular expression engine retry the value at every position, which takes
+        time quadratic in the length of the value when it nearly matches a long attribute value.
+        """
+
+        import re
+        import soupsieve as sv
+
+        for op in ('=', '~=', '|=', '^=', '$=', '*=', '!='):
+            for case in ('', ' i', ' s'):
+                for attr in ('title', 'type'):
+                    selector = f'[{attr}{op}"aBc"{case}]'
+                    attribute = sv.compile(selector).selectors[0].attributes[0]
+                    for pattern in (attribute.pattern, attribute.xml_type_pattern):
+                        if pattern is None:
+                            continue
+                        self.assertFalse(pattern.pattern.startswith('.*'), selector)
+                        self.assertFalse(pattern.flags & re.I, selector)
+                    self.assertEqual(attribute.ignore_case, case == ' i' or (attr == 'type' and not case), selector)
+                    if attribute.ignore_case:
+                        self.assertIn('abc', attribute.pattern.pattern, selector)
+
+    def test_attribute_case_insensitive_long_near_match(self):
+        """Test case insensitive `*=` and `$=` against a long attribute value that nearly matches."""
+
+        markup = '<div id="1" title="{}"></div><div id="2" title="{}b"></div>'.format('A' * 2000, 'A' * 2000)
+        self.assert_selector(markup, '[title*="{}B" i]'.format('a' * 500), ['2'], flags=util.HTML)
+        self.assert_selector(markup, '[title$="{}B" i]'.format('a' * 500), ['2'], flags=util.HTML)
+        self.assert_selector(markup, '[title*="{}B"]'.format('A' * 500), [], flags=util.HTML)
+
+    def test_attribute_case_insensitive_ascii_only(self):
+        """Test that case insensitive attribute values only fold ASCII letters."""
+
+        markup = '<div id="1" title="CAFÉ"></div><div id="2" title="Café"></div><div id="3" title="K"></div>'
+        self.assert_selector(markup, '[title*="café" i]', ['2'], flags=util.HTML)
+        self.assert_selector(markup, '[title="k" i]', ['3'], flags=util.HTML)
+        self.assert_selector(markup, '[title="\\212a" i]', [], flags=util.HTML)

@@ -875,64 +875,73 @@ class CSSParser:
         ns = css_unescape(m.group('attr_ns')[:-1]) if m.group('attr_ns') else ''
         attr = css_unescape(m.group('attr_name'))
         html_insensitive = False
+        pattern = None
         pattern2 = None
-        value = ''
         inverse = False
 
         if case:
-            flags = (re.I | re.ASCII if case == 'i' else 0) | re.DOTALL
+            ignore_case = case == 'i'
         elif util.lower(attr) in HTML_CASE_INSENSITIVE_ATTRIBUTES:
-            flags = re.I | re.ASCII | re.DOTALL
+            ignore_case = True
             html_insensitive = True
         else:
-            flags = re.DOTALL
+            ignore_case = False
 
         if op:
             value = css_unescape(m.group('value'))
-
-        if not op:
-            # Attribute name
-            pattern = None
-        elif op.startswith('^'):
-            # Value start with
-            # `^=` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
-            value = r'(?!)' if not value else re.escape(value)
-            pattern = re.compile(fr'^{value}.*', flags)
-        elif op.startswith('$'):
-            # Value ends with
-            # `$=` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
-            value = r'(?!)' if not value else re.escape(value)
-            pattern = re.compile(fr'.*?{value}\Z', flags)
-        elif op.startswith('*'):
-            # Value contains
-            # `*=` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
-            value = r'(?!)' if not value else re.escape(value)
-            pattern = re.compile(fr'.*?{value}.*', flags)
-        elif op.startswith('~'):
-            # Value contains word within space separated list
-            # `*~` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
-            value = r'(?!)' if not value or RE_WS.search(value) else re.escape(value)
-            pattern = re.compile(fr'.*?(?:(?<=^)|(?<=[ \t\r\n\f])){value}(?=(?:[ \t\r\n\f]|\Z)).*', flags)
-        elif op.startswith('|'):
-            # Value starts with word in dash separated list
-            pattern = re.compile(fr'^{re.escape(value)}(?:-.*)?\Z', flags)
-        elif op.startswith('!'):
-            # Value does not matches
-            pattern = re.compile(fr'^(?!{re.escape(value)}\Z)', flags)
-            inverse = True
-        else:
-            # Value matches
-            pattern = re.compile(fr'^{re.escape(value)}\Z', flags)
-
-        if html_insensitive and pattern:
-            pattern2 = re.compile(pattern.pattern, re.DOTALL)
+            pattern = self.parse_attribute_pattern(op, util.lower(value) if ignore_case else value)
+            if html_insensitive:
+                # Outside HTML, the value is matched case sensitive.
+                pattern2 = self.parse_attribute_pattern(op, value)
+            inverse = op.startswith('!')
 
         # Append the attribute selector
-        sel_attr = ct.SelectorAttribute(attr, ns, pattern, pattern2, inverse)
+        sel_attr = ct.SelectorAttribute(attr, ns, pattern, pattern2, inverse, ignore_case)
         sel.attributes.append(sel_attr)
 
         has_selector = True
         return has_selector
+
+    @staticmethod
+    def parse_attribute_pattern(op: str, value: str) -> re.Pattern[str]:
+        """
+        Create the pattern for an attribute selector's value.
+
+        The pattern is applied with `search()`, so it must not need a leading `.*?` to find the value, which would make
+        the regular expression engine retry the value at every position instead of scanning for it as a literal.
+
+        A case insensitive pattern is compiled case sensitive for the value converted to ASCII lowercase and is matched
+        against the attribute value converted the same way. We purposely avoid using `re.I` as the regular expression
+        engine cannot then scan as a literal, making the search take quadratic time depending on the pattern.
+        """
+
+        if op.startswith('^'):
+            # Value start with
+            # `^=` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
+            source = r'^(?!)' if not value else fr'^{re.escape(value)}'
+        elif op.startswith('$'):
+            # Value ends with
+            # `$=` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
+            source = r'(?!)' if not value else fr'{re.escape(value)}\Z'
+        elif op.startswith('*'):
+            # Value contains
+            # `*=` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
+            source = r'(?!)' if not value else re.escape(value)
+        elif op.startswith('~'):
+            # Value contains word within space separated list
+            # `~=` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
+            value = r'(?!)' if not value or RE_WS.search(value) else re.escape(value)
+            source = fr'(?:(?<=^)|(?<=[ \t\r\n\f])){value}(?=(?:[ \t\r\n\f]|\Z))'
+        elif op.startswith('|'):
+            # Value starts with word in dash separated list
+            source = fr'^{re.escape(value)}(?:-.*)?\Z'
+        elif op.startswith('!'):
+            # Value does not matches
+            source = fr'^(?!{re.escape(value)}\Z)'
+        else:
+            # Value matches
+            source = fr'^{re.escape(value)}\Z'
+        return re.compile(source, re.DOTALL)
 
     def parse_tag_pattern(self, sel: _Selector, m: Match[str], has_selector: bool) -> bool:
         """Parse tag pattern from regex match."""

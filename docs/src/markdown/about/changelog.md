@@ -3,7 +3,7 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## 4.1.0
+## 4.1
 
 -   **NEW**: Soup Sieve is now thread safe, and this is now tested, including on free-threaded Python. This is assuming
     read only operations on a document. Check out our documentation for more details.
@@ -25,6 +25,8 @@ icon: lucide/scroll-text
     nothing. Previously, `lang="-"` matched `:lang('')`, and ill-formed tags matched `:lang('*')`.
 -   **FIX**: Fix `:lang()` ranges that end in a wildcard, such as `en-*` or `*-*`, never matching. As RFC 4647 extended
     filtering specifies, wildcards after the first subtag are ignored, so `en-*` matches the same as `en`.
+-   **FIX**: Fix `[attr*=value]` and `[attr$=value]` taking time quadratic in the length of the value when it nearly
+    matches a long attribute value, including when matching case insensitive.
 
 ## 4.0.1
 

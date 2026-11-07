@@ -889,20 +889,25 @@ class CSSMatch(_DocumentNav):
             for a in attributes:
                 temp = self.match_attribute_name(el, a.attribute, a.prefix)
                 # The case insensitive pattern only applies to HTML elements in HTML documents
-                pattern = (
-                    a.xml_type_pattern
-                    if a.xml_type_pattern and (self.is_xml or not self.is_html_tag(el))
-                    else a.pattern
-                )
+                pattern: re.Pattern[str] | None
+                if a.xml_type_pattern and (self.is_xml or not self.is_html_tag(el)):
+                    pattern = a.xml_type_pattern
+                    ignore_case = False
+                else:
+                    pattern = a.pattern
+                    ignore_case = a.ignore_case
                 if temp is None and a.inverse:
                     continue
                 if temp is None:
                     match = False
                     break
-                value = temp if isinstance(temp, str) else ' '.join(temp)
                 if pattern is None:
                     continue
-                elif pattern.match(value) is None:
+                value = temp if isinstance(temp, str) else ' '.join(temp)
+                # A case insensitive pattern is compiled for the value converted to ASCII lowercase.
+                if ignore_case:
+                    value = util.ascii_lower(value)
+                if pattern.search(value) is None:
                     match = False
                     break
         return match
