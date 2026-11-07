@@ -205,11 +205,14 @@ PAT_PSEUDO_NTH_TYPE = fr'''
 PAT_PSEUDO_LANG = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*+,{WSC}*+{VALUE})*+){WSC}*+\)'
 # Pseudo class direction (`:dir(ltr)`)
 PAT_PSEUDO_DIR = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<dir>{IDENTIFIER}){WSC}*+\)'
-# Combining characters (`>`, `~`, ` `, `+`, `,`)
-PAT_COMBINE = fr'(?={WS}|[,+>~]){WSC}*+(?P<relation>[,+>~])?+{WSC}*+'
+# Combining characters (`>`, `~`, ` `, `+`, `,`) along with any comments and whitespace around them.
+# A run of comments and whitespace is matched all at once. `ws` captures whether the run has whitespace
+# before the relation, as a run of only comments does not combine selectors.
+PAT_COMBINE = fr'''
+(?=[,+>~]|{WS}|/\*){COMMENTS}*+(?:(?P<ws>{WS}){WSC}*+)?+(?P<relation>[,+>~])?+{WSC}*+
+'''
 # Extra: Contains (`:contains(text)`)
 PAT_PSEUDO_CONTAINS = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*+,{WSC}*+{VALUE})*+){WSC}*+\)'
-PAT_COMMENTS = fr'({COMMENTS})++'
 
 # Regular expressions
 # CSS escape pattern
@@ -381,18 +384,12 @@ class SelectorPattern:
         return None if m is None else (self.name, m)
 
 
-class SelectorPatternComment(SelectorPattern):
-    """Selector comment."""
-
-    def match(self, selector: str, index: int, flags: int) -> tuple[str | None, Match[str]] | None:
-        """Match the selector."""
-
-        m = self.re_pattern.match(selector, index)
-        return None if m is None else (None, m)
-
-
 class SelectorPatternCombinator(SelectorPattern):
-    """A space might be a combinator or a space, process all combinators except normal white space."""
+    """
+    A run of comments and whitespace might be a combinator or might just be consumed.
+
+    Process all combinators except whitespace at the start or end, and runs of only comments.
+    """
 
     def match(self, selector: str, index: int, flags: int) -> tuple[str | None, Match[str]] | None:
         """
@@ -400,15 +397,17 @@ class SelectorPatternCombinator(SelectorPattern):
 
         If we match at the start or end of the string and have a non-whitespace combinator, the match is bogus.
         If we are at the start or end and the combinator is white space, then it can be consumed with no further
-        processing.
+        processing. Comments are not whitespace, so a run of only comments is consumed as well.
         """
 
         m = self.re_pattern.match(selector, index)
-        if m is None:
+        # An unterminated comment matches nothing, which must not be consumed or the parser would never advance.
+        if m is None or m.end(0) == index:
             return None
+        relation = m.group('relation')
         if m.start(0) == 0 or m.end(0) == len(selector):
-            return None if m.group('relation') else (None, m)
-        return self.name, m
+            return None if relation else (None, m)
+        return (self.name if relation or m.group('ws') else None), m
 
 
 class SpecialPseudoPattern(SelectorPattern):
@@ -815,7 +814,6 @@ class CSSParser:
         SelectorPattern("class", PAT_CLASS),
         SelectorPattern("tag", PAT_TAG),
         SelectorPattern("attribute", PAT_ATTR),
-        SelectorPatternComment('comment', PAT_COMMENTS),
         SelectorPatternCombinator("combine", PAT_COMBINE)
     )
 

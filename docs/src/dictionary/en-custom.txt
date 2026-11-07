@@ -101,6 +101,7 @@ unmatchable
 unpickle
 unpickling
 untagged
+unterminated
 untrusted
 unvisited
 useable

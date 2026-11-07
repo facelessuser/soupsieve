@@ -1,5 +1,6 @@
 """Test comments."""
 from .. import util
+from soupsieve import SelectorSyntaxError
 
 
 class TestComments(util.TestCase):
@@ -123,3 +124,66 @@ class TestComments(util.TestCase):
             ['1', '3', '4', '5', '6'],
             flags=util.HTML
         )
+
+    def test_comments_leading_whitespace(self):
+        """Test a comment leading a selector followed by whitespace."""
+
+        self.assert_selector(
+            self.MARKUP,
+            """/* comment */ span""",
+            ['1', '3', '4', '5', '6'],
+            flags=util.HTML
+        )
+
+    def test_comments_leading_multiple_whitespace(self):
+        """Test comments and whitespace leading a selector."""
+
+        self.assert_selector(
+            self.MARKUP,
+            """/* a */ /* b */
+            div /* c */ > /* d */ span""",
+            ['3'],
+            flags=util.HTML
+        )
+
+    def test_comments_leading_whitespace_combinator(self):
+        """Test a comment and whitespace leading a combinator."""
+
+        self.assert_raises('/* comment */ > span', SelectorSyntaxError)
+
+    def test_comments_leading_whitespace_only(self):
+        """Test a selector with only a comment and whitespace."""
+
+        self.assert_raises('/* comment */ ', SelectorSyntaxError)
+
+    def test_comments_in_compound(self):
+        """Test that a comment between parts of a compound selector does not combine them."""
+
+        self.assert_selector(
+            self.MARKUP,
+            """span/* comment */[id]/* comment */:not([id="1"])""",
+            ['3', '4', '5', '6'],
+            flags=util.HTML
+        )
+
+    def test_comments_around_combinator_no_space(self):
+        """Test comments directly around a combinator."""
+
+        self.assert_selector(
+            self.MARKUP,
+            """div/* a */>/* b */span""",
+            ['3'],
+            flags=util.HTML
+        )
+
+    def test_comments_between_tags(self):
+        """Test that a comment is not a descendant combinator."""
+
+        self.assert_raises('div/* comment */span', SelectorSyntaxError)
+
+    def test_comments_unterminated(self):
+        """Test unterminated comments."""
+
+        self.assert_raises('div/* comment', SelectorSyntaxError)
+        self.assert_raises('div /* comment', SelectorSyntaxError)
+        self.assert_raises('/* comment', SelectorSyntaxError)
