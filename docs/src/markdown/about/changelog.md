@@ -7,6 +7,8 @@ icon: lucide/scroll-text
 
 -   **FIX**: Fix issue where trailing whitespace and comments can sometimes fail to be consumed properly.
 -   **FIX**: Custom selector names should be checked with ASCII only lowercase.
+-   **FIX**: Fix `[attr=value]`, `[attr$=value]`, `[attr|=value]`, and `[attr!=value]` ignoring a trailing newline in
+    the attribute value, so `[type=hidden]` no longer matches `type="hidden&#10;"`.
 
 ## 4.0.1
 

@@ -166,6 +166,24 @@ class TestAttribute(util.TestCase):
             flags=util.HTML
         )
 
+    def test_attribute_equal_trailing_newline(self):
+        """Test attribute value with a trailing newline does not equal the value without it."""
+
+        markup = """
+        <input id="0" type="hidden">
+        <input id="1" type="hidden&#10;">
+        <p id="2" title="foo&#10;"></p>
+        """
+
+        self.assert_selector(markup, '[type="hidden"]', ["0"], flags=util.HTML)
+        self.assert_selector(markup, '[title="foo"]', [], flags=util.HTML)
+        self.assert_selector(
+            '<r><p id="0" type="a"/><p id="1" type="a&#10;"/></r>',
+            '[type="a"]',
+            ["0"],
+            flags=util.XML
+        )
+
     def test_attribute_equal_literal_null(self):
         """Test attribute with value that equals specified value with a literal null character."""
 
@@ -348,6 +366,16 @@ class TestAttribute(util.TestCase):
             """,
             "[lang|=en]",
             ["0"],
+            flags=util.HTML
+        )
+
+    def test_attribute_start_dash_trailing_newline(self):
+        """Test attribute value with a trailing newline does not equal a dash separated value without it."""
+
+        self.assert_selector(
+            '<p id="0" lang="en&#10;"></p><p id="1" lang="en-us&#10;"></p>',
+            "[lang|=en]",
+            ["1"],
             flags=util.HTML
         )
 

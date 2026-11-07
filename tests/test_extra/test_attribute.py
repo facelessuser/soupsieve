@@ -146,6 +146,19 @@ class TestAttributeEquivalence(util.TestCase):
             flags=util.XML
         )
 
+    def test_attribute_not_equal_trailing_newline(self):
+        """Test a value with a trailing newline is not equal to the value without it."""
+
+        markup = '<r><p id="0" type="a"/><p id="1" type="a&#10;"/></r>'
+        self.assert_selector(markup, 'p[type!="a"]', ["1"], flags=util.XML)
+        self.assert_selector(markup, 'p:not([type="a"])', ["1"], flags=util.XML)
+        self.assert_selector(
+            '<p id="0" title="a"></p><p id="1" title="a&#10;"></p>',
+            'p[title!="a"]',
+            ["1"],
+            flags=util.HTML
+        )
+
     def test_missing_attribute(self):
         """Test missing attribute."""
 
