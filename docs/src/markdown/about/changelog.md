@@ -3,8 +3,11 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## 4.0.2
+## 4.1.0
 
+-   **NEW**: Soup Sieve is now thread safe, and this is now tested, including on free-threaded Python.
+-   **FIX**: Fix a race where compiling selectors in multiple threads at the same time could fail with a bogus
+    syntax error or silently parse a selector incorrectly.
 -   **FIX**: Fix issue where trailing whitespace and comments can sometimes fail to be consumed properly.
 -   **FIX**: Custom selector names should be checked with ASCII only lowercase.
 -   **FIX**: Fix `[attr=value]`, `[attr$=value]`, `[attr|=value]`, and `[attr!=value]` ignoring a trailing newline in
