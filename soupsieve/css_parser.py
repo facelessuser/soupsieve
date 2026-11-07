@@ -206,9 +206,10 @@ PAT_PSEUDO_LANG = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*+,{WSC
 # Pseudo class direction (`:dir(ltr)`)
 PAT_PSEUDO_DIR = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<dir>{IDENTIFIER}){WSC}*+\)'
 # Combining characters (`>`, `~`, ` `, `+`, `,`)
-PAT_COMBINE = fr'{COMMENTS}*+(?={WS}|[,+>~]){WSC}*+(?P<relation>[,+>~])?+{WSC}*+'
+PAT_COMBINE = fr'(?={WS}|[,+>~]){WSC}*+(?P<relation>[,+>~])?+{WSC}*+'
 # Extra: Contains (`:contains(text)`)
 PAT_PSEUDO_CONTAINS = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*+,{WSC}*+{VALUE})*+){WSC}*+\)'
+PAT_COMMENTS = fr'({COMMENTS})++'
 
 # Regular expressions
 # CSS escape pattern
@@ -383,6 +384,19 @@ class SelectorPattern:
         """Match the selector."""
 
         return self.re_pattern.match(selector, index)
+
+
+class SelectorPatternComment(SelectorPattern):
+    """Selector comment."""
+
+    def match(self, selector: str, index: int, flags: int) -> Match[str] | None:
+        """Match the selector."""
+
+        self._consume_only = False
+        m = self.re_pattern.match(selector, index)
+        if m is not None:
+            self._consume_only = True
+        return m
 
 
 class SelectorPatternCombinator(SelectorPattern):
@@ -828,6 +842,7 @@ class CSSParser:
         SelectorPattern("class", PAT_CLASS),
         SelectorPattern("tag", PAT_TAG),
         SelectorPattern("attribute", PAT_ATTR),
+        SelectorPatternComment('comment', PAT_COMMENTS),
         SelectorPatternCombinator("combine", PAT_COMBINE)
     )
 
@@ -1520,9 +1535,8 @@ class CSSParser:
                     if self.debug:  # pragma: no cover
                         print(f"TOKEN: '{name}' --> {m.group(0)!r} at position {m.start(0)}")
                     index = m.end(0)
-                    if v.consume_only:
-                        continue
-                    yield name, m
+                    if not v.consume_only:
+                        yield name, m
                     break
             if m is None:
                 c = pattern[index]
