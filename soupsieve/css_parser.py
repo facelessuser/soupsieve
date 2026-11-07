@@ -904,6 +904,7 @@ class CSSParser:
         if op:
             value = css_unescape(m.group('value'))
 
+        # The end of the value is anchored with `\Z` as `$` also matches before a trailing newline.
         if not op:
             # Attribute name
             pattern = None
@@ -916,7 +917,7 @@ class CSSParser:
             # Value ends with
             # `$=` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
             value = r'(?!)' if not value else re.escape(value)
-            pattern = re.compile(fr'.*?{value}$', flags)
+            pattern = re.compile(fr'.*?{value}\Z', flags)
         elif op.startswith('*'):
             # Value contains
             # `*=` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
@@ -926,17 +927,17 @@ class CSSParser:
             # Value contains word within space separated list
             # `*~` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
             value = r'(?!)' if not value or RE_WS.search(value) else re.escape(value)
-            pattern = re.compile(fr'.*?(?:(?<=^)|(?<=[ \t\r\n\f])){value}(?=(?:[ \t\r\n\f]|$)).*', flags)
+            pattern = re.compile(fr'.*?(?:(?<=^)|(?<=[ \t\r\n\f])){value}(?=(?:[ \t\r\n\f]|\Z)).*', flags)
         elif op.startswith('|'):
             # Value starts with word in dash separated list
-            pattern = re.compile(fr'^{re.escape(value)}(?:-.*)?$', flags)
+            pattern = re.compile(fr'^{re.escape(value)}(?:-.*)?\Z', flags)
         elif op.startswith('!'):
             # Value does not matches
-            pattern = re.compile(fr'^(?!{re.escape(value)}$)', flags)
+            pattern = re.compile(fr'^(?!{re.escape(value)}\Z)', flags)
             inverse = True
         else:
             # Value matches
-            pattern = re.compile(fr'^{re.escape(value)}$', flags)
+            pattern = re.compile(fr'^{re.escape(value)}\Z', flags)
 
         if html_insensitive and pattern:
             pattern2 = re.compile(pattern.pattern, re.DOTALL)
