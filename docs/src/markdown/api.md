@@ -382,3 +382,16 @@ try:
 except ValueError:
     print('Too many selectors')
 ```
+
+## Thread Safety
+
+> [!new] New in 4.1
+
+Soup Sieve is thread safe. Selectors can be compiled in any thread, and a compiled selector can be shared and used to
+match in any number of threads at the same time. This holds for free-threaded builds of Python as well.
+
+Soup Sieve only reads a document, so matching in many threads at the same time is safe as long as no thread modifies the
+document while it is being matched. Beautiful Soup is not thread safe, so modifying a document must not happen at the
+same time as anything else that uses it.
+
+An iterator from [`iselect()`](#soupsieveiselect) should only be used by one thread.

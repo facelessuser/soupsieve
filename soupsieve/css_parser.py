@@ -350,7 +350,13 @@ def escape(ident: str) -> str:
 
 
 class SelectorPattern:
-    """Selector pattern."""
+    """
+    Selector pattern.
+
+    Patterns are shared by all parsers, so they must not hold any per-match state.
+    `match` returns the token name along with the match; a name of `None` means the
+    match is consumed without being processed further.
+    """
 
     def __init__(self, name: str, pattern: str) -> None:
         """Initialize."""
@@ -358,13 +364,6 @@ class SelectorPattern:
         self.name = name
         self.pattern = pattern
         self._re_pattern: re.Pattern[str] | None = None
-        self._consume_only = False
-
-    @property
-    def consume_only(self) -> bool:
-        """Consume content without processing further."""
-
-        return self._consume_only
 
     @property
     def re_pattern(self) -> re.Pattern[str]:
@@ -375,39 +374,27 @@ class SelectorPattern:
                 self._re_pattern = re.compile(self.pattern, re.I | re.X | re.U)
         return self._re_pattern
 
-    def get_name(self) -> str:
-        """Get name."""
-
-        return self.name
-
-    def match(self, selector: str, index: int, flags: int) -> Match[str] | None:
+    def match(self, selector: str, index: int, flags: int) -> tuple[str | None, Match[str]] | None:
         """Match the selector."""
 
-        return self.re_pattern.match(selector, index)
+        m = self.re_pattern.match(selector, index)
+        return None if m is None else (self.name, m)
 
 
 class SelectorPatternComment(SelectorPattern):
     """Selector comment."""
 
-    def match(self, selector: str, index: int, flags: int) -> Match[str] | None:
+    def match(self, selector: str, index: int, flags: int) -> tuple[str | None, Match[str]] | None:
         """Match the selector."""
 
-        self._consume_only = False
         m = self.re_pattern.match(selector, index)
-        if m is not None:
-            self._consume_only = True
-        return m
+        return None if m is None else (None, m)
 
 
 class SelectorPatternCombinator(SelectorPattern):
     """A space might be a combinator or a space, process all combinators except normal white space."""
 
-    def get_name(self) -> str:
-        """Get name."""
-
-        return self.name if not self._consume_only else "whitespace"
-
-    def match(self, selector: str, index: int, flags: int) -> Match[str] | None:
+    def match(self, selector: str, index: int, flags: int) -> tuple[str | None, Match[str]] | None:
         """
         Match the selector.
 
@@ -416,13 +403,12 @@ class SelectorPatternCombinator(SelectorPattern):
         processing.
         """
 
-        self._consume_only = False
         m = self.re_pattern.match(selector, index)
-        if m is not None and (m.start(0) == 0 or m.end(0) == len(selector)):
-            if m.group('relation'):
-                return None
-            self._consume_only = True
-        return m
+        if m is None:
+            return None
+        if m.start(0) == 0 or m.end(0) == len(selector):
+            return None if m.group('relation') else (None, m)
+        return self.name, m
 
 
 class SpecialPseudoPattern(SelectorPattern):
@@ -438,28 +424,15 @@ class SpecialPseudoPattern(SelectorPattern):
             for pseudo in p[1]:
                 self.patterns[pseudo] = pattern
 
-        self._consume_only = False
-        self.matched_name: SelectorPattern | None = None
-
-    def get_name(self) -> str:
-        """Get name."""
-
-        return '' if self.matched_name is None else self.matched_name.get_name()
-
-    def match(self, selector: str, index: int, flags: int) -> Match[str] | None:
+    def match(self, selector: str, index: int, flags: int) -> tuple[str | None, Match[str]] | None:
         """Match the selector."""
 
-        pseudo = None
         m = RE_PSEUDO_CLASS_SPECIAL.match(selector, index)
         if m:
-            name = util.lower(css_unescape(m.group('name')))
-            pattern = self.patterns.get(name)
+            pattern = self.patterns.get(util.lower(css_unescape(m.group('name'))))
             if pattern:
-                pseudo = pattern.match(selector, index, flags)
-                if pseudo:
-                    self.matched_name = pattern
-
-        return pseudo
+                return pattern.match(selector, index, flags)
+        return None
 
 
 class _Selector:
@@ -1527,18 +1500,18 @@ class CSSParser:
         if self.debug:  # pragma: no cover
             print(f'## PARSING: {pattern!r}')
         while index <= end:
-            m = None
+            token = None
             for v in self.CSS_TOKENS:
-                m = v.match(pattern, index, self.flags)
-                if m:
-                    name = v.get_name()
+                token = v.match(pattern, index, self.flags)
+                if token is not None:
+                    name, m = token
                     if self.debug:  # pragma: no cover
-                        print(f"TOKEN: '{name}' --> {m.group(0)!r} at position {m.start(0)}")
+                        print(f"TOKEN: '{name or 'consumed'}' --> {m.group(0)!r} at position {m.start(0)}")
                     index = m.end(0)
-                    if not v.consume_only:
+                    if name is not None:
                         yield name, m
                     break
-            if m is None:
+            if token is None:
                 c = pattern[index]
                 # If the character represents the start of one of the known selector types,
                 # throw an exception mentioning that the known selector type is in error;

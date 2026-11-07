@@ -17,7 +17,7 @@ jobs:
       max-parallel: 4
       matrix:
         platform: [ubuntu-latest, windows-latest]
-        hatch-env: [py311, py312, py313, py314, py315, stdlib]
+        hatch-env: [py311, py312, py313, py314, py315, stdlib, py314t]
         include:
           - hatch-env: py311
             python-version: '3.11'
@@ -42,6 +42,10 @@ jobs:
           - hatch-env: stdlib
             python-version: '3.14'
             dev: dev-stdlib
+            continue-on-error: false
+          - hatch-env: py314t
+            python-version: '3.14t'
+            dev: dev-ft
             continue-on-error: false
         # exclude:
         #   - platform: windows-latest
