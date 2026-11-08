@@ -5,7 +5,8 @@ icon: lucide/scroll-text
 
 ## 4.1.0
 
--   **NEW**: Soup Sieve is now thread safe, and this is now tested, including on free-threaded Python.
+-   **NEW**: Soup Sieve is now thread safe, and this is now tested, including on free-threaded Python. This is assuming
+    read only operations on a document. Check out our documentation for more details.
 -   **FIX**: Fix a race where compiling selectors in multiple threads at the same time could fail with a bogus
     syntax error or silently parse a selector incorrectly.
 -   **FIX**: Fix issue where trailing whitespace and comments can sometimes fail to be consumed properly.
