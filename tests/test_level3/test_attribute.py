@@ -124,6 +124,16 @@ class TestAttribute(util.TestCase):
             flags=util.HTML
         )
 
+    def test_attribute_ends_with_trailing_newline(self):
+        """Test attribute `$=` will not match when the value is followed by a trailing newline."""
+
+        self.assert_selector(
+            "<p><span id='1' title='foo bar'>foo1</span><span id='2' title='foo bar\n'>foo1</span></p>",
+            "span[title$='bar']",
+            ["1"],
+            flags=util.HTML
+        )
+
     def test_attribute_dash_list_with_newlines(self):
         """Test attribute `|=` will match with new lines."""
 

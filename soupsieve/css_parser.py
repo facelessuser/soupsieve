@@ -205,8 +205,12 @@ PAT_PSEUDO_NTH_TYPE = fr'''
 PAT_PSEUDO_LANG = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*+,{WSC}*+{VALUE})*+){WSC}*+\)'
 # Pseudo class direction (`:dir(ltr)`)
 PAT_PSEUDO_DIR = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<dir>{IDENTIFIER}){WSC}*+\)'
-# Combining characters (`>`, `~`, ` `, `+`, `,`)
-PAT_COMBINE = fr'{COMMENTS}*+(?={WS}|[,+>~]){WSC}*+(?P<relation>[,+>~])?+{WSC}*+'
+# Combining characters (`>`, `~`, ` `, `+`, `,`) along with any comments and whitespace around them.
+# A run of comments and whitespace is matched all at once. `ws` captures whether the run has whitespace
+# before the relation, as a run of only comments does not combine selectors.
+PAT_COMBINE = fr'''
+(?=[,+>~]|{WS}|/\*){COMMENTS}*+(?:(?P<ws>{WS}){WSC}*+)?+(?P<relation>[,+>~])?+{WSC}*+
+'''
 # Extra: Contains (`:contains(text)`)
 PAT_PSEUDO_CONTAINS = fr'{PAT_PSEUDO_CLASS_SPECIAL}(?P<values>{VALUE}(?:{WSC}*+,{WSC}*+{VALUE})*+){WSC}*+\)'
 
@@ -349,7 +353,13 @@ def escape(ident: str) -> str:
 
 
 class SelectorPattern:
-    """Selector pattern."""
+    """
+    Selector pattern.
+
+    Patterns are shared by all parsers, so they must not hold any per-match state.
+    `match` returns the token name along with the match; a name of `None` means the
+    match is consumed without being processed further.
+    """
 
     def __init__(self, name: str, pattern: str) -> None:
         """Initialize."""
@@ -357,13 +367,6 @@ class SelectorPattern:
         self.name = name
         self.pattern = pattern
         self._re_pattern: re.Pattern[str] | None = None
-        self._consume_only = False
-
-    @property
-    def consume_only(self) -> bool:
-        """Consume content without processing further."""
-
-        return self._consume_only
 
     @property
     def re_pattern(self) -> re.Pattern[str]:
@@ -374,41 +377,37 @@ class SelectorPattern:
                 self._re_pattern = re.compile(self.pattern, re.I | re.X | re.U)
         return self._re_pattern
 
-    def get_name(self) -> str:
-        """Get name."""
-
-        return self.name
-
-    def match(self, selector: str, index: int, flags: int) -> Match[str] | None:
+    def match(self, selector: str, index: int, flags: int) -> tuple[str | None, Match[str]] | None:
         """Match the selector."""
 
-        return self.re_pattern.match(selector, index)
+        m = self.re_pattern.match(selector, index)
+        return None if m is None else (self.name, m)
 
 
 class SelectorPatternCombinator(SelectorPattern):
-    """A space might be a combinator or a space, process all combinators except normal white space."""
+    """
+    A run of comments and whitespace might be a combinator or might just be consumed.
 
-    def get_name(self) -> str:
-        """Get name."""
+    Process all combinators except whitespace at the start or end, and runs of only comments.
+    """
 
-        return self.name if not self._consume_only else "whitespace"
-
-    def match(self, selector: str, index: int, flags: int) -> Match[str] | None:
+    def match(self, selector: str, index: int, flags: int) -> tuple[str | None, Match[str]] | None:
         """
         Match the selector.
 
         If we match at the start or end of the string and have a non-whitespace combinator, the match is bogus.
         If we are at the start or end and the combinator is white space, then it can be consumed with no further
-        processing.
+        processing. Comments are not whitespace, so a run of only comments is consumed as well.
         """
 
-        self._consume_only = False
         m = self.re_pattern.match(selector, index)
-        if m is not None and (m.start(0) == 0 or m.end(0) == len(selector)):
-            if m.group('relation'):
-                return None
-            self._consume_only = True
-        return m
+        # An unterminated comment matches nothing, which must not be consumed or the parser would never advance.
+        if m is None or m.end(0) == index:
+            return None
+        relation = m.group('relation')
+        if m.start(0) == 0 or m.end(0) == len(selector):
+            return None if relation else (None, m)
+        return (self.name if relation or m.group('ws') else None), m
 
 
 class SpecialPseudoPattern(SelectorPattern):
@@ -424,28 +423,15 @@ class SpecialPseudoPattern(SelectorPattern):
             for pseudo in p[1]:
                 self.patterns[pseudo] = pattern
 
-        self._consume_only = False
-        self.matched_name: SelectorPattern | None = None
-
-    def get_name(self) -> str:
-        """Get name."""
-
-        return '' if self.matched_name is None else self.matched_name.get_name()
-
-    def match(self, selector: str, index: int, flags: int) -> Match[str] | None:
+    def match(self, selector: str, index: int, flags: int) -> tuple[str | None, Match[str]] | None:
         """Match the selector."""
 
-        pseudo = None
         m = RE_PSEUDO_CLASS_SPECIAL.match(selector, index)
         if m:
-            name = util.lower(css_unescape(m.group('name')))
-            pattern = self.patterns.get(name)
+            pattern = self.patterns.get(util.lower(css_unescape(m.group('name'))))
             if pattern:
-                pseudo = pattern.match(selector, index, flags)
-                if pseudo:
-                    self.matched_name = pattern
-
-        return pseudo
+                return pattern.match(selector, index, flags)
+        return None
 
 
 class _Selector:
@@ -916,7 +902,7 @@ class CSSParser:
             # Value ends with
             # `$=` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
             value = r'(?!)' if not value else re.escape(value)
-            pattern = re.compile(fr'.*?{value}$', flags)
+            pattern = re.compile(fr'.*?{value}\Z', flags)
         elif op.startswith('*'):
             # Value contains
             # `*=` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
@@ -926,17 +912,17 @@ class CSSParser:
             # Value contains word within space separated list
             # `*~` should match nothing if the value is empty, so use `(?!)` which cannot be matched.
             value = r'(?!)' if not value or RE_WS.search(value) else re.escape(value)
-            pattern = re.compile(fr'.*?(?:(?<=^)|(?<=[ \t\r\n\f])){value}(?=(?:[ \t\r\n\f]|$)).*', flags)
+            pattern = re.compile(fr'.*?(?:(?<=^)|(?<=[ \t\r\n\f])){value}(?=(?:[ \t\r\n\f]|\Z)).*', flags)
         elif op.startswith('|'):
             # Value starts with word in dash separated list
-            pattern = re.compile(fr'^{re.escape(value)}(?:-.*)?$', flags)
+            pattern = re.compile(fr'^{re.escape(value)}(?:-.*)?\Z', flags)
         elif op.startswith('!'):
             # Value does not matches
-            pattern = re.compile(fr'^(?!{re.escape(value)}$)', flags)
+            pattern = re.compile(fr'^(?!{re.escape(value)}\Z)', flags)
             inverse = True
         else:
             # Value matches
-            pattern = re.compile(fr'^{re.escape(value)}$', flags)
+            pattern = re.compile(fr'^{re.escape(value)}\Z', flags)
 
         if html_insensitive and pattern:
             pattern2 = re.compile(pattern.pattern, re.DOTALL)
@@ -1512,19 +1498,18 @@ class CSSParser:
         if self.debug:  # pragma: no cover
             print(f'## PARSING: {pattern!r}')
         while index <= end:
-            m = None
+            token = None
             for v in self.CSS_TOKENS:
-                m = v.match(pattern, index, self.flags)
-                if m:
-                    name = v.get_name()
+                token = v.match(pattern, index, self.flags)
+                if token is not None:
+                    name, m = token
                     if self.debug:  # pragma: no cover
-                        print(f"TOKEN: '{name}' --> {m.group(0)!r} at position {m.start(0)}")
+                        print(f"TOKEN: '{name or 'consumed'}' --> {m.group(0)!r} at position {m.start(0)}")
                     index = m.end(0)
-                    if v.consume_only:
-                        continue
-                    yield name, m
+                    if name is not None:
+                        yield name, m
                     break
-            if m is None:
+            if token is None:
                 c = pattern[index]
                 # If the character represents the start of one of the known selector types,
                 # throw an exception mentioning that the known selector type is in error;
