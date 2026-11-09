@@ -175,7 +175,7 @@ class TestLang(util.TestCase):
         )
 
     def test_language_empty_string(self):
-        """Test that an empty string language will only match untagged languages `lang=""`."""
+        """Test that an empty string language will match untagged languages `lang=""` and unknown languages."""
 
         markup = """
         <div id="1" lang=""></div>
@@ -189,7 +189,7 @@ class TestLang(util.TestCase):
         self.assert_selector(
             markup,
             "div:lang('')",
-            ['1', '3', '4'],
+            ['1', '3', '4', '5'],
             flags=util.HTML
         )
 
@@ -495,7 +495,7 @@ class TestLang(util.TestCase):
         self.assert_selector(markup, ":lang(fr)", ['4', '5', '6', '8'], flags=util.HTML | util.NOCACHE)
 
     def test_no_language_in_header(self):
-        """Test that elements without a language are not given one when the header has none."""
+        """Test that every element without a language has an unknown language when the header has none."""
 
         markup = """
         <!DOCTYPE html>
@@ -511,7 +511,8 @@ class TestLang(util.TestCase):
         </html>
         """
 
-        self.assert_selector(markup, "[id]:lang('')", ['4'], flags=util.HTML | util.NOCACHE)
+        self.assert_selector(markup, "[id]:lang('')", ['1', '2', '3', '4'], flags=util.HTML | util.NOCACHE)
+        self.assert_selector(markup, "[id]:lang('*')", [], flags=util.HTML | util.NOCACHE)
 
     def test_deeply_nested_language(self):
         """Test that each ancestor is checked once for the language of a deeply nested document."""

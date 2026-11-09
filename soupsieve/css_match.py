@@ -617,7 +617,7 @@ class CSSMatch(_DocumentNav):
         self.anc_cache: dict[tuple[int, int], bool] = {}
         self.desc_cache: dict[tuple[int, int], bool] = {}
         self.dir_cache: dict[int, int] = {}
-        self.lang_cache: dict[int, str | None] = {}
+        self.lang_cache: dict[int, str] = {}
         self.edit_cache: dict[int, bool] = {}
         self.tree_cache: dict[int, bs4.Tag] = {}
         self.select_cache: dict[int, bs4.Tag | None] = {}
@@ -1620,21 +1620,19 @@ class CSSMatch(_DocumentNav):
             for key in visited:
                 self.lang_cache[key] = found_lang
 
-        # If we determined a language, compare.
         match = False
-        if found_lang is not None:
-            for patterns in langs:
-                match = False
-                for pattern in patterns:
-                    if self.extended_language_filter(pattern, found_lang):
-                        match = True
-                if not match:
-                    break
+        for patterns in langs:
+            match = False
+            for pattern in patterns:
+                if self.extended_language_filter(pattern, found_lang):
+                    match = True
+            if not match:
+                break
 
         return match
 
-    def resolve_lang(self, el: bs4.Tag, visited: list[int]) -> str | None:
-        """Resolve the language of an element, returning `None` if it has none."""
+    def resolve_lang(self, el: bs4.Tag, visited: list[int]) -> str:
+        """Resolve the language of an element, which is an empty string if it is unknown."""
 
         has_ns = self.supports_namespaces()
         root = self.root
@@ -1677,11 +1675,11 @@ class CSSMatch(_DocumentNav):
                 parent = last
                 break
 
-        # Use cached meta language. An empty string means the tree has none, so the element has no language.
+        # Use cached meta language.
         if found_lang is None and self.cached_meta_lang:
             for cache in self.cached_meta_lang:
                 if root is not None and cast(str, root) is cache[0]:
-                    return cache[1] or None
+                    return cache[1]
 
         # If we couldn't find a language, and the document is HTML, look to meta to determine language.
         if found_lang is None and (not self.is_xml or (has_html_namespace and root and root.name == 'html')):
@@ -1717,7 +1715,8 @@ class CSSMatch(_DocumentNav):
                 if found_lang is None:
                     self.cached_meta_lang.append((cast(str, root), ''))
 
-        return cast('str | None', found_lang)
+        # Without any language information, the language is unknown, which is an empty language tag.
+        return '' if found_lang is None else cast(str, found_lang)
 
     def match_dir(self, el: bs4.Tag, directionality: int) -> bool:
         """Check directionality."""
