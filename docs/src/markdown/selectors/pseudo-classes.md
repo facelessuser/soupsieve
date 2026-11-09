@@ -691,6 +691,15 @@ Level 4 CSS:material-flask:{: title="Experimental" data-md-color-primary="purple
     implicit wildcard matching already takes place between subtags, it is not needed: `de-*-DE` would be the same as
     just using `de-DE`.
 
+    An empty string, `#!css :lang('')`, matches elements whose language is untagged: those with `lang=""`, and those
+    with no language information at all. `*` matches any tagged language, including `und`, but not an untagged one.
+
+    Language tags and ranges must be well-formed BCP 47 syntax: subtags of 1 to 8 ASCII letters and digits, separated
+    by `-`, with a first subtag of only letters, and `*` subtags only in a range. Subtags are not checked against the
+    language subtag registry, so `qq` is fine, but `en_US`, `en-`, and `åå` are not. An element whose language tag is
+    not well-formed is not matched by any language range, not even `''` or `*`, and a range that is not well-formed
+    matches nothing.
+
     /// tab | Syntax
     ```css
     :lang('*-language', language2)

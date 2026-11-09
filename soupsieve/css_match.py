@@ -79,7 +79,11 @@ RE_DATETIME = re.compile(
     r'(?::(?P<seconds>[0-9]{2}(?:\.[0-9]{1,3})?))?\Z'
 )
 RE_SIZE = re.compile(r'[ \t\r\n\f]*\+?(?P<value>[0-9]+)')
-RE_WILD_STRIP = re.compile(r'(?:(?:-\*-)(?:\*(?:-|$))*|-\*$)')
+# BCP 47 syntax for an extended language range (RFC 4647) and a language tag (RFC 5646), as browsers check it:
+# subtags of 1 to 8 ASCII letters and digits, the first only letters, and `*` subtags only in a range.
+# Subtags are not checked against the registry.
+RE_LANG_RANGE = re.compile(r'(?:[a-zA-Z]{1,8}|\*)(?:-(?:[a-zA-Z0-9]{1,8}|\*))*')
+RE_LANG_TAG = re.compile(r'[a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*')
 
 MONTHS_30 = (4, 6, 9, 11)  # April, June, September, and November
 FEB = 2
@@ -746,25 +750,32 @@ class CSSMatch(_DocumentNav):
         return None
 
     def extended_language_filter(self, lang_range: str, lang_tag: str) -> bool:
-        """Filter the language tags."""
+        """
+        Filter the language tags.
+
+        `lang_tag` is a well-formed language tag, or an empty string if the language is untagged.
+        """
+
+        # Only an empty range matches an untagged language, and a range that is not well-formed matches nothing.
+        if not lang_range or not lang_tag:
+            return not lang_range and not lang_tag
+        if RE_LANG_RANGE.fullmatch(lang_range) is None:
+            return False
 
         match = True
-        lang_range = RE_WILD_STRIP.sub('-', lang_range).lower()
-        ranges = lang_range.split('-')
+        # Wildcards after the first subtag are ignored (RFC 4647 section 3.3.2, step 3.A), as subtags in between are
+        # already skipped implicitly. So `en-*` is the same as `en` and `de-*-DE` the same as `de-DE`.
+        first, *rest = lang_range.lower().split('-')
+        ranges = [first, *(r for r in rest if r != '*')]
         subtags = lang_tag.lower().split('-')
         length = len(ranges)
-        slength = len(subtags)
         rindex = 0
         sindex = 0
         r = ranges[rindex]
         s = subtags[sindex]
 
-        # Empty specified language should match unspecified language attributes
-        if length == 1 and slength == 1 and not r and r == s:
-            return True
-
         # Primary tag needs to match
-        if (r != '*' and r != s) or (r == '*' and slength == 1 and not s):
+        if r != '*' and r != s:
             match = False
 
         rindex += 1
@@ -781,13 +792,8 @@ class CSSMatch(_DocumentNav):
                 match = False
                 continue
 
-            # Empty range
-            if not r:
-                match = False
-                continue
-
             # Matched range
-            elif s == r:
+            if s == r:
                 rindex += 1
 
             # Implicit wildcard cannot match
@@ -1619,6 +1625,10 @@ class CSSMatch(_DocumentNav):
         if self.enable_cache:
             for key in visited:
                 self.lang_cache[key] = found_lang
+
+        # A language tag that is not well-formed matches nothing, not even `:lang('')` or `:lang('*')`.
+        if found_lang and RE_LANG_TAG.fullmatch(found_lang) is None:
+            return False
 
         match = False
         for patterns in langs:

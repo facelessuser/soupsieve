@@ -20,6 +20,11 @@ icon: lucide/scroll-text
     and `:indeterminate` to avoid quadratic time on deeply nested documents.
 -   **FIX**: Fix `:lang('')` not matching every element without any language information, which per the HTML spec has
     an empty language tag. It missed the first such element checked, or all of them when there was no `head`.
+-   **FIX**: `:lang()` no longer matches an element whose language tag is not well-formed BCP 47 syntax, such as `-`,
+    `en-`, `en_US`, or a subtag longer than 8 characters, and a language range that is not well-formed matches
+    nothing. Previously, `lang="-"` matched `:lang('')`, and ill-formed tags matched `:lang('*')`.
+-   **FIX**: Fix `:lang()` ranges that end in a wildcard, such as `en-*` or `*-*`, never matching. As RFC 4647 extended
+    filtering specifies, wildcards after the first subtag are ignored, so `en-*` matches the same as `en`.
 
 ## 4.0.1
 
