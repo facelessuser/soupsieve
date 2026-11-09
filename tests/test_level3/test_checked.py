@@ -665,3 +665,29 @@ class TestChecked(util.TestCase):
             ['2', '3', '4', '5'],
             flags=util.XHTML
         )
+
+    def test_option_deeply_nested(self):
+        """Test that each ancestor is checked once for the `select` of options that a parser nests."""
+
+        from bs4 import BeautifulSoup
+        from unittest import mock
+
+        n = 32
+        soup = BeautifulSoup("<select>" + "<option>" * n, "html.parser")
+        get_parent = sv.css_match.CSSMatch.get_parent
+        with mock.patch.object(sv.css_match.CSSMatch, "get_parent", autospec=True, side_effect=get_parent) as patched:
+            self.assertEqual(len(sv.select("option:checked", soup)), 1)
+        self.assertLessEqual(patched.call_count, 2 * n)
+
+    def test_radio_deeply_nested(self):
+        """Test that each ancestor is checked once for the tree of radio buttons in a deeply nested document."""
+
+        from bs4 import BeautifulSoup
+        from unittest import mock
+
+        n = 32
+        soup = BeautifulSoup('<form><ul>' + '<li><input type="radio" name="a" checked>' * n, "html.parser")
+        get_parent = sv.css_match.CSSMatch.get_parent
+        with mock.patch.object(sv.css_match.CSSMatch, "get_parent", autospec=True, side_effect=get_parent) as patched:
+            self.assertEqual(len(sv.select(":checked", soup)), 1)
+        self.assertLessEqual(patched.call_count, 4 * n)
