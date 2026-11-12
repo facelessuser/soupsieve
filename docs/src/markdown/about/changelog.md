@@ -3,6 +3,10 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 4.1.1
+
+-   **FIX**: Improve performance of tag name matching, which runs for every element and selector.
+
 ## 4.1
 
 -   **NEW**: Soup Sieve is now thread safe, and this is now tested, including on free-threaded Python. This is assuming
