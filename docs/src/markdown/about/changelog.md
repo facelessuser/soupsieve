@@ -9,6 +9,10 @@ icon: lucide/scroll-text
 -   **FIX**: A `range` input's value is clamped to its minimum and maximum, 0 and 100 by default, so it now matches
     `:out-of-range` only when its maximum is less than its minimum, and `:in-range` otherwise, including without `min`
     or `max`. A `range` input that is disabled, `readonly` or in a `datalist` matches neither.
+-   **FIX**: `:in-range` and `:out-of-range` no longer match an input of any type that is disabled, `readonly` or in a
+    `datalist`, as it is barred from constraint validation.
+-   **FIX**: `:in-range` and `:out-of-range` treat a `date`, `month`, `week` or `datetime-local` value after
+    275760-09-13T00:00:00Z as invalid, as browsers do.
 
 ## 4.1
 

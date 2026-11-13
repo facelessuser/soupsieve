@@ -91,6 +91,17 @@ SHORT_MONTH = 30
 LONG_MONTH = 31
 FEB_MONTH = 28
 FEB_LEAP_MONTH = 29
+
+# The latest value each date and time input type accepts in browsers. The HTML spec puts no upper
+# limit on the year, but browsers store these values as a JavaScript time, which ends at
+# 275760-09-13T00:00:00Z, and reject a value whose period starts after it. Chrome, Firefox and
+# Safari agree on `date` and `datetime-local`; Chrome is the only one with `month` and `week`.
+MAX_INPUT_VALUE: dict[str, tuple[float, ...]] = {
+    'date': (275760, 9, 13),
+    'month': (275760, 9),
+    'week': (275760, 37),
+    'datetime-local': (275760, 9, 13, 0, 0, 0),
+}
 DAYS_IN_WEEK = 7
 
 
@@ -537,7 +548,26 @@ class Inputs:
 
     @classmethod
     def parse_value(cls, itype: str, value: str | None) -> tuple[float, ...] | None:
-        """Parse the input value."""
+        """
+        Parse an input's `value`, `min` or `max` attribute, returning `None` if it is not valid.
+
+        The same strict syntax is used for all three attributes, which is what browsers do. The HTML
+        spec only requires it for the value. It converts `min` and `max` with more lenient algorithms,
+        but every browser rejects what only those algorithms accept:
+
+        - `number` and `range`: the spec's "rules for parsing floating-point number values" skip
+          leading whitespace, accept a leading `+`, and ignore trailing characters (`20abc`, `20.`,
+          `2e+`). Browsers reject all of these, so a `min` or `max` must be a valid floating-point
+          number. A number that overflows a double (`1e9999`) is an error in the spec too.
+        - `time` and `datetime-local`: the spec's parser accepts any number of fractional second
+          digits, but browsers reject more than three, as in a valid time string.
+        - `date`, `month`, `week` and `datetime-local`: the spec has no upper limit on the year,
+          but browsers reject a value after `MAX_INPUT_VALUE`.
+
+        Dates and times need the whole string to match, with no surrounding whitespace, a year of four
+        or more digits greater than zero, an upper-case `W` in a week, and a `T` or a single space
+        between the date and time of a `datetime-local`. Browsers and the spec agree on these.
+        """
 
         parsed: tuple[float, ...] | None = None
         if value is None:
@@ -592,6 +622,8 @@ class Inputs:
                 number = float(m.group('value'))
                 if isfinite(number):
                     parsed = (number,)
+        if parsed is not None and itype in MAX_INPUT_VALUE and parsed > MAX_INPUT_VALUE[itype]:
+            parsed = None
         return parsed
 
 
@@ -1813,12 +1845,44 @@ class CSSMatch(_DocumentNav):
 
     def match_range(self, el: bs4.Tag, condition: int) -> bool:
         """
-        Match range.
+        Match `:in-range` or `:out-of-range`.
 
-        Behavior is modeled after what we see in browsers. Browsers seem to evaluate
-        if the value is out of range, and if not, it is in range. So a missing value
-        will not evaluate out of range; therefore, value is in range. Personally, I
-        feel like this should evaluate as neither in or out of range.
+        Policy: follow the HTML spec, except where all browsers agree on something else, in which case
+        follow the browsers and document the difference here or in `Inputs.parse_value()`. Before
+        changing this behavior, check it against the spec and against Chrome, Firefox and Safari. A
+        report that cites only the spec, or only one browser, is not enough. Where browsers disagree
+        with each other, follow the spec. Known cases, all deliberate:
+
+        - A `range` input whose maximum is less than its minimum: Chrome and Safari match `:in-range`,
+          Firefox and the spec `:out-of-range` (see below).
+        - Firefox and Safari do not support `month` or `week` inputs and treat them as text, so Chrome
+          is the only browser to compare them with.
+        - Safari accepts a `number` bound with a trailing `.` (`min="20."`), and Firefox accepts such
+          a value. Neither is a valid floating-point number, and the other browsers reject them.
+
+        https://html.spec.whatwg.org/multipage/semantics-other.html#selector-in-range
+
+        - `:out-of-range` matches an input that is a candidate for constraint validation, has range
+          limitations, and is suffering from an underflow or an overflow. `:in-range` matches one that
+          is a candidate and has range limitations but suffers from neither.
+        - Being a candidate for constraint validation is checked by `CSS_IN_RANGE` and
+          `CSS_OUT_OF_RANGE`, which exclude inputs that are disabled, `readonly` or in a `datalist`.
+        - An input has range limitations if it has a minimum or a maximum. Only `range` has defaults:
+          0 and 100. For the other types, a `min` or `max` that does not parse is ignored, and an input
+          with neither matches neither pseudo-class.
+        - An input suffers from an underflow when its value is below its minimum, and from an overflow
+          when it is above its maximum. An empty or invalid value is sanitized to the empty string,
+          which suffers from neither, so it is in range.
+        - `time` has a periodic domain. When its maximum is less than its minimum, it has a reversed
+          range, such as 22:00 to 02:00 across midnight, and is out of range only when its value is
+          both below the minimum and above the maximum.
+        - The other types do not have a periodic domain. When the maximum is less than the minimum,
+          any value is out of range, but an empty value is still in range.
+        - A `range` input's value is clamped to its minimum and maximum, and an invalid or missing
+          value becomes a default within them, so it is in range unless its maximum is less than its
+          minimum. In that case, the value is raised to the minimum but is not lowered to the maximum,
+          so it is always out of range. Chrome and Safari match it as in range instead, which is a
+          browser bug; Firefox follows the spec, and so do we.
         """
 
         out_of_range = False
@@ -1842,7 +1906,7 @@ class CSSMatch(_DocumentNav):
 
         value = Inputs.parse_value(itype, cast(str, self.get_attribute_by_name(el, 'value', None)))
         if value is not None:
-            if itype in ("date", "datetime-local", "month", "week", "number", "range"):
+            if itype in ("date", "datetime-local", "month", "week", "number"):
                 if mn is not None and value < mn:
                     out_of_range = True
                 if not out_of_range and mx is not None and value > mx:
