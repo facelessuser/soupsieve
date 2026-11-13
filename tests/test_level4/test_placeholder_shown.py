@@ -112,6 +112,10 @@ class TestPlaceholderShown(util.TestCase):
         <!-- A number that overflows a double is removed, as in all browsers. -->
         <input id="12" type="number" placeholder="This is some text" value="1e9999">
         <input id="13" type="number" placeholder="This is some text" value="-1e9999">
+
+        <!-- A large number that still fits in a double is kept. -->
+        <input id="14" type="number" placeholder="This is some text" value="1e308">
+        <input id="15" type="number" placeholder="This is some text" value="-1e308">
         """
 
         self.assert_selector(
