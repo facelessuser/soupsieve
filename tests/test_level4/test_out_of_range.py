@@ -23,11 +23,13 @@ class TestOutOfRange(util.TestCase):
         <input id="10" type="number" min="0" max="10" value="1E-1">
         """
 
-        for itype in ('number', 'range'):
+        # A range input clamps its value to its minimum and maximum, so it is out of range only when its maximum is
+        # less than its minimum, which none of these are
+        for itype, expected in (('number', ['1', '2', '3']), ('range', [])):
             self.assert_selector(
                 markup.replace('type="number"', f'type="{itype}"'),
                 ':out-of-range',
-                ['1', '2', '3'],
+                expected,
                 flags=util.HTML
             )
 
@@ -78,19 +80,39 @@ class TestOutOfRange(util.TestCase):
         <input id="7" type="range" max="8.8">
         <input id="8" type="range" max="8.8" value="invalid">
 
-        <!-- These should match -->
+        <!-- Nor these: the value is clamped to the minimum and maximum, 0 and 100 by default -->
         <input id="9" type="range" min="0" max="10" value="-1">
         <input id="10" type="range" min="0" max="10" value="10.1">
-
-        <!-- These cannot match -->
         <input id="11" type="range" value="10">
         <input id="12" type="range" min="invalid" value="10">
+        <input id="13" type="range" value="150">
+        <input id="15" type="RANGE" min="0" max="10" value="20">
+
+        <!-- The maximum is less than the minimum: out of range -->
+        <input id="14" type="range" min="10" max="0" value="3">
+        <!-- The maximum is less than the minimum, which default to 100 and 0: out of range -->
+        <input id="16" type="range" min="200">
+        <input id="17" type="range" max="-5">
+        <input id="18" type="range" min="invalid" max="-5">
+        <input id="19" type="range" min="10" max="0" value="">
+
+        <!-- Barred from constraint validation: neither in range nor out of range -->
+        <input id="20" type="range" disabled>
+        <input id="21" type="range" min="0" max="10" value="50" disabled>
+        <input id="22" type="range" min="0" max="10" value="50" readonly>
+        <fieldset disabled><input id="23" type="range" min="0" max="10" value="50"></fieldset>
+        <datalist><input id="24" type="range" min="0" max="10" value="50"></datalist>
+        <fieldset disabled><legend></legend><legend><input id="25" type="range" value="5"></legend></fieldset>
+
+        <!-- In the first legend of a disabled fieldset: not disabled, so evaluated as usual -->
+        <fieldset disabled><legend><input id="26" type="range" min="0" max="10" value="50"></legend></fieldset>
+        <fieldset disabled><legend><input id="27" type="range" min="10" max="0"></legend></fieldset>
         """
 
         self.assert_selector(
             markup,
             ":out-of-range",
-            ['9', '10'],
+            ['14', '16', '17', '18', '19', '27'],
             flags=util.HTML
         )
 
