@@ -88,14 +88,28 @@ class TestInRange(util.TestCase):
         <input id="11" type="range" value="10">
         <input id="12" type="range" min="invalid" value="10">
         <input id="13" type="range" value="150">
-        <input id="14" type="range" min="10" max="0" value="3">
         <input id="15" type="RANGE" min="0" max="10" value="20">
+
+        <!-- The maximum is less than the minimum: out of range -->
+        <input id="14" type="range" min="10" max="0" value="3">
+        <!-- The maximum is less than the minimum, which default to 100 and 0: out of range -->
+        <input id="16" type="range" min="200">
+        <input id="17" type="range" max="-5">
+        <input id="18" type="range" min="invalid" max="-5">
+        <input id="19" type="range" min="10" max="0" value="">
+
+        <!-- Barred from constraint validation: neither in range nor out of range -->
+        <input id="20" type="range" disabled>
+        <input id="21" type="range" min="0" max="10" value="50" disabled>
+        <input id="22" type="range" min="0" max="10" value="50" readonly>
+        <fieldset disabled><input id="23" type="range" min="0" max="10" value="50"></fieldset>
+        <datalist><input id="24" type="range" min="0" max="10" value="50"></datalist>
         """
 
         self.assert_selector(
             markup,
             ":in-range",
-            [str(i) for i in range(16)],
+            [str(i) for i in range(16) if i != 14],
             flags=util.HTML
         )
 

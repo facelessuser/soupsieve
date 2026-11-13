@@ -1825,10 +1825,13 @@ class CSSMatch(_DocumentNav):
 
         itype = util.lower(cast(str, self.get_attribute_by_name(el, 'type', '')))
 
-        # A `range` input always has a minimum and maximum, 0 and 100 by default,
-        # and its value is clamped to them, so it is always in range.
+        # A `range` input always has a minimum and maximum, 0 and 100 by default, and its value
+        # is clamped to them, so it is out of range only when its maximum is less than its minimum.
         if itype == 'range':
-            return bool(condition & ct.SEL_IN_RANGE)
+            mn = Inputs.parse_value(itype, cast(str, self.get_attribute_by_name(el, 'min', None)))
+            mx = Inputs.parse_value(itype, cast(str, self.get_attribute_by_name(el, 'max', None)))
+            out_of_range = (mx or (100.0,)) < (mn or (0.0,))
+            return not out_of_range if condition & ct.SEL_IN_RANGE else out_of_range
 
         mn = Inputs.parse_value(itype, cast(str, self.get_attribute_by_name(el, 'min', None)))
         mx = Inputs.parse_value(itype, cast(str, self.get_attribute_by_name(el, 'max', None)))

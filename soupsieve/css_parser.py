@@ -743,9 +743,11 @@ CSS_READ_WRITE = CSSPattern(
 # CSS pattern for `:read-only`
 CSS_READ_ONLY = CSSPattern('html|*:not(:read-write)', FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:in-range`
-# A `range` input always has a minimum and maximum: 0 and 100 by default.
+# A `range` input always has a minimum and maximum: 0 and 100 by default. When it is barred
+# from constraint validation, it matches neither `:in-range` nor `:out-of-range`.
+RANGE_INPUT = 'html|input[type="range"]:not(:disabled, [readonly], html|datalist html|*)'
 CSS_IN_RANGE = CSSPattern(
-    '''
+    f'''
     html|input:is(
         :is(
             [type="date"],
@@ -758,25 +760,27 @@ CSS_IN_RANGE = CSSPattern(
             [min],
             [max]
         ),
-        [type="range"]
+        {RANGE_INPUT}
     )
     ''',
     FLG_PSEUDO | FLG_HTML | FLG_IN_RANGE
 )
 # CSS pattern for `:out-of-range`
-# A `range` input is never out of range: its value is clamped to its minimum and maximum.
 CSS_OUT_OF_RANGE = CSSPattern(
-    '''
+    f'''
     html|input:is(
-        [type="date"],
-        [type="month"],
-        [type="week"],
-        [type="time"],
-        [type="datetime-local"],
-        [type="number"]
-    ):is(
-        [min],
-        [max]
+        :is(
+            [type="date"],
+            [type="month"],
+            [type="week"],
+            [type="time"],
+            [type="datetime-local"],
+            [type="number"]
+        ):is(
+            [min],
+            [max]
+        ),
+        {RANGE_INPUT}
     )
     ''',
     FLG_PSEUDO | FLG_HTML | FLG_OUT_OF_RANGE
