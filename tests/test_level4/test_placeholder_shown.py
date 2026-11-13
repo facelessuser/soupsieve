@@ -86,3 +86,33 @@ class TestPlaceholderShown(util.TestCase):
             ['0', '1', '2'],
             flags=util.HTML
         )
+
+    def test_placeholder_shown_sanitized_value(self):
+        """Test that an input's value is sanitized before checking that it is empty."""
+
+        markup = """
+        <!-- Line breaks are removed from the value. -->
+        <input id="0" type="text" placeholder="This is some text" value="&#10;">
+        <input id="1" type="password" placeholder="This is some text" value="&#13;&#10;">
+        <input id="2" type="text" placeholder="This is some text" value=" ">
+
+        <!-- Leading and trailing whitespace is removed from a URL or an email. -->
+        <input id="3" type="url" placeholder="This is some text" value=" ">
+        <input id="4" type="email" placeholder="This is some text" value="&#9;&#10;">
+        <input id="5" type="email" placeholder="This is some text" value=" a@b ">
+
+        <!-- A number that is not a valid floating-point number is removed. -->
+        <input id="6" type="number" placeholder="This is some text" value="abc">
+        <input id="7" type="number" placeholder="This is some text" value=" 7 ">
+        <input id="8" type="number" placeholder="This is some text" value="+1">
+        <input id="9" type="number" placeholder="This is some text" value="1.">
+        <input id="10" type="number" placeholder="This is some text" value="Infinity">
+        <input id="11" type="number" placeholder="This is some text" value="-.5e2">
+        """
+
+        self.assert_selector(
+            markup,
+            ":placeholder-shown",
+            ['0', '1', '3', '4', '6', '7', '8', '9', '10'],
+            flags=util.HTML
+        )

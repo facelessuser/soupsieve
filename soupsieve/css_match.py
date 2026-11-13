@@ -1959,15 +1959,26 @@ class CSSMatch(_DocumentNav):
         Match placeholder shown according to HTML spec.
 
         - text area should be checked if they have content. A single newline does not count as content.
+        - An input's value is sanitized first, as browsers do, and the placeholder is shown when the
+          result is empty. Text-like inputs drop line breaks, `url` and `email` inputs also drop
+          leading and trailing whitespace, and a `number` input empties a value that is not a valid
+          floating-point number, so `value="abc"` still shows the placeholder.
 
+        https://html.spec.whatwg.org/multipage/input.html#value-sanitization-algorithm
         """
 
-        match = False
-        content = self.get_text(el)
-        if content in ('', '\n'):
-            match = True
+        if self.get_tag(el) == 'input':
+            itype = util.lower(cast(str, self.get_attribute_by_name(el, 'type', '')))
+            value = cast(str, self.get_attribute_by_name(el, 'value', ''))
+            value = value.replace('\r', '').replace('\n', '')
+            if itype in ('url', 'email'):
+                value = value.strip(' \t\f')
+            elif itype == 'number' and not RE_NUM.match(value):
+                value = ''
+            return value == ''
 
-        return match
+        content = self.get_text(el)
+        return content in ('', '\n')
 
     def match_editable(self, el: bs4.Tag) -> bool:
         """

@@ -13,6 +13,9 @@ icon: lucide/scroll-text
     `datalist`, as it is barred from constraint validation.
 -   **FIX**: `:in-range` and `:out-of-range` treat a `date`, `month`, `week` or `datetime-local` value after
     275760-09-13T00:00:00Z as invalid, as browsers do.
+-   **FIX**: `:placeholder-shown` sanitizes an input's value before checking it, as browsers do, so it matches when the
+    value is only line breaks, only whitespace for `url` and `email`, or not a valid floating-point number for
+    `number`.
 
 ## 4.1
 

@@ -703,16 +703,18 @@ CSS_OPTIONAL = CSSPattern(
 # CSS pattern for `:placeholder-shown`
 CSS_PLACEHOLDER_SHOWN = CSSPattern(
     f'''
-    html|input:is(
-        {INPUT_TEXT_STATE},
-        [type=search],
-        [type=url],
-        [type=tel],
-        [type=email],
-        [type=password],
-        [type=number]
-    )[placeholder]:not([placeholder='']):is(:not([value]), [value=""]),
-    html|textarea[placeholder]:not([placeholder=''])
+    html|*:is(
+        input:is(
+            {INPUT_TEXT_STATE},
+            [type=search],
+            [type=url],
+            [type=tel],
+            [type=email],
+            [type=password],
+            [type=number]
+        ),
+        textarea
+    )[placeholder]:not([placeholder=''])
     ''',
     FLG_PSEUDO | FLG_HTML | FLG_PLACEHOLDER_SHOWN
 )
