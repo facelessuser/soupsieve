@@ -108,11 +108,15 @@ class TestPlaceholderShown(util.TestCase):
         <input id="9" type="number" placeholder="This is some text" value="1.">
         <input id="10" type="number" placeholder="This is some text" value="Infinity">
         <input id="11" type="number" placeholder="This is some text" value="-.5e2">
+
+        <!-- A number that overflows a double is removed, as in all browsers. -->
+        <input id="12" type="number" placeholder="This is some text" value="1e9999">
+        <input id="13" type="number" placeholder="This is some text" value="-1e9999">
         """
 
         self.assert_selector(
             markup,
             ":placeholder-shown",
-            ['0', '1', '3', '4', '6', '7', '8', '9', '10'],
+            ['0', '1', '3', '4', '6', '7', '8', '9', '10', '12', '13'],
             flags=util.HTML
         )
