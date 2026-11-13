@@ -23,11 +23,12 @@ class TestOutOfRange(util.TestCase):
         <input id="10" type="number" min="0" max="10" value="1E-1">
         """
 
-        for itype in ('number', 'range'):
+        # A range input clamps its value to its minimum and maximum, so it is never out of range
+        for itype, expected in (('number', ['1', '2', '3']), ('range', [])):
             self.assert_selector(
                 markup.replace('type="number"', f'type="{itype}"'),
                 ':out-of-range',
-                ['1', '2', '3'],
+                expected,
                 flags=util.HTML
             )
 
@@ -78,19 +79,20 @@ class TestOutOfRange(util.TestCase):
         <input id="7" type="range" max="8.8">
         <input id="8" type="range" max="8.8" value="invalid">
 
-        <!-- These should match -->
+        <!-- Nor these: the value is clamped to the minimum and maximum, 0 and 100 by default -->
         <input id="9" type="range" min="0" max="10" value="-1">
         <input id="10" type="range" min="0" max="10" value="10.1">
-
-        <!-- These cannot match -->
         <input id="11" type="range" value="10">
         <input id="12" type="range" min="invalid" value="10">
+        <input id="13" type="range" value="150">
+        <input id="14" type="range" min="10" max="0" value="3">
+        <input id="15" type="RANGE" min="0" max="10" value="20">
         """
 
         self.assert_selector(
             markup,
             ":out-of-range",
-            ['9', '10'],
+            [],
             flags=util.HTML
         )
 

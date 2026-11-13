@@ -743,24 +743,28 @@ CSS_READ_WRITE = CSSPattern(
 # CSS pattern for `:read-only`
 CSS_READ_ONLY = CSSPattern('html|*:not(:read-write)', FLG_PSEUDO | FLG_HTML)
 # CSS pattern for `:in-range`
+# A `range` input always has a minimum and maximum: 0 and 100 by default.
 CSS_IN_RANGE = CSSPattern(
     '''
     html|input:is(
-        [type="date"],
-        [type="month"],
-        [type="week"],
-        [type="time"],
-        [type="datetime-local"],
-        [type="number"],
+        :is(
+            [type="date"],
+            [type="month"],
+            [type="week"],
+            [type="time"],
+            [type="datetime-local"],
+            [type="number"]
+        ):is(
+            [min],
+            [max]
+        ),
         [type="range"]
-    ):is(
-        [min],
-        [max]
     )
     ''',
     FLG_PSEUDO | FLG_HTML | FLG_IN_RANGE
 )
 # CSS pattern for `:out-of-range`
+# A `range` input is never out of range: its value is clamped to its minimum and maximum.
 CSS_OUT_OF_RANGE = CSSPattern(
     '''
     html|input:is(
@@ -769,8 +773,7 @@ CSS_OUT_OF_RANGE = CSSPattern(
         [type="week"],
         [type="time"],
         [type="datetime-local"],
-        [type="number"],
-        [type="range"]
+        [type="number"]
     ):is(
         [min],
         [max]

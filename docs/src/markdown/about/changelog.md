@@ -6,6 +6,8 @@ icon: lucide/scroll-text
 ## 4.1.1
 
 -   **FIX**: Improve performance of tag name matching, which runs for every element and selector.
+-   **FIX**: A `range` input is always `:in-range` and never `:out-of-range`, as in browsers: its value is clamped to
+    its minimum and maximum, which are 0 and 100 by default.
 
 ## 4.1
 
