@@ -1,5 +1,6 @@
 """Test placeholder shown selectors."""
 from .. import util
+import soupsieve as sv
 
 
 class TestPlaceholderShown(util.TestCase):
@@ -124,3 +125,24 @@ class TestPlaceholderShown(util.TestCase):
             ['0', '1', '3', '4', '6', '7', '8', '9', '10', '12', '13'],
             flags=util.HTML
         )
+
+    def test_placeholder_shown_deeply_nested(self):
+        """Test that the text of elements that can't show a placeholder is not checked in a deeply nested document."""
+
+        from bs4 import BeautifulSoup
+        from unittest import mock
+
+        n = 32
+        soup = BeautifulSoup(
+            '<form><ul>' + '<li>' * n + '<input placeholder="a"><textarea placeholder="a"></textarea>',
+            'html.parser'
+        )
+        get_text = sv.css_match.CSSMatch.get_text
+        for selector, matches in (
+            (':placeholder-shown', 2),
+            (':not(:placeholder-shown)', n + 2),
+            ('form:has(:placeholder-shown)', 1)
+        ):
+            with mock.patch.object(sv.css_match.CSSMatch, "get_text", autospec=True, side_effect=get_text) as patched:
+                self.assertEqual(len(sv.select(selector, soup)), matches)
+            self.assertLessEqual(patched.call_count, 1)

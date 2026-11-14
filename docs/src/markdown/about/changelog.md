@@ -21,6 +21,8 @@ icon: lucide/scroll-text
 -   **FIX**: `:placeholder-shown` sanitizes an input's value before checking it, as browsers do, so it matches when the
     value is only line breaks, only whitespace for `url` and `email`, or, for `number`, not a valid floating-point
     number or one that overflows a double, such as `1e9999`.
+-   **FIX**: Fix `:placeholder-shown` taking time quadratic in the depth of the document, as it got the text of every
+    element before checking that it is a `textarea`.
 
 ## 4.1
 
