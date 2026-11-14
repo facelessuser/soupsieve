@@ -1959,15 +1959,35 @@ class CSSMatch(_DocumentNav):
         Match placeholder shown according to HTML spec.
 
         - text area should be checked if they have content. A single newline does not count as content.
+        - An input's value is sanitized first, and the placeholder is shown when the result is
+          empty. Text-like inputs drop line breaks, `url` and `email` inputs also drop leading and
+          trailing whitespace, and a `number` input empties a value that is not a valid
+          floating-point number, so `value="abc"` still shows the placeholder.
 
+        https://html.spec.whatwg.org/multipage/input.html#value-sanitization-algorithm
+
+        As in `match_range()`, we follow the spec, except where all browsers agree on something
+        else. Known cases, all deliberate:
+
+        - A `number` value that overflows a double, such as `1e9999`, is emptied, as in Chrome,
+          Firefox and Safari, although the spec's sanitization keeps it as a valid floating-point
+          number.
+        - Firefox keeps `value="1."` for a `number` input, so it hides the placeholder. It is not a
+          valid floating-point number: Chrome, Safari and the spec empty it, and so do we.
         """
 
-        match = False
-        content = self.get_text(el)
-        if content in ('', '\n'):
-            match = True
+        if self.get_tag(el) == 'input':
+            itype = util.lower(cast(str, self.get_attribute_by_name(el, 'type', '')))
+            value = cast(str, self.get_attribute_by_name(el, 'value', ''))
+            value = value.replace('\r', '').replace('\n', '')
+            if itype in ('url', 'email'):
+                value = value.strip(' \t\f')
+            elif itype == 'number' and Inputs.parse_value(itype, value) is None:
+                value = ''
+            return value == ''
 
-        return match
+        content = self.get_text(el)
+        return content in ('', '\n')
 
     def match_editable(self, el: bs4.Tag) -> bool:
         """
