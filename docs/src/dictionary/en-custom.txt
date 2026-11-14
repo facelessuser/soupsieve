@@ -83,6 +83,7 @@ pytest
 recurse
 recursing
 regex
+sanitization
 selectedness
 sublicense
 substring
