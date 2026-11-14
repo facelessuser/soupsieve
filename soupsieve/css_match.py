@@ -1976,7 +1976,8 @@ class CSSMatch(_DocumentNav):
           valid floating-point number: Chrome, Safari and the spec empty it, and so do we.
         """
 
-        if self.get_tag(el) == 'input':
+        name = self.get_tag(el)
+        if name == 'input':
             itype = util.lower(cast(str, self.get_attribute_by_name(el, 'type', '')))
             value = cast(str, self.get_attribute_by_name(el, 'value', ''))
             value = value.replace('\r', '').replace('\n', '')
@@ -1986,8 +1987,8 @@ class CSSMatch(_DocumentNav):
                 value = ''
             return value == ''
 
-        content = self.get_text(el)
-        return content in ('', '\n')
+        # This is checked for every element before the rest of the pattern, so only get the text of a `textarea`.
+        return name == 'textarea' and self.get_text(el) in ('', '\n')
 
     def match_editable(self, el: bs4.Tag) -> bool:
         """
