@@ -105,6 +105,22 @@ MAX_INPUT_VALUE: dict[str, tuple[float, ...]] = {
 DAYS_IN_WEEK = 7
 
 
+class NthState:
+    """Lazily built positions of the siblings counted by an `nth` selector under one parent."""
+
+    __slots__ = ('pos', 'count', 'positions')
+
+    def __init__(self, pos: int, count: int, positions: dict[int, int]) -> None:
+        """Initialize."""
+
+        # Next position in the parent's contents to scan
+        self.pos = pos
+        # Number of counted siblings found so far
+        self.count = count
+        # 1-based index of each counted sibling, keyed by `id()`
+        self.positions = positions
+
+
 class TreeForms(NamedTuple):
     """The form information of a tree. Elements are tracked by `id()` as `bs4` hashes them by their content."""
 
@@ -648,7 +664,7 @@ class CSSMatch(_DocumentNav):
         self.namespaces: ct.Namespaces | dict[str, str] = {} if namespaces is None else namespaces
         self.flags = flags
         self.enable_cache = not bool(self.flags & util.NOCACHE)
-        self.nth_cache: dict[Hashable, list[int]] = {}
+        self.nth_cache: dict[Hashable, NthState] = {}
         self.sib_cache: dict[Hashable, int] = {}
         self.anc_cache: dict[tuple[int, int], bool] = {}
         self.desc_cache: dict[tuple[int, int], bool] = {}
@@ -1268,112 +1284,96 @@ class CSSMatch(_DocumentNav):
             (self.get_tag_ns(child) == self.get_tag_ns(el))
         )
 
+    def match_nth_candidate(self, el: bs4.Tag, child: bs4.Tag, n: ct.SelectorNth) -> MatchGenerator:
+        """Check if a sibling is counted by the `nth` selector (`of-type` or `of S`)."""
+
+        if n.of_type and not self.match_nth_tag_type(el, child):
+            return False
+        if n.selectors and not (yield child, n.selectors):
+            return False
+        return True
+
+    def get_nth_index(
+        self,
+        el: bs4.Tag,
+        parent: bs4.Tag | bs4.BeautifulSoup | None,
+        n: ct.SelectorNth
+    ) -> Generator[MatchRequest, bool, int]:
+        """
+        Get the 1-based index of `el` among the siblings counted by `n`, or 0 if `el` is not counted.
+
+        When caching is enabled, each sibling is evaluated against `n` at most once per parent.
+        The siblings are scanned lazily in document order and the position of every counted sibling
+        is recorded, so a lookup costs amortized O(1) no matter what order elements are queried in.
+        This matters as an `nth` selector's `of S` may contain other `nth` selectors, which will then
+        be queried in whatever order the outer selector walks its siblings.
+        """
+
+        # No parent, just evaluate the element against the selectors
+        if parent is None:
+            return 1 if (yield from self.match_nth_candidate(el, el, n)) else 0
+
+        # Non-cached handling of parented element
+        if not self.enable_cache:
+            index = 0
+            for child in self.get_children(parent, reverse=n.last, tags=True, template_contents=True):
+                if (yield from self.match_nth_candidate(el, child, n)):
+                    index += 1
+                    if child is el:
+                        return index
+                elif child is el:
+                    break
+            return 0
+
+        key = (
+            (id(parent), id(n), self.get_tag(el), self.get_tag_ns(el))
+            if n.of_type
+            else (id(parent), id(n), None, None)
+        )
+        state = self.nth_cache.get(key)
+        if state is None:
+            # Next content position to scan, number of counted siblings found, and their positions.
+            state = self.nth_cache[key] = NthState(0, 0, {})
+
+        # "Last" selectors need the total count, so scan all siblings, otherwise just scan up to `el`.
+        contents = parent.contents
+        if n.last:
+            end = len(contents)
+        else:
+            pkey = id(parent)
+            if pkey not in self.index_cache:
+                self.index_cache[pkey] = {id(child): i for i, child in enumerate(contents)}
+            end = self.index_cache[pkey][id(el)] + 1
+
+        while state.pos < end:
+            node = contents[state.pos]
+            if self.is_tag(node) and (yield from self.match_nth_candidate(el, cast('bs4.Tag', node), n)):
+                state.count += 1
+                state.positions[id(node)] = state.count
+            state.pos += 1
+
+        index = state.positions.get(id(el), 0)
+        if index and n.last:
+            index = state.count - index + 1
+        return index
+
     def match_nth(self, el: bs4.Tag, nth: tuple[ct.SelectorNth, ...]) -> MatchGenerator:
         """Match `nth` elements."""
 
-        key: tuple[int, int, str | None, str | None] | None = None
-        start = rindex = 0
-        incr = rincr = 0
-
-        # Get the parent and use the ID for the cache key. The top level
-        # contents of a `template` have no parent element, but they do have siblings.
+        # The top level contents of a `template` have no parent element, but they do have siblings.
         parent = self.get_parent(el, no_doc=False, no_template=False)
-        pkey = id(parent) if self.enable_cache and parent else None
 
-        # Test element against the `nth` selectors.
-        matched = True
         for n in nth:
-            matched = False
-            last = n.last
-            key = None
-
-            # Prepare the child iterator and get the starting, real index and the relative index
-            if pkey is not None and parent:
-                # Get last info from the cache
-                if pkey:
-                    key = (
-                        (pkey, id(n), self.get_tag(el), self.get_tag_ns(el))
-                        if n.of_type
-                        else (pkey, id(n), None, None)
-                    )
-
-                valid = False
-                if key and key in self.nth_cache:
-                    start, rindex = self.nth_cache[key]
-                    if self.within(el, parent, start):
-                        last = False
-                        rincr = -1 if n.last else 1
-                        valid = True
-
-                # Start/overwrite the cache if the cache was empty or invalid
-                if not valid:
-                    start, rindex = len(parent) - 1 if last else 0, 0
-                    self.nth_cache[key] = [start, rindex]
-                    rincr = 1
-
-                incr = 1 if not last else -1
-                children = self.get_children(parent, start=start, reverse=last, template_contents=True)
-
-            # Non-cached handling of parented element
-            elif parent:
-                rindex = 0
-                start = len(parent) - 1 if last else 0
-                rincr = incr = 1
-                children = self.get_children(parent, start=start, reverse=last, template_contents=True)
-
-            # No parent, just evaluate the element against the selectors
-            else:
-                start = rindex = 0
-                rincr = incr = 1
-                children = iter([el])
-
-            # Find index of element compared to its siblings and check the index conditions
-            child: bs4.Tag
-            for child in children:
-                start += incr
-
-                # We only care about tags
-                if not self.is_tag(child):
-                    continue
-
-                # Handle `of S` in `nth-child` and handle `of-type`
-                if (
-                    (n.selectors and not (yield child, n.selectors)) or
-                    (n.of_type and not self.match_nth_tag_type(el, child))
-                ):
-                    if child is el:
-                        # Cached "last" lookups count down from `rindex`, so it must be the
-                        # position `el` would have had, even though `el` did not match.
-                        if last:
-                            rindex += 1
-                        break
-                    continue
-
-                # Test the relative index against the `nth` requirement.
-                rindex += rincr
-                if child is el:
-                    if n.a != 0:
-                        v = (rindex - n.b) / n.a
-                        matched = v.is_integer() and v >= 0
-                    else:
-                        matched = rindex == n.b and n.b >= 1
-                    break
-
-            # "Last index" selectors evaluate first from the bottom and then evaluate
-            # from the first found element top-down. Start will be incremented in the
-            # wrong direction, so increment it and step over the current index.
-            if last:
-                start += 2
-
-            # Update the cache
-            if key:
-                self.nth_cache[key] = [start, rindex]
-
-            # If we failed to match any `nth` selectors, quit.
-            if not matched:
-                break
-
-        return matched
+            index = yield from self.get_nth_index(el, parent, n)
+            if not index:
+                return False
+            if n.a != 0:
+                v = (index - n.b) / n.a
+                if not (v.is_integer() and v >= 0):
+                    return False
+            elif index != n.b:
+                return False
+        return True
 
     def match_empty(self, el: bs4.Tag) -> bool:
         """Check if element is empty (if requested)."""

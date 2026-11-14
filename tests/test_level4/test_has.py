@@ -210,6 +210,71 @@ class TestHas(util.TestCase):
                 self.assertEqual(len(sv.select(selector, soup)), matches)
             self.assertLessEqual(patched.call_count, 5 * n)
 
+    def test_has_sibling_nth_of_s(self):
+        """Test `nth` selectors inside `:has()` with a subsequent-sibling combinator."""
+
+        markup = """
+        <div>
+        <p id="0" class="x"></p>
+        <p id="1"></p>
+        <p id="2" class="x"></p>
+        <span id="3" class="x"></span>
+        <p id="4"></p>
+        <p id="5" class="x"></p>
+        <p id="6"></p>
+        </div>
+        """
+
+        self.assert_selector(
+            markup,
+            "p:has(~ :nth-child(2n of .x))",
+            ['0', '1', '2', '4'],
+            flags=util.HTML | util.NOCACHE
+        )
+
+        self.assert_selector(
+            markup,
+            ":nth-child(odd of :has(~ :nth-child(n of p.x)))",
+            ['0', '2', '4'],
+            flags=util.HTML | util.NOCACHE
+        )
+
+        self.assert_selector(
+            markup,
+            "p:not(:has(~ :nth-last-child(-n+2 of .x)))",
+            ['5', '6'],
+            flags=util.HTML | util.NOCACHE
+        )
+
+    def test_has_sibling_nth_of_s_evaluates_siblings_once(self):
+        """
+        Test that `nth` selectors inside `:has()` with a subsequent-sibling combinator evaluate each sibling once.
+
+        The `:has()` search restarts at the next sibling of each element it is evaluated on, so the `nth` selector
+        is looked up out of document order. The `nth` cache must handle that, or the work is quadratic in the number
+        of siblings.
+
+        Only the cached path is tested as matching without the cache is expected to be slow here.
+        """
+
+        import soupsieve as sv
+        from bs4 import BeautifulSoup
+        from unittest import mock
+
+        n = 50
+        soup = BeautifulSoup('<div>' + '<p></p>' * n + '</div>', 'html.parser')
+        match = sv.css_match.CSSMatch._match_selectors
+        for selector, matches in (
+            ('p:has(~ :nth-child(n of p.x))', 0),
+            ('p:not(:has(~ :nth-child(n of p.x)))', n),
+            (':nth-child(n of :has(~ :nth-child(n of p.x)))', 0)
+        ):
+            with mock.patch.object(
+                sv.css_match.CSSMatch, '_match_selectors', autospec=True, side_effect=match
+            ) as patched:
+                self.assertEqual(len(sv.select(selector, soup)), matches, selector)
+            self.assertLessEqual(patched.call_count, 6 * n, selector)
+
     def test_strict_has(self):
         """Test strict has behavior."""
 

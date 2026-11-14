@@ -6,6 +6,11 @@ icon: lucide/scroll-text
 ## 4.1.1
 
 -   **FIX**: Improve performance of tag name matching, which runs for every element and selector.
+-   **FIX**: Fix `nth` selectors taking polynomial time when nested inside the `of S` of other `nth` selectors, such
+    as `:nth-last-child(n of :nth-last-child(n of li))`, as each level of nesting multiplied the work by the number
+    of siblings. `nth` selectors inside `:has()` with a subsequent-sibling combinator, such as
+    `:has(~ :nth-child(n of li))`, were also quadratic. Each sibling is now evaluated against an `nth` selector at most
+    once per parent.
 -   **FIX**: A `range` input's value is clamped to its minimum and maximum, 0 and 100 by default, so it now matches
     `:out-of-range` only when its maximum is less than its minimum, and `:in-range` otherwise, including without `min`
     or `max`. A `range` input that is disabled, `readonly` or in a `datalist` matches neither.
