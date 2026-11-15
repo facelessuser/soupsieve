@@ -730,7 +730,8 @@ class CSSMatch(_DocumentNav):
         self.index_cache: dict[int, dict[int, int]] = {}
         self.form_cache: dict[int, TreeForms] = {}
         self.option_cache: dict[int, dict[int, bool]] = {}
-        self.contains_cache: dict[tuple[int, str], tuple[bool, str, str, int]] = {}
+        self.contains_cache: dict[tuple[int, int], tuple[bool, str, str, int]] = {}
+        self.contains_patterns: dict[int, tuple[re.Pattern[str] | None, int]] = {}
         # Used even with `NOCACHE`, as it does not depend on the tree.
         self.lang_match_cache: dict[tuple[int, str], bool] = {}
 
@@ -776,6 +777,7 @@ class CSSMatch(_DocumentNav):
         self.form_cache.clear()
         self.option_cache.clear()
         self.contains_cache.clear()
+        self.contains_patterns.clear()
         self.lang_match_cache.clear()
 
     def supports_namespaces(self) -> bool:
@@ -1471,35 +1473,51 @@ class CSSMatch(_DocumentNav):
                 match = False
         return match
 
-    def contains_text(self, el: bs4.Tag, text: str) -> bool:
+    def contains_text(self, el: bs4.Tag, contain_list: ct.SelectorContains) -> bool:
         """
-        Check if the text of an element, as `get_text()` gets it, contains `text`.
+        Check if the text of an element, as `get_text()` gets it, contains any of the values of `contain_list`.
 
         Getting the text of every element to search it takes time quadratic in the depth of the document, as an
-        element's text includes that of all its descendants. Instead, each element is summarized once for `text`,
-        from the summaries of its children, and cached: whether its text contains `text`, its length, and its
-        first and last `len(text) - 1` characters. An occurrence of `text` that crosses the boundary between two
-        children has at most `len(text) - 1` characters on each side of it, so searching the end of what comes
-        before the boundary joined to the start of what comes after it finds every one of them.
+        element's text includes that of all its descendants. Instead, each element is summarized once for the
+        list, from the summaries of its children, and cached: whether its text contains any of the values, its
+        length, and its first and last `n - 1` characters, where `n` is the length of the longest value. An
+        occurrence of a value that crosses the boundary between two children has at most `n - 1` characters on
+        each side of it, so searching the end of what comes before the boundary joined to the start of what comes
+        after it finds every one of them.
+
+        All the values are searched for at once, with a pattern of all of them, so the summary of an element and
+        the work to make it don't grow with the number of values, only the searches themselves do, as with the
+        text of a value.
 
         The first element checked is summarized along with all of its descendants, and the elements below it
-        that are checked later are found in the cache.
-
-        Only an element's parent uses its first and last characters, so once the parent is summarized, they are
-        dropped from the element's summary. Otherwise, the cache would hold up to `2 * (len(text) - 1)`
-        characters for every element, which adds up for a long `text` on a large document. A parent is never
-        summarized again, and checking the element itself only needs whether its text contains `text`.
+        that are checked later are found in the cache. Only an element's parent uses its first and last
+        characters, so once the parent is summarized, they are dropped from the element's summary. Otherwise,
+        the cache would hold up to `2 * (n - 1)` characters for every element, which adds up for a long value
+        on a large document. A parent is never summarized again, and checking the element itself only needs
+        whether its text contains a value.
         """
 
-        if not text:
+        list_key = id(contain_list)
+        compiled = self.contains_patterns.get(list_key)
+        if compiled is None:
+            values = set(contain_list.text)
+            if '' in values:
+                # Every text contains an empty value.
+                compiled = (None, 0)
+            else:
+                ordered = sorted(values, key=len, reverse=True)
+                compiled = (re.compile('|'.join(re.escape(v) for v in ordered)), len(ordered[0]) - 1)
+            self.contains_patterns[list_key] = compiled
+        pattern, edge = compiled
+        if pattern is None:
             return True
+        search = pattern.search
 
         cache = self.contains_cache
-        edge = len(text) - 1
         stack = [(el, False)]
         while stack:
             node, children_done = stack.pop()
-            key = (id(node), text)
+            key = (id(node), list_key)
             if key in cache:
                 continue
             # Like `get_text()`, the contents of a `template` are not included.
@@ -1508,7 +1526,7 @@ class CSSMatch(_DocumentNav):
                 stack.append((node, True))
                 stack.extend(
                     (child, False) for child in contents
-                    if isinstance(child, bs4.Tag) and (id(child), text) not in cache
+                    if isinstance(child, bs4.Tag) and (id(child), list_key) not in cache
                 )
                 continue
 
@@ -1517,17 +1535,17 @@ class CSSMatch(_DocumentNav):
             length = 0
             for child in contents:
                 if isinstance(child, bs4.Tag):
-                    c_found, c_head, c_tail, c_length = cache[(id(child), text)]
+                    c_found, c_head, c_tail, c_length = cache[(id(child), list_key)]
                 elif self.is_content_string(child):
                     string = str(child)
-                    c_found = text in string
+                    c_found = not found and search(string) is not None
                     c_head = string[:edge]
                     c_tail = string[-edge:] if edge else ''
                     c_length = len(string)
                 else:
                     continue
                 if not found:
-                    found = c_found or (edge > 0 and text in tail + c_head)
+                    found = c_found or (edge > 0 and search(tail + c_head) is not None)
                 if length < edge:
                     head = (head + c_head)[:edge]
                 if edge:
@@ -1539,11 +1557,11 @@ class CSSMatch(_DocumentNav):
             # The ends of the children are no longer needed.
             for child in contents:
                 if isinstance(child, bs4.Tag):
-                    child_key = (id(child), text)
+                    child_key = (id(child), list_key)
                     c_found, _, _, c_length = cache[child_key]
                     cache[child_key] = (c_found, '', '', c_length)
 
-        return cache[(id(el), text)][0]
+        return cache[(id(el), list_key)][0]
 
     def match_contains(self, el: bs4.Tag, contains: tuple[ct.SelectorContains, ...]) -> bool:
         """Match element if it contains text."""
@@ -1553,26 +1571,22 @@ class CSSMatch(_DocumentNav):
         own_content: Sequence[str] | None = None
         for contain_list in contains:
             found = False
-            for text in contain_list.text:
-                if contain_list.own:
-                    if own_content is None:
-                        own_content = self.get_own_text(el)
-                    for c in own_content:
-                        if text in c:
+            if not contain_list.own and self.enable_cache:
+                found = self.contains_text(el, contain_list)
+            else:
+                for text in contain_list.text:
+                    if contain_list.own:
+                        if own_content is None:
+                            own_content = self.get_own_text(el)
+                        if any(text in c for c in own_content):
                             found = True
                             break
-                    if found:
-                        break
-                elif self.enable_cache:
-                    if self.contains_text(el, text):
-                        found = True
-                        break
-                else:
-                    if content is None:
-                        content = self.get_text(el)
-                    if text in content:
-                        found = True
-                        break
+                    else:
+                        if content is None:
+                            content = self.get_text(el)
+                        if text in content:
+                            found = True
+                            break
             if not found:
                 match = False
         return match

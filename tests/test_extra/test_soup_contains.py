@@ -366,4 +366,42 @@ class TestSoupContains(util.TestCase):
         # Every `li` is summarized, but once its parent is, it only keeps whether its text contains the string.
         self.assertEqual(len(matcher.contains_cache), n)
         kept = [key for key, (_, head, tail, _) in matcher.contains_cache.items() if head or tail]
-        self.assertEqual(kept, [(id(soup.li), 'zzz')])
+        self.assertEqual(kept, [(id(soup.li), id(pattern.selectors[0].contains[0]))])
+
+    def test_contains_many_values(self):
+        """Test that each element is summarized once for a list of values, however many values it has."""
+
+        from bs4 import BeautifulSoup
+
+        n = 32
+        soup = BeautifulSoup('<ul>' + '<li>xy' * n, 'html.parser')
+        values = ', '.join(f'"v{i}"' for i in range(1000))
+        for selector, matches in (
+            (f'li:-soup-contains({values})', 0),
+            (f'li:-soup-contains({values}, "yx")', n - 1),
+            (f'li:-soup-contains({values}, "y")', n),
+            (f'li:-soup-contains({values}, "")', n)
+        ):
+            pattern = sv.compile(selector)
+            matcher = sv.css_match.CSSMatch(pattern.selectors, soup, pattern.namespaces, pattern.flags)
+            self.assertEqual(len(list(matcher.select())), matches)
+            self.assertLessEqual(len(matcher.contains_cache), n)
+            self.assertEqual(len(sv.select(selector, soup, flags=sv.NOCACHE)), matches)
+
+    def test_contains_values_across_boundaries(self):
+        """Test values of different lengths, some repeated, across the boundaries between text and elements."""
+
+        markup = """
+        <div id="1">a<span>bc</span>d</div>
+        <div id="2">ab<i></i>cd<b>e</b></div>
+        <div id="3"><p id="4">xyz</p><p id="5">z</p></div>
+        <div id="6">a b c d</div>
+        """
+
+        self.assert_selector(markup, 'div:-soup-contains("bcd", "zz")', ['1', '2', '3'], flags=util.HTML | util.NOCACHE)
+        self.assert_selector(
+            markup, '[id]:-soup-contains("abcde", "b", "b", "zzz")', ['1', '2', '6'], flags=util.HTML | util.NOCACHE
+        )
+        self.assert_selector(
+            markup, '[id]:-soup-contains("q", "yzz"):-soup-contains("x")', ['3'], flags=util.HTML | util.NOCACHE
+        )
