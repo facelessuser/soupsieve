@@ -16,6 +16,7 @@ icon: lucide/scroll-text
 -   **FIX**: `NOCACHE` now turns off the caches of the content language in a document's header, of the forms of a
     document, and of the selected options of a `select`, so `:lang()`, `:default`, `:indeterminate` and `:checked`
     see changes made to the tree during a lazy iteration such as `iselect()`.
+-   **FIX**: Slimmed relation caches so they now take roughly half the memory.
 
 ## 4.1.1
 

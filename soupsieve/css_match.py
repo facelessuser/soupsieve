@@ -717,9 +717,11 @@ class CSSMatch(_DocumentNav):
         # `:lang()` quadratic.
         self.enable_cache = not bool(self.flags & util.NOCACHE)
         self.nth_cache: dict[Hashable, NthState] = {}
-        self.sib_cache: dict[Hashable, int] = {}
-        self.anc_cache: dict[tuple[int, int], bool] = {}
-        self.desc_cache: dict[tuple[int, int], bool] = {}
+        # The caches of relations are keyed by the relation first, then the element, as a key of both in a tuple
+        # takes about twice the memory, and they can hold an entry for every element and relation of a selector.
+        self.sib_cache: dict[int, dict[int, int]] = {}
+        self.anc_cache: dict[int, dict[int, bool]] = {}
+        self.desc_cache: dict[int, dict[int, bool]] = {}
         self.dir_cache: dict[int, int] = {}
         self.lang_cache: dict[int, str] = {}
         self.edit_cache: dict[int, bool] = {}
@@ -1069,7 +1071,6 @@ class CSSMatch(_DocumentNav):
             return found
 
         pkey: int | None = None
-        key: tuple[int, int] | None = None
 
         # Get the parent and use the ID for the cache key. Siblings do not need a parent element:
         # they can be top level elements in the document or the top level contents of a `template`.
@@ -1085,16 +1086,18 @@ class CSSMatch(_DocumentNav):
         # Lastly, if this is our first time, setup the cache.
         reverse = relation[0].rel_type == REL_HAS_SIBLING
         start = len(parent) - 1 if reverse else 0
+        cache = self.sib_cache.get(id(relation))
+        if cache is None:
+            cache = self.sib_cache[id(relation)] = {}
         if pkey is not None:
-            key = (pkey, id(relation))
-            if key in self.sib_cache:
-                index = self.sib_cache[key]
+            if pkey in cache:
+                index = cache[pkey]
                 if index >= 0:
                     a, b = (index + 1, start + 1) if reverse else (start, index)
                     return not self.within(el, parent, a, b)
                 else:
                     return False
-            self.sib_cache[key] = start
+            cache[pkey] = start
 
         # Start at the furthest endpoint and walk back towards the element looking for siblings.
         # The current element counts as a sibling, but will not cause a match.
@@ -1116,8 +1119,8 @@ class CSSMatch(_DocumentNav):
                 break
 
         # Cache the index of the sibling or mark as there being no siblings.
-        if pkey and key:
-            self.sib_cache[key] = start if found else -1
+        if pkey:
+            cache[pkey] = start if found else -1
 
         # If we passed the current element and then found a sibling, it doesn't count as a match.
         if passed:
@@ -1135,18 +1138,21 @@ class CSSMatch(_DocumentNav):
         """
 
         found = False
-        visited: list[tuple[int, int]] = []
+        cache = self.anc_cache.get(id(relation))
+        if cache is None:
+            cache = self.anc_cache[id(relation)] = {}
+        visited: list[int] = []
         parent: bs4.Tag | None = el
         while not found and parent and (parent := self.get_parent(parent)):
-            key = (id(parent), id(relation))
-            if key in self.anc_cache:
-                found = self.anc_cache[key]
+            key = id(parent)
+            if key in cache:
+                found = cache[key]
                 break
             visited.append(key)
             found = yield parent, relation
 
         for key in visited:
-            self.anc_cache[key] = found
+            cache[key] = found
 
         return found
 
@@ -1173,10 +1179,13 @@ class CSSMatch(_DocumentNav):
                 # Siblings share the parent, so cache whether it matches to avoid evaluating it again for every child.
                 # This is inlined, instead of going through `match_ancestor`, as an extra generator is costly on
                 # documents where most parents have a single child and the cache rarely gets a hit.
-                key = (id(parent), id(relation))
-                cached = self.anc_cache.get(key)
+                cache = self.anc_cache.get(id(relation))
+                if cache is None:
+                    cache = self.anc_cache[id(relation)] = {}
+                key = id(parent)
+                cached = cache.get(key)
                 if cached is None:
-                    cached = self.anc_cache[key] = yield parent, relation
+                    cached = cache[key] = yield parent, relation
                 found = cached
             else:
                 found = yield parent, relation
@@ -1222,15 +1231,18 @@ class CSSMatch(_DocumentNav):
         """
 
         found = False
+        cache = self.desc_cache.get(id(relation))
+        if cache is None:
+            cache = self.desc_cache[id(relation)] = {}
         # Elements whose contents are being searched, outermost first, and elements searched without a match
-        searching: list[tuple[int, int]] = []
-        searched: list[tuple[int, int]] = []
+        searching: list[int] = []
+        searched: list[int] = []
         stack = [self.get_tag_children(el)]
         while stack and not found:
             for child in stack[-1]:
-                key = (id(child), id(relation))
-                if key in self.desc_cache:
-                    if self.desc_cache[key]:
+                key = id(child)
+                if key in cache:
+                    if cache[key]:
                         found = True
                         break
                     continue
@@ -1246,9 +1258,9 @@ class CSSMatch(_DocumentNav):
                     searched.append(searching.pop())
 
         for key in searching:
-            self.desc_cache[key] = True
+            cache[key] = True
         for key in searched:
-            self.desc_cache[key] = False
+            cache[key] = False
 
         return found
 
