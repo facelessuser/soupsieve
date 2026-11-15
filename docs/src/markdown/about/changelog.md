@@ -3,6 +3,12 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 4.1.2
+
+-   **FIX**: Fix `:lang()` taking time quadratic in the number of top level elements of a fragment that have an `html`
+    or `head` child, such as many documents concatenated and parsed with `html.parser`, as the content language
+    found in the header of each one was cached in a list that was searched for every new top level element.
+
 ## 4.1.1
 
 -   **FIX**: Improve performance of tag name matching, which runs for every element and selector.

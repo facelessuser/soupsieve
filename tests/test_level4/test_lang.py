@@ -536,6 +536,20 @@ class TestLang(util.TestCase):
         self.assert_selector(markup, "[id]:lang('')", ['1', '2', '3', '4'], flags=util.HTML | util.NOCACHE)
         self.assert_selector(markup, "[id]:lang('*')", [], flags=util.HTML | util.NOCACHE)
 
+    def test_language_in_header_of_each_root(self):
+        """Test that each top level element of a fragment uses the language in its own header."""
+
+        markup = """
+        <html><head><meta http-equiv="content-language" content="en"></head><body><p id="1"></p></body></html>
+        <html><head><meta http-equiv="content-language" content="fr"></head><body><p id="2"></p></body></html>
+        <html><head></head><body><p id="3"></p></body></html>
+        <html><head><meta http-equiv="content-language" content="en"></head><body><p id="4"></p></body></html>
+        """
+
+        self.assert_selector(markup, "p:lang(en)", ['1', '4'], flags=util.PYHTML | util.NOCACHE)
+        self.assert_selector(markup, "p:lang(fr)", ['2'], flags=util.PYHTML | util.NOCACHE)
+        self.assert_selector(markup, "p:lang('')", ['3'], flags=util.PYHTML | util.NOCACHE)
+
     def test_deeply_nested_language(self):
         """Test that each ancestor is checked once for the language of a deeply nested document."""
 
