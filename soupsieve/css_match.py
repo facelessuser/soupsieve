@@ -657,7 +657,7 @@ class CSSMatch(_DocumentNav):
 
         self.assert_valid_input(scope)
         self.tag = scope
-        self.cached_meta_lang: list[tuple[str, str]] = []
+        self.cached_meta_lang: dict[int, str] = {}
         self.cached_forms: dict[int, TreeForms] = {}
         self.cached_options: dict[int, dict[int, bool]] = {}
         self.selectors = selectors
@@ -1724,11 +1724,10 @@ class CSSMatch(_DocumentNav):
                 parent = last
                 break
 
-        # Use cached meta language.
-        if found_lang is None and self.cached_meta_lang:
-            for cache in self.cached_meta_lang:
-                if root is not None and cast(str, root) is cache[0]:
-                    return cache[1]
+        # Use cached meta language. Each top level element of a fragment is its own root,
+        # so look it up by the root instead of searching every root seen so far.
+        if found_lang is None and root is not None and id(root) in self.cached_meta_lang:
+            return self.cached_meta_lang[id(root)]
 
         # If we couldn't find a language, and the document is HTML, look to meta to determine language.
         if found_lang is None and (not self.is_xml or (has_html_namespace and root and root.name == 'html')):
@@ -1757,12 +1756,12 @@ class CSSMatch(_DocumentNav):
                                 content = v
                             if c_lang and content:
                                 found_lang = content
-                                self.cached_meta_lang.append((cast(str, root), cast(str, found_lang)))
+                                self.cached_meta_lang[id(root)] = cast(str, found_lang)
                                 break
                     if found_lang is not None:
                         break
                 if found_lang is None:
-                    self.cached_meta_lang.append((cast(str, root), ''))
+                    self.cached_meta_lang[id(root)] = ''
 
         # Without any language information, the language is unknown, which is an empty language tag.
         return '' if found_lang is None else cast(str, found_lang)
