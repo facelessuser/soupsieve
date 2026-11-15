@@ -665,6 +665,21 @@ class CSSMatch(_DocumentNav):
 
     A report of polynomial time needs a document that breaks the contract, with time measured at increasing
     sizes, not only a slow example: a large document is slow in linear time too.
+
+    Memory follows the same contract. The caches that keep matching linear belong to one call of `select()`,
+    `match()`, `filter()` or `closest()`, or to one `iselect()` for as long as it is iterated, and are freed
+    with it, so nothing builds up across calls. Each entry records work that was done, so a cache grows no
+    faster than the time spent matching: at most in proportion to the size of the selector times the size of
+    the document. For example, `:has()`, the descendant combinator and `~` keep an entry for each element and
+    each of these relations in the selector, so a selector with many of them on a large document can use a lot
+    of memory, but it takes as long to match. Limiting the selectors that are accepted, such as with `ignore`
+    or `max_selectors`, limits both.
+
+    The caches are not bounded, and should not be. Evicting entries brings back the work that they avoid, so a
+    bounded cache, such as a least recently used one, makes matching quadratic again on the large documents the
+    caches are there for, unless the bound is at least the number of entries anyway. It also slows every cache
+    access, and `contains_text()` relies on its entries staying in the cache. A report of excessive memory needs
+    memory that grows faster than the time spent matching.
     """
 
     def __init__(
@@ -693,6 +708,7 @@ class CSSMatch(_DocumentNav):
         # So a new cache must be declared here, only be read or written when `enable_cache` is true, and be
         # cleared in `reset()`. Keys are the `id()` of elements, which stay valid as long as the tree does
         # not change. The pattern cache in `css_parser` and `util.lower()` do not depend on the tree.
+        # The caches are not bounded: the class documentation explains why, and how much memory they can use.
         #
         # The one exception is `lang_match_cache`, which is used even with `NOCACHE`. It holds whether a
         # language matches a `:lang()`, keyed by the `:lang()` of the compiled selector, which lives as long
