@@ -564,6 +564,34 @@ class TestLang(util.TestCase):
             self.assertEqual(len(sv.select("li:lang(en)", soup)), 0)
         self.assertLessEqual(patched.call_count, 2 * n)
 
+    def test_long_inherited_language(self):
+        """Test that a language shared by many elements is checked and matched once per `:lang()`."""
+
+        import soupsieve as sv
+        from bs4 import BeautifulSoup
+        from unittest import mock
+
+        n = 32
+        tag = 'en-' + '-'.join(['abcdefgh'] * n)
+        filter_lang = sv.css_match.CSSMatch.extended_language_filter
+        for lang, valid in ((tag, True), (tag + '!', False)):
+            soup = BeautifulSoup(f'<html lang="{lang}"><body>' + '<p>x</p>' * n, 'html.parser')
+            for selector, matches, ranges in (
+                ('p:lang(en)', n if valid else 0, 1),
+                ('p:not(:lang(en))', 0 if valid else n, 1),
+                ('p:lang("*-x", fr)', 0, 2)
+            ):
+                with mock.patch.object(
+                    sv.css_match, 'RE_LANG_TAG', wraps=sv.css_match.RE_LANG_TAG
+                ) as re_lang_tag, mock.patch.object(
+                    sv.css_match.CSSMatch, 'extended_language_filter', autospec=True, side_effect=filter_lang
+                ) as patched:
+                    self.assertEqual(len(sv.select(selector, soup, flags=sv.NOCACHE)), matches)
+                    self.assertEqual(len(sv.select(selector, soup)), matches)
+                # Two selects: the tag is checked once, and each range matched once, per select.
+                self.assertLessEqual(re_lang_tag.fullmatch.call_count, 2)
+                self.assertLessEqual(patched.call_count, 2 * ranges if valid else 0)
+
     def test_language_ill_formed_tag(self):
         """Test that an element whose language tag is not well-formed matches no language range."""
 

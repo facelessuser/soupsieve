@@ -658,6 +658,7 @@ class CSSMatch(_DocumentNav):
         self.assert_valid_input(scope)
         self.tag = scope
         self.cached_meta_lang: dict[int, str] = {}
+        self.lang_matches: dict[tuple[int, str], bool] = {}
         self.cached_forms: dict[int, TreeForms] = {}
         self.cached_options: dict[int, dict[int, bool]] = {}
         self.selectors = selectors
@@ -1665,8 +1666,18 @@ class CSSMatch(_DocumentNav):
             for key in visited:
                 self.lang_cache[key] = found_lang
 
+        # The result only depends on the language, which elements usually inherit, so match each distinct
+        # language once per `:lang()`. Checking a long language tag for every element would take time
+        # quadratic in the size of the document.
+        match_key = (id(langs), found_lang)
+        try:
+            return self.lang_matches[match_key]
+        except KeyError:
+            pass
+
         # A language tag that is not well-formed matches nothing, not even `:lang('')` or `:lang('*')`.
         if found_lang and RE_LANG_TAG.fullmatch(found_lang) is None:
+            self.lang_matches[match_key] = False
             return False
 
         match = False
@@ -1678,6 +1689,7 @@ class CSSMatch(_DocumentNav):
             if not match:
                 break
 
+        self.lang_matches[match_key] = match
         return match
 
     def resolve_lang(self, el: bs4.Tag, visited: list[int]) -> str:

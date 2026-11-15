@@ -8,6 +8,8 @@ icon: lucide/scroll-text
 -   **FIX**: Fix `:lang()` taking time quadratic in the number of top level elements of a fragment that have an `html`
     or `head` child, such as many documents concatenated and parsed with `html.parser`, as the content language
     found in the header of each one was cached in a list that was searched for every new top level element.
+-   **FIX**: Fix `:lang()` taking time quadratic in the size of the document when many elements share a long language
+    tag, such as one inherited from `<html lang>`, as the tag was checked and matched again for every element.
 
 ## 4.1.1
 
