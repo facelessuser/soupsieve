@@ -657,13 +657,27 @@ class CSSMatch(_DocumentNav):
 
         self.assert_valid_input(scope)
         self.tag = scope
-        self.cached_meta_lang: dict[int, str] = {}
-        self.lang_matches: dict[tuple[int, str], bool] = {}
-        self.cached_forms: dict[int, TreeForms] = {}
-        self.cached_options: dict[int, dict[int, bool]] = {}
         self.selectors = selectors
         self.namespaces: ct.Namespaces | dict[str, str] = {} if namespaces is None else namespaces
         self.flags = flags
+
+        # Caches for this call of `select()`, `iselect()`, `match()` or `filter()`.
+        #
+        # They assume the tree does not change during the call. Changing it during a lazy iteration such as
+        # `iselect()` is only supported with `NOCACHE`, which turns off every one of these caches, so results
+        # then reflect the tree as it is when each element is matched. Changing the tree with caching on can
+        # give stale results, and that is expected: there is no cheap way to detect a change, and clearing
+        # the caches for every element would make many selectors quadratic again.
+        #
+        # So a new cache must be declared here, only be read or written when `enable_cache` is true, and be
+        # cleared in `reset()`. Keys are the `id()` of elements, which stay valid as long as the tree does
+        # not change. The pattern cache in `css_parser` and `util.lower()` do not depend on the tree.
+        #
+        # The one exception is `lang_match_cache`, which is used even with `NOCACHE`. It holds whether a
+        # language matches a `:lang()`, keyed by the `:lang()` of the compiled selector, which lives as long
+        # as this object, and by the language itself, not by an element. Nothing in it comes from the tree,
+        # so it cannot go stale, and without it a long language tag shared by many elements would make
+        # `:lang()` quadratic.
         self.enable_cache = not bool(self.flags & util.NOCACHE)
         self.nth_cache: dict[Hashable, NthState] = {}
         self.sib_cache: dict[Hashable, int] = {}
@@ -675,6 +689,11 @@ class CSSMatch(_DocumentNav):
         self.tree_cache: dict[int, bs4.Tag] = {}
         self.select_cache: dict[int, bs4.Tag | None] = {}
         self.index_cache: dict[int, dict[int, int]] = {}
+        self.form_cache: dict[int, TreeForms] = {}
+        self.option_cache: dict[int, dict[int, bool]] = {}
+        self.meta_lang_cache: dict[int, str] = {}
+        # Used even with `NOCACHE`, as it does not depend on the tree.
+        self.lang_match_cache: dict[tuple[int, str], bool] = {}
 
         # Find the root element for the whole tree
         doc = scope
@@ -715,6 +734,10 @@ class CSSMatch(_DocumentNav):
         self.tree_cache.clear()
         self.select_cache.clear()
         self.index_cache.clear()
+        self.form_cache.clear()
+        self.option_cache.clear()
+        self.meta_lang_cache.clear()
+        self.lang_match_cache.clear()
 
     def supports_namespaces(self) -> bool:
         """Check if namespaces are supported in the HTML type."""
@@ -1483,9 +1506,10 @@ class CSSMatch(_DocumentNav):
         """
 
         key = id(tree)
-        forms = self.cached_forms.get(key)
-        if forms is not None:
-            return forms
+        if self.enable_cache:
+            cached = self.form_cache.get(key)
+            if cached is not None:
+                return cached
 
         ids: dict[str, bs4.Tag] = {}
         controls: list[tuple[bs4.Tag, bs4.Tag | None]] = []
@@ -1539,7 +1563,8 @@ class CSSMatch(_DocumentNav):
             ):
                 forms.checked[(id(form), radio_name)] = el
 
-        self.cached_forms[key] = forms
+        if self.enable_cache:
+            self.form_cache[key] = forms
         return forms
 
     def match_default(self, el: bs4.Tag) -> bool:
@@ -1593,9 +1618,10 @@ class CSSMatch(_DocumentNav):
         """
 
         key = id(select)
-        selectedness = self.cached_options.get(key)
-        if selectedness is not None:
-            return selectedness
+        if self.enable_cache:
+            cached = self.option_cache.get(key)
+            if cached is not None:
+                return cached
 
         options: list[tuple[bs4.Tag, bool]] = []
         stack: list[tuple[bs4.Tag, bool | None]] = [
@@ -1629,7 +1655,8 @@ class CSSMatch(_DocumentNav):
 
         selected = {id(el) for el in marked}
         selectedness = {id(el): id(el) in selected for el, _ in options}
-        self.cached_options[key] = selectedness
+        if self.enable_cache:
+            self.option_cache[key] = selectedness
         return selectedness
 
     def match_checked_option(self, el: bs4.Tag) -> bool:
@@ -1668,16 +1695,15 @@ class CSSMatch(_DocumentNav):
 
         # The result only depends on the language, which elements usually inherit, so match each distinct
         # language once per `:lang()`. Checking a long language tag for every element would take time
-        # quadratic in the size of the document.
+        # quadratic in the size of the document. This does not depend on the tree, so unlike the other
+        # caches it is also used with `NOCACHE`.
         match_key = (id(langs), found_lang)
-        try:
-            return self.lang_matches[match_key]
-        except KeyError:
-            pass
+        if match_key in self.lang_match_cache:
+            return self.lang_match_cache[match_key]
 
         # A language tag that is not well-formed matches nothing, not even `:lang('')` or `:lang('*')`.
         if found_lang and RE_LANG_TAG.fullmatch(found_lang) is None:
-            self.lang_matches[match_key] = False
+            self.lang_match_cache[match_key] = False
             return False
 
         match = False
@@ -1689,7 +1715,7 @@ class CSSMatch(_DocumentNav):
             if not match:
                 break
 
-        self.lang_matches[match_key] = match
+        self.lang_match_cache[match_key] = match
         return match
 
     def resolve_lang(self, el: bs4.Tag, visited: list[int]) -> str:
@@ -1738,8 +1764,8 @@ class CSSMatch(_DocumentNav):
 
         # Use cached meta language. Each top level element of a fragment is its own root,
         # so look it up by the root instead of searching every root seen so far.
-        if found_lang is None and root is not None and id(root) in self.cached_meta_lang:
-            return self.cached_meta_lang[id(root)]
+        if found_lang is None and root is not None and self.enable_cache and id(root) in self.meta_lang_cache:
+            return self.meta_lang_cache[id(root)]
 
         # If we couldn't find a language, and the document is HTML, look to meta to determine language.
         if found_lang is None and (not self.is_xml or (has_html_namespace and root and root.name == 'html')):
@@ -1768,12 +1794,13 @@ class CSSMatch(_DocumentNav):
                                 content = v
                             if c_lang and content:
                                 found_lang = content
-                                self.cached_meta_lang[id(root)] = cast(str, found_lang)
+                                if self.enable_cache:
+                                    self.meta_lang_cache[id(root)] = cast(str, found_lang)
                                 break
                     if found_lang is not None:
                         break
-                if found_lang is None:
-                    self.cached_meta_lang[id(root)] = ''
+                if found_lang is None and self.enable_cache:
+                    self.meta_lang_cache[id(root)] = ''
 
         # Without any language information, the language is unknown, which is an empty language tag.
         return '' if found_lang is None else cast(str, found_lang)

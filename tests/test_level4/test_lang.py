@@ -581,16 +581,17 @@ class TestLang(util.TestCase):
                 ('p:not(:lang(en))', 0 if valid else n, 1),
                 ('p:lang("*-x", fr)', 0, 2)
             ):
-                with mock.patch.object(
-                    sv.css_match, 'RE_LANG_TAG', wraps=sv.css_match.RE_LANG_TAG
-                ) as re_lang_tag, mock.patch.object(
-                    sv.css_match.CSSMatch, 'extended_language_filter', autospec=True, side_effect=filter_lang
-                ) as patched:
-                    self.assertEqual(len(sv.select(selector, soup, flags=sv.NOCACHE)), matches)
-                    self.assertEqual(len(sv.select(selector, soup)), matches)
-                # Two selects: the tag is checked once, and each range matched once, per select.
-                self.assertLessEqual(re_lang_tag.fullmatch.call_count, 2)
-                self.assertLessEqual(patched.call_count, 2 * ranges if valid else 0)
+                # Matching a language doesn't depend on the tree, so it is cached even with `NOCACHE`.
+                for flags in (0, sv.NOCACHE):
+                    with mock.patch.object(
+                        sv.css_match, 'RE_LANG_TAG', wraps=sv.css_match.RE_LANG_TAG
+                    ) as re_lang_tag, mock.patch.object(
+                        sv.css_match.CSSMatch, 'extended_language_filter', autospec=True, side_effect=filter_lang
+                    ) as patched:
+                        self.assertEqual(len(sv.select(selector, soup, flags=flags)), matches)
+                    # The tag is checked once, and each range matched once.
+                    self.assertLessEqual(re_lang_tag.fullmatch.call_count, 1)
+                    self.assertLessEqual(patched.call_count, ranges if valid else 0)
 
     def test_language_ill_formed_tag(self):
         """Test that an element whose language tag is not well-formed matches no language range."""

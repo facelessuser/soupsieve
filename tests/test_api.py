@@ -612,6 +612,46 @@ class TestSoupSieve(util.TestCase):
         sv.purge()
         self.assertEqual(sv.cp._cached_css_compile.cache_info().currsize, 0)
 
+    def test_nocache_tree_changes_during_iselect(self):
+        """With `NOCACHE`, each element is matched against the tree as it is at that point of an `iselect()`."""
+
+        from bs4 import BeautifulSoup
+
+        # The content language in the header.
+        soup = BeautifulSoup(
+            '<html><head><meta http-equiv="content-language" content="en"></head>'
+            '<body><p id="1"></p><p id="2"></p></body></html>',
+            'html.parser'
+        )
+        found = []
+        for el in sv.iselect('p:lang(en)', soup, flags=sv.NOCACHE):
+            found.append(el['id'])
+            soup.meta['content'] = 'fr'
+        self.assertEqual(found, ['1'])
+
+        # The checked radio button of a group, which ends it being indeterminate.
+        soup = BeautifulSoup(
+            '<form><input id="1" type="radio" name="a"><input id="2" type="radio" name="a">'
+            '<input id="3" type="radio" name="a"></form>',
+            'html.parser'
+        )
+        found = []
+        for el in sv.iselect(':indeterminate', soup, flags=sv.NOCACHE):
+            found.append(el['id'])
+            soup.find(id='3')['checked'] = ''
+        self.assertEqual(found, ['1'])
+
+        # The selected option of a `select`.
+        soup = BeautifulSoup(
+            '<select><option id="1">a</option><option id="2">b</option><option id="3">c</option></select>',
+            'html.parser'
+        )
+        found = []
+        for el in sv.iselect('option:checked', soup, flags=sv.NOCACHE):
+            found.append(el['id'])
+            soup.find(id='3')['selected'] = ''
+        self.assertEqual(found, ['1', '3'])
+
     def test_recompile(self):
         """If you feed through the same object, it should pass through unless you change parameters."""
 

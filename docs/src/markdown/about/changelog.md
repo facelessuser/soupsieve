@@ -10,6 +10,9 @@ icon: lucide/scroll-text
     found in the header of each one was cached in a list that was searched for every new top level element.
 -   **FIX**: Fix `:lang()` taking time quadratic in the size of the document when many elements share a long language
     tag, such as one inherited from `<html lang>`, as the tag was checked and matched again for every element.
+-   **FIX**: `NOCACHE` now turns off the caches of the content language in a document's header, of the forms of a
+    document, and of the selected options of a `select`, so `:lang()`, `:default`, `:indeterminate` and `:checked`
+    see changes made to the tree during a lazy iteration such as `iselect()`.
 
 ## 4.1.1
 
