@@ -169,39 +169,60 @@ sv.purge()
 ## Security Concerns
 
 Soup Sieve is a library built for Beautiful Soup that takes user specified CSS language style inputs and uses them to
-walk the HTML/XML tree and return elements according to the CSS Specification. While performance concerns are taken
-seriously, not all selectors are equal in regard to performance as specified via the CSS specification.
+walk the HTML/XML tree and return elements according to the CSS Specification. Performance concerns are taken seriously,
+but not all selectors are equal in regard to performance, and matching a selector takes time.
 
-Soup Sieve attempts to do various tricks to help improve performance, but some selectors will always have non-linear
-performance in certain situations.
+For a given selector, Soup Sieve aims for the time to match a document to grow linearly with the size of the document,
+whatever its shape: deeply nested, very wide, or with many top level elements. The cost of a selector still depends on
+how much of the document it has to look at, and grows with the size of the selector too: a selector twice as long, or a
+document twice as large, takes about twice as long, and both together about four times as long. Large documents and
+large selectors are slow even when nothing is wrong.
 
-Selectors like the descendant and subsequent sibling combinators (`#!css a b` and `#!css a ~ b`) often cause entire
-subtrees of the main document tree to be crawled when evaluating a single element. If used poorly, this can impact
-performance in a non-linear ways. It should be noted that Soup Sieve employs caching to reduce performance concerns
-in various cases, but there will always be the potential produce non-linear cases simply due to how the selectors work.
+Several selectors look at much more of the document than the element being matched:
 
-Selectors like the `#!css :nth-*` family of selectors will evaluate numerous children under one parent to find a
-suitable element. These can also be a potential concern for performance if used poorly. Soup Sieve also employs caching
-in these cases to dramatically improve performance in a number of problematic circumstances, but again, there will
-likely always be some cases that will exhibit performance that is inferior to other cases.
+-   The descendant and subsequent sibling combinators (`#!css a b` and `#!css a ~ b`) look at the ancestors or the
+    earlier siblings of an element, and the `#!css :nth-*` family of selectors counts the siblings of an element.
+    Soup Sieve caches what it finds, so each part of the document is looked at once for each of these in a selector,
+    instead of once for every element.
 
-The `#!css :has()` selector acts like a lookahead in regular expression. And paired with  descendant and subsequent
-sibling combinators, can exhibit non-linear performance. Much like regular expression lookaheads, it is an extremely
-powerful selector, but will always open the door for poor performance if not used thoughtfully.
+-   The `#!css :has()` selector acts like a lookahead in a regular expression, and can search the whole subtree or all
+    the following siblings of an element. It is cached the same way, but a relative selector that starts with `>` or
+    `+`, which only checks the children or the next sibling, still does less work than one that doesn't.
 
-The `#!css :-soup-contains()` selector is also a very useful selector that can crawl entire subtrees of the main
-document tree. This is by design, and provides useful utility, but admittedly, if not used in an intelligent manner,
-using tight patterns to narrow the scope of operation, can degrade performance.
+-   The `#!css :-soup-contains()` selector searches the text of an element and all of its descendants, so it can
+    crawl entire subtrees of the document. This is by design, and provides useful utility. Before 4.1.2, the text of
+    each element was gathered and searched again for every element, so on deeply nested documents it could take time
+    quadratic in the depth of the document. Since 4.1.2, each text is read once for each list of values in a select,
+    but searching more text, or for more values, still takes longer, so narrowing the scope with a specific anchor
+    still helps.
 
-This is not an exhaustive list of all possibilities in which CSS selectors can be performance bottleneck, but is meant
-to accomplish a few things.
+Older versions of Soup Sieve did not cache all of these cases and could take time that grew faster than the size of the
+document. The [change log](./about/changelog.md) lists each case that was improved and the version that improved it.
+
+The caches only last for one select, match, or filter, and the memory they use grows with the work done, so a selector
+that takes a long time to match can also use a lot of memory.
+
+Some options give up these protections:
+
+-   The [`NOCACHE`](./api.md#soupseivenocache) flag turns off the caches, so the selectors above look at the same
+    parts of the document again for every element, which can take time that grows faster than the size of the
+    document, such as on deeply nested documents.
+
+-   The [`NOSTRICT`](./api.md#soupseivenostrict) flag allows complex selectors and nested `#!css :has()` within
+    `#!css :has()`, which are not covered by the protections above.
+
+This is not an exhaustive list of all possibilities in which CSS selectors can be a performance bottleneck, but is
+meant to accomplish a few things.
 
 1.  Make clear to all users that taking untrusted user input in a time critical system, without any kind of mitigation
-    to abort long running operations will open you up to performance concerns.
+    to abort long running operations, will open you up to performance concerns. Pseudo-classes that are not needed can
+    also be disabled with the [`ignore`](./api.md#ignore-pseudo-class) option.
 
-2.  Encourage users, before deploying solutions, to test understand how the selectors work, and thoughtfully apply them
-    after testing them .
+2.  Encourage users, before deploying solutions, to test and understand how the selectors work, and thoughtfully apply
+    them after testing them.
 
 As always, we here at Soup Sieve are happy to hear about real performance concerns that are within our power to improve,
-and will always take them seriously, but it should be noted that exposing time critical systems, with large document
-trees, to untrusted user inputs, will open you up to performance related exploits.
+and will always take them seriously. A report should show the time to match growing faster than the size of the
+document, measured at increasing sizes, as a large document is slow even when the time grows linearly. It should be
+noted that exposing time critical systems, with large document trees, to untrusted user inputs, will open you up to
+performance related exploits.
