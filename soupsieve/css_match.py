@@ -730,7 +730,6 @@ class CSSMatch(_DocumentNav):
         self.index_cache: dict[int, dict[int, int]] = {}
         self.form_cache: dict[int, TreeForms] = {}
         self.option_cache: dict[int, dict[int, bool]] = {}
-        self.meta_lang_cache: dict[int, str] = {}
         self.contains_cache: dict[tuple[int, str], tuple[bool, str, str, int]] = {}
         # Used even with `NOCACHE`, as it does not depend on the tree.
         self.lang_match_cache: dict[tuple[int, str], bool] = {}
@@ -776,7 +775,6 @@ class CSSMatch(_DocumentNav):
         self.index_cache.clear()
         self.form_cache.clear()
         self.option_cache.clear()
-        self.meta_lang_cache.clear()
         self.contains_cache.clear()
         self.lang_match_cache.clear()
 
@@ -1891,12 +1889,9 @@ class CSSMatch(_DocumentNav):
                 parent = last
                 break
 
-        # Use cached meta language. Each top level element of a fragment is its own root,
-        # so look it up by the root instead of searching every root seen so far.
-        if found_lang is None and root is not None and self.enable_cache and id(root) in self.meta_lang_cache:
-            return self.meta_lang_cache[id(root)]
-
         # If we couldn't find a language, and the document is HTML, look to meta to determine language.
+        # This needs no cache of its own: the root is one of the elements visited, so `match_lang()` caches
+        # the result for it in `lang_cache`, and later walks stop there before getting here again.
         if found_lang is None and (not self.is_xml or (has_html_namespace and root and root.name == 'html')):
             # Find head
             found = False
@@ -1923,13 +1918,9 @@ class CSSMatch(_DocumentNav):
                                 content = v
                             if c_lang and content:
                                 found_lang = content
-                                if self.enable_cache:
-                                    self.meta_lang_cache[id(root)] = cast(str, found_lang)
                                 break
                     if found_lang is not None:
                         break
-                if found_lang is None and self.enable_cache:
-                    self.meta_lang_cache[id(root)] = ''
 
         # Without any language information, the language is unknown, which is an empty language tag.
         return '' if found_lang is None else cast(str, found_lang)
