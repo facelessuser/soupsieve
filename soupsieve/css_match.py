@@ -644,7 +644,28 @@ class Inputs:
 
 
 class CSSMatch(_DocumentNav):
-    """Perform CSS matching."""
+    """
+    Perform CSS matching.
+
+    Performance contract: for a given selector, the time to match a document grows linearly with the size of
+    the document, whatever its shape: deeply nested, very wide, or with many top level elements. Before
+    changing how something is matched, check that it stays linear on such documents, and when a cache is needed
+    for that, follow the rules for caches in `__init__()`.
+
+    Within that, these are expected and are not bugs:
+
+    - Time proportional to the size of the selector times the size of the document. Every element may be
+      checked against every part of the selector, so a long selector costs more. This includes a long chain
+      of combinators, such as `p ~ p ~ ... ~ p` with `k` links, which takes time proportional to `k` squared
+      on a parent with at least `k` children, as each child walks up to `k` links: that is still at most the
+      size of the selector times the size of the document.
+    - Time proportional to the length of an attribute value or a text, as with any string search.
+    - Anything with `NOCACHE`, which turns off the caches that keep matching linear and is documented as
+      possibly slow, and the complex `:has()` forms that `NOSTRICT` allows, which are documented likewise.
+
+    A report of polynomial time needs a document that breaks the contract, with time measured at increasing
+    sizes, not only a slow example: a large document is slow in linear time too.
+    """
 
     def __init__(
         self,
@@ -692,6 +713,7 @@ class CSSMatch(_DocumentNav):
         self.form_cache: dict[int, TreeForms] = {}
         self.option_cache: dict[int, dict[int, bool]] = {}
         self.meta_lang_cache: dict[int, str] = {}
+        self.contains_cache: dict[tuple[int, str], tuple[bool, str, str, int]] = {}
         # Used even with `NOCACHE`, as it does not depend on the tree.
         self.lang_match_cache: dict[tuple[int, str], bool] = {}
 
@@ -737,6 +759,7 @@ class CSSMatch(_DocumentNav):
         self.form_cache.clear()
         self.option_cache.clear()
         self.meta_lang_cache.clear()
+        self.contains_cache.clear()
         self.lang_match_cache.clear()
 
     def supports_namespaces(self) -> bool:
@@ -1422,6 +1445,80 @@ class CSSMatch(_DocumentNav):
                 match = False
         return match
 
+    def contains_text(self, el: bs4.Tag, text: str) -> bool:
+        """
+        Check if the text of an element, as `get_text()` gets it, contains `text`.
+
+        Getting the text of every element to search it takes time quadratic in the depth of the document, as an
+        element's text includes that of all its descendants. Instead, each element is summarized once for `text`,
+        from the summaries of its children, and cached: whether its text contains `text`, its length, and its
+        first and last `len(text) - 1` characters. An occurrence of `text` that crosses the boundary between two
+        children has at most `len(text) - 1` characters on each side of it, so searching the end of what comes
+        before the boundary joined to the start of what comes after it finds every one of them.
+
+        The first element checked is summarized along with all of its descendants, and the elements below it
+        that are checked later are found in the cache.
+
+        Only an element's parent uses its first and last characters, so once the parent is summarized, they are
+        dropped from the element's summary. Otherwise, the cache would hold up to `2 * (len(text) - 1)`
+        characters for every element, which adds up for a long `text` on a large document. A parent is never
+        summarized again, and checking the element itself only needs whether its text contains `text`.
+        """
+
+        if not text:
+            return True
+
+        cache = self.contains_cache
+        edge = len(text) - 1
+        stack = [(el, False)]
+        while stack:
+            node, children_done = stack.pop()
+            key = (id(node), text)
+            if key in cache:
+                continue
+            # Like `get_text()`, the contents of a `template` are not included.
+            contents = node.contents if self.has_contents(node, False) else []
+            if not children_done:
+                stack.append((node, True))
+                stack.extend(
+                    (child, False) for child in contents
+                    if isinstance(child, bs4.Tag) and (id(child), text) not in cache
+                )
+                continue
+
+            found = False
+            head = tail = ''
+            length = 0
+            for child in contents:
+                if isinstance(child, bs4.Tag):
+                    c_found, c_head, c_tail, c_length = cache[(id(child), text)]
+                elif self.is_content_string(child):
+                    string = str(child)
+                    c_found = text in string
+                    c_head = string[:edge]
+                    c_tail = string[-edge:] if edge else ''
+                    c_length = len(string)
+                else:
+                    continue
+                if not found:
+                    found = c_found or (edge > 0 and text in tail + c_head)
+                if length < edge:
+                    head = (head + c_head)[:edge]
+                if edge:
+                    # A child shorter than `edge` is entirely in its head.
+                    tail = (tail + (c_tail if c_length >= edge else c_head))[-edge:]
+                length += c_length
+            cache[key] = (found, head, tail, length)
+
+            # The ends of the children are no longer needed.
+            for child in contents:
+                if isinstance(child, bs4.Tag):
+                    child_key = (id(child), text)
+                    c_found, _, _, c_length = cache[child_key]
+                    cache[child_key] = (c_found, '', '', c_length)
+
+        return cache[(id(el), text)][0]
+
     def match_contains(self, el: bs4.Tag, contains: tuple[ct.SelectorContains, ...]) -> bool:
         """Match element if it contains text."""
 
@@ -1439,6 +1536,10 @@ class CSSMatch(_DocumentNav):
                             found = True
                             break
                     if found:
+                        break
+                elif self.enable_cache:
+                    if self.contains_text(el, text):
+                        found = True
                         break
                 else:
                     if content is None:

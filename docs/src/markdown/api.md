@@ -360,8 +360,8 @@ Soup API. Soup Sieve uses the Beautiful Soup API to then compare namespaces for 
 ## Ignore Pseudo-class
 
 Soup Sieve implements a number of pseudo classes, but some (e.g. [`#!css :has()`](./selectors/pseudo-classes.md#:has)
-and [`#!css :-soup-contains()`](./selectors/pseudo-classes.md#:-soup-contains)) have potential performance concerns if
-exposed to untrusted user inputs. While Beautiful Soup (along with Soup Sieve) are not necessarily recommended for time
+with the [`NOSTRICT`](#soupseivenostrict) flag) have potential performance concerns if exposed to untrusted user
+inputs. While Beautiful Soup (along with Soup Sieve) are not necessarily recommended for time
 critical, high performance systems, if you are in an environment where the risk of using a specific pseudo-class is not
 tolerable, you can use the `ignore` option to specify and fail if they are used.
 

@@ -309,3 +309,61 @@ class TestSoupContains(util.TestCase):
                     break
             # Verify some things
             self.assertTrue(found)
+
+    def test_contains_across_boundaries(self):
+        """Test that text is found across the boundaries between text and elements, but not in what is skipped."""
+
+        markup = """
+        <div id="1"><span>ab</span>c</div>
+        <div id="2">a<b>b</b><i></i><b>c</b></div>
+        <div id="3">ab<!--x-->c</div>
+        <div id="4">ab<template>c</template></div>
+        <div id="5"><p id="6">xa</p><p id="7">b</p><p id="8">cx</p></div>
+        <div id="9">a b c</div>
+        <div id="10"><span id="11">abca</span></div>
+        <div id="12"><div id="13">a<div id="14">b<div id="15">c</div></div></div></div>
+        """
+
+        self.assert_selector(
+            markup, 'div:-soup-contains("abc")', ['1', '2', '3', '5', '10', '12', '13'], flags=util.HTML | util.NOCACHE
+        )
+        self.assert_selector(markup, '[id]:-soup-contains("xab", "zz")', ['5'], flags=util.HTML | util.NOCACHE)
+        self.assert_selector(markup, '[id]:-soup-contains("ca")', ['10', '11'], flags=util.HTML | util.NOCACHE)
+        self.assert_selector(markup, 'p:-soup-contains("")', ['6', '7', '8'], flags=util.HTML | util.NOCACHE)
+
+    def test_contains_deeply_nested(self):
+        """Test that each text is checked once for the elements of a deeply nested document."""
+
+        from bs4 import BeautifulSoup
+        from unittest import mock
+
+        n = 32
+        # `html.parser` nests each `li` in the previous one, so the text of each `li` holds that of the next.
+        soup = BeautifulSoup('<ul>' + '<li>x' * n, 'html.parser')
+        is_content_string = sv.css_match.CSSMatch.is_content_string
+        for selector, matches in (
+            ('li:-soup-contains("zzz")', 0),
+            ('li:-soup-contains(x)', n),
+            ('li:not(:-soup-contains("xxx"))', 2)
+        ):
+            with mock.patch.object(
+                sv.css_match.CSSMatch, 'is_content_string', side_effect=is_content_string
+            ) as patched:
+                self.assertEqual(len(sv.select(selector, soup)), matches)
+            self.assertLessEqual(patched.call_count, n)
+            self.assertEqual(len(sv.select(selector, soup, flags=sv.NOCACHE)), matches)
+
+    def test_contains_cache_drops_ends(self):
+        """Test that only the topmost element summarized keeps the ends of its text in the cache."""
+
+        from bs4 import BeautifulSoup
+
+        n = 32
+        soup = BeautifulSoup('<ul>' + '<li>xy' * n, 'html.parser')
+        pattern = sv.compile('li:-soup-contains("zzz")')
+        matcher = sv.css_match.CSSMatch(pattern.selectors, soup, pattern.namespaces, pattern.flags)
+        self.assertEqual(list(matcher.select()), [])
+        # Every `li` is summarized, but once its parent is, it only keeps whether its text contains the string.
+        self.assertEqual(len(matcher.contains_cache), n)
+        kept = [key for key, (_, head, tail, _) in matcher.contains_cache.items() if head or tail]
+        self.assertEqual(kept, [(id(soup.li), 'zzz')])

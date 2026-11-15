@@ -437,45 +437,28 @@ nesting of `#!css :has()`, but these restriction are placed upon the selector fo
 > ```
 
 > [!note] Performance Considerations
-> Certain uses of the `#!css :has()` pseudo-class can significantly impact performance.
+> With the default rules, each `#!css :has()` in a selector takes time proportional to the size of the document, even
+> with a broad anchor such as `#!css *:has(.content)`. Within a single select, whether an element has a matching
+> descendant or sibling is found once and reused for the other elements that need it, so `#!css :has()` doesn't
+> search the same part of the tree again for every anchor.
 >
-> The anchor selector (the `#!css A` in `#!css A:has(B)`) should not be an element that has too many children.
-> Additionally, too general an anchor, such as `*`, can cause `#!css :has()` to be applied to every element.
+> How much of the tree is searched still matters. A relative selector that starts with `>` or `+` only checks the
+> anchor's children or next sibling, while one with no combinator or with `~` may search the whole subtree or all
+> following siblings when nothing matches:
 >
-> > [!failure] Avoid
-> > ```css
-> > /* Avoid anchoring :has() to broad elements */
-> > body:has(.content)
-> > *:has(.content)
-> > ```
+> ```css
+> /* Checks only the children of each `.ancestor` */
+> .ancestor:has(> .foo)
 >
-> > [!success] Recommended
-> > ```css
-> > /* Use specific containers to limit scope */
-> > .container:has(.sidebar-expanded)
-> > .content-wrapper:has(> article[data-priority="high"])
-> > .gallery:has(> img[data-loaded="false"])
-> > ```
+> /* May search everything below each `.ancestor` (once, as results are reused) */
+> .ancestor:has(.foo)
+> ```
 >
-> The inner selector (the `#!css B` in `#!css A:has(B)`) should use combinators like `>` or `+` to limit traversal. When the
-> selector inside `#!css :has()` is not tightly constrained, Soup Sieve might need to traverse the entire subtree of the
-> anchor element to check if the condition holds.
->
-> > [!failure] Avoid
-> > ```css
-> > /* May trigger full subtree traversal */
-> > .ancestor:has(.foo)
-> > ```
->
-> > [!success] Recommended
-> > ```css
-> > /* More constrained - limits traversal */
-> > .ancestor:has(> .foo)
-> > .ancestor:has(+ .sibling .foo)
-> > ```
->
-> If the risk of performance concerns from untrusted user input cannot be tolerated in a specific project, `:has` can
-> be disabled using the [`ignore`](../api.md#ignore-pseudo-class) option.
+> These guarantees don't cover the [complex](./index.md#complex-selector) selectors and nested `#!css :has()` that
+> the `NOSTRICT` flag allows, or matching with the [`NOCACHE`](../api.md#soupseivenocache) flag, which searches the
+> subtree again for every element and is slow on large or deeply nested documents. If selectors come from untrusted
+> input and `NOSTRICT` is used, `#!css :has()` can be disabled using the [`ignore`](../api.md#ignore-pseudo-class)
+> option.
 
 /// tab | Syntax
 ```css
@@ -1716,32 +1699,18 @@ one of the items in the comma separated list to
 be considered matching.
 
 > [!note] Performance Considerations
-> `#!css :-soup-contains()` is an expensive operation as it scans all the text nodes of an element under consideration,
-> which includes all descendants. This has the potential to cause scanning the entire tree, potentially multiple times.
+> `#!css :-soup-contains()` searches the text of an element and all of its descendants. Within a single select, Soup
+> Sieve reads each text in the document once for each string it searches for, and reuses what it finds for the elements
+> nested inside, so even a broad selector such as `#!css *:-soup-contains('text')` takes time proportional to the amount
+> of text in the document.
 >
-> While sometimes, scanning large portions of the tree may be exactly what you want, and the outcome is worth the
-> performance hit. Anchoring `#!css :-soup_contains` to a very broad element, like `*`, can cause every element to have
-> all of its children scanned. Using highly specific selectors can reduce how often it is evaluated and limiting usage
-> to shallow elements with a small amount of descendants can reduce the amount of content that is checked.
+> How much text is searched still matters: anchoring to a specific container, such as
+> `#!css .container:-soup-contains('text')`, only searches that container's text, and
+> [`#!css :-soup-contains-own()`](#:-soup-contains-own) only searches an element's own text, not that of its
+> descendants. Each string in a comma separated list is searched separately.
 >
-> > [!failure] Avoid
-> > ```css
-> > /* Avoid anchoring :-soup-contains() to broad elements */
-> > body:-soup-contains('text')
-> > *:-soup-contains('text')
-> > ```
->
-> > [!success] Recommended
-> > ```css
-> > /* Use specific containers to limit scope */
-> > .container:-soup-contains('text')
-> > ```
->
-> Additionally, using [`#!css anchor:-soup-contains-own()`](#:-soup-contains-own) can limit crawling to just the
-> immediate children under the anchor, providing better performance at the cost of a more shallow search.
->
-> If the risk of performance concerns from untrusted user input cannot be tolerated in a specific project,
-> `#!css :-soup-contains` can be disabled using the [`ignore`](../api.md#ignore-pseudo-class) option.
+> With the [`NOCACHE`](../api.md#soupseivenocache) flag, the text is gathered again for every element, which is slow on
+> deeply nested documents.
 
 > [!warning] Rename 2.1
 > The name `#!css :-soup-contains()` is new in version 2.1. Previously, it was known by `#!css :contains()`. While the
