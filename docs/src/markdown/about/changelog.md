@@ -17,6 +17,10 @@ icon: lucide/scroll-text
     document, and of the selected options of a `select`, so `:lang()`, `:default`, `:indeterminate` and `:checked`
     see changes made to the tree during a lazy iteration such as `iselect()`.
 -   **FIX**: Slimmed relation caches so they now take roughly half the memory.
+-   **FIX**: Fix `nth` selectors with very large `An+B` values raising an `OverflowError` when matching, and
+    matching the wrong elements when a value is larger than 2^53, as the position of an element was checked with a
+    float division. A value with more digits than Python will convert to an integer now raises a
+    `SelectorSyntaxError` instead of a `ValueError`.
 
 ## 4.1.1
 

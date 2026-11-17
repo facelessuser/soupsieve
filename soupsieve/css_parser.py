@@ -1097,8 +1097,16 @@ class CSSParser:
                 _s2 = '-'
             if nth_parts.group('b'):
                 _s2 += nth_parts.group('b')
-            s1 = int(_s1, 10) if _s1 else 0
-            s2 = int(_s2, 10) if _s2 else 0
+            try:
+                s1 = int(_s1, 10) if _s1 else 0
+                s2 = int(_s2, 10) if _s2 else 0
+            except ValueError as e:
+                # `int()` refuses strings with more digits than `sys.get_int_max_str_digits()`.
+                raise SelectorSyntaxError(
+                    f"Value in '{mdict['name']}' is too large",
+                    self.pattern,
+                    m.start(0)
+                ) from e
 
         pseudo_sel = mdict['name']
         if postfix == '_child':

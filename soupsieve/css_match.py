@@ -1443,8 +1443,10 @@ class CSSMatch(_DocumentNav):
             if not index:
                 return False
             if n.a != 0:
-                v = (index - n.b) / n.a
-                if not (v.is_integer() and v >= 0):
+                # `index` matches if `index = a * k + b` for an integer `k >= 0`. Integer arithmetic is used as `a`
+                # and `b` can be of any size, and a float division would overflow or lose precision.
+                diff = index - n.b
+                if diff % n.a or diff // n.a < 0:
                     return False
             elif index != n.b:
                 return False

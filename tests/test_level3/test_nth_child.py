@@ -255,6 +255,63 @@ class TestNthChild(util.TestCase):
 
         self.assert_raises(':nth-child(a)', SelectorSyntaxError)
 
+    def test_nth_child_too_many_digits(self):
+        """Test that a value with more digits than Python will convert is a syntax error."""
+
+        import sys
+
+        limit = sys.get_int_max_str_digits()
+        if not limit:  # pragma: no cover
+            self.skipTest('Integer string conversion is not limited')
+        digits = '1' * (limit + 1)
+        self.assert_raises(f':nth-child({digits})', SelectorSyntaxError)
+        self.assert_raises(f':nth-child({digits}n)', SelectorSyntaxError)
+        self.assert_raises(f':nth-last-of-type(n+{digits})', SelectorSyntaxError)
+
+    def test_nth_child_huge_values(self):
+        """Test `An+B` values too large for a float."""
+
+        markup = """
+        <div>
+        <p id="1"></p>
+        <p id="2"></p>
+        <p id="3"></p>
+        </div>
+        """
+
+        huge = '1' * 400
+        self.assert_selector(markup, f"p:nth-child(n+{huge})", [], flags=util.HTML)
+        self.assert_selector(markup, f"p:nth-child(n-{huge})", ['1', '2', '3'], flags=util.HTML)
+        self.assert_selector(markup, f"p:nth-child(-n+{huge})", ['1', '2', '3'], flags=util.HTML)
+        self.assert_selector(markup, f"p:nth-child(-n-{huge})", [], flags=util.HTML)
+        self.assert_selector(markup, f"p:nth-child({huge}n+1)", ['1'], flags=util.HTML)
+        self.assert_selector(markup, f"p:nth-child(-{huge}n+2)", ['2'], flags=util.HTML)
+        self.assert_selector(markup, f"p:nth-child(n+{huge} of p)", [], flags=util.HTML)
+        self.assert_selector(markup, f"p:nth-last-child(n-{huge})", ['1', '2', '3'], flags=util.HTML)
+        self.assert_selector(markup, f"p:nth-of-type(n+{huge})", [], flags=util.HTML)
+        self.assert_selector(markup, f"p:nth-last-of-type(-n+{huge})", ['1', '2', '3'], flags=util.HTML)
+
+    def test_nth_child_imprecise_float_values(self):
+        """Test `An+B` values above 2^53, which a float can't hold exactly."""
+
+        markup = """
+        <div>
+        <p id="1"></p>
+        <p id="2"></p>
+        <p id="3"></p>
+        <p id="4"></p>
+        <p id="5"></p>
+        <p id="6"></p>
+        </div>
+        """
+
+        # `(index + 10^17) % 3 == 0`, so `index % 3 == 2`
+        self.assert_selector(markup, "p:nth-child(3n-100000000000000000)", ['2', '5'], flags=util.HTML)
+        self.assert_selector(markup, "p:nth-child(3n+100000000000000000)", [], flags=util.HTML)
+        # `(10^17 - index) % 3 == 0`, so `index % 3 == 1`
+        self.assert_selector(markup, "p:nth-child(-3n+100000000000000000)", ['1', '4'], flags=util.HTML)
+        self.assert_selector(markup, "p:nth-child(100000000000000000n+3)", ['3'], flags=util.HTML)
+
     def test_nth_child_an_plus_b_boundaries(self):
         """Test `An+B` forms whose sequence steps onto index 0 or the last child."""
 
