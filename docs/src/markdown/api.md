@@ -388,6 +388,22 @@ except sv.SelectorSyntaxError:
     print('Not allowed')
 ```
 
+A name is matched however it is written in the selector: in any case, and with CSS escapes, such as `#!css :HAS()` or
+`#!css :h\61 s()`, and wherever it is used, such as inside `#!css :is()` or `#!css :not()`.
+
+Each name is ignored on its own, so a pseudo-class that has an alias must have every name it goes by listed. For
+example, `#!css :-soup-contains()` is also available under its deprecated name `#!css :contains()`, and `#!css :is()`
+under `#!css :matches()`:
+
+```py play exceptions
+import soupsieve as sv
+sv.compile('p:contains(text)', ignore=[':-soup-contains'])
+try:
+    sv.compile('p:contains(text)', ignore=[':-soup-contains', ':contains'])
+except sv.SelectorSyntaxError:
+    print('Not allowed')
+```
+
 ## Selector Limits
 
 > [!new] New in 3.0

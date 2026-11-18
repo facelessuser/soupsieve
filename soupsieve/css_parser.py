@@ -852,7 +852,9 @@ class CSSParser:
         self.debug = self.flags & util.DEBUG
         self.nostrict = self.flags & util.NOSTRICT
         self.custom = custom
-        self.ignore = frozenset([] if ignore is None else ignore)
+        # Names are compared as the parser recognizes pseudo-classes: with CSS escapes resolved and ASCII letters in
+        # lowercase. Otherwise, writing a name with an escape, such as `:h\61 s()`, would get past it.
+        self.ignore = frozenset([] if ignore is None else (util.lower(css_unescape(name)) for name in ignore))
         self.count = 0
         self.maxsel = max_selectors
 
@@ -1355,7 +1357,7 @@ class CSSParser:
             # Handle parts
             if self.ignore:
                 mi = RE_PSEUDO_IGNORE.match(m.group(0))
-                if mi is not None and mi.group('name').lower() in self.ignore:
+                if mi is not None and util.lower(css_unescape(mi.group('name'))) in self.ignore:
                     raise SelectorSyntaxError(
                         f"The selector '{mi.group('name')}' at position {m.start(0)}, has been disallowed",
                         self.pattern,

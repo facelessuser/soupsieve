@@ -16,6 +16,36 @@ class TestSoupSieve(util.TestCase):
         with self.assertRaises(sv.SelectorSyntaxError):
             sv.compile('*:has(a)', ignore=[':has'])
 
+    def test_ignore_escaped_and_cased_names(self):
+        """Test that an ignored pseudo-class can't be used by writing its name with escapes or another case."""
+
+        for ignore, selector in (
+            ([':has'], '*:h\\61 s(a)'),
+            ([':has'], '*:\\68 as(a)'),
+            ([':has'], '*:HAS(a)'),
+            ([':HAS'], '*:has(a)'),
+            ([':has'], 'div:not(:h\\61 s(span))'),
+            ([':lang'], ':l\\61 ng(en)'),
+            ([':lang'], ':is(:LANG(en))'),
+            ([':nth-child'], 'p:n\\74 h-child(2)'),
+            ([':-soup-contains'], ':-soup-\\63 ontains(text)'),
+            ([':l\\61 ng'], ':lang(en)')
+        ):
+            sv.purge()
+            with self.assertRaises(sv.SelectorSyntaxError, msg=selector):
+                sv.compile(selector, ignore=ignore)
+
+    def test_ignore_aliases(self):
+        """Test that an alias of a pseudo-class must be ignored separately."""
+
+        sv.purge()
+        with self.assertWarns(FutureWarning):
+            sv.compile(':contains(text)', ignore=[':-soup-contains'])
+        sv.compile(':matches(p)', ignore=[':is'])
+        for selector in (':contains(text)', ':-soup-contains(text)'):
+            with self.assertRaises(sv.SelectorSyntaxError, msg=selector):
+                sv.compile(selector, ignore=[':-soup-contains', ':contains'])
+
     def test_select(self):
         """Test select."""
 

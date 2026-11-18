@@ -25,6 +25,9 @@ icon: lucide/scroll-text
     the caches that keep matching linear, instead of matching each tag separately, which took time quadratic in the
     depth of a nested document for any selector. A selector that uses `:scope` or `&` still matches each tag
     separately, as each tag is its own scope.
+-   **FIX**: The `ignore` option now disallows a pseudo-class however its name is written, as names were compared
+    without resolving CSS escapes, so a name written with an escape, such as `:h\61 s()`, was not disallowed. Document
+    that each alias of a pseudo-class, such as `:contains()` for `:-soup-contains()`, must be listed as well.
 
 ## 4.1.1
 
