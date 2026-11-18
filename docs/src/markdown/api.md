@@ -191,6 +191,14 @@ sv.match('p:not(.b)', nodes[0])
 sv.match('p:not(.b)', nodes[1])
 ```
 
+> [!tip] Matching Many Tags
+> Soup Sieve caches what it learns about a document while matching, such as the text of an element for
+> `#!css :-soup-contains()` or whether it has a matching descendant for `#!css :has()`, but only for the duration
+> of one call. Each call of `match` starts over, so calling it for each element of a large or deeply nested document
+> can take time that grows faster than the size of the document. To test many tags, use [`select`](#soupsieveselect),
+> or [`filter`](#soupsievefilter) with a list of the tags, which share what they learn between the tags of the same
+> document.
+
 ## `soupsieve.filter()`
 
 ```py
@@ -207,6 +215,12 @@ and flags.
 ```py play session="example1"
 sv.filter('p:not(.b)', soup.div)
 ```
+
+When given a list, or any other iterable, the tags can be from different documents. The tags from the same document,
+or more exactly under the same top level element, share what Soup Sieve learns while matching, as one call of
+[`select`](#soupsieveselect) does, so filtering many tags of a document takes time that grows with the size of the
+document, not faster. A selector that uses `#!css :scope` or `#!css &` is the exception: each tag is the scope when it is
+matched, as with [`match`](#soupsievematch), so each tag is matched separately.
 
 ## `soupsieve.escape()`
 

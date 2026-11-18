@@ -297,6 +297,69 @@ class TestSoupSieve(util.TestCase):
         self.assertEqual(len(nodes), 1)
         self.assertEqual(nodes[0].attrs['id'], '6')
 
+    def test_filter_list_mixed(self):
+        """Test filtering a list of tags from different documents, detached tags, and the contents of a `template`."""
+
+        soup1 = self.soup(
+            '<div id="1" lang="en"><p id="2">ab</p><template><p id="3">ab</p></template></div>', 'html.parser'
+        )
+        soup2 = self.soup('<div id="4" lang="fr"><p id="5">ab</p></div><p id="6">cd</p>', 'html.parser')
+        detached = self.soup('<p id="7">ab</p>', 'html.parser').p.extract()
+        nodes = [
+            soup2.find(id='5'), soup1, detached, soup1.find(id='2'), soup2.find(id='6'), soup1.template.p,
+            soup1.div, soup1.find(id='2').string, soup2.div
+        ]
+
+        self.assertEqual([n['id'] for n in sv.filter('p:-soup-contains(ab)', nodes)], ['5', '7', '2', '3'])
+        self.assertEqual([n['id'] for n in sv.filter(':lang(en)', nodes)], ['2', '1'])
+        self.assertEqual([n['id'] for n in sv.filter(':has(> p)', nodes)], ['1', '4'])
+        # Each top level element of a fragment is a root, and so is a detached tag.
+        self.assertEqual([n['id'] for n in sv.filter(':root', nodes)], ['7', '1'])
+        # Each tag is its own scope.
+        self.assertEqual([n['id'] for n in sv.filter(':scope', nodes)], ['5', '7', '2', '6', '3', '1', '4'])
+        self.assertEqual([n['id'] for n in sv.filter('div:has(:scope)', nodes)], [])
+
+    def test_filter_list_shares_matcher(self):
+        """Test that the tags of a list that have the same top level element share one matcher and its caches."""
+
+        from bs4 import BeautifulSoup
+        from unittest import mock
+
+        n = 32
+        soup = BeautifulSoup('<ul>' + '<li>x' * n, 'html.parser')
+        other = BeautifulSoup('<ul>' + '<li>x' * n, 'html.parser')
+        nodes = soup.find_all(True) + other.find_all(True)
+        init = sv.css_match.CSSMatch.__init__
+        for selector, matches, matchers in (
+            ('li:-soup-contains(x)', 2 * n, 2),
+            (':has(li)', 2 * (n - 1) + 2, 2),
+            (':scope', 2 * (n + 1), 2 * (n + 1))
+        ):
+            with mock.patch.object(sv.css_match.CSSMatch, '__init__', autospec=True, side_effect=init) as patched:
+                self.assertEqual(len(sv.filter(selector, nodes)), matches)
+            self.assertEqual(patched.call_count, matchers)
+
+    def test_uses_scope(self):
+        """Test finding `:scope` or `&` in any part of a selector, nested ones included."""
+
+        custom = {':--div': 'div', ':--scoped': ':scope > p'}
+        for selector, expected in (
+            ('p', False),
+            (':scope', True),
+            ('& > p', True),
+            ('div p > span ~ b', False),
+            (':is(div, :not(:scope p))', True),
+            ('div:has(> :scope)', True),
+            ('p:nth-child(2n of :scope li)', True),
+            ('p:nth-child(2n of li)', False),
+            (':is()', False),
+            (':is(), :scope', True),
+            (':--div p :--div', False),
+            (':--div, :--scoped, :--scoped', True)
+        ):
+            pattern = sv.compile(selector, custom=custom, flags=sv.NOSTRICT)
+            self.assertEqual(sv.css_match.uses_scope(pattern.selectors), expected, selector)
+
     def test_closest_match_parent(self):
         """Test match parent closest."""
 

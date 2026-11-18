@@ -132,6 +132,27 @@ class TreeForms(NamedTuple):
     checked: dict[tuple[int, str], bs4.Tag]
 
 
+def uses_scope(selectors: ct.SelectorList) -> bool:
+    """Check if any part of a selector, nested ones included, matches the scope (`:scope` or `&`)."""
+
+    seen: set[int] = set()
+    stack = [selectors]
+    while stack:
+        selector_list = stack.pop()
+        if id(selector_list) in seen:
+            continue
+        seen.add(id(selector_list))
+        for selector in selector_list:
+            if isinstance(selector, ct.SelectorNull):
+                continue
+            if selector.flags & ct.SEL_SCOPE:
+                return True
+            stack.extend(selector.selectors)
+            stack.append(selector.relation)
+            stack.extend(nth.selectors for nth in selector.nth)
+    return False
+
+
 class _DocumentNav:
     """Navigate a Beautiful Soup document."""
 
@@ -662,6 +683,11 @@ class CSSMatch(_DocumentNav):
     - Time proportional to the length of an attribute value or a text, as with any string search.
     - Anything with `NOCACHE`, which turns off the caches that keep matching linear and is documented as
       possibly slow, and the complex `:has()` forms that `NOSTRICT` allows, which are documented likewise.
+    - Matching the elements of a document one call at a time, such as calling `match()` for each element in
+      a loop. Each call starts with empty caches, so the contract holds for each call, not for the loop, and
+      the documentation says to use one `select()` or `filter()` instead. `filter()` with a list shares a
+      `CSSMatch` between the tags under the same top level element, except for a selector that uses `:scope`
+      or `&`, where each tag is the scope and is matched separately, as with `match()`.
 
     A report of polynomial time needs a document that breaks the contract, with time measured at increasing
     sizes, not only a slow example: a large document is slow in linear time too.
@@ -2407,19 +2433,56 @@ class SoupSieve(ct.Immutable):
         """
         Filter.
 
-        `CSSMatch` can cache certain searches for tags of the same document,
-        so if we are given a tag, all tags are from the same document,
-        and we can take advantage of the optimization.
+        Given a tag, its children are filtered with one `CSSMatch`, so its caches are shared by all of them.
 
-        Any other kind of iterable could have tags from different documents or detached tags,
-        so for those, we use a new `CSSMatch` for each item in the iterable.
+        Any other iterable can hold tags from different documents, or detached tags. A `CSSMatch` takes what
+        it knows about a document from the top level element above the tag it is created with, so the tags
+        are grouped by that element, and each group shares a `CSSMatch` and its caches. Matching each tag
+        with a new `CSSMatch` would search the same parts of a document again for every tag, which is
+        quadratic for a selector like `:has()` or `:-soup-contains()` on the elements of a nested document.
+
+        The one thing a `CSSMatch` knows about the tag it is created with is that it is the scope, which
+        `:scope` and `&` match, and caches can depend on it. So a selector that uses them still matches
+        each tag with a new `CSSMatch`, with the tag as the scope, as `match()` does.
         """
 
         if isinstance(iterable, bs4.Tag):
             return CSSMatch(self.selectors, iterable, self.namespaces, self.flags).filter()
-        else:
-            # There is no guarantee that elements are from the same document, evaluate them separately.
+
+        if uses_scope(self.selectors):
             return [node for node in iterable if not CSSMatch.is_navigable_string(node) and self.match(node)]
+
+        matchers: dict[int, CSSMatch] = {}
+        tops: dict[int, bs4.Tag] = {}
+        matched = []
+        for node in iterable:
+            if CSSMatch.is_navigable_string(node):
+                continue
+            CSSMatch.assert_valid_input(node)
+            if CSSMatch.is_doc(node):
+                continue
+
+            # Find the top level element above the tag, as `CSSMatch` does, sharing the walk with the tags
+            # it passes through so that a nested document is walked once.
+            visited = []
+            top = node
+            while id(top) not in tops:
+                visited.append(id(top))
+                parent = top.parent
+                if parent is None or CSSMatch.is_doc(parent):
+                    break
+                top = parent
+            else:
+                top = tops[id(top)]
+            for key in visited:
+                tops[key] = top
+
+            matcher = matchers.get(id(top))
+            if matcher is None:
+                matcher = matchers[id(top)] = CSSMatch(self.selectors, node, self.namespaces, self.flags)
+            if matcher.match(node):
+                matched.append(node)
+        return matched
 
     def select_one(self, tag: bs4.Tag) -> bs4.Tag | None:
         """Select a single tag."""

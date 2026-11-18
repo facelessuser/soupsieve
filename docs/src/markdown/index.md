@@ -200,7 +200,10 @@ Older versions of Soup Sieve did not cache all of these cases and could take tim
 document. The [change log](./about/changelog.md) lists each case that was improved and the version that improved it.
 
 The caches only last for one select, match, or filter, and the memory they use grows with the work done, so a selector
-that takes a long time to match can also use a lot of memory.
+that takes a long time to match can also use a lot of memory. As each call starts over, matching the elements of a
+document one call at a time, such as calling [`match`](./api.md#soupsievematch) for each of them in a loop, loses these
+protections and can take time that grows faster than the size of the document. To test many elements, use one select,
+or one filter with a list of them.
 
 Some options give up these protections:
 

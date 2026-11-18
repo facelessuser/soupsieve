@@ -21,6 +21,10 @@ icon: lucide/scroll-text
     matching the wrong elements when a value is larger than 2^53, as the position of an element was checked with a
     float division. A value with more digits than Python will convert to an integer now raises a
     `SelectorSyntaxError` instead of a `ValueError`.
+-   **FIX**: `filter()` given a list of tags now matches the tags under the same top level element together, sharing
+    the caches that keep matching linear, instead of matching each tag separately, which took time quadratic in the
+    depth of a nested document for any selector. A selector that uses `:scope` or `&` still matches each tag
+    separately, as each tag is its own scope.
 
 ## 4.1.1
 
