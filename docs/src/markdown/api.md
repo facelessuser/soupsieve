@@ -88,8 +88,8 @@ sv.select('p:nth-child(2n + 1)', soup, flags=sv.NOCACHE)
 > [!new] New in 3.0
 
 > [!warning]
-> Disabling the strict mode will enable more complex behavior which may introduce poor behavior. `NOSTRICT` should not
-> be enabled in time critical systems where bad performance cannot be tolerated.
+> Disabling the strict mode will enable more complex behavior which may introduce poor performance. `NOSTRICT` should
+> not be enabled in time critical systems where bad performance cannot be tolerated.
 
 Soup Sieve provides more strict rules by default as of version 3.0. To relax these rules, at the cost of possible
 performance concerns, the `NOSTRICT` flag can be used to disable the strict rules and allow for some more flexible
