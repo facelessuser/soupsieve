@@ -72,3 +72,34 @@ class TestNthOfType(util.TestCase):
             ['0', '2', '4', '6', '7', '9'],
             flags=util.HTML
         )
+
+    def test_many_types(self):
+        """
+        Test `of-type` selectors on siblings of many different types.
+
+        The siblings of every type are counted in one scan of the parent's contents. Scanning them again for each type
+        takes time quadratic in the number of siblings when they have about as many types, such as custom elements.
+
+        Only the cached path is tested as matching without the cache is expected to be slow here.
+        """
+
+        import soupsieve as sv
+        from bs4 import BeautifulSoup
+        from unittest import mock
+
+        n = 64
+        markup = '<div>' + ''.join(f'<x-{i}></x-{i}><p></p>' for i in range(n)) + '</div>'
+        soup = BeautifulSoup(markup, 'html.parser')
+        get_tag = sv.css_match.CSSMatch.get_tag
+        for selector, matches in (
+            ('div > :first-of-type', n + 1),
+            ('div > :last-of-type', n + 1),
+            ('div > :only-of-type', n),
+            ('div > :nth-of-type(2)', 1),
+            ('div > :nth-last-of-type(2)', 1)
+        ):
+            with mock.patch.object(
+                sv.css_match.CSSMatch, 'get_tag', autospec=True, side_effect=get_tag
+            ) as patched:
+                self.assertEqual(len(sv.select(selector, soup)), matches, selector)
+            self.assertLessEqual(patched.call_count, 6 * n, selector)

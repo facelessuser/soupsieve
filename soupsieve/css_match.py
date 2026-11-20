@@ -108,16 +108,16 @@ DAYS_IN_WEEK = 7
 class NthState:
     """Lazily built positions of the siblings counted by an `nth` selector under one parent."""
 
-    __slots__ = ('pos', 'count', 'positions')
+    __slots__ = ('pos', 'counts', 'positions')
 
-    def __init__(self, pos: int, count: int, positions: dict[int, int]) -> None:
+    def __init__(self, pos: int, counts: dict[Hashable, int], positions: dict[int, int]) -> None:
         """Initialize."""
 
         # Next position in the parent's contents to scan
         self.pos = pos
-        # Number of counted siblings found so far
-        self.count = count
-        # 1-based index of each counted sibling, keyed by `id()`
+        # Number of counted siblings found so far, for each type for an `of-type` selector
+        self.counts = counts
+        # 1-based index of each counted sibling, among those of its type for an `of-type` selector, keyed by `id()`
         self.positions = positions
 
 
@@ -1426,15 +1426,13 @@ class CSSMatch(_DocumentNav):
                     break
             return 0
 
-        key = (
-            (id(parent), id(n), self.get_tag(el), self.get_tag_ns(el))
-            if n.of_type
-            else (id(parent), id(n), None, None)
-        )
+        # An `of-type` selector counts the siblings of each type separately, but in one scan for all types, as
+        # scanning the siblings again for each type takes time quadratic in their number when they have many types.
+        key = (id(parent), id(n))
         state = self.nth_cache.get(key)
         if state is None:
             # Next content position to scan, number of counted siblings found, and their positions.
-            state = self.nth_cache[key] = NthState(0, 0, {})
+            state = self.nth_cache[key] = NthState(0, {}, {})
 
         # "Last" selectors need the total count, so scan all siblings, otherwise just scan up to `el`.
         contents = parent.contents
@@ -1448,14 +1446,17 @@ class CSSMatch(_DocumentNav):
 
         while state.pos < end:
             node = contents[state.pos]
-            if self.is_tag(node) and (yield from self.match_nth_candidate(el, cast('bs4.Tag', node), n)):
-                state.count += 1
-                state.positions[id(node)] = state.count
+            # An `of-type` selector has no `of S` and counts every sibling under its own type.
+            if isinstance(node, bs4.Tag) and (n.of_type or (yield from self.match_nth_candidate(el, node, n))):
+                group = (self.get_tag(node), self.get_tag_ns(node)) if n.of_type else None
+                count = state.counts[group] = state.counts.get(group, 0) + 1
+                state.positions[id(node)] = count
             state.pos += 1
 
         index = state.positions.get(id(el), 0)
         if index and n.last:
-            index = state.count - index + 1
+            group = (self.get_tag(el), self.get_tag_ns(el)) if n.of_type else None
+            index = state.counts[group] - index + 1
         return index
 
     def match_nth(self, el: bs4.Tag, nth: tuple[ct.SelectorNth, ...]) -> MatchGenerator:

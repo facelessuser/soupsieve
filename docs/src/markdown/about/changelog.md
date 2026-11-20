@@ -3,6 +3,12 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 4.1.3
+
+-   **FIX**: Fix `:nth-of-type()`, `:nth-last-of-type()`, `:first-of-type`, `:last-of-type` and `:only-of-type`
+    taking time quadratic in the number of siblings when they have many different tag names, such as custom elements,
+    as all the siblings were scanned again for each tag name.
+
 ## 4.1.2
 
 -   **FIX**: Fix `:lang()` taking time quadratic in the number of top level elements of a fragment that have an `html`
