@@ -108,17 +108,26 @@ DAYS_IN_WEEK = 7
 class NthState:
     """Lazily built positions of the siblings counted by an `nth` selector under one parent."""
 
-    __slots__ = ('pos', 'count', 'positions')
+    __slots__ = ('pos', 'count', 'positions', 'counts')
 
-    def __init__(self, pos: int, count: int, positions: dict[int, int]) -> None:
+    def __init__(
+        self,
+        pos: int,
+        count: int,
+        positions: dict[int, int],
+        counts: dict[tuple[str | None, str], int] | None
+    ) -> None:
         """Initialize."""
 
         # Next position in the parent's contents to scan
         self.pos = pos
         # Number of counted siblings found so far
         self.count = count
-        # 1-based index of each counted sibling, keyed by `id()`
+        # 1-based index of each counted sibling, keyed by `id()`, among the siblings of its type for `of-type`
         self.positions = positions
+        # For `of-type`, the number of siblings found so far of each type, keyed by tag name and namespace,
+        # so siblings of every type share one scan, and `None` otherwise
+        self.counts = counts
 
 
 class TreeForms(NamedTuple):
@@ -1426,15 +1435,15 @@ class CSSMatch(_DocumentNav):
                     break
             return 0
 
-        key = (
-            (id(parent), id(n), self.get_tag(el), self.get_tag_ns(el))
-            if n.of_type
-            else (id(parent), id(n), None, None)
-        )
+        # Siblings of every type share one state for `of-type`, as a state for each type would scan the siblings
+        # again for each type, which is quadratic when many siblings have distinct tag names.
+        key = (id(parent), id(n))
         state = self.nth_cache.get(key)
         if state is None:
-            # Next content position to scan, number of counted siblings found, and their positions.
-            state = self.nth_cache[key] = NthState(0, 0, {})
+            # Next content position to scan, number of counted siblings found, their positions,
+            # and the number found of each type for `of-type`.
+            state = self.nth_cache[key] = NthState(0, 0, {}, {} if n.of_type else None)
+        counts = state.counts
 
         # "Last" selectors need the total count, so scan all siblings, otherwise just scan up to `el`.
         contents = parent.contents
@@ -1448,14 +1457,22 @@ class CSSMatch(_DocumentNav):
 
         while state.pos < end:
             node = contents[state.pos]
-            if self.is_tag(node) and (yield from self.match_nth_candidate(el, cast('bs4.Tag', node), n)):
-                state.count += 1
-                state.positions[id(node)] = state.count
+            if self.is_tag(node):
+                child = cast('bs4.Tag', node)
+                if counts is not None:
+                    # `of-type`: count the sibling among those of its own type.
+                    tkey = (self.get_tag(child), self.get_tag_ns(child))
+                    count = counts[tkey] = counts.get(tkey, 0) + 1
+                    state.positions[id(child)] = count
+                elif not n.selectors or (yield child, n.selectors):
+                    state.count += 1
+                    state.positions[id(child)] = state.count
             state.pos += 1
 
         index = state.positions.get(id(el), 0)
         if index and n.last:
-            index = state.count - index + 1
+            total = state.count if counts is None else counts[(self.get_tag(el), self.get_tag_ns(el))]
+            index = total - index + 1
         return index
 
     def match_nth(self, el: bs4.Tag, nth: tuple[ct.SelectorNth, ...]) -> MatchGenerator:
