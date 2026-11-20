@@ -3,6 +3,12 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## Unreleased
+
+-   **FIX**: Fix `of-type` selectors, such as `:first-of-type`, `:last-of-type`, `:only-of-type`, and
+    `:nth-of-type()`, taking time quadratic in the number of siblings when many of them have distinct tag names, as
+    the siblings were scanned again for each tag name. Siblings of every type now share one scan.
+
 ## 4.1.2
 
 -   **FIX**: Fix `:lang()` taking time quadratic in the number of top level elements of a fragment that have an `html`
@@ -13,9 +19,6 @@ icon: lucide/scroll-text
 -   **FIX**: Fix `:-soup-contains()` taking time quadratic in the depth of the document, such as a long list of
     unclosed `<li>` parsed with `html.parser`, as the text of every element, which includes that of all its
     descendants, was gathered and searched again for every element.
--   **FIX**: Fix `of-type` selectors, such as `:first-of-type`, `:last-of-type`, `:only-of-type`, and
-    `:nth-of-type()`, taking time quadratic in the number of siblings when many of them have distinct tag names, as
-    the siblings were scanned again for each tag name. Siblings of every type now share one scan.
 -   **FIX**: `NOCACHE` now turns off the caches of the content language in a document's header, of the forms of a
     document, and of the selected options of a `select`, so `:lang()`, `:default`, `:indeterminate` and `:checked`
     see changes made to the tree during a lazy iteration such as `iselect()`.
