@@ -422,6 +422,16 @@ except ValueError:
     print('Too many selectors')
 ```
 
+> [!warning] Selector Length
+> `max_selectors` limits the number of selectors and the parts they are made of. It does not limit the length of the
+> selector string, or the number of values in the argument of a pseudo-class, such as the language ranges of
+> `#!css :lang(en, fr, de)`, which together count as one.
+>
+> Soup Sieve does not limit the length of selector strings, and does not guarantee protection against long ones. The
+> time to match grows with the length of the selector, whatever the selector is made of, and no option of Soup Sieve
+> bounds it. If long selector strings are a concern, for example because selectors come from untrusted input, limiting
+> their length is the responsibility of the application, before it passes them to Soup Sieve.
+
 ## Thread Safety
 
 > [!new] New in 4.1

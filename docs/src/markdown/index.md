@@ -219,7 +219,9 @@ meant to accomplish a few things.
 
 1.  Make clear to all users that taking untrusted user input in a time critical system, without any kind of mitigation
     to abort long running operations, will open you up to performance concerns. Pseudo-classes that are not needed can
-    also be disabled with the [`ignore`](./api.md#ignore-pseudo-class) option.
+    also be disabled with the [`ignore`](./api.md#ignore-pseudo-class) option. Soup Sieve does not limit the length of
+    selector strings, and [`max_selectors`](./api.md#selector-limits) does not either, so if long selectors are a
+    concern, limiting their length is the responsibility of the application.
 
 2.  Encourage users, before deploying solutions, to test and understand how the selectors work, and thoughtfully apply
     them after testing them.

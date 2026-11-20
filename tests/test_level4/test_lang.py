@@ -593,6 +593,40 @@ class TestLang(util.TestCase):
                     self.assertLessEqual(re_lang_tag.fullmatch.call_count, 1)
                     self.assertLessEqual(patched.call_count, ranges if valid else 0)
 
+    def test_language_list_stops_at_match(self):
+        """Test that a language is not checked against the rest of a list once one of its values matches."""
+
+        import soupsieve as sv
+        from bs4 import BeautifulSoup
+        from unittest import mock
+
+        n = 1000
+        soup = BeautifulSoup('<p lang="en">x</p><p lang="fr">x</p>' * 32, 'html.parser')
+        selector = 'p:lang(en, fr, ' + ', '.join(f'x-v{i}' for i in range(n)) + ')'
+        filter_lang = sv.css_match.CSSMatch.extended_language_filter
+        for flags in (0, sv.NOCACHE):
+            with mock.patch.object(
+                sv.css_match.CSSMatch, 'extended_language_filter', autospec=True, side_effect=filter_lang
+            ) as patched:
+                self.assertEqual(len(sv.select(selector, soup, flags=flags)), 64)
+            # `en` matches the first value, and `fr` the second.
+            self.assertLessEqual(patched.call_count, 3)
+
+    def test_language_lists(self):
+        """Test that each `:lang()` must match, and that it matches if any of its values do."""
+
+        markup = """
+        <p id="1" lang="en-US"></p>
+        <p id="2" lang="en"></p>
+        <p id="3" lang="fr"></p>
+        <p id="4"></p>
+        """
+
+        self.assert_selector(markup, 'p:lang(de, en):lang(fr, en-US)', ['1'], flags=util.HTML | util.NOCACHE)
+        self.assert_selector(markup, 'p:lang(de, en, fr)', ['1', '2', '3'], flags=util.HTML | util.NOCACHE)
+        self.assert_selector(markup, "p:lang(de, '')", ['4'], flags=util.HTML | util.NOCACHE)
+        self.assert_selector(markup, "p:lang(fr, en):not(:lang(en-US))", ['2', '3'], flags=util.HTML | util.NOCACHE)
+
     def test_language_ill_formed_tag(self):
         """Test that an element whose language tag is not well-formed matches no language range."""
 

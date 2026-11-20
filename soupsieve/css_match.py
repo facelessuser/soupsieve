@@ -1892,12 +1892,15 @@ class CSSMatch(_DocumentNav):
             self.lang_match_cache[match_key] = False
             return False
 
+        # Each `:lang()` must match, and it matches if any of its values do, so stop at the first value that
+        # matches, and at the first `:lang()` that doesn't. A list can have any number of values.
         match = False
         for patterns in langs:
             match = False
             for pattern in patterns:
                 if self.extended_language_filter(pattern, found_lang):
                     match = True
+                    break
             if not match:
                 break
 
