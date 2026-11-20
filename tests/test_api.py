@@ -350,7 +350,7 @@ class TestSoupSieve(util.TestCase):
         self.assertEqual([n['id'] for n in sv.filter('div:has(:scope)', nodes)], [])
 
     def test_filter_list_shares_matcher(self):
-        """Test that the tags of a list that have the same top level element share one matcher and its caches."""
+        """Test that the tags of a list that are in the same document share one matcher and its caches."""
 
         from bs4 import BeautifulSoup
         from unittest import mock
@@ -368,6 +368,53 @@ class TestSoupSieve(util.TestCase):
             with mock.patch.object(sv.css_match.CSSMatch, '__init__', autospec=True, side_effect=init) as patched:
                 self.assertEqual(len(sv.filter(selector, nodes)), matches)
             self.assertEqual(patched.call_count, matchers)
+
+    def test_filter_list_top_level_shares_matcher(self):
+        """Test that the top level elements of a fragment, which are siblings, share one matcher and its caches."""
+
+        from bs4 import BeautifulSoup
+        from unittest import mock
+
+        n = 32
+        soup = BeautifulSoup('<div><p>x</p></div>' * n, 'html.parser')
+        detached = BeautifulSoup('<div><p>x</p></div>', 'html.parser').div.extract()
+        nodes = soup.find_all(True) + detached.find_all(True) + [detached]
+        init = sv.css_match.CSSMatch.__init__
+        # The last or first `div` of the fragment, every `p`, and the detached `div` and its `p`.
+        for selector, matches in (
+            (':nth-child(2n)', n // 2),
+            (':nth-last-child(1)', n + 3),
+            (':first-of-type', n + 3),
+            ('div:nth-of-type(n+3)', n - 2),
+            (':nth-child(n of p)', n + 1),
+            (':root', 1),
+        ):
+            with mock.patch.object(sv.css_match.CSSMatch, '__init__', autospec=True, side_effect=init) as patched:
+                self.assertEqual(len(sv.filter(selector, nodes)), matches, selector)
+            # One for the fragment, and one for the detached tree.
+            self.assertEqual(patched.call_count, 2, selector)
+            self.assertEqual(
+                sv.filter(selector, nodes), [node for node in nodes if sv.match(selector, node)], selector
+            )
+
+    def test_filter_list_top_level_linear(self):
+        """Test that filtering the tags of a fragment with many top level elements counts each sibling once."""
+
+        from bs4 import BeautifulSoup
+        from unittest import mock
+
+        n = 200
+        soup = BeautifulSoup('<div><p>x</p></div>' * n, 'html.parser')
+        nodes = soup.find_all(True)
+        candidate = sv.css_match.CSSMatch.match_nth_candidate
+        for selector in (':nth-child(2n)', ':nth-last-child(n)', ':first-of-type', ':nth-of-type(n)'):
+            expected = sv.select(selector, soup)
+            with mock.patch.object(
+                sv.css_match.CSSMatch, 'match_nth_candidate', autospec=True, side_effect=candidate
+            ) as patched:
+                self.assertEqual(sv.filter(selector, nodes), expected, selector)
+            # Each of the `2n` elements is counted among its siblings once.
+            self.assertLessEqual(patched.call_count, 2 * n, selector)
 
     def test_uses_scope(self):
         """Test finding `:scope` or `&` in any part of a selector, nested ones included."""

@@ -3,8 +3,13 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
-## Unreleased
+## 4.1.3
 
+-   **FIX**: Fix `filter()` given a list of tags taking time and memory quadratic in the number of top level elements
+    of a document, such as a fragment parsed with `html.parser`, for selectors that count siblings, like
+    `:nth-child()` or `:first-of-type`. The tags were grouped by their top level element, so each top level element
+    counted all of its siblings again with caches of its own. The tags of a document now share one group, as with
+    `select()`.
 -   **FIX**: Fix `of-type` selectors, such as `:first-of-type`, `:last-of-type`, `:only-of-type`, and
     `:nth-of-type()`, taking time quadratic in the number of siblings when many of them have distinct tag names, as
     the siblings were scanned again for each tag name. Siblings of every type now share one scan.

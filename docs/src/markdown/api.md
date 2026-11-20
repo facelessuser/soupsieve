@@ -217,7 +217,7 @@ sv.filter('p:not(.b)', soup.div)
 ```
 
 When given a list, or any other iterable, the tags can be from different documents. The tags from the same document,
-or more exactly under the same top level element, share what Soup Sieve learns while matching, as one call of
+or from the same detached tree, share what Soup Sieve learns while matching, as one call of
 [`select`](#soupsieveselect) does, so filtering many tags of a document takes time that grows with the size of the
 document, not faster. A selector that uses `#!css :scope` or `#!css &` is the exception: each tag is the scope when it is
 matched, as with [`match`](#soupsievematch), so each tag is matched separately.

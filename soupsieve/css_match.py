@@ -2456,10 +2456,14 @@ class SoupSieve(ct.Immutable):
         Given a tag, its children are filtered with one `CSSMatch`, so its caches are shared by all of them.
 
         Any other iterable can hold tags from different documents, or detached tags. A `CSSMatch` takes what
-        it knows about a document from the top level element above the tag it is created with, so the tags
-        are grouped by that element, and each group shares a `CSSMatch` and its caches. Matching each tag
-        with a new `CSSMatch` would search the same parts of a document again for every tag, which is
-        quadratic for a selector like `:has()` or `:-soup-contains()` on the elements of a nested document.
+        it knows about a document from the tree the tag it is created with is in, so the tags are grouped by
+        their document, or by the top level element of a detached tree, and each group shares a `CSSMatch` and
+        its caches, created with the document as `select()` does. Matching each tag with a new `CSSMatch`
+        would search the same parts of a document again for every tag, which is quadratic for a selector like
+        `:has()` or `:-soup-contains()` on the elements of a nested document. The top level elements of a
+        document are siblings, so they must share one too, or sibling selectors like `:nth-child()` would
+        count all the top level elements again for every tag, which is quadratic in time and memory on a
+        fragment with many top level elements.
 
         The one thing a `CSSMatch` knows about the tag it is created with is that it is the scope, which
         `:scope` and `&` match, and caches can depend on it. So a selector that uses them still matches
@@ -2482,8 +2486,8 @@ class SoupSieve(ct.Immutable):
             if CSSMatch.is_doc(node):
                 continue
 
-            # Find the top level element above the tag, as `CSSMatch` does, sharing the walk with the tags
-            # it passes through so that a nested document is walked once.
+            # Find the top level element above the tag, sharing the walk with the tags it passes through so
+            # that a nested document is walked once.
             visited = []
             top = node
             while id(top) not in tops:
@@ -2497,9 +2501,12 @@ class SoupSieve(ct.Immutable):
             for key in visited:
                 tops[key] = top
 
-            matcher = matchers.get(id(top))
+            # Top level elements of the same document are siblings, so they share one `CSSMatch`, created with the
+            # document as `select()` does, or a detached tree has one of its own.
+            group = top.parent if top.parent is not None else top
+            matcher = matchers.get(id(group))
             if matcher is None:
-                matcher = matchers[id(top)] = CSSMatch(self.selectors, node, self.namespaces, self.flags)
+                matcher = matchers[id(group)] = CSSMatch(self.selectors, group, self.namespaces, self.flags)
             if matcher.match(node):
                 matched.append(node)
         return matched
