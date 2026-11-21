@@ -979,6 +979,14 @@ class CSSMatch(_DocumentNav):
                 # Get attribute parts
                 namespace, name = self.split_namespace(el, k)
 
+                # `*|attr` matches the attribute in any namespace or in none, so compare the local name only.
+                if prefix == '*':
+                    local = name if namespace is not None and name is not None else k
+                    if (self.is_xml and attr == local) or (not self.is_xml and util.lower(attr) == util.lower(local)):
+                        value = v
+                        break
+                    continue
+
                 # Can't match a prefix attribute as we haven't specified one to match
                 # Try to match it normally as a whole `p:a` as selector may be trying `p\:a`.
                 if ns is None:
@@ -991,7 +999,7 @@ class CSSMatch(_DocumentNav):
                     continue  # pragma: no cover
 
                 # We can't match our desired prefix attribute as the attribute doesn't have a prefix
-                if namespace is None or (ns != namespace and prefix != '*'):
+                if namespace is None or ns != namespace:
                     continue
 
                 # The attribute doesn't match.
