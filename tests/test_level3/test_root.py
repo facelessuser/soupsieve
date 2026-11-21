@@ -131,6 +131,13 @@ class TestRoot(util.TestCase):
         soup = self.soup(markup, 'html.parser')
         self.assertEqual(soup.select(':root'), [])
 
+    def test_no_root_non_ascii_space(self):
+        """Test when there is no root due to text that is not HTML white space."""
+
+        for markup in ('\xa0<div id="1"></div>', '<div id="1"></div>\u3000'):
+            soup = self.soup(markup, 'html.parser')
+            self.assertEqual(soup.select(':root'), [])
+
     def test_no_root_cdata(self):
         """Test when there is no root due to CDATA and tag."""
 

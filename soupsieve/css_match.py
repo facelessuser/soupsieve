@@ -1363,7 +1363,7 @@ class CSSMatch(_DocumentNav):
             sibling: Any = self.get_previous(el)
             while is_root and sibling is not None:
                 if (
-                    self.is_tag(sibling) or (self.is_content_string(sibling) and sibling.strip()) or
+                    self.is_tag(sibling) or (self.is_content_string(sibling) and RE_NOT_EMPTY.search(sibling)) or
                     self.is_cdata(sibling)
                 ):
                     is_root = False
@@ -1373,7 +1373,7 @@ class CSSMatch(_DocumentNav):
             sibling = self.get_next(el)
             while is_root and sibling is not None:
                 if (
-                    self.is_tag(sibling) or (self.is_content_string(sibling) and sibling.strip()) or
+                    self.is_tag(sibling) or (self.is_content_string(sibling) and RE_NOT_EMPTY.search(sibling)) or
                     self.is_cdata(sibling)
                 ):
                     is_root = False

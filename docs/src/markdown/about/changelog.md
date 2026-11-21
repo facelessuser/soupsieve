@@ -3,6 +3,12 @@ icon: lucide/scroll-text
 ---
 # Changelog
 
+## 4.1.4
+
+-   **FIX**: `:root` no longer matches an element that has a top level text sibling made only of non-ASCII white space,
+    such as a non-breaking space, as such text was treated as white space. Only HTML white space is ignored, as with
+    `:empty`.
+
 ## 4.1.3
 
 -   **FIX**: Fix `filter()` given a list of tags taking time and memory quadratic in the number of top level elements
