@@ -153,6 +153,12 @@ soup.select('.some-class')
 The attribute selector matches an element based on its attributes. When specifying a value of an attribute, if it
 contains whitespace or special characters, you should quote them with either single or double quotes.
 
+Attribute names are matched without case sensitivity only on HTML elements in HTML documents. On other elements, such
+as SVG and MathML elements in an HTML document, and in XML documents, the name must match exactly. HTML parsers convert
+attribute names to lowercase, then restore the case of some SVG and MathML ones, so an SVG element's `viewBox` is
+matched by `#!css [viewBox]`, but not by `#!css [viewbox]`. A parser that does not record namespaces, such as
+`html.parser`, treats every element as an HTML element.
+
 > [!tip] Additional Reading
 > https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors
 

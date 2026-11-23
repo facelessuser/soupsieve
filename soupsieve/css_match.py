@@ -965,6 +965,13 @@ class CSSMatch(_DocumentNav):
         Match attribute name and return value if it exists.
 
         `*|attr` can match several attributes of an element, so it is matched by `match_attribute_wildcard()`.
+
+        Attribute names are only matched case insensitively on HTML elements in HTML documents. Elsewhere, such as on
+        SVG and MathML elements in an HTML document, they must match exactly, as the HTML specification says and as
+        Firefox and Safari do (Chrome ignores the case everywhere). The HTML parser converts attribute names to
+        lowercase, then restores the case of some SVG and MathML ones, such as `viewBox`, so `[viewBox]` matches an SVG
+        element's `viewBox` and `[viewbox]` does not. A document without namespaces, such as one from `html.parser`,
+        has only HTML elements, so its attribute names are still matched case insensitively.
         """
 
         value = None
@@ -978,6 +985,8 @@ class CSSMatch(_DocumentNav):
             else:
                 ns = None
 
+            insensitive = self.attribute_names_insensitive(el)
+            target = util.lower(attr) if insensitive else attr
             for k, v in self.iter_attributes(el):
 
                 # Get attribute parts
@@ -986,7 +995,7 @@ class CSSMatch(_DocumentNav):
                 # Can't match a prefix attribute as we haven't specified one to match
                 # Try to match it normally as a whole `p:a` as selector may be trying `p\:a`.
                 if ns is None:
-                    if (self.is_xml and attr == k) or (not self.is_xml and util.lower(attr) == util.lower(k)):
+                    if (util.lower(k) if insensitive else k) == target:
                         value = v
                         break
                     # Coverage is not finding this even though it is executed.
@@ -999,7 +1008,7 @@ class CSSMatch(_DocumentNav):
                     continue
 
                 # The attribute doesn't match.
-                if (util.lower(attr) != util.lower(name)) if not self.is_xml else (attr != name):
+                if (util.lower(name) if insensitive and name is not None else name) != target:
                     continue
 
                 value = v
@@ -1011,6 +1020,18 @@ class CSSMatch(_DocumentNav):
                 value = v
                 break
         return value
+
+    def attribute_names_insensitive(self, el: bs4.Tag) -> bool:
+        """
+        Check if attribute names are matched case insensitively, which is only on HTML elements in HTML documents.
+
+        This is `not self.is_xml and self.is_html_tag(el)`, written out as it runs for each element an attribute
+        selector checks: a document without namespaces only has HTML elements.
+        """
+
+        if self.is_xml:
+            return False
+        return not self.has_namespaces or el.namespace == NS_XHTML
 
     def match_attribute_wildcard(
         self,
@@ -1027,13 +1048,15 @@ class CSSMatch(_DocumentNav):
         a value that differs, must pass all of them. Attributes are only checked until the result is known.
         """
 
-        attr = attribute.attribute
         inverse = attribute.inverse
+        # As in `match_attribute_name()`, names are only case insensitive on HTML elements in HTML documents.
+        insensitive = self.attribute_names_insensitive(el)
+        target = util.lower(attribute.attribute) if insensitive else attribute.attribute
         for k, v in self.iter_attributes(el):
             # The local name of an attribute without a namespace is the whole name.
             namespace, name = self.split_namespace(el, k)
             local = name if namespace is not None and name is not None else k
-            if (attr != local) if self.is_xml else (util.lower(attr) != util.lower(local)):
+            if (util.lower(local) if insensitive else local) != target:
                 continue
             if pattern is None:
                 return True

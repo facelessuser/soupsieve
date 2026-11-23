@@ -11,6 +11,10 @@ icon: lucide/scroll-text
 -   **FIX**: `[*|attr]` now matches the attribute in any namespace, such as `xlink:href` for `[*|href]`, and not only
     the attribute without a namespace. When an element has several, such as `href` and `xlink:href`, `[*|attr=value]`
     matches if any of them has the value, and `[*|attr!=value]` only if none of them does.
+-   **FIX**: Attribute names are only matched without case sensitivity on HTML elements in HTML documents, as the HTML
+    specification says and Firefox and Safari do. On SVG and MathML elements in an HTML document, the name must now
+    match exactly, so `[viewbox]` no longer matches an SVG element's `viewBox`. A document parsed without namespaces,
+    such as with `html.parser`, only has HTML elements, so it is unaffected.
 
 ## 4.1.3
 

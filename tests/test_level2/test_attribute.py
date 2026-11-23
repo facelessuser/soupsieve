@@ -277,6 +277,40 @@ class TestAttribute(util.TestCase):
         self.assert_selector(markup, '[type="fractalNoise"]', ["1"], flags=util.HTML5)
         self.assert_selector(markup, '[rel="nofollow"]', [], flags=util.HTML5)
 
+    def test_attribute_name_case_foreign(self):
+        """Attribute names are only case insensitive on HTML elements in HTML documents."""
+
+        markup = """
+        <div id="0" data-Q="1" HREF="x"></div>
+        <svg id="1" viewBox="0 0 1 1" data-Q="1" HREF="x" xlink:href="y">
+        <g id="2" definitionURL="u"></g>
+        </svg>
+        <math id="3" definitionURL="u"><mi id="4" mathvariant="bold"></mi></math>
+        """
+
+        # The HTML parser converts attribute names to lowercase, then restores the case of some SVG and MathML ones.
+        for selector, expected in (
+            ('[viewBox]', ['1']),
+            ('[viewbox]', []),
+            ('[VIEWBOX^="0"]', []),
+            ('[data-q]', ['0', '1']),
+            ('[data-Q]', ['0']),
+            ('[DATA-Q="1"]', ['0']),
+            ('[HREF]', ['0']),
+            ('[|HREF]', ['0']),
+            ('[*|href]', ['0', '1']),
+            ('[*|HREF]', ['0']),
+            ('[definitionURL]', ['3']),
+            ('[definitionurl]', ['2']),
+            ('[MATHVARIANT]', []),
+            ('[ID]', ['0'])
+        ):
+            self.assert_selector(markup, selector, expected, flags=util.HTML5)
+
+        # Without namespaces, as with `html.parser`, every element is an HTML element.
+        self.assert_selector(markup, '[VIEWBOX]', ['1'], flags=util.PYHTML)
+        self.assert_selector(markup, '[ID]', ['0', '1', '2', '3', '4'], flags=util.PYHTML)
+
     def test_attribute_html_case_insensitive_values_are_ascii_only(self):
         """Default HTML attribute folding does not equate non-ASCII letters to ASCII ones."""
 
