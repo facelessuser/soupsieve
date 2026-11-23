@@ -286,6 +286,39 @@ class TestNamespace(util.TestCase):
             flags=util.XHTML
         )
 
+    def test_attribute_namespace_wildcard_several(self):
+        """Test that `*|attr` with a value matches if any of the attributes with that local name do, in any order."""
+
+        markup = """
+        <svg>
+        <a id="1" href="bar" xlink:href="foo"></a>
+        <a id="2" xlink:href="foo" href="bar"></a>
+        <a id="3" href="bar"></a>
+        <a id="4"></a>
+        </svg>
+        """
+
+        xml = """
+        <root xmlns:x="http://example.com/x">
+        <e id="1" href="bar" x:href="foo"/>
+        <e id="2" x:href="foo" href="bar"/>
+        <e id="3" href="bar"/>
+        <e id="4"/>
+        </root>
+        """
+
+        for selector, expected in (
+            ('[*|href="foo"]', ['1', '2']),
+            ('[*|href="bar"]', ['1', '2', '3']),
+            ('[*|href$=o]', ['1', '2']),
+            ('[*|href="FOO" i]', ['1', '2']),
+            ('[id][*|href!=foo]', ['3', '4']),
+            ('[id]:not([*|href="foo"])', ['3', '4']),
+            ('[id][*|href!=bar]', ['4'])
+        ):
+            self.assert_selector(markup, selector, expected, flags=util.HTML5)
+            self.assert_selector(xml, selector, expected, flags=util.XML)
+
     def test_attribute_namespace_escapes(self):
         """Test attribute namespace escapes."""
 

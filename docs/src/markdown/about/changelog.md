@@ -9,7 +9,8 @@ icon: lucide/scroll-text
     such as a non-breaking space, as such text was treated as white space. Only HTML white space is ignored, as with
     `:empty`.
 -   **FIX**: `[*|attr]` now matches the attribute in any namespace, such as `xlink:href` for `[*|href]`, and not only
-    the attribute without a namespace.
+    the attribute without a namespace. When an element has several, such as `href` and `xlink:href`, `[*|attr=value]`
+    matches if any of them has the value, and `[*|attr!=value]` only if none of them does.
 
 ## 4.1.3
 

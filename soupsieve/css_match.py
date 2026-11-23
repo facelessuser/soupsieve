@@ -478,7 +478,7 @@ class _DocumentNav:
         return value
 
     @classmethod
-    def iter_attributes(cls, el: bs4.Tag | None) -> Iterator[tuple[str, str | Sequence[str] | None]]:
+    def iter_attributes(cls, el: bs4.Tag | None) -> Iterator[tuple[str, str | Sequence[str]]]:
         """Iterate attributes."""
 
         if el is not None:
@@ -961,7 +961,11 @@ class CSSMatch(_DocumentNav):
         attr: str,
         prefix: str | None
     ) -> str | Sequence[str] | None:
-        """Match attribute name and return value if it exists."""
+        """
+        Match attribute name and return value if it exists.
+
+        `*|attr` can match several attributes of an element, so it is matched by `match_attribute_wildcard()`.
+        """
 
         value = None
         if self.supports_namespaces():
@@ -969,7 +973,7 @@ class CSSMatch(_DocumentNav):
             # If we have not defined namespaces, we can't very well find them, so don't bother trying.
             if prefix:
                 ns = self.namespaces.get(prefix)
-                if ns is None and prefix != '*':
+                if ns is None:
                     return None
             else:
                 ns = None
@@ -978,14 +982,6 @@ class CSSMatch(_DocumentNav):
 
                 # Get attribute parts
                 namespace, name = self.split_namespace(el, k)
-
-                # `*|attr` matches the attribute in any namespace or in none, so compare the local name only.
-                if prefix == '*':
-                    local = name if namespace is not None and name is not None else k
-                    if (self.is_xml and attr == local) or (not self.is_xml and util.lower(attr) == util.lower(local)):
-                        value = v
-                        break
-                    continue
 
                 # Can't match a prefix attribute as we haven't specified one to match
                 # Try to match it normally as a whole `p:a` as selector may be trying `p\:a`.
@@ -1016,6 +1012,40 @@ class CSSMatch(_DocumentNav):
                 break
         return value
 
+    def match_attribute_wildcard(
+        self,
+        el: bs4.Tag,
+        attribute: ct.SelectorAttribute,
+        pattern: re.Pattern[str] | None,
+        ignore_case: bool
+    ) -> bool:
+        """
+        Match `*|attr`, which matches the attribute in any namespace or in none.
+
+        An element can have several such attributes, such as `href` and `xlink:href` for `*|href`, so the selector
+        matches if any of their values does. `[*|attr!=value]` is `:not([*|attr=value])`, so its pattern, which passes
+        a value that differs, must pass all of them. Attributes are only checked until the result is known.
+        """
+
+        attr = attribute.attribute
+        inverse = attribute.inverse
+        for k, v in self.iter_attributes(el):
+            # The local name of an attribute without a namespace is the whole name.
+            namespace, name = self.split_namespace(el, k)
+            local = name if namespace is not None and name is not None else k
+            if (attr != local) if self.is_xml else (util.lower(attr) != util.lower(local)):
+                continue
+            if pattern is None:
+                return True
+            value = v if isinstance(v, str) else ' '.join(v)
+            # A case insensitive pattern is compiled for the value converted to ASCII lowercase.
+            if ignore_case:
+                value = util.ascii_lower(value)
+            if (pattern.search(value) is not None) is not inverse:
+                return not inverse
+        # No attribute settled it: an existence check or a value found none, and `!=` was passed by all, if any.
+        return inverse
+
     def match_namespace(self, el: bs4.Tag, tag: ct.SelectorTag) -> bool:
         """Match the namespace of the element."""
 
@@ -1043,7 +1073,6 @@ class CSSMatch(_DocumentNav):
         match = True
         if attributes:
             for a in attributes:
-                temp = self.match_attribute_name(el, a.attribute, a.prefix)
                 # The case insensitive pattern only applies to HTML elements in HTML documents
                 pattern: re.Pattern[str] | None
                 if a.xml_type_pattern and (self.is_xml or not self.is_html_tag(el)):
@@ -1052,6 +1081,12 @@ class CSSMatch(_DocumentNav):
                 else:
                     pattern = a.pattern
                     ignore_case = a.ignore_case
+                if a.prefix == '*':
+                    if not self.match_attribute_wildcard(el, a, pattern, ignore_case):
+                        match = False
+                        break
+                    continue
+                temp = self.match_attribute_name(el, a.attribute, a.prefix)
                 if temp is None and a.inverse:
                     continue
                 if temp is None:
