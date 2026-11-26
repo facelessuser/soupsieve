@@ -395,13 +395,8 @@ Each name is ignored on its own, so a pseudo-class that has an alias must have e
 example, `#!css :-soup-contains()` is also available under its deprecated name `#!css :contains()`, and `#!css :is()`
 under `#!css :matches()`:
 
-```py play exceptions
-import soupsieve as sv
-sv.compile('p:contains(text)', ignore=[':-soup-contains'])
-try:
-    sv.compile('p:contains(text)', ignore=[':-soup-contains', ':contains'])
-except sv.SelectorSyntaxError:
-    print('Not allowed')
+```py
+sv.compile('p:contains(text)', ignore=[':-soup-contains', ':contains'])
 ```
 
 ## Selector Limits

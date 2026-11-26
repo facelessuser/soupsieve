@@ -63,6 +63,7 @@ linter
 lookahead
 lookaheads
 lookups
+lowercased
 lxml
 matchable
 matcher
