@@ -151,10 +151,12 @@ soup.select(':default')
 
 ## `#!css :defined`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:defined}
 
-In a browser environment, this represents *defined* elements (names without hyphens) and custom elements (names with
-hyphens) that have been properly added to the custom element registry. Since elements cannot be added to a custom
-element registry in Beautiful Soup, this will select all elements that are not custom tags. HTML elements with an `is`
-attribute (customized built-in elements) are treated the same way as custom tags and are not matched. `:defined` is a
+In a browser environment, this represents *defined* elements and custom elements that have been properly added to
+the custom element registry. Names reserved by HTML, such as `font-face`, are not custom element names even though
+they contain a hyphen. Elements identified as belonging to another namespace are not custom elements either. Since
+elements cannot be added to a custom element registry in Beautiful Soup, this will select all elements that are not
+custom tags. HTML elements with an `is` attribute (customized built-in elements) are treated the same way as custom
+tags and are not matched. `:defined` is a
 HTML specific selector, so it doesn't apply to XML.
 
 /// tab | Syntax

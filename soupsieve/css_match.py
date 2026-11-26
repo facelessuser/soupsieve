@@ -50,6 +50,12 @@ NS_XHTML = 'http://www.w3.org/1999/xhtml'
 NS_XML = 'http://www.w3.org/XML/1998/namespace'
 NS_SVG = 'http://www.w3.org/2000/svg'
 
+# Hyphenated names that HTML reserves and does not allow as custom element names.
+RESERVED_CUSTOM_ELEMENT_NAMES = frozenset((
+    'annotation-xml', 'color-profile', 'font-face', 'font-face-src', 'font-face-uri',
+    'font-face-format', 'font-face-name', 'missing-glyph'
+))
+
 # Values of `type` that put an `input` in a state that does not use its value for `dir="auto"`.
 # A missing or invalid value is the Text state, which does.
 NON_AUTO_DIR_INPUT_TYPES = frozenset((
@@ -2217,7 +2223,7 @@ class CSSMatch(_DocumentNav):
         `:defined` is related to custom elements in a browser.
 
         - If the document is XML (not XHTML), no tags will match.
-        - Tags that are not custom (don't have a hyphen) are marked defined.
+        - Tags with no hyphen, a reserved name, or a known non-HTML namespace are marked defined.
         - If the tag has a prefix (without or without a namespace), it will not match.
         - HTML elements with an `is` attribute (customized built-in elements) are created as undefined,
           like custom tags, so they don't match.
@@ -2229,7 +2235,11 @@ class CSSMatch(_DocumentNav):
         name = self.get_tag(el)
         return (
             self.is_html and name is not None and (
-                (name.find('-') == -1 and not self.is_customized_builtin(el)) or
+                self.get_uri(el) not in (None, '', NS_XHTML) or
+                (
+                    (name.find('-') == -1 or name in RESERVED_CUSTOM_ELEMENT_NAMES) and
+                    not self.is_customized_builtin(el)
+                ) or
                 name.find(':') != -1 or
                 self.get_prefix(el) is not None
             )

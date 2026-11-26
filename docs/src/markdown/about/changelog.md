@@ -5,6 +5,8 @@ icon: lucide/scroll-text
 
 ## 4.1.4
 
+-   **FIX**: `:defined` now matches hyphenated names reserved by HTML, such as `font-face`, and hyphenated elements
+    outside the HTML namespace. Neither can be an autonomous custom element.
 -   **FIX**: `:root` no longer matches an element that has a top level text sibling made only of non-ASCII white space,
     such as a non-breaking space, as such text was treated as white space. Only HTML white space is ignored, as with
     `:empty`.
