@@ -2289,7 +2289,7 @@ class CSSMatch(_DocumentNav):
         # Every element visited shares the state, so cache it to avoid walking the same ancestors again.
         visited: list[int] = []
         editable = False
-        node = el  # type: bs4.Tag | None
+        node: bs4.Tag | None = el
         while node is not None:
             key = id(node)
             if key in self.edit_cache:
