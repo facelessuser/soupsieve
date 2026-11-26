@@ -104,11 +104,121 @@ class TestDefined(util.TestCase):
 
         from lxml import etree
 
+        # The undeclared prefix leaves `prefix:div` and `prefix:div-custom` in no namespace, so, as in a browser,
+        # they are not HTML elements and can't be custom elements.
         self.assert_selector(
             markup,
             'body :defined',
             # We should get 3, but for LXML versions less than 4.4.0 we don't for reasons stated above.
-            ['0', '2'] if etree.LXML_VERSION < (4, 4, 0, 0) else ['0', '1', '2'],
+            ['0', '2'] if etree.LXML_VERSION < (4, 4, 0, 0) else ['0', '2', '3'],
+            flags=util.XHTML
+        )
+
+    @util.requires_lxml
+    def test_defined_xhtml_namespaces(self):
+        """Test that only elements in the XHTML namespace can be undefined in XHTML, whatever their prefix."""
+
+        markup = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://www.w3.org/1999/xhtml"
+            xmlns:s="http://www.w3.org/2000/svg" xmlns:o="urn:other">
+        <head>
+        </head>
+        <body>
+        <div id="0"></div>
+        <x-foo id="1"></x-foo>
+        <h:div id="2"></h:div>
+        <h:x-bar id="3"></h:x-bar>
+        <s:x-g id="4"></s:x-g>
+        <o:x-baz id="5"></o:x-baz>
+        <x-none xmlns="" id="6"></x-none>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            'body :defined',
+            ['0', '2', '4', '5', '6'],
+            flags=util.XHTML
+        )
+
+    @util.requires_lxml
+    def test_defined_xhtml_default_namespace(self):
+        """Test a custom element in the default namespace when no other prefix maps to XHTML."""
+
+        markup = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <html xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+        </head>
+        <body>
+        <div id="0"></div>
+        <x-foo id="1"></x-foo>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            'body :defined',
+            ['0'],
+            flags=util.XHTML
+        )
+
+    @util.requires_lxml
+    def test_defined_xhtml_names(self):
+        """Test which names are custom element names in XHTML, where names keep their case."""
+
+        markup = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <html xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+        </head>
+        <body>
+        <font-face id="0"></font-face>
+        <annotation-xml id="1"></annotation-xml>
+        <X-UP id="2"></X-UP>
+        <x-Up id="3"></x-Up>
+        <_x-y id="4"></_x-y>
+        <a-b.c id="5"></a-b.c>
+        <x-é id="6"></x-é>
+        <a- id="7"></a->
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            'body :defined',
+            ['0', '1', '2', '3', '4'],
+            flags=util.XHTML
+        )
+
+    @util.requires_lxml
+    def test_defined_xhtml_customized_builtin(self):
+        """Test that an `is` attribute only makes elements in the XHTML namespace undefined."""
+
+        markup = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <html xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://www.w3.org/2000/svg">
+        <head>
+        </head>
+        <body>
+        <div id="0"></div>
+        <div id="1" is="x-a"></div>
+        <font-face id="2" is="x-a"></font-face>
+        <div id="3" IS="x-a"></div>
+        <s:g id="4" is="x-a"></s:g>
+        <div xmlns="" id="5" is="x-a"></div>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            'body :defined',
+            ['0', '3', '4', '5'],
             flags=util.XHTML
         )
 

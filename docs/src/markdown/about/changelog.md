@@ -5,6 +5,11 @@ icon: lucide/scroll-text
 
 ## 4.1.4
 
+-   **FIX**: `:defined` in XHTML documents now follows the element's namespace instead of its prefix, as browsers do.
+    Previously, an element in the default namespace was treated as prefixed, so custom elements such as `<x-foo>`
+    were matched. Now only elements in the XHTML namespace can be undefined, whatever their prefix. Names with an
+    uppercase ASCII letter, and names reserved by HTML, such as `font-face`, are not custom element names and are
+    matched.
 -   **FIX**: `:root` no longer matches an element that has a top level text sibling made only of non-ASCII white space,
     such as a non-breaking space, as such text was treated as white space. Only HTML white space is ignored, as with
     `:empty`.

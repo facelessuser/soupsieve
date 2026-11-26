@@ -157,6 +157,11 @@ element registry in Beautiful Soup, this will select all elements that are not c
 attribute (customized built-in elements) are treated the same way as custom tags and are not matched. `:defined` is a
 HTML specific selector, so it doesn't apply to XML.
 
+In XHTML, namespaces are known, so, as in a browser, only elements in the XHTML namespace can be custom elements or
+customized built-in elements, whatever their prefix. Elements in another namespace or in no namespace are always
+matched. Names keep their case in XHTML, and a name with an uppercase ASCII letter, such as `X-Foo`, is not a custom
+element name, so it is matched. Names reserved by HTML, such as `font-face`, are matched too.
+
 /// tab | Syntax
 ```css
 :defined

@@ -50,6 +50,12 @@ NS_XHTML = 'http://www.w3.org/1999/xhtml'
 NS_XML = 'http://www.w3.org/XML/1998/namespace'
 NS_SVG = 'http://www.w3.org/2000/svg'
 
+# Hyphenated names that HTML reserves and does not allow as custom element names.
+RESERVED_CUSTOM_ELEMENT_NAMES = frozenset((
+    'annotation-xml', 'color-profile', 'font-face', 'font-face-src', 'font-face-uri',
+    'font-face-format', 'font-face-name', 'missing-glyph'
+))
+
 # Values of `type` that put an `input` in a state that does not use its value for `dir="auto"`.
 # A missing or invalid value is the Text state, which does.
 NON_AUTO_DIR_INPUT_TYPES = frozenset((
@@ -2217,6 +2223,12 @@ class CSSMatch(_DocumentNav):
         `:defined` is related to custom elements in a browser.
 
         - If the document is XML (not XHTML), no tags will match.
+        - In XHTML, namespaces are known, so, as in a browser, only an element in the XHTML namespace can be
+          undefined: one with a valid custom element name, or with an `is` attribute. Prefixes don't matter,
+          and names keep their case, so `X-Foo` is not a custom element name.
+
+        In HTML:
+
         - Tags that are not custom (don't have a hyphen) are marked defined.
         - If the tag has a prefix (without or without a namespace), it will not match.
         - HTML elements with an `is` attribute (customized built-in elements) are created as undefined,
@@ -2227,12 +2239,30 @@ class CSSMatch(_DocumentNav):
         """
 
         name = self.get_tag(el)
+        if self.is_xml:
+            return self.is_html and name is not None and not (
+                self.is_html_tag(el) and (self.is_custom_element_name(name) or self.is_customized_builtin(el))
+            )
         return (
             self.is_html and name is not None and (
                 (name.find('-') == -1 and not self.is_customized_builtin(el)) or
                 name.find(':') != -1 or
                 self.get_prefix(el) is not None
             )
+        )
+
+    @staticmethod
+    def is_custom_element_name(name: str) -> bool:
+        """
+        Check if a name is a valid custom element name.
+
+        It must contain a hyphen, start with an ASCII lowercase letter, have no ASCII uppercase letters, and not
+        be a name that HTML reserves. Other characters, such as `.` or `é`, are allowed, as Chrome and Firefox do.
+        """
+
+        return (
+            '-' in name and 'a' <= name[0] <= 'z' and name == util.lower(name) and
+            name not in RESERVED_CUSTOM_ELEMENT_NAMES
         )
 
     def is_customized_builtin(self, el: bs4.Tag) -> bool:
