@@ -151,16 +151,21 @@ soup.select(':default')
 
 ## `#!css :defined`:material-language-html5:{: title="HTML" data-md-color-primary="orange" .icon} {:#:defined}
 
-In a browser environment, this represents *defined* elements (names without hyphens) and custom elements (names with
-hyphens) that have been properly added to the custom element registry. Since elements cannot be added to a custom
-element registry in Beautiful Soup, this will select all elements that are not custom tags. HTML elements with an `is`
-attribute (customized built-in elements) are treated the same way as custom tags and are not matched. `:defined` is a
-HTML specific selector, so it doesn't apply to XML.
+In a browser environment, this represents *defined* elements and custom elements that have been properly added to
+the custom element registry. Since elements cannot be added to a custom element registry in Beautiful Soup, this will
+select all elements that are not custom elements. `:defined` is a HTML specific selector, so it doesn't apply to XML.
 
-In XHTML, namespaces are known, so, as in a browser, only elements in the XHTML namespace can be custom elements or
-customized built-in elements, whatever their prefix. Elements in another namespace or in no namespace are always
-matched. Names keep their case in XHTML, and a name with an uppercase ASCII letter, such as `X-Foo`, is not a custom
-element name, so it is matched. Names reserved by HTML, such as `font-face`, are matched too.
+As in a browser, only an HTML element can be a custom element, and it is one if:
+
+-   It has a valid custom element name: one that starts with a lowercase ASCII letter, contains a hyphen, and has no
+    uppercase ASCII letters. Other characters, such as `.`, `:` or `é`, are allowed, so `prefix:my-element` is a
+    custom element name. Names reserved by HTML, such as `font-face`, are not custom element names.
+-   Or it has an `is` attribute, which makes it a customized built-in element, such as `#!html <button is="my-button">`.
+
+SVG and MathML elements, such as `font-face` in SVG, are never custom elements, and neither is an element in another
+namespace or in none in XHTML, whatever its prefix. HTML names are not case sensitive, but XHTML names are, so in XHTML
+`X-Foo` is not a custom element name. Parsers that don't record namespaces, such as `html.parser` and `lxml`, make
+every element an HTML element, so there, hyphenated SVG and MathML elements are treated as custom elements.
 
 /// tab | Syntax
 ```css

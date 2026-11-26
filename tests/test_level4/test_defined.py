@@ -23,11 +23,121 @@ class TestDefined(util.TestCase):
         </html>
         """
 
+        # A colon is allowed in a custom element name, so `prefix:div-custom` is one, as in Chrome and Firefox.
         self.assert_selector(
             markup,
             'body :defined',
-            ['0', '2', '3'],
+            ['0', '2'],
             flags=util.HTML
+        )
+
+    def test_defined_html_names(self):
+        """Test which hyphenated names are custom element names in HTML."""
+
+        markup = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+        </head>
+        <body>
+        <x:y id="0"></x:y>
+        <a-b:c id="1"></a-b:c>
+        <a:-b id="2"></a:-b>
+        <x-y: id="3"></x-y:>
+        <a-b! id="4"></a-b!>
+        <x-y_z id="5"></x-y_z>
+        <math-\u03b1 id="6"></math-\u03b1>
+        <X-UP id="7"></X-UP>
+        </body>
+        </html>
+        """
+
+        # Names are lowercased by the parser, so `X-UP` is the custom element name `x-up`.
+        self.assert_selector(
+            markup,
+            'body :defined',
+            ['0'],
+            flags=util.HTML
+        )
+
+    def test_defined_html_reserved_names(self):
+        """Test that hyphenated names reserved by HTML are not custom element names."""
+
+        markup = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+        </head>
+        <body>
+        <annotation-xml id="0"></annotation-xml>
+        <color-profile id="1"></color-profile>
+        <font-face id="2"></font-face>
+        <font-face-src id="3"></font-face-src>
+        <font-face-uri id="4"></font-face-uri>
+        <font-face-format id="5"></font-face-format>
+        <font-face-name id="6"></font-face-name>
+        <missing-glyph id="7"></missing-glyph>
+        <FONT-FACE id="8"></FONT-FACE>
+        <font-face id="9" is="x-a"></font-face>
+        <prefix:font-face id="10"></prefix:font-face>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            'body :defined',
+            ['0', '1', '2', '3', '4', '5', '6', '7', '8'],
+            flags=util.HTML
+        )
+
+    def test_defined_html_foreign(self):
+        """Test that hyphenated SVG and MathML elements are not custom elements when the parser gives namespaces."""
+
+        markup = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+        </head>
+        <body>
+        <svg id="0">
+        <custom-graphic id="1"></custom-graphic>
+        <x:y-z id="2"></x:y-z>
+        <font-face id="3"></font-face>
+        <foreignObject id="4"><x-inner id="5"></x-inner></foreignObject>
+        </svg>
+        <math id="6"><custom-math id="7"></custom-math></math>
+        <x-foo id="8"></x-foo>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            'body :defined',
+            ['0', '1', '2', '3', '4', '6', '7'],
+            flags=util.HTML5
+        )
+
+    def test_defined_html_foreign_no_namespace(self):
+        """Test that, without namespaces, hyphenated SVG elements are treated as custom elements."""
+
+        markup = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+        </head>
+        <body>
+        <svg id="0"><custom-graphic id="1"></custom-graphic><font-face id="2"></font-face></svg>
+        </body>
+        </html>
+        """
+
+        self.assert_selector(
+            markup,
+            'body :defined',
+            ['0', '2'],
+            flags=util.PYHTML
         )
 
     def test_defined_customized_builtin(self):

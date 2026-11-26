@@ -392,12 +392,6 @@ class _DocumentNav:
         return el.name if el is not None else None
 
     @staticmethod
-    def get_prefix_name(el: bs4.Tag) -> str | None:
-        """Get prefix."""
-
-        return el.prefix
-
-    @staticmethod
     def get_uri(el: bs4.Tag | None) -> str | None:
         """Get namespace `URI`."""
 
@@ -851,12 +845,6 @@ class CSSMatch(_DocumentNav):
 
         name = self.get_tag_name(el)
         return util.lower(name) if name is not None and not self.is_xml else name
-
-    def get_prefix(self, el: bs4.Tag) -> str | None:
-        """Get prefix."""
-
-        prefix = self.get_prefix_name(el)
-        return util.lower(prefix) if prefix is not None and not self.is_xml else prefix
 
     @staticmethod
     def find_text_dir(text: str) -> int | None:
@@ -2223,32 +2211,18 @@ class CSSMatch(_DocumentNav):
         `:defined` is related to custom elements in a browser.
 
         - If the document is XML (not XHTML), no tags will match.
-        - In XHTML, namespaces are known, so, as in a browser, only an element in the XHTML namespace can be
-          undefined: one with a valid custom element name, or with an `is` attribute. Prefixes don't matter,
-          and names keep their case, so `X-Foo` is not a custom element name.
-
-        In HTML:
-
-        - Tags that are not custom (don't have a hyphen) are marked defined.
-        - If the tag has a prefix (without or without a namespace), it will not match.
-        - HTML elements with an `is` attribute (customized built-in elements) are created as undefined,
-          like custom tags, so they don't match.
-
-        This is of course requires the parser to provide us with the proper prefix and namespace info,
-        if it doesn't, there is nothing we can do.
+        - As in a browser, only an HTML element can be undefined: one with a valid custom element name
+          (autonomous custom elements), or with an `is` attribute (customized built-in elements). Elements
+          in another namespace, or in none in XHTML, are always defined. Prefixes don't matter.
+        - Parsers that don't record namespaces, such as `html.parser`, make every element an HTML element,
+          so hyphenated SVG and MathML elements can't be told apart from custom elements there.
         """
 
         name = self.get_tag(el)
-        if self.is_xml:
-            return self.is_html and name is not None and not (
-                self.is_html_tag(el) and (self.is_custom_element_name(name) or self.is_customized_builtin(el))
-            )
-        return (
-            self.is_html and name is not None and (
-                (name.find('-') == -1 and not self.is_customized_builtin(el)) or
-                name.find(':') != -1 or
-                self.get_prefix(el) is not None
-            )
+        # The namespace is checked last, as most elements have neither a custom element name nor an `is` attribute.
+        return self.is_html and name is not None and not (
+            (self.is_custom_element_name(name) or self.get_attribute_by_name(el, 'is') is not None) and
+            self.is_html_tag(el)
         )
 
     @staticmethod
@@ -2257,18 +2231,16 @@ class CSSMatch(_DocumentNav):
         Check if a name is a valid custom element name.
 
         It must contain a hyphen, start with an ASCII lowercase letter, have no ASCII uppercase letters, and not
-        be a name that HTML reserves. Other characters, such as `.` or `é`, are allowed, as Chrome and Firefox do.
+        be a name that HTML reserves. Other characters, such as `.`, `:` or `é`, are allowed, as the HTML
+        specification, Chrome and Firefox do. Safari still follows an older, narrower rule.
+
+        HTML names are already lowercase here, but XHTML names keep their case.
         """
 
         return (
             '-' in name and 'a' <= name[0] <= 'z' and name == util.lower(name) and
             name not in RESERVED_CUSTOM_ELEMENT_NAMES
         )
-
-    def is_customized_builtin(self, el: bs4.Tag) -> bool:
-        """Check if an HTML element has an `is` attribute, which makes it a customized built-in element."""
-
-        return self.is_html_tag(el) and self.get_attribute_by_name(el, 'is') is not None
 
     def match_placeholder_shown(self, el: bs4.Tag) -> bool:
         """

@@ -5,6 +5,11 @@ icon: lucide/scroll-text
 
 ## 4.1.4
 
+-   **FIX**: `:defined` now follows the HTML specification's custom element names in HTML documents, as Chrome and
+    Firefox do. Names reserved by HTML, such as `font-face`, are not custom element names and are matched, while a
+    hyphenated name with a colon, such as `prefix:my-element`, is one and is no longer matched. When the parser records
+    namespaces, as `html5lib` does, hyphenated SVG and MathML elements are matched too, as they can't be custom
+    elements (@Muneer320).
 -   **FIX**: `:defined` in XHTML documents now follows the element's namespace instead of its prefix, as browsers do.
     Previously, an element in the default namespace was treated as prefixed, so custom elements such as `<x-foo>`
     were matched. Now only elements in the XHTML namespace can be undefined, whatever their prefix. Names with an
